@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《极简快速阅读》知识脑图 · 完整版</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.min.js" integrity="sha384-yQ4mmBBT+vhTAwjFH0toJXNYJ6O4usWnt6EPIdWwrRvx2V/n5lXuDZQwQFeSFydF" crossorigin="anonymous"></script>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, #fafafa 0%, #f3f0eb 100%);
+  color: #2d2a26;
+  line-height: 1.7;
+  padding-bottom: 80px;
+}
+
+/* ===== 垂直目录侧边栏 ===== */
+.toc-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+}
+.toc-sidebar::-webkit-scrollbar { width: 6px; }
+.toc-sidebar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+.toc-sidebar::-webkit-scrollbar-thumb { background: rgba(233, 196, 106, 0.3); border-radius: 3px; }
+.toc-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(233, 196, 106, 0.5); }
+
+.toc-header {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid rgba(233, 196, 106, 0.2);
+  flex-shrink: 0;
+}
+.toc-header .label {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #e9c46a;
+  background: rgba(233, 196, 106, 0.12);
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.toc-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+.toc-header .hint { font-size: 12px; opacity: 0.5; }
+
+.toc-list {
+  flex: 1;
+  padding: 16px 0;
+  list-style: none;
+}
+.toc-group-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: rgba(233, 196, 106, 0.6);
+  padding: 14px 24px 6px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.toc-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 14px;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+}
+.toc-item:hover {
+  background: rgba(233, 196, 106, 0.08);
+  color: #fff;
+  border-left-color: rgba(233, 196, 106, 0.4);
+}
+.toc-item.active {
+  background: rgba(233, 196, 106, 0.12);
+  color: #e9c46a;
+  border-left-color: #e9c46a;
+  font-weight: 600;
+}
+.toc-item .toc-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.06);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #e9c46a;
+  letter-spacing: 0.5px;
+}
+.toc-item .toc-text { flex: 1; line-height: 1.3; }
+.toc-item .toc-text small { display: block; font-size: 11px; opacity: 0.55; margin-top: 1px; font-weight: normal; }
+
+.toc-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 11px;
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+.toc-top {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e9c46a;
+  color: #1a1a2e;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(233, 196, 106, 0.4);
+  transition: all 0.2s;
+  z-index: 99;
+}
+.toc-top.show { display: flex; }
+.toc-top:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(233, 196, 106, 0.6); }
+
+/* 移动端汉堡菜单 */
+.toc-toggle {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 200;
+  width: 44px;
+  height: 44px;
+  background: #1a1a2e;
+  color: #e9c46a;
+  border: none;
+  border-radius: 8px;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 900px) {
+  .toc-sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+  .toc-sidebar.open { transform: translateX(0); }
+  .toc-toggle { display: flex; align-items: center; justify-content: center; }
+  .toc-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+  .toc-overlay.open { display: block; }
+}
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff;
+  padding: 80px 40px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(233, 196, 106, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(168, 218, 220, 0.12) 0%, transparent 40%);
+}
+.hero-inner { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; }
+.hero .badge {
+  display: inline-block;
+  padding: 6px 18px;
+  background: rgba(233, 196, 106, 0.18);
+  border: 1px solid rgba(233, 196, 106, 0.4);
+  border-radius: 999px;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: #e9c46a;
+  margin-bottom: 24px;
+}
+.hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+  background: linear-gradient(120deg, #fff 0%, #e9c46a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .sub { font-size: 18px; opacity: 0.85; margin-bottom: 8px; }
+.hero .author { font-size: 15px; opacity: 0.6; margin-top: 8px; }
+.hero .meta {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+.meta-item { display: flex; align-items: center; gap: 6px; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 32px; margin-left: 280px; }
+@media (max-width: 900px) { .container { margin-left: auto; padding: 0 16px; padding-top: 80px; } }
+
+.section-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin: 56px 0 24px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid #e9c46a;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.section-title .num {
+  background: #1a1a2e;
+  color: #e9c46a;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 22px;
+}
+
+.lead-card {
+  background: linear-gradient(135deg, #fffbf0 0%, #fff5e1 100%);
+  border-left: 4px solid #e9c46a;
+  padding: 24px 28px;
+  border-radius: 0 12px 12px 0;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+.lead-card h3 { color: #1a1a2e; font-size: 20px; margin-bottom: 8px; }
+.lead-card p { color: #555; }
+
+.chapter-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+  border: 1px solid #ece5d6;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.chapter-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+
+.chapter-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+.chapter-head .ch-num {
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  color: #e9c46a;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.chapter-head h4 { font-size: 22px; color: #1a1a2e; font-weight: 700; }
+.chapter-head .tagline { font-size: 14px; color: #888; margin-left: auto; }
+
+.bullets {
+  list-style: none;
+  padding: 16px 0 8px 0;
+  border-top: 1px dashed #ece5d6;
+  margin-top: 12px;
+}
+.bullets li {
+  padding: 8px 0 8px 28px;
+  position: relative;
+  color: #444;
+}
+.bullets li::before {
+  content: "▸";
+  color: #e9c46a;
+  position: absolute;
+  left: 8px;
+  font-weight: bold;
+}
+
+.subsec {
+  background: #fafaf6;
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin: 12px 0;
+  border-left: 3px solid #a8dadc;
+}
+.subsec h5 {
+  color: #1a1a2e;
+  font-size: 16px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.subsec h5::before {
+  content: "❖";
+  color: #a8dadc;
+}
+.subsec p { color: #555; font-size: 14.5px; }
+
+.quote {
+  background: linear-gradient(135deg, #f7f3eb 0%, #f0eadf 100%);
+  border-radius: 8px;
+  padding: 14px 20px;
+  margin: 12px 0;
+  font-style: italic;
+  color: #5b5547;
+  border-left: 4px solid #c8a951;
+  position: relative;
+}
+.quote::before {
+  content: """;
+  position: absolute;
+  left: 6px;
+  top: -6px;
+  font-size: 48px;
+  color: #c8a951;
+  opacity: 0.25;
+  font-family: Georgia, serif;
+}
+
+.takeaway-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.takeaway {
+  background: #fff;
+  border: 1px solid #ece5d6;
+  border-radius: 12px;
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.takeaway::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #e9c46a, #a8dadc);
+}
+.takeaway h4 {
+  color: #1a1a2e;
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+.takeaway p { font-size: 13.5px; color: #666; }
+
+.mermaid-wrap {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  margin: 32px 0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+  overflow: auto;
+}
+.mermaid { text-align: center; font-size: 14px; }
+
+.table-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+@media (max-width: 900px) { .table-3 { grid-template-columns: 1fr; } }
+.stage-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  border-top: 4px solid #1a1a2e;
+  position: relative;
+}
+.stage-card.s1 { border-top-color: #a8dadc; }
+.stage-card.s2 { border-top-color: #e9c46a; }
+.stage-card.s3 { border-top-color: #e76f51; }
+.stage-card h4 { color: #1a1a2e; margin-bottom: 8px; }
+.stage-card .time { font-size: 32px; font-weight: 800; color: #1a1a2e; }
+.stage-card .task { font-size: 14px; color: #666; margin: 4px 0 12px; }
+.stage-card ul { list-style: none; padding: 0; }
+.stage-card li { font-size: 13.5px; color: #555; padding: 4px 0; padding-left: 18px; position: relative; }
+.stage-card li::before { content: "•"; position: absolute; left: 6px; color: #e9c46a; }
+
+.principle-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 24px 0; }
+.principle {
+  background: linear-gradient(135deg, #fff 0%, #fafaf6 100%);
+  border-radius: 10px;
+  padding: 16px 20px;
+  border: 1px solid #ece5d6;
+  position: relative;
+  padding-left: 56px;
+}
+.principle .idx {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  width: 32px;
+  height: 32px;
+  background: #1a1a2e;
+  color: #e9c46a;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+.principle h5 { color: #1a1a2e; margin-bottom: 4px; font-size: 15px; }
+.principle p { color: #666; font-size: 13px; }
+
+.author-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  margin: 32px 0;
+}
+.author-card h3 { color: #e9c46a; margin-bottom: 12px; }
+.author-card p { opacity: 0.9; }
+
+.footer {
+  text-align: center;
+  padding: 40px 20px 20px;
+  color: #999;
+  font-size: 13px;
+}
+
+.book-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: center;
+  margin: 24px 0;
+}
+.fact {
+  background: rgba(255,255,255,0.08);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.fact b { color: #e9c46a; display: block; font-size: 18px; margin-bottom: 2px; }
+
+.summary-box {
+  background: #fff;
+  border: 2px solid #1a1a2e;
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin: 24px 0;
+}
+.summary-box h3 { color: #1a1a2e; margin-bottom: 12px; }
+.summary-box ol { padding-left: 24px; }
+.summary-box li { margin-bottom: 8px; color: #444; }
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 32px; }
+  .hero { padding: 50px 20px; }
+  .container { padding: 0 16px; }
+  .section-title { font-size: 24px; }
+  .chapter-head h4 { font-size: 18px; }
+  .mermaid-wrap { padding: 16px; }
+  .table-3 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="badge">知识脑图 · 完整版</div>
+    <h1>极简快速阅读</h1>
+    <div class="sub">信息时代如何读一本书</div>
+    <div class="author">[韩] 金正 · 著</div>
+    <div class="meta">
+      <div class="meta-item">📚 5 大章节 · 59 个小节</div>
+      <div class="meta-item">⏱ 100 分钟读三遍</div>
+      <div class="meta-item">🎯 战略性读书法</div>
+    </div>
+  </div>
+</section>
+
+<button class="toc-toggle" onclick="toggleToc()" aria-label="打开目录">☰</button>
+<div class="toc-overlay" onclick="toggleToc()"></div>
+
+<aside class="toc-sidebar" id="tocSidebar">
+  <div class="toc-header">
+    <span class="label">CONTENTS</span>
+    <h2>知识脑图<br>目录导航</h2>
+    <div class="hint">点击章节快速跳转</div>
+  </div>
+
+  <div class="toc-group-label">开始阅读</div>
+  <ul class="toc-list">
+    <li><a class="toc-item" href="#overview" data-target="overview">
+      <span class="toc-num">0</span>
+      <span class="toc-text">全书全景<small>Overview</small></span>
+    </a></li>
+    <li><a class="toc-item" href="#mindmap" data-target="mindmap">
+      <span class="toc-num">⊕</span>
+      <span class="toc-text">知识脑图<small>Mindmap</small></span>
+    </a></li>
+  </ul>
+
+  <div class="toc-group-label">5 大章节</div>
+  <ul class="toc-list">
+    <li><a class="toc-item" href="#c1" data-target="c1">
+      <span class="toc-num">1</span>
+      <span class="toc-text">战略性读书法<small>100 分钟读三遍</small></span>
+    </a></li>
+    <li><a class="toc-item" href="#c2" data-target="c2">
+      <span class="toc-num">2</span>
+      <span class="toc-text">阅读是一种投资<small>提升综合实力</small></span>
+    </a></li>
+    <li><a class="toc-item" href="#c3" data-target="c3">
+      <span class="toc-num">3</span>
+      <span class="toc-text">第一遍 10 分钟<small>通读全书</small></span>
+    </a></li>
+    <li><a class="toc-item" href="#c4" data-target="c4">
+      <span class="toc-num">4</span>
+      <span class="toc-text">第二遍 50 分钟<small>详细阅读</small></span>
+    </a></li>
+    <li><a class="toc-item" href="#c5" data-target="c5">
+      <span class="toc-num">5</span>
+      <span class="toc-text">第三遍 40 分钟<small>深入阅读</small></span>
+    </a></li>
+  </ul>
+
+  <div class="toc-group-label">方法论</div>
+  <ul class="toc-list">
+    <li><a class="toc-item" href="#ten" data-target="ten">
+      <span class="toc-num">★</span>
+      <span class="toc-text">十大战略<small>Ten Strategies</small></span>
+    </a></li>
+    <li><a class="toc-item" href="#post" data-target="post">
+      <span class="toc-num">末</span>
+      <span class="toc-text">后记<small>爱与读书都是技术</small></span>
+    </a></li>
+    <li><a class="toc-item" href="#summary" data-target="summary">
+      <span class="toc-num">✓</span>
+      <span class="toc-text">行动清单<small>立即可做 10 件事</small></span>
+    </a></li>
+  </ul>
+
+  <div class="toc-footer">
+    © 知识脑图 · 仅供学习
+  </div>
+</aside>
+
+<button class="toc-top" id="tocTop" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="回到顶部">↑</button>
+
+<div class="container">
+
+<!-- ========== 全景 ========== -->
+<section id="overview">
+  <h2 class="section-title"><span class="num">0</span>一、 全书全景</h2>
+
+  <div class="lead-card">
+    <h3>核心理念：100 分钟读三遍</h3>
+    <p>本书提出一套"登山式"读书法——以战略眼光，用 100 分钟读完一本书三遍：<b>10 分钟通读</b>、<b>50 分钟精读</b>、<b>40 分钟深入</b>。把阅读从消磨时间变成投资大脑的高效行为。</p>
+  </div>
+
+  <h3 style="margin: 24px 0 12px; color: #1a1a2e;">📌 三大基础</h3>
+  <div class="takeaway-grid">
+    <div class="takeaway">
+      <h4>散步式 vs 登山式</h4>
+      <p>文艺类书籍适合散步式随意品味；商务/实用/修养类书籍必须采用登山式战略性阅读。</p>
+    </div>
+    <div class="takeaway">
+      <h4>视点的转换</h4>
+      <p>读书的目的不是寻找普遍真理，而是发现属于自己的视点，调整看待世界的角度。</p>
+    </div>
+    <div class="takeaway">
+      <h4>读书 = 合著</h4>
+      <p>把所思所感写在书上，读者与作者合著一本书——这是对作者最大的尊重。</p>
+    </div>
+  </div>
+
+  <h3 style="margin: 32px 0 12px; color: #1a1a2e;">🧠 三遍阅读阶段速览</h3>
+  <div class="table-3">
+    <div class="stage-card s1">
+      <div class="time">10<span style="font-size:18px;">分钟</span></div>
+      <div class="task">第 3 章 · 概览 + 抓要点</div>
+      <ul>
+        <li>做好舍弃 80% 的准备</li>
+        <li>先看目录，再通读</li>
+        <li>建立书的"地图"</li>
+        <li>确定第二、三遍重点</li>
+        <li>舍得跳读、舍读</li>
+      </ul>
+    </div>
+    <div class="stage-card s2">
+      <div class="time">50<span style="font-size:18px;">分钟</span></div>
+      <div class="task">第 4 章 · 精读 + 选书</div>
+      <ul>
+        <li>整体与细节兼顾</li>
+        <li>黄色荧光笔划重点</li>
+        <li>快选适合自己的书</li>
+        <li>掌握商务/古典读法</li>
+        <li>多逛书店提升选书力</li>
+      </ul>
+    </div>
+    <div class="stage-card s3">
+      <div class="time">40<span style="size:18px;">分钟</span></div>
+      <div class="task">第 5 章 · 深入 + 输出</div>
+      <ul>
+        <li>红色荧光笔 + 笔记</li>
+        <li>边白处批注与作者对话</li>
+        <li>"读书三连问"复盘</li>
+        <li>转述给他人</li>
+        <li>让书成为"合著"</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 脑图 ========== -->
+<section id="mindmap">
+  <h2 class="section-title"><span class="num">⊕</span>二、 知识脑图（交互式）</h2>
+  <div class="mermaid-wrap">
+    <pre class="mermaid">
+mindmap
+  root((极简快速阅读 100分钟读三遍))
+    自序 有效阅读
+      书籍让人生多彩
+      视点的转换
+      主动战略阅读
+      推荐 4 类读者
+    第1章 战略性读书法
+      散步式 vs 登山式
+      100 分钟读三遍
+      跳跃式 80-20
+      速读抓核心
+      视点转换与合著
+      勇于跳过和舍弃
+      带着目的去读
+    第2章 阅读是投资
+      提升综合实力
+      父亲留书的记忆
+      成年学外语优势
+      岩波文库与启蒙
+      三岛由纪夫思索
+      修养哲学古典根基
+      自我修养完备
+      读书是成长起点
+      书与网络信息对比
+    第3章 第一遍 10 分钟
+      舍弃 80% 心态
+      时间就是生命
+      有时间要读没时间也要读
+      严格设定时限
+      快速阅读抓要点
+      流程化阅读习惯
+      沉没成本与机会成本
+      掌控人生决定权
+      非日常模式
+    第4章 第二遍 50 分钟
+      整体与细节兼顾
+      快速找到适合的书
+      商务类正确读法
+      古典与时代背景
+      读懂古典并不难
+      提高自我修养
+      启蒙类 80% 不必读
+      优秀作者链
+      多逛书店
+      语言的巨大能量
+      父母以身作则
+      送书的习惯
+      普拉达包里的诗集
+    第5章 第三遍 40 分钟
+      记笔记是最大敬意
+      眼过千遍不如手过一遍
+      笔记变精神财富
+      读书即创作
+      边白处批注
+      思维焕然一新
+      开启新世界
+      最大化利用书籍
+      知识共享习惯
+      读书三连问
+      阅读是有力量的行为
+    十大战略
+      选书的技术
+      摸清整体结构
+      确定所需时间
+      确定阅读目的
+      主动阅读
+      准确捕捉要点
+      了解书籍背景
+      合著心态划线笔记
+      转述书中内容
+      教学相长
+    后记 爱与读书
+      弗罗姆爱的艺术
+      钢笔的轶事
+      书籍即未来之路
+    </pre>
+  </div>
+  <p style="text-align:center;color:#888;font-size:13px;">↑ 思维导图：可缩放查看，节点显示本书全部要点</p>
+</section>
+
+<!-- ========== 第1章 ========== -->
+<section id="c1">
+  <h2 class="section-title"><span class="num">1</span>第 1 章 · 具有战略性质的读书法——100分钟读三遍</h2>
+
+  <div class="lead-card">
+    <h3>章首金句</h3>
+    <p>● 读书大致可分为两种——散步式和登山式。<br>
+       ● 100 分钟读三遍：第一遍 10 分钟总览，第二遍 50 分钟精读，第三遍 40 分钟深入。<br>
+       ● 阅读时通过与作者思维的碰撞，要有意识地得出属于自己的、独一无二的答案。<br>
+       ● 如果阅读时只抓要点，效率会大幅提升。<br>
+       ● 阅读时，一定要有跳过和舍弃的勇气。</p>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head">
+      <span class="ch-num">1.1</span>
+      <h4>多读书，读好书</h4>
+    </div>
+    <div class="subsec">
+      <h5>核心观点</h5>
+      <p>人的寿命有限，无法与生活在过去的人对话，但书籍让这一切成为可能。书籍超越了时空，授我以知识、引发深思、给我鼓励。印刷术出现前知识被教会垄断；印刷术普及后，民众才获得真正的自由。</p>
+    </div>
+    <div class="quote">书籍于我而言，是无可替代的珍宝。</div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head">
+      <span class="ch-num">1.2</span>
+      <h4>读书要讲究方法——散步式和登山式</h4>
+    </div>
+    <div class="subsec">
+      <h5>两种读书方式</h5>
+      <p><b>散步式：</b>读文艺类书籍，无特定目的，沉浸作品，娱乐与休闲。<br>
+         <b>登山式：</b>读商务/实用/修养类书籍，目的明确，讲究战略，注重效果与实践性。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head">
+      <span class="ch-num">1.3</span>
+      <h4>带着与作者"合著"的想法去读书</h4>
+    </div>
+    <div class="subsec">
+      <h5>核心观点</h5>
+      <p>登山式阅读是实现战略性阅读的最佳方法。读书不能被动，要带着自己的视点去观察。读书的好处首先是<b>视点的转换</b>——以自己的视点为出发点，与作者进行"合著"。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head">
+      <span class="ch-num">1.4</span>
+      <h4>具有战略性质的读书法——100分钟读三遍</h4>
+    </div>
+    <div class="subsec">
+      <h5>方法要点</h5>
+      <p>200 页的商务/实用书籍，100 分钟读完三遍：<b>10 + 50 + 40</b>。读书要做到提纲挈领，不可能全部记住，关键是掌握若干要点。</p>
+      <p style="margin-top:8px;"><b>三遍递进：</b></p>
+      <ul class="bullets">
+        <li><b>第一遍（10分钟）：</b>概括性 + 发现性阅读，把握大体结构</li>
+        <li><b>第二遍（50分钟）：</b>用黄色荧光笔标记要点，只读重点</li>
+        <li><b>第三遍（40分钟）：</b>用红色/粉色荧光笔，必要时做笔记</li>
+        <li><b>反复阅读：</b>比集中精力更有效，熟悉后才能集中</li>
+        <li><b>读三遍后：</b>每加深一次理解，这就是反复的效果</li>
+        <li><b>转化为合著：</b>摘抄、感想、换种说法、向作者提问</li>
+      </ul>
+    </div>
+    <div class="quote">"100 分钟读三遍"对把握书的要点十分有效，付诸实施的话，读书质量会大为改观。</div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head">
+      <span class="ch-num">1.5</span>
+      <h4>"跳跃式阅读"能带来巨大阅读量</h4>
+    </div>
+    <div class="subsec">
+      <h5>三要点法</h5>
+      <p>让学生总结三个要点，他们无一例外做到——因为有"三"作为目标，思维会朝这个方向努力。</p>
+      <p><b>日语 vs 英语：</b>英语论文每天可读 1000 页（日语 300 页就需大量时间），因此更要强调战略性阅读。</p>
+      <p style="margin-top:8px;"><b>两种书：</b></p>
+      <ul class="bullets">
+        <li><b>立竿见影型：</b>商务类书籍，短期见效快</li>
+        <li><b>日积月累型：</b>修养类、古典类书籍，长期"增肌"</li>
+        <li>二者兼顾才可均衡成长</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head">
+      <span class="ch-num">1.6</span>
+      <h4>用速读来把握书的核心</h4>
+    </div>
+    <div class="subsec">
+      <h5>金矿比喻</h5>
+      <p>读商务/实用书籍就像采掘金矿——表面看起来全是金子，其实只有很少一部分。250 页的书，含金量微乎其微。我们要像开采金矿那样，从大量泥土沙砾中发掘真正的金子。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head">
+      <span class="ch-num">1.7</span>
+      <h4>把阅读升华到另一境界</h4>
+    </div>
+    <div class="subsec">
+      <h5>多线索阅读</h5>
+      <p>阅读线索不应限于一条，要俯瞰全局。展开书卷要有意识地发掘哪部分值得一读，而非立即通读。浏览时凡能引起注意的地方皆视为要点，第二遍针对要点前后进行详细解读。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head">
+      <span class="ch-num">1.8</span>
+      <h4>阅读时，要有跳过和舍弃的勇气</h4>
+    </div>
+    <div class="subsec">
+      <h5>作者经历</h5>
+      <p>作者 19 岁公费留学日本研究经济学，发现日本经济领先韩国二三十年。研究阅读方法期间，做"小买卖"维持生活。开始研究"登山式"读书法，发现必须勇于舍弃。</p>
+      <p><b>关键洞察：</b>书读三遍依然掌握不了的话，读五遍也白搭。三遍的目的是用不同方法读。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head">
+      <span class="ch-num">1.9</span>
+      <h4>带着明确的目的去阅读</h4>
+    </div>
+    <div class="subsec">
+      <h5>RAS 节能模式</h5>
+      <p>大脑经常处于节能模式（RAS 网状激活系统），只有关注什么才能看到什么。雄鹰漫无目的飞翔也能发现猎物，因为它找不到食物幼崽就要挨饿。人类则不同，<b>只有确定目标后才会努力</b>。</p>
+      <p><b>美国军校案例：</b>让学员背 30 公斤装备行军，但不交代距离——两三天就走不动了。目的不明确，积极性就会消磨殆尽。</p>
+      <p><b>"优质阅读"五要素：</b>战略性、主体性、效率、效果、实践性、创造性。</p>
+    </div>
+    <div class="quote">读书要从是否具备战略性、主体性、效率、效果、实践性、创造性等多方面考量。</div>
+  </div>
+</section>
+
+<!-- ========== 第2章 ========== -->
+<section id="c2">
+  <h2 class="section-title"><span class="num">2</span>第 2 章 · 阅读是一种投资</h2>
+
+  <div class="lead-card">
+    <h3>章首金句</h3>
+    <p>● 名人读书的与众不同之处在于他们极具实践性，不要让自己沦为配角。<br>
+       ● 修养类、哲学类及古典类书籍荒疏不得，能让你达到仅凭一己之力绝难企及的境界。<br>
+       ● 读书的妙处在于能将学到的知识转化为思考的素材。<br>
+       ● 在家或在地铁上每天摆弄智能手机虚度时光，这或许是最危险的事。</p>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">2.1</span><h4>读书的真谛——提升自身综合实力</h4></div>
+    <div class="subsec">
+      <h5>四大能力</h5>
+      <p>思维能力、写作能力、决策能力、行动能力都会因阅读而提升。读书同时锻炼阅读能力、思考能力、写作能力——这才是真正的读书。</p>
+      <ul class="bullets">
+        <li>书是出人头地最可靠的捷径</li>
+        <li>不要把读书当成消磨时光，而要当成正事</li>
+        <li>对话式阅读 = 终身良师益友</li>
+        <li>读屏是"被动接收"，读书才"耗费精力"</li>
+        <li>思维能力是将来最重要的竞争力</li>
+        <li>把每本书当作"写给自己的信"</li>
+      </ul>
+    </div>
+    <div class="quote">我上学时生活费一半用来买书。没有什么投资比购买书籍更划得来。</div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">2.2</span><h4>读书会让人精神饱满</h4></div>
+    <div class="subsec">
+      <h5>父亲留下的书籍</h5>
+      <p>父亲 1 岁时去世，留下债务和书籍。小学五年级时家里只剩自己，唯一的慰藉是父亲留下的书。书上的划线与笔记是与父亲"交流"的纽带。</p>
+      <p><b>核心感悟：</b>一无所有还想生存下去，就要具备能力。读书是获取知识和智慧最直接、最廉价的手段。书是信使、是媒体、也是道标。</p>
+    </div>
+    <div class="quote">是父亲留下的书籍，让我望见了他的背影。</div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">2.3</span><h4>成年以后学习外语的优势</h4></div>
+    <div class="subsec">
+      <h5>学外语 = 学思维</h5>
+      <p>在韩国每天清晨跟老师读《朝日新闻》社论；用录音机录《COUNT DOWN TV》学日语。音乐节奏帮记忆，效果惊人。</p>
+      <p><b>核心观点：</b>外语是成年、心智成熟后学习的语言，所以能用理性思维操控运用——比母语更具战略性。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">2.4</span><h4>"岩波文库"带给我的阅读方便</h4></div>
+    <div class="subsec">
+      <h5>启蒙与民主</h5>
+      <p>岩波文库 1927 年创建，目的向普通民众普及知识——类似文艺复兴"百科全书派"。打破信息垄断是民主主义不可或缺。</p>
+      <p><b>学日语如玩乐高：</b>词汇 3000 即可自由组合；食材再丰富，没有烹饪技艺也枉然。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">2.5</span><h4>三岛由纪夫带给我的思索</h4></div>
+    <div class="subsec">
+      <h5>理性 + 感性</h5>
+      <p>三岛由纪夫：语言精准、思维理性、感性美、实践性强。其"增之一分则嫌长，减之一分则嫌短"的语言是美学典范。读《叶隐入门》，被武士道精神震撼。</p>
+      <p><b>核心观点：</b>三岛对当权者是麻烦，国外评价高于国内。师从"右翼"是因其精神内核。</p>
+    </div>
+    <div class="quote">他的语言至臻至美，我是第一次读到如此热情洋溢的文字。</div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">2.6</span><h4>修养类、哲学类、古典类书籍是人生的根基</h4></div>
+    <div class="subsec">
+      <h5>入门四哲人</h5>
+      <p><b>推荐入门：</b>塞内卡、尼采、叔本华、歌德（黑格尔/康德/笛卡尔坚决不读）。</p>
+      <p>根基不牢令人不安——对未来感到不安的人不在少数。夯实基础要向经历过风雨的人学习，尤其是从他们的语言中找出端倪。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">2.7</span><h4>人生的核心在于自我修养的完备</h4></div>
+    <div class="subsec">
+      <h5>伯纳德之喻</h5>
+      <p>社会性差异千万种，但<b>决定人生成败的是自身能力与精神力量</b>。文章与言行举止是精神素养的真实体现——无法造作。</p>
+      <div class="quote">法国哲人伯纳德："我们只不过是站在巨人肩膀上的侏儒罢了。"</div>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">2.8</span><h4>读书是自我成长的起点</h4></div>
+    <div class="subsec">
+      <h5>叔本华警示</h5>
+      <p>叔本华：读书本质是"用他人大脑思考"，对自己思维是有害无益。"读书脑"与"思考脑"截然不同。"读书如果是银箔，思索就是纯金。"</p>
+      <p><b>三阶段：</b>知识 = 食材；理论 = 烹饪方法；<b>智慧 = 实践中来</b>。没有实践，知识无法转化为智慧。</p>
+    </div>
+    <div class="quote">读书绝不是终点，而只是一个起点，一个自我强化、自我调整的起点。</div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">2.9</span><h4>书的价值与网上的信息不可同日而语</h4></div>
+    <div class="subsec">
+      <h5>慢餐 vs 快餐</h5>
+      <p>作者 15 年未读报，放弃读报反而活得更简单自由。著作权是幸还是不幸——因为有著作权，书籍价值才不可被网络取代。</p>
+      <ul class="bullets">
+        <li>网上的信息属"快餐"，书籍像"有机食材调理的菜肴"</li>
+        <li>问自己：想要信息的快捷性，还是心智的"骨骼与肌肉"？</li>
+        <li>摆弄智能手机虚度时光，是最危险的事</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 第3章 ========== -->
+<section id="c3">
+  <h2 class="section-title"><span class="num">3</span>第 3 章 · 阅读第一遍：10 分钟通读全书</h2>
+
+  <div class="lead-card">
+    <h3>章首金句</h3>
+    <p>● 花 10 分钟浏览全书目的是把握大体轮廓。<br>
+       ● 做好舍弃 80% 内容的准备。<br>
+       ● 200 页的书，值得读的部分约 40 页。<br>
+       ● 时间就是生命，100 分钟也必须善加利用。</p>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">3.1</span><h4>要以舍弃 80% 的心态去阅读</h4></div>
+    <div class="subsec">
+      <h5>米开朗基罗之喻</h5>
+      <p>"大卫像早已沉睡在大理石中，我所做的只是把无用的部分除去。"——读书亦如此。"大卫像"就沉睡在书中。</p>
+      <ul class="bullets">
+        <li>浏览目录掌握整体构成</li>
+        <li>目标越明确，顺序越明了</li>
+        <li>有时从末尾/后记读起效果更好</li>
+        <li>作者常把核心放在末尾</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">3.2</span><h4>时间就是生命，绝对不能浪费</h4></div>
+    <div class="subsec">
+      <h5>速度比喻</h5>
+      <p>10 分钟读完 200 页 = 1 分钟 20 页。像跑马拉松——慢了加速，快了不必减速。剩下时间可分配到后续阅读。</p>
+      <p><b>关键洞察：</b>100 分钟读的书，1 年后仍能记忆犹新；花 2 周读的，2 周后就忘了——殊途同归，不必逐字逐句。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">3.3</span><h4>有时间要读，没有时间也要读</h4></div>
+    <div class="subsec">
+      <h5>时间不是挤出来的</h5>
+      <p>比尔·盖茨、巴菲特爱书的名言："有时间要读，没有时间也要读。"——书是人生头等大事，要特意安排时间。</p>
+      <ul class="bullets">
+        <li>设闹钟：第一遍 10 分钟，第二遍 50 分钟，第三遍 40 分钟</li>
+        <li>先达成"100 分钟读完一本书"，再追求理解深度</li>
+        <li>真正优秀的读者能从质量不佳的书中也获益</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">3.4</span><h4>阅读一定要在设定的时限内完成</h4></div>
+    <div class="subsec">
+      <h5>沉浸理论与专注</h5>
+      <p>设定时限后注意力会更集中。100 分钟读三遍远比长时间读一遍更易抓重点——花的时间与理解成反比。</p>
+      <p><b>G7 生产率案例：</b>日本人相信花时间越多生产率越高，结果生产率最低——花更多时间=目的不够明确。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">3.5</span><h4>快速阅读也能迅速抓住要点</h4></div>
+    <div class="subsec">
+      <h5>日本读书现状</h5>
+      <p>日本人爱读书，但读书时间效率堪忧。掌握短时高效阅读法才能多读、泛读。</p>
+      <ul class="bullets">
+        <li>常读书 vs 不读书的人差距越来越大</li>
+        <li>速读可在书店随手翻几页判断有无价值</li>
+        <li>与人交谈 1 分钟即可识人，读书亦然</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">3.6</span><h4>将一系列流程融入阅读习惯</h4></div>
+    <div class="subsec">
+      <h5>习惯的力量</h5>
+      <p>意志远比想象中薄弱，行动应依赖习惯而非意志。每天 100 分钟 → 一年 365 本。</p>
+      <p><b>成功三条件：</b>① 势在必得的意欲；② 从小处做起（歌德）；③ 日积月累。三者缺一不可。</p>
+      <p><b>读 10/20/30 本的差异：</b>10 本有些许感触；20 本找到门道；30 本找到感觉。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">3.7</span><h4>对毫无阅读价值的书，应当即放弃</h4></div>
+    <div class="subsec">
+      <h5>沉没成本 vs 机会成本</h5>
+      <p>沉没成本派：花 1800 日元看烂片也要看完。<b>机会成本派</b>：看 15 分钟发现是烂片立刻离开，腾出时间做更有价值的事。</p>
+      <p>沉没成本派难以成功；机会成本派随机应变。<b>读书也应如此</b>——发现无价值就立即放弃。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">3.8</span><h4>将人生的决定权掌控在自己手中</h4></div>
+    <div class="subsec">
+      <h5>主见 = 竞争力</h5>
+      <p>日本家长剥夺孩子决定权，丧失了在错误中摸索的机会。美法家长让孩子自己点菜，即便点辣的也能获得宝贵经验。</p>
+      <ul class="bullets">
+        <li>没有主见的人最容易被取代</li>
+        <li>将来需要的是具有创造力的人才</li>
+        <li>无标准答案的世界，创造力越发重要</li>
+        <li>只有具备自主意识才能与 AI 抗衡</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">3.9</span><h4>调整至"非日常模式"的要点</h4></div>
+    <div class="subsec">
+      <h5>海德格尔之喻</h5>
+      <p>海德格尔："日常生活麻痹着我们的理性。"旅行就像读书——手绘地图代替导游手册，先坐观光巴士再漫步后巷。</p>
+      <p><b>读书旅行的对应：</b>手绘地图=浏览目录；观光巴士=第一遍通读；后巷漫步=第二、三遍精读。</p>
+    </div>
+    <div class="quote">"一半计划，一半邂逅"是阅读与旅行的最佳节奏。</div>
+  </div>
+</section>
+
+<!-- ========== 第4章 ========== -->
+<section id="c4">
+  <h2 class="section-title"><span class="num">4</span>第 4 章 · 阅读第二遍：用 50 分钟详细阅读</h2>
+
+  <div class="lead-card">
+    <h3>章首金句</h3>
+    <p>● 读第二遍要理解书中的具体内容。<br>
+       ● 既要掌握整体，又要注意细节。<br>
+       ● 提高信息处理能力 = 处理大量信息 + 甄别有用信息。<br>
+       ● 第二遍要为划线而读，无需深入阅读。</p>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.1</span><h4>既要掌握整体，又要注意细节</h4></div>
+    <div class="subsec">
+      <h5>派对比喻</h5>
+      <p>200 人派对不可能只与最先见面的 3 人聊到结束，也不可能与 200 人各聊 1 分钟。派对三步：① 10 分钟掌握整体 → ② 各小群体转一转 → ③ 与感兴趣的深入交流换名片。</p>
+      <p><b>能力超群者：</b>同时使用望远镜和显微镜。读第一遍找到"树根"（一行核心），第二遍捋着树根找树干树枝，排除树叶干扰。</p>
+      <p><b>预处理（Pre-Programming）：</b>丰田生产模式——减少无用动作。读第二遍就要"预处理"信息。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.2</span><h4>快速找到适合自己的书</h4></div>
+    <div class="subsec">
+      <h5>两本书的功用</h5>
+      <p>书的功用：<b>① 提高自我修养；② 为人生做准备</b>——最好分开对待。</p>
+      <ul class="bullets">
+        <li>学问原本无学科领域之分——古代由家庭教师一揽子教授</li>
+        <li>选购时思考"此刻我需要什么"——按心情/状态选书</li>
+        <li>书的价值会随心境、目的、意志改变</li>
+        <li>以近乎苛刻的眼光挑选，避免金钱浪费在烂书上</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.3</span><h4>商务类书籍的正确阅读法</h4></div>
+    <div class="subsec">
+      <h5>三方面着手</h5>
+      <p>理解某一事物三方面：<b>要点、关联性、整体概况</b>——也是企业经营者必备素质。</p>
+      <ul class="bullets">
+        <li>选概论性质的书（不要选内容过于深奥的）</li>
+        <li>遇到生词不要停止——凭语感推断，后文会重复出现</li>
+        <li>重要内容重复出现数次，只出现一次的不重要</li>
+        <li>读 3~5 本某领域著作即可掌握概况</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.4</span><h4>读古典书籍要充分了解作者的时代背景</h4></div>
+    <div class="subsec">
+      <h5>塞内卡之例</h5>
+      <p>修养/古典书籍是"暂时派不上用场"却"益处良多"的类型。读前要做知识储备。</p>
+      <p><b>塞内卡：</b>曾任罗马第五任皇帝尼禄的家庭教师，后因受猜忌被迫自杀。知道这些背景后，《论生命之短暂》才有深度。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.5</span><h4>读懂古典书籍并不难</h4></div>
+    <div class="subsec">
+      <h5>爱克曼的《歌德谈话录》</h5>
+      <p>从《歌德谈话录》入门最易——爱克曼是歌德的秘书，日记里记述了歌德日常与思想。</p>
+      <ul class="bullets">
+        <li>孔子：儒家学派，各阶层各安其分</li>
+        <li>老子：对权威完全否定，通过"空"和"水"表达超然</li>
+        <li>冈本太郎：艺术品与艺术家密不可分</li>
+        <li>达·芬奇每天去中央市场买菜——天才并非不可想象</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.6</span><h4>提高自我修养的途径</h4></div>
+    <div class="subsec">
+      <h5>冲破学科藩篱</h5>
+      <p>现代教育像卓别林《摩登时代》——把社会变成巨大传送带。读书时不分学科领域，藩篱瞬间消失。</p>
+      <ul class="bullets">
+        <li>人文修养 = 操作系统的升级</li>
+        <li>好的 OS 决定可安装的应用程序质量</li>
+        <li>设计 > 理解（作者在庆应义塾教"设计"的学问）</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.7</span><h4>自我启蒙类书籍中的八成都没有必要读</h4></div>
+    <div class="subsec">
+      <h5>三大源头</h5>
+      <p>自我启蒙类万变不离其宗——源头：爱默生《相信自己》、阿德勒《自卑与超越》、拿破仑·希尔《思考术》。</p>
+      <p><b>时代趋势：</b>农业 → 工业 → 信息 → 创新。决定成败的不是计算/信息/知识，而是<b>创造力和想象力</b>。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.8</span><h4>从优秀的作者那里知道另一位优秀的作者</h4></div>
+    <div class="subsec">
+      <h5>艾力·贺佛尔</h5>
+      <p>艾力·贺佛尔（Erik Havel）——7 岁失明又复明，码头工人，加州大学伯克利分校教授。"激情是年轻人逃避现实的一种手段。"</p>
+      <p><b>关键洞察：</b>网上能搜到任何书，但前提是知道关键词。优秀作者会推荐其他优秀作者——松冈正刚 1000+ 天每日推荐一本书。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.9</span><h4>多逛书店能提升选书能力</h4></div>
+    <div class="subsec">
+      <h5>书店 = 文化</h5>
+      <p>去实体书店买书的理由：① 书店是文化，有责任保护；② 买书可"切实感受"；③ 书店像旅行，邂逅无法检索的书籍。</p>
+      <p><b>茑屋书店：</b>东京六本木/官代山，分类独创，主题展柜每月更新——"活化思维"。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.10</span><h4>书中的语言蕴含着巨大的能量</h4></div>
+    <div class="subsec">
+      <h5>语言的威力</h5>
+      <p>接触正能量语言浑身充满力量；接触负能量语言产生虚脱感。语言 = 另一个环境、另一个世界。</p>
+      <p>叔本华担心的事——网络时代，他人想法源源不断涌入我们大脑。不分青红皂白全盘接受是危险的。</p>
+    </div>
+    <div class="quote">语言对我们的身心、感情以及思维的影响之大，远超乎我们的想象。</div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.11</span><h4>大人读书时，孩子自然也会跟着读</h4></div>
+    <div class="subsec">
+      <h5>身教胜于言传</h5>
+      <p>不强迫孩子读书——以身作则。父母养成读书习惯，孩子自然也喜欢读书。茶余饭后能避免聊可有可无的闲话，转而深层次话题。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.12</span><h4>要养成送书籍的习惯</h4></div>
+    <div class="subsec">
+      <h5>书的礼物力量</h5>
+      <p>送书 = 介绍一位名人/挚友/老师。一本千余日元的书可能价值百万日元。</p>
+      <ul class="bullets">
+        <li>研讨会每人带一本书互赠——收到有划线的书尤其兴味盎然</li>
+        <li>《我的一生：猫儿达茜的故事》——作者送过最多的一本</li>
+        <li>韩国书扉页印"Dear"便于赠书</li>
+        <li>送书 = 送入场券，参观美术馆后觉得好就买一张送给朋友</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">4.13</span><h4>在普拉达包里放一本诗集吧</h4></div>
+    <div class="subsec">
+      <h5>包里诗集</h5>
+      <p>较之外表，内涵更重要。恋爱时女性以"外在魅力"取胜，结婚时男性将以多种视角审视——<b>人性魅力</b>才是关键。</p>
+      <p>别人从敞开的缝隙窥见你包里装着里尔克诗集——那是另一种叹服。即便读不惯也"摆出姿态"——好的开始。</p>
+      <p>诗集段落短、通俗易懂、无标准答案——适合找回遗忘已久的感性。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 第5章 ========== -->
+<section id="c5">
+  <h2 class="section-title"><span class="num">5</span>第 5 章 · 阅读第三遍：花 40 分钟深入阅读</h2>
+
+  <div class="lead-card">
+    <h3>章首金句</h3>
+    <p>● 记笔记是对一本书最大的敬意。<br>
+       ● "眼过千遍不如手过一遍。"<br>
+       ● 主动阅读（拒绝被动），相信自己的野性与直觉。<br>
+       ● 划线、笔记、转述——把书变成与作者的"合著"。</p>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">5.1</span><h4>记笔记是对一本书最大的敬意</h4></div>
+    <div class="subsec">
+      <h5>三遍的递进</h5>
+      <p>第三遍 40 分钟中分配 10 分钟划线（红/粉色荧光笔），30 分钟深入阅读做笔记。</p>
+      <p><b>三种笔记：</b>① 抄录（与佛教抄经同理）；② 感想（与作者共同创作）；③ 提问/自己的语言。</p>
+      <div class="quote">人只有将所学知识传授给其他人时，才能融会贯通。</div>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">5.2</span><h4>"眼过千遍不如手过一遍"</h4></div>
+    <div class="subsec">
+      <h5>大脑-肢体反馈</h5>
+      <p>大脑向手发出指令，手写字时大脑处于接收信息状态——身体动作提升大脑接收效率。脑神经元因重复而增加，记忆更扎实。</p>
+      <p>灵感闪现时必须立刻记录——用纸笔记下只言片语或记号，否则灵感生出翅膀一去不返。粗圆珠笔一天用光是乐趣——竟成读书动力。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">5.3</span><h4>记笔记能更好地把读过的书变成精神财富</h4></div>
+    <div class="subsec">
+      <h5>明信片笔记法</h5>
+      <p>明信片笔记法：100 日元店买 50 张明信片带在身上，灵感触动就用大字记——空间开放感让人注意力集中。</p>
+      <ul class="bullets">
+        <li>一天可用数十张，一月 3000 张</li>
+        <li>写完 100 张翻看一次，又有新思绪浮上心头</li>
+        <li>卡片用过即弃——内容已刻在脑海</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">5.4</span><h4>读书是学习，更是创作</h4></div>
+    <div class="subsec">
+      <h5>完整思维需要书写</h5>
+      <p>说话容易，写文章至难——白纸黑字让纰漏无所遁形。书是作者突破万难写就的，对书要抱有万分敬意。</p>
+      <p><b>核心观点：</b>无法转化成语言的想法，尚不能称其为思维。通过书写将想法可视化，思维方能升华。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">5.5</span><h4>牛人读书都喜欢在边白处批注</h4></div>
+    <div class="subsec">
+      <h5>边白即回信便笺</h5>
+      <p>书籍是作者写给读者的信，边白是读者用来回信的便笺。书中有无数"开关"能活化思维。</p>
+      <ul class="bullets">
+        <li>冈仓天心《茶之书》：茶室留空为让人感受从容</li>
+        <li>没有足够空间，人类的创造力将受束缚</li>
+        <li>从无到有最难——从摘抄开始</li>
+        <li>30 秒能切中要害，否则 1 小时也无济于事</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">5.6</span><h4>读书令人的思维焕然一新</h4></div>
+    <div class="subsec">
+      <h5>语言即世界</h5>
+      <p>没有语言就无法思考。上帝用语言创造万物——语言可构筑整个世界。</p>
+      <p>拿破仑·希尔："思考的过程就是将想法转化为现实的过程"——只有语言转化成思维，思维才能转化成现实。</p>
+    </div>
+    <div class="quote">语言就是拯救自己人生、开拓美好未来最有力的武器。</div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">5.7</span><h4>书籍引导我开启新世界的大门</h4></div>
+    <div class="subsec">
+      <h5>千门万户</h5>
+      <p>作者每周三买不熟悉领域的书——陌生的语汇引导我开启新世界的大门。</p>
+      <p>人生像无数扇门，打开一扇又有数十扇。做选择不必考虑对错——下定决心推开就好。一本书 = 通向其他无数本书的大门。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">5.8</span><h4>最大限度地对书籍进行有效利用</h4></div>
+    <div class="subsec">
+      <h5>三色笔法</h5>
+      <p>第一遍：任意划线画箭头圈点；第二遍：黄色荧光笔；第三遍：红色荧光笔 + 圆珠笔记笔记。</p>
+      <ul class="bullets">
+        <li>100 分钟读三遍法不适用于图书馆的书（不能弄脏）</li>
+        <li>也不适用于电子书（无法在边白记笔记）</li>
+        <li>不要把读过的书卖给旧书店——书会送人</li>
+        <li>送人收益远超金钱</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">5.9</span><h4>让知识共享成为一种习惯</h4></div>
+    <div class="subsec">
+      <h5>教别人 = 巩固学习</h5>
+      <p>主动学习法：只要经历将学到的知识转述给他人，就不易忘记——教学相长。</p>
+      <ul class="bullets">
+        <li>在博客、读书沙龙分享"那一句话的感悟"也行</li>
+        <li>100 位成员拍下最触动的书页上传博客</li>
+        <li>演讲前要求"请每人提 3 个问题"——态度立即不同</li>
+        <li>带着"准备教别人"心态去学，效率与精度都不同</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">5.10</span><h4>"读书三连问"的巧妙运用</h4></div>
+    <div class="subsec">
+      <h5>三连问</h5>
+      <p><b>① 作者写这本书的初衷是什么？</b><br>
+         <b>② 这本书最为关键的内容是什么？</b><br>
+         <b>③ 这本书对自己的人生有何帮助？</b></p>
+      <p>带着能够将学到的东西表达出来的意识去读。学生按此总结后——表达能力提升、阅读速度更快、求职表现出色。</p>
+    </div>
+  </div>
+
+  <div class="chapter-card">
+    <div class="chapter-head"><span class="ch-num">5.11</span><h4>阅读是一种有力量的行为</h4></div>
+    <div class="subsec">
+      <h5>愿景蓝图</h5>
+      <p>读书不为了娱乐（不读新近小说）。书架上摆着精神食粮，摄取养分保障精神丰盛。</p>
+      <p>读书像在为自己的人生绘制愿景蓝图。划线、笔记、写写画画——都像是罗盘。时隔一个月再读同一本书，会有不同感想与体会。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 十大战略 ========== -->
+<section id="ten">
+  <h2 class="section-title"><span class="num">★</span>三、 "100分钟读三遍"十大战略</h2>
+
+  <div class="lead-card">
+    <h3>作者亲授的步骤总结</h3>
+    <p>这是书中核心方法的凝练，融合了选择、阅读、笔记、输出四大环节。</p>
+  </div>
+
+  <div class="principle-list">
+    <div class="principle"><span class="idx">1</span><h5>选书的技术</h5><p>判断标准："现在是否需要"。写下三个需求；看书名腰封；看作者相关背景与实绩。</p></div>
+    <div class="principle"><span class="idx">2</span><h5>摸清整体结构</h5><p>仔细阅读目录；审视章节结构；跳过不感兴趣部分；非急需部分原则略过。</p></div>
+    <div class="principle"><span class="idx">3</span><h5>确定所需时间</h5><p>规划开始和终了时间；设定后结果就是一切都能按计划准时完成。</p></div>
+    <div class="principle"><span class="idx">4</span><h5>确定阅读目的与战略</h5><p>明确为何要读这本书；没有明确战略只会让自己陷入迷茫。</p></div>
+    <div class="principle"><span class="idx">5</span><h5>主动阅读（拒绝被动）</h5><p>诱导性内容作为参考；相信自己的野性与直觉；采用与需求吻合的读书方法。</p></div>
+    <div class="principle"><span class="idx">6</span><h5>准确捕捉要点</h5><p>目录、图表、趋势图、导言、尾声；章节的开头与结尾要重点阅读。</p></div>
+    <div class="principle"><span class="idx">7</span><h5>了解书籍背景</h5><p>了解作者背景；了解书籍背景；掌握作者最想表达的主旨。</p></div>
+    <div class="principle"><span class="idx">8</span><h5>合著心态划线笔记</h5><p>划线；用自己的语言总结书中内容记在书上；将感悟记在书上。</p></div>
+    <div class="principle"><span class="idx">9</span><h5>转述书中内容</h5><p>以向杂志投稿水准写书评；用"读书三连问"总结；与他人分享心得。</p></div>
+    <div class="principle"><span class="idx">10</span><h5>教学相长</h5><p>用自己的语言写下来深化学习；教是学之化境；组织好语言让转述更简明扼要。</p></div>
+  </div>
+</section>
+
+<!-- ========== 后记 ========== -->
+<section id="post">
+  <h2 class="section-title"><span class="num">末</span>后记 · 爱与读书都是技术</h2>
+
+  <div class="quote" style="font-size:16px;">"人人都渴望被爱，但却都不肯付出自己的爱。我们还都不习惯于爱和被爱。"——弗罗姆《爱的艺术》</div>
+
+  <div class="chapter-card">
+    <div class="subsec">
+      <h5>爱是一门技巧</h5>
+      <p>弗罗姆在《爱的艺术》中写道：归根结底这一切都是技术方面的原因——我们没有学到爱的技巧，所以才不懂该如何去爱。<b>读书也是一样</b>，明白读书也需要技巧的时候，我们就学会了读书。</p>
+    </div>
+    <div class="subsec">
+      <h5>钢笔的轶事</h5>
+      <p>10 多岁少年问作家："如何才能成为像您一样伟大的作家呢？"作家答："立刻花光你打工赚来的钱，去买一支钢笔。"——花钱买书证明对梦想的决心。</p>
+    </div>
+    <div class="quote">事实上，书籍就是一条通向未来的道路。把握住现在，这条未来之路就会呈现在你的面前。</div>
+    <div class="subsec" style="margin-top:20px;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;">
+      <h5 style="color:#e9c46a;">名家寄语</h5>
+      <p style="color:#e9e0c0;">"所有的好书，读起来就像和过去世界上最杰出的人们的谈话。"<br>——（法）笛卡尔</p>
+      <p style="color:#e9e0c0;margin-top:8px;">"世间数百年旧家无非积德，天下第一件好事还是读书。"<br>——（清）姚文田</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 总结 ========== -->
+<section id="summary">
+  <h2 class="section-title"><span class="num">✓</span>四、 行动清单</h2>
+
+  <div class="summary-box">
+    <h3>读完本书后立即可做的 10 件事</h3>
+    <ol>
+      <li>选一本待读书，在书签上写下三个需求</li>
+      <li>用 10 分钟浏览全书目录与正文，建立"地图"</li>
+      <li>准备黄色与红色荧光笔 + 圆珠笔</li>
+      <li>设定 100 分钟闹钟，限时读完三遍</li>
+      <li>在书页边白处写下自己的第一句感想</li>
+      <li>在 100 日元店买一叠明信片随身携带</li>
+      <li>记下三句"读书三连问"的答案</li>
+      <li>把书评写在博客或朋友圈，承诺教给别人</li>
+      <li>逛一次实体书店（推荐：茑屋书店思路）</li>
+      <li>把这本书送给一位朋友，写上自己的推荐语</li>
+    </ol>
+  </div>
+</section>
+
+<section class="author-card">
+  <h3>关于作者</h3>
+  <p><b>金正（Kim Jeong）</b>，韩国学者，研究尖端科学技术的多媒体专家。生于韩国，19 岁公费留学日本，后赴美留学，回日本后在庆应义塾大学任教。</p>
+  <p style="margin-top:8px;">自幼丧父，靠父亲留下的书籍慰藉成长。凭"100 分钟读三遍"读书法在日美两地高效阅读海量书籍，是读书方法论的积极推广者。</p>
+  <p style="margin-top:12px;opacity:0.7;font-size:13px;">本书由 PHP 研究所出版，代笔为上阪彻。中文版由后浪出版。</p>
+</section>
+
+<div class="footer">
+  本知识脑图由 Claude 基于《极简快速阅读：信息时代如何读一本书》全本 59 个章节内容整理<br>
+  © 知识脑图 · 仅供学习交流使用
+</div>
+
+</div>
+
+<script>
+mermaid.initialize({ startOnLoad: true, securityLevel: "strict", theme: "default", themeVariables: { fontSize: '14px' } });
+
+// 移动端目录切换
+function toggleToc() {
+  document.getElementById('tocSidebar').classList.toggle('open');
+  document.querySelector('.toc-overlay').classList.toggle('open');
+}
+
+// 当前章节高亮 + 返回顶部按钮
+(function() {
+  const sections = document.querySelectorAll('section[id]');
+  const tocItems = document.querySelectorAll('.toc-item');
+  const topBtn = document.getElementById('tocTop');
+
+  function update() {
+    const scrollY = window.scrollY + 120;
+    let current = sections[0]?.id;
+    sections.forEach(s => {
+      if (s.offsetTop <= scrollY) current = s.id;
+    });
+    tocItems.forEach(a => {
+      a.classList.toggle('active', a.dataset.target === current);
+    });
+    if (window.scrollY > 600) topBtn.classList.add('show');
+    else topBtn.classList.remove('show');
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+
+  // 点击目录项后，在移动端自动关闭侧边栏
+  tocItems.forEach(a => a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) {
+      document.getElementById('tocSidebar').classList.remove('open');
+      document.querySelector('.toc-overlay').classList.remove('open');
+    }
+  }));
+})();
+</script>
+
+</body>
+</html>
