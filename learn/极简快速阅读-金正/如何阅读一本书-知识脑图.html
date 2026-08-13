@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《如何阅读一本书》知识脑图</title>
+<style>
+:root {
+  --bg-page: #f6f1e7;
+  --bg-sidebar: #2a2f3a;
+  --bg-card: #ffffff;
+  --bg-card-hover: #faf6ec;
+  --bg-tag: #f3e9d0;
+  --color-primary: #8b5a2b;
+  --color-primary-dark: #5c3a18;
+  --color-accent: #c19a4a;
+  --color-text: #2c2c2c;
+  --color-text-muted: #6b6b6b;
+  --color-text-light: #9a9a9a;
+  --color-sidebar-text: #d8d2c0;
+  --color-sidebar-text-active: #f3e9d0;
+  --color-sidebar-bg-active: rgba(193, 154, 74, 0.18);
+  --color-divider: #e6dfc9;
+  --color-chapter-1: #8b5a2b;
+  --color-chapter-2: #a67c52;
+  --color-chapter-3: #6d8c5f;
+  --color-chapter-4: #b85450;
+  --color-chapter-5: #4a6fa5;
+  --color-chapter-6: #7b5a8c;
+  --color-chapter-7: #c8853b;
+  --color-chapter-8: #4a8c8c;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.04);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --font-serif: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "STSong", serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg-page);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  font-size: 15px;
+  scroll-behavior: smooth;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ============ 左侧竖向导航 ============ */
+.sidebar {
+  width: 320px;
+  min-width: 320px;
+  background: linear-gradient(180deg, #2a2f3a 0%, #1f242e 100%);
+  color: var(--color-sidebar-text);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 0 40px 0;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.08);
+  z-index: 10;
+}
+
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(193,154,74,0.4); border-radius: 3px; }
+
+.sidebar-header {
+  padding: 28px 24px 20px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: sticky;
+  top: 0;
+  background: linear-gradient(180deg, #2a2f3a 0%, rgba(42,47,58,0.95) 100%);
+  z-index: 5;
+  backdrop-filter: blur(8px);
+}
+
+.sidebar-title {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 600;
+  color: #f3e9d0;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.sidebar-subtitle {
+  font-size: 12px;
+  color: rgba(216,210,192,0.6);
+  letter-spacing: 0.5px;
+}
+
+.sidebar-search {
+  margin: 16px 0 4px 0;
+  position: relative;
+}
+
+.sidebar-search input {
+  width: 100%;
+  padding: 9px 12px 9px 32px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  color: #f3e9d0;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.sidebar-search input::placeholder { color: rgba(216,210,192,0.4); }
+.sidebar-search input:focus {
+  background: rgba(255,255,255,0.1);
+  border-color: var(--color-accent);
+}
+
+.sidebar-search::before {
+  content: "🔍";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.nav-list {
+  padding: 12px 0;
+  list-style: none;
+}
+
+.nav-group {
+  margin: 4px 0;
+}
+
+.nav-chapter {
+  padding: 10px 24px 8px 24px;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-accent);
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-top: 1px dashed rgba(255,255,255,0.05);
+  margin-top: 8px;
+}
+
+.nav-chapter .num {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  background: var(--color-accent);
+  color: #2a2f3a;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.nav-section {
+  padding: 8px 24px 8px 44px;
+  font-size: 13px;
+  color: var(--color-sidebar-text);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.18s;
+  border-left: 2px solid transparent;
+  line-height: 1.5;
+}
+
+.nav-section:hover {
+  color: var(--color-sidebar-text-active);
+  background: rgba(193,154,74,0.08);
+  border-left-color: var(--color-accent);
+}
+
+.nav-section.active {
+  color: var(--color-sidebar-text-active);
+  background: var(--color-sidebar-bg-active);
+  border-left-color: var(--color-accent);
+  font-weight: 500;
+}
+
+.nav-section .dot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background: currentColor;
+  border-radius: 50%;
+  margin-right: 8px;
+  opacity: 0.5;
+  vertical-align: middle;
+}
+
+/* ============ 主内容区 ============ */
+.main {
+  margin-left: 320px;
+  flex: 1;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.cover {
+  background: linear-gradient(135deg, #5c3a18 0%, #8b5a2b 50%, #c19a4a 100%);
+  color: #f6f1e7;
+  padding: 60px 60px 70px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cover::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(243,233,208,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.cover::after {
+  content: "";
+  position: absolute;
+  bottom: -50px;
+  left: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(243,233,208,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.cover-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(243,233,208,0.2);
+  border: 1px solid rgba(243,233,208,0.3);
+  border-radius: 20px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  font-family: var(--font-serif);
+}
+
+.cover-title {
+  font-family: var(--font-serif);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.cover-en {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-style: italic;
+  opacity: 0.8;
+  margin-bottom: 30px;
+  letter-spacing: 1px;
+}
+
+.cover-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-size: 14px;
+  opacity: 0.85;
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(243,233,208,0.25);
+  padding-top: 20px;
+  margin-top: 30px;
+}
+
+.cover-meta-item { display: flex; align-items: center; gap: 6px; }
+
+.cover-quote {
+  margin-top: 36px;
+  padding: 20px 24px;
+  background: rgba(243,233,208,0.12);
+  border-left: 3px solid rgba(243,233,208,0.6);
+  border-radius: 0 8px 8px 0;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  line-height: 1.8;
+  font-style: italic;
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+}
+
+/* ============ 内容区块 ============ */
+.content {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 50px 80px 50px;
+}
+
+.section {
+  margin-bottom: 60px;
+  scroll-margin-top: 20px;
+}
+
+.section-anchor {
+  scroll-margin-top: 20px;
+}
+
+/* 章节头部 */
+.chapter-header {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 30px 36px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  border-left: 5px solid var(--color-primary);
+  position: relative;
+}
+
+.chapter-header.chapter-1 { border-left-color: var(--color-chapter-1); }
+.chapter-header.chapter-2 { border-left-color: var(--color-chapter-2); }
+.chapter-header.chapter-3 { border-left-color: var(--color-chapter-3); }
+.chapter-header.chapter-4 { border-left-color: var(--color-chapter-4); }
+.chapter-header.chapter-5 { border-left-color: var(--color-chapter-5); }
+.chapter-header.chapter-6 { border-left-color: var(--color-chapter-6); }
+.chapter-header.chapter-7 { border-left-color: var(--color-chapter-7); }
+.chapter-header.chapter-8 { border-left-color: var(--color-chapter-8); }
+
+.chapter-num {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.chapter-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.chapter-title .sub {
+  font-size: 18px;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.chapter-intro {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-divider);
+  font-style: italic;
+}
+
+/* 小节卡片 */
+.topic-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 26px 32px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+.topic-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: rgba(193,154,74,0.2);
+}
+
+.topic-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-divider);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.topic-title .marker {
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: var(--color-accent);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.topic-content { font-size: 14.5px; line-height: 1.85; color: var(--color-text); }
+
+.topic-content p { margin-bottom: 10px; }
+
+.topic-content strong { color: var(--color-primary-dark); font-weight: 600; }
+
+/* 子点 */
+.sub-list {
+  list-style: none;
+  margin: 12px 0;
+  padding: 0;
+}
+
+.sub-list li {
+  padding: 8px 0 8px 20px;
+  position: relative;
+  line-height: 1.75;
+  border-bottom: 1px dashed rgba(230,223,201,0.5);
+}
+
+.sub-list li:last-child { border-bottom: none; }
+
+.sub-list li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  color: var(--color-accent);
+  font-size: 12px;
+}
+
+.sub-list li .sub-title {
+  font-weight: 600;
+  color: var(--color-primary-dark);
+}
+
+/* 关键点标签 */
+.tag {
+  display: inline-block;
+  padding: 2px 10px;
+  background: var(--bg-tag);
+  color: var(--color-primary-dark);
+  border-radius: 4px;
+  font-size: 12px;
+  margin: 0 4px 4px 0;
+  font-weight: 500;
+}
+
+/* 引用块 */
+.quote {
+  margin: 14px 0;
+  padding: 12px 18px;
+  background: linear-gradient(to right, #faf6ec 0%, #fdfbf6 100%);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0 6px 6px 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.quote::before {
+  content: """;
+  font-size: 28px;
+  color: var(--color-accent);
+  font-family: Georgia, serif;
+  margin-right: 4px;
+  vertical-align: -8px;
+  opacity: 0.6;
+}
+
+.quote-author {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-style: normal;
+  text-align: right;
+}
+
+/* 数字/要点列表 */
+.numbered-list {
+  list-style: none;
+  counter-reset: item;
+  margin: 12px 0;
+  padding: 0;
+}
+
+.numbered-list li {
+  counter-increment: item;
+  padding: 8px 0 8px 36px;
+  position: relative;
+  line-height: 1.75;
+  border-bottom: 1px dashed rgba(230,223,201,0.4);
+}
+
+.numbered-list li:last-child { border-bottom: none; }
+
+.numbered-list li::before {
+  content: counter(item);
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  background: var(--color-accent);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* 总结/关键点面板 */
+.summary-panel {
+  background: linear-gradient(135deg, #faf6ec 0%, #f3e9d0 100%);
+  border-radius: var(--radius-md);
+  padding: 18px 22px;
+  margin-top: 14px;
+  border: 1px solid var(--color-accent);
+}
+
+.summary-panel .summary-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.summary-panel .summary-title::before {
+  content: "✦";
+  color: var(--color-accent);
+  font-size: 14px;
+}
+
+/* 前言/后记样式 */
+.front-back-section .topic-card {
+  background: linear-gradient(135deg, #ffffff 0%, #faf6ec 100%);
+}
+
+/* 目录 */
+.toc-list {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 24px 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.toc-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--color-divider);
+  font-family: var(--font-serif);
+}
+
+.toc-item:last-child { border-bottom: none; }
+
+.toc-item .toc-name { color: var(--color-text); font-size: 14px; }
+.toc-item .toc-name .toc-num { color: var(--color-accent); font-weight: 600; margin-right: 10px; }
+.toc-item .toc-page { color: var(--color-text-muted); font-size: 12px; }
+
+/* 工具栏 */
+.toolbar {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 20;
+}
+
+.tool-btn {
+  width: 44px;
+  height: 44px;
+  background: var(--bg-card);
+  border: 1px solid var(--color-divider);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  font-size: 16px;
+  color: var(--color-primary-dark);
+  transition: all 0.2s;
+}
+
+.tool-btn:hover {
+  background: var(--color-accent);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .cover { padding: 40px 24px; }
+  .cover-title { font-size: 32px; }
+  .content { padding: 24px 20px 60px 20px; }
+  .topic-card { padding: 20px; }
+  .chapter-header { padding: 20px 24px; }
+  .chapter-title { font-size: 22px; }
+  .topic-title { font-size: 17px; }
+  .menu-toggle { display: flex !important; }
+}
+
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  width: 44px;
+  height: 44px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+  box-shadow: var(--shadow-md);
+}
+
+/* 段落强调 */
+.highlight {
+  background: linear-gradient(transparent 60%, rgba(193,154,74,0.25) 60%);
+  padding: 0 2px;
+  font-weight: 500;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--color-divider), transparent);
+  margin: 24px 0;
+}
+
+/* 进度条 */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 320px;
+  right: 0;
+  height: 3px;
+  background: var(--color-divider);
+  z-index: 15;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+  width: 0%;
+  transition: width 0.1s;
+}
+</style>
+</head>
+<body>
+
+<div class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</div>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">《如何阅读一本书》</div>
+    <div class="sidebar-subtitle">知识脑图 · 全书导览</div>
+    <div class="sidebar-search">
+      <input type="text" id="searchInput" placeholder="搜索章节或主题..." oninput="filterNav(this.value)">
+    </div>
+  </div>
+  <ul class="nav-list" id="navList">
+    <li class="nav-section" data-target="preface" style="padding-left: 24px; color: var(--color-accent); font-weight: 500;">📖 前言</li>
+    <li class="nav-section" data-target="intro" style="padding-left: 24px; color: var(--color-accent); font-weight: 500;">📋 内容简介</li>
+    <li class="nav-section" data-target="toc" style="padding-left: 24px; color: var(--color-accent); font-weight: 500;">📑 全书目录</li>
+
+    <li class="nav-chapter"><span class="num">1</span>第一章 · 3W1H</li>
+    <li class="nav-section" data-target="ch1-why"><span class="dot"></span>Why：为什么要阅读</li>
+    <li class="nav-section" data-target="ch1-what"><span class="dot"></span>What：读什么书</li>
+    <li class="nav-section" data-target="ch1-where"><span class="dot"></span>Where：阅读的场所</li>
+    <li class="nav-section" data-target="ch1-how"><span class="dot"></span>How：如何阅读一本书</li>
+
+    <li class="nav-chapter"><span class="num">2</span>第二章 · 阅读的层次</li>
+    <li class="nav-section" data-target="ch2-adler"><span class="dot"></span>艾德勒：四层次</li>
+    <li class="nav-section" data-target="ch2-zou"><span class="dot"></span>邹韬奋分层次阅读</li>
+    <li class="nav-section" data-target="ch2-wangguowei"><span class="dot"></span>王国维三重境界</li>
+    <li class="nav-section" data-target="ch2-four-asks"><span class="dot"></span>阅读层次与读书四问</li>
+    <li class="nav-section" data-target="ch2-staple"><span class="dot"></span>主食类图书与主题阅读</li>
+    <li class="nav-section" data-target="ch2-delicacy"><span class="dot"></span>美食类图书与分析阅读</li>
+
+    <li class="nav-chapter"><span class="num">3</span>第三章 · 速读法</li>
+    <li class="nav-section" data-target="ch3-misread"><span class="dot"></span>我们是否误解了速读</li>
+    <li class="nav-section" data-target="ch3-silent"><span class="dot"></span>基本要求：视读不声读</li>
+    <li class="nav-section" data-target="ch3-hand"><span class="dot"></span>阅读时手和身体做什么</li>
+    <li class="nav-section" data-target="ch3-view"><span class="dot"></span>拓宽视野的练习</li>
+    <li class="nav-section" data-target="ch3-jump"><span class="dot"></span>跳跃视线，摆脱逐字阅读</li>
+    <li class="nav-section" data-target="ch3-vertical"><span class="dot"></span>视野垂直扩展：一目数行</li>
+    <li class="nav-section" data-target="ch3-flip"><span class="dot"></span>快速翻页阅读</li>
+    <li class="nav-section" data-target="ch3-no-rewind"><span class="dot"></span>永远不要回读</li>
+    <li class="nav-section" data-target="ch3-focus"><span class="dot"></span>提高专注度的方法</li>
+    <li class="nav-section" data-target="ch3-negative"><span class="dot"></span>警惕阅读的负面情绪</li>
+    <li class="nav-section" data-target="ch3-understand"><span class="dot"></span>快速理解更重要</li>
+    <li class="nav-section" data-target="ch3-ask"><span class="dot"></span>速读提问技巧</li>
+    <li class="nav-section" data-target="ch3-mmap"><span class="dot"></span>阅读"思维导图"</li>
+    <li class="nav-section" data-target="ch3-memory"><span class="dot"></span>快速记忆的条件反射</li>
+
+    <li class="nav-chapter"><span class="num">4</span>第四章 · 精读法</li>
+    <li class="nav-section" data-target="ch4-ancient"><span class="dot"></span>古人的精读方法</li>
+    <li class="nav-section" data-target="ch4-notes"><span class="dot"></span>记得怎样写读书笔记吗</li>
+    <li class="nav-section" data-target="ch4-base"><span class="dot"></span>精读基本要求：识文解义</li>
+    <li class="nav-section" data-target="ch4-repeat"><span class="dot"></span>反复阅读的方法</li>
+    <li class="nav-section" data-target="ch4-web"><span class="dot"></span>精读一本书，像织一张网</li>
+    <li class="nav-section" data-target="ch4-speak"><span class="dot"></span>用自己的话把内容讲出来</li>
+    <li class="nav-section" data-target="ch4-form"><span class="dot"></span>也有"形式"重于"内容"时</li>
+    <li class="nav-section" data-target="ch4-review"><span class="dot"></span>如何评论一本书</li>
+    <li class="nav-section" data-target="ch4-doubt"><span class="dot"></span>无疑不读书，读书必有疑</li>
+    <li class="nav-section" data-target="ch4-if-i-write"><span class="dot"></span>如果让我写这本书</li>
+
+    <li class="nav-chapter"><span class="num">5</span>第五章 · 主题阅读法</li>
+    <li class="nav-section" data-target="ch5-sushi"><span class="dot"></span>苏轼"八面受敌"读书法</li>
+    <li class="nav-section" data-target="ch5-prepare"><span class="dot"></span>做好主题阅读的准备</li>
+    <li class="nav-section" data-target="ch5-theme-first"><span class="dot"></span>始终把主题排在第一位</li>
+    <li class="nav-section" data-target="ch5-find"><span class="dot"></span>检视出需要的内容</li>
+    <li class="nav-section" data-target="ch5-language"><span class="dot"></span>创设主题阅读的语言体系</li>
+    <li class="nav-section" data-target="ch5-thesis"><span class="dot"></span>建立自己的主旨</li>
+    <li class="nav-section" data-target="ch5-priority"><span class="dot"></span>界定论点的主次</li>
+    <li class="nav-section" data-target="ch5-discuss"><span class="dot"></span>论点的分析讨论</li>
+    <li class="nav-section" data-target="ch5-research"><span class="dot"></span>完成"研究性"阅读</li>
+
+    <li class="nav-chapter"><span class="num">6</span>第六章 · 写与读</li>
+    <li class="nav-section" data-target="ch6-rel"><span class="dot"></span>写与读的关系</li>
+    <li class="nav-section" data-target="ch6-story"><span class="dot"></span>怎样写一个故事</li>
+    <li class="nav-section" data-target="ch6-arg"><span class="dot"></span>阅读论说性作品的方法</li>
+    <li class="nav-section" data-target="ch6-explain"><span class="dot"></span>阅读说明性文字的方法</li>
+    <li class="nav-section" data-target="ch6-lyric"><span class="dot"></span>阅读抒情类作品的方法</li>
+    <li class="nav-section" data-target="ch6-layout"><span class="dot"></span>一本书的布局谋篇</li>
+    <li class="nav-section" data-target="ch6-web"><span class="dot"></span>网络、写作和阅读</li>
+    <li class="nav-section" data-target="ch6-apply"><span class="dot"></span>跳出书本外，学以致用</li>
+
+    <li class="nav-chapter"><span class="num">7</span>第七章 · 阅读的效用</li>
+    <li class="nav-section" data-target="ch7-tool"><span class="dot"></span>阅读不是目的，只是工具</li>
+    <li class="nav-section" data-target="ch7-know"><span class="dot"></span>为知：绝知此事要躬行</li>
+    <li class="nav-section" data-target="ch7-self"><span class="dot"></span>为己：书籍是全世界的营养品</li>
+    <li class="nav-section" data-target="ch7-share"><span class="dot"></span>为人：分享与影响</li>
+    <li class="nav-section" data-target="ch7-continue"><span class="dot"></span>延续：创新与传承</li>
+    <li class="nav-section" data-target="ch7-leverage"><span class="dot"></span>浅析"杠杆阅读术"</li>
+    <li class="nav-section" data-target="ch7-ria"><span class="dot"></span>浅析"RIA拆书阅读法"</li>
+    <li class="nav-section" data-target="ch7-practical"><span class="dot"></span>怎样阅读实用型书</li>
+
+    <li class="nav-chapter"><span class="num">8</span>第八章 · 鱼与渔</li>
+    <li class="nav-section" data-target="ch8-fish"><span class="dot"></span>"鱼"不如"渔"</li>
+    <li class="nav-section" data-target="ch8-bookstore"><span class="dot"></span>眼见大厦倾，又见高楼起</li>
+    <li class="nav-section" data-target="ch8-borrow"><span class="dot"></span>书非借不能读也</li>
+    <li class="nav-section" data-target="ch8-shelf"><span class="dot"></span>整理自己的书架</li>
+    <li class="nav-section" data-target="ch8-companion"><span class="dot"></span>书山寻路，结伴同行</li>
+    <li class="nav-section" data-target="ch8-three-paths"><span class="dot"></span>三条阅读之路</li>
+
+    <li class="nav-section" data-target="postscript" style="padding-left: 24px; color: var(--color-accent); font-weight: 500;">📜 后记 · 书卷多情似故人</li>
+  </ul>
+</aside>
+
+<div class="progress-bar"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<main class="main">
+  <header class="cover">
+    <span class="cover-tag">知 识 脑 图</span>
+    <h1 class="cover-title">如何阅读一本书</h1>
+    <p class="cover-en">How to Read a Book — A Knowledge Mind Map</p>
+    <div class="cover-meta">
+      <span class="cover-meta-item">📚 编著：轻阅读编写组</span>
+      <span class="cover-meta-item">🏢 民主与建设出版社</span>
+      <span class="cover-meta-item">📅 2017年1月</span>
+      <span class="cover-meta-item">📖 共八章 · 67节</span>
+    </div>
+    <div class="cover-quote">
+      读书，每个人一生中至少要用九年时间主要做这件事。很难相信，读书这件事做了十几年，却还是不明白究竟应该怎样做。本书以科学的阅读方法为核心，帮助每一位读者<span class="highlight">读得快、记得牢、学得透</span>，从"3W1H"到阅读四层次，从速读法到精读法，从主题阅读到学以致用，构建完整的阅读认知体系。
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- 前言 -->
+    <section class="section front-back-section" id="preface">
+      <div class="chapter-header">
+        <div class="chapter-num">PREFACE</div>
+        <h2 class="chapter-title">前言</h2>
+        <div class="chapter-intro">读书十余年，却仍未掌握阅读之法——这是大多数人的真实写照。本书正为解决这一困境而生。</div>
+      </div>
+      <div class="topic-card">
+        <h3 class="topic-title"><span class="marker"></span>本书缘起</h3>
+        <div class="topic-content">
+          <p>现代人虽长年与书为伴，却鲜少有人系统学习过"如何阅读"。市场上有许多阅读类畅销书，但真正系统化讲解基础阅读方法的并不多。本书旨在以<span class="highlight">科学方法</span>为切入点，提供可操作的阅读训练指南。</p>
+          <div class="quote">
+            读书，每个人一生中至少要用九年时间——也就是九年义务教育的时间——主要做这件事，加上继续教育的时间，一般来说长达十几年。很难相信，读书这件事做了十几年，却还是不明白究竟应该怎样做，可事实就是这样。
+            <span class="quote-author">——本书前言</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 内容简介 -->
+    <section class="section" id="intro">
+      <div class="chapter-header">
+        <div class="chapter-num">INTRODUCTION</div>
+        <h2 class="chapter-title">内容简介</h2>
+      </div>
+      <div class="topic-card">
+        <div class="topic-content">
+          <p>本书在介绍基础的、科学的阅读方法之余，力求满足不同读者在阅读上的不同需求：</p>
+          <ul class="numbered-list">
+            <li><strong>第一章</strong> 对读书的"3W1H"进行分析，引入正题。</li>
+            <li><strong>第二章</strong> 主要分析"阅读的层次"，不同的阅读层次对应不同的阅读方法。</li>
+            <li><strong>第三章</strong> 主要介绍"速读法"，从生理、心理、理解、记忆的角度讲述提高阅读效率的方法。</li>
+            <li><strong>第四章</strong> 主要介绍"精读法"，详细讲述识文、解义、提要钩玄的方法。</li>
+            <li><strong>第五章</strong> 介绍"主题阅读法"，多本书围绕一个主题展开研究性阅读。</li>
+            <li><strong>第六章</strong> 从"写"的角度反观"读"，知己知彼，举一反三。</li>
+            <li><strong>第七章</strong> 阐述阅读的效用——为知、为人、为己。</li>
+            <li><strong>第八章</strong> 探讨"鱼"与"渔"，解决阅读之外的相关问题。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 全书目录 -->
+    <section class="section" id="toc">
+      <div class="chapter-header">
+        <div class="chapter-num">TABLE OF CONTENTS</div>
+        <h2 class="chapter-title">全书目录</h2>
+        <div class="chapter-intro">本书共八章，67节，涵盖阅读方法论的完整知识体系。</div>
+      </div>
+      <div class="toc-list">
+        <div class="toc-item"><span class="toc-name"><span class="toc-num">前言</span>阅读十余年却不明阅读之法</span><span class="toc-page">001</span></div>
+        <div class="toc-item"><span class="toc-name"><span class="toc-num">第一章</span>磨刀不误砍柴工——读书的"3W1H"</span><span class="toc-page">007</span></div>
+        <div class="toc-item"><span class="toc-name"><span class="toc-num">第二章</span>深处种菱浅种稻——阅读的层次</span><span class="toc-page">030</span></div>
+        <div class="toc-item"><span class="toc-name"><span class="toc-num">第三章</span>一目十行，过目不忘——速读法</span><span class="toc-page">058</span></div>
+        <div class="toc-item"><span class="toc-name"><span class="toc-num">第四章</span>"四到""五用"，提要钩玄——精读法</span><span class="toc-page">094</span></div>
+        <div class="toc-item"><span class="toc-name"><span class="toc-num">第五章</span>八面受敌，一意求之——主题阅读法</span><span class="toc-page">128</span></div>
+        <div class="toc-item"><span class="toc-name"><span class="toc-num">第六章</span>知己知彼，举一反三——写与读</span><span class="toc-page">156</span></div>
+        <div class="toc-item"><span class="toc-name"><span class="toc-num">第七章</span>纸上得来终觉浅——阅读的效用</span><span class="toc-page">184</span></div>
+        <div class="toc-item"><span class="toc-name"><span class="toc-num">第八章</span>众里寻他千百度——"鱼"与"渔"</span><span class="toc-page">216</span></div>
+        <div class="toc-item"><span class="toc-name"><span class="toc-num">后记</span>书卷多情似故人</span><span class="toc-page">245</span></div>
+      </div>
+    </section>
+
+    <!-- 第一章 -->
+    <section class="section" id="ch1">
+      <div class="chapter-header chapter-1">
+        <div class="chapter-num">CHAPTER ONE</div>
+        <h2 class="chapter-title">磨刀不误砍柴工<span class="sub">——读书的"3W1H"</span></h2>
+        <div class="chapter-intro">"Why"为导向，"What"为对象，"Where"为场所，"How"为方法。"3W1H"提醒阅读者对阅读本身进行深入思考，是阅读的总纲。</div>
+      </div>
+
+      <article class="topic-card" id="ch1-why">
+        <h3 class="topic-title"><span class="marker"></span>Why：为什么要阅读</h3>
+        <div class="topic-content">
+          <div class="quote">
+            书籍是人类进步的阶梯。<span class="quote-author">——高尔基</span>
+          </div>
+          <div class="quote">
+            遍读好书，有如走访著书的前代高贤，同他们促膝谈心。<span class="quote-author">——笛卡尔</span>
+          </div>
+          <p>现代社会"读书无用论"悄然浮出，但阅读仍具有不可替代的价值：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">获取知识</span>最基础的需求，通过阅读了解世界运行规律。</li>
+            <li><span class="sub-title">提升能力</span>职业发展需要系统化学习与持续输入。</li>
+            <li><span class="sub-title">塑造思维</span>不同的书塑造不同的思维模式与认知深度。</li>
+            <li><span class="sub-title">愉悦身心</span>阅读是与作者跨越时空的精神交流。</li>
+            <li><span class="sub-title">传承文化</span>个人成长融入人类文明长河。</li>
+          </ul>
+          <div class="summary-panel">
+            <div class="summary-title">核心观点</div>
+            <p>读书之"用"不仅在于短期回报，更在于长期的认知积累与精神涵养。阅读的"用"是无用之大用。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch1-what">
+        <h3 class="topic-title"><span class="marker"></span>What：读什么书</h3>
+        <div class="topic-content">
+          <p>台湾学者郝明义在《越读者》中将书比喻为食物：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">第一类 · 主食</span>包括职业、生活、生理、心理等方面的现实问题及其直接解决之道。</li>
+            <li><span class="sub-title">第二类 · 美食</span>不求针对人生的现实问题，却可以满足思想需求。</li>
+            <li><span class="sub-title">第三类 · 蔬菜水果</span>工具书，帮助我们更好地阅读。</li>
+            <li><span class="sub-title">第四类 · 甜点零食</span>用于娱乐、消遣，满足休闲需求。</li>
+          </ul>
+          <ul class="sub-list">
+            <li><span class="sub-title">按时、足量摄入"主食"</span>主食是阅读的根基，是解决现实问题的主战场。</li>
+            <li><span class="sub-title">不时享用"美食"</span>美食塑造品味与思维深度，不可或缺但不宜过度。</li>
+            <li><span class="sub-title">善用"果蔬"工具书</span>字典、词典、百科全书是阅读的利器。</li>
+            <li><span class="sub-title">控制"甜点零食"的摄入</span>娱乐性阅读应适度，避免侵占深度阅读时间。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch1-where">
+        <h3 class="topic-title"><span class="marker"></span>Where：阅读的场所</h3>
+        <div class="topic-content">
+          <div class="quote">
+            余平生所作文章，多在三上，乃马上、枕上、厕上也。<span class="quote-author">——欧阳修</span>
+          </div>
+          <p>阅读的场所无处不在——书房、图书馆、咖啡屋、飞机、列车、地铁……</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">在安静的场所享用"主食"与"美食"</span>深度阅读需要稳定的环境与持续的注意力。</li>
+            <li><span class="sub-title">把"三上"空间交给"零食"图书</span>移动的场所更适合轻松的浅阅读。</li>
+          </ul>
+          <p>欧阳修的"三上"（马上、枕上、厕上）配上汉代董遇的"三余"（冬者岁之余、夜者日之余、雨者晴之余），阅读就成为<span class="highlight">无处不可、无时不可</span>的行为。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch1-how">
+        <h3 class="topic-title"><span class="marker"></span>How：如何阅读一本书</h3>
+        <div class="topic-content">
+          <p>以下十条是阅读中常见的现象，反映出一些值得思考的问题：</p>
+          <ul class="numbered-list">
+            <li>我通常只阅读与工作或学习相关的书，没有时间读其他自己喜欢的书。</li>
+            <li>我通常只在家里读书，在别的场合读书，别人会说我装模作样。</li>
+            <li>我只读自己购买的书，从不借书来读。</li>
+            <li>当我开始读一本书后，无论喜欢与否，我都会读完它。</li>
+            <li>我珍惜每一本书，从不在书上涂画。</li>
+            <li>我只读书，从来不敢评论一本书，无论认同还是不认同。</li>
+            <li>阅读的时候，当我遇到不懂的地方，会反复读那段内容。</li>
+            <li>我读书很认真，从来不跳过书中任何一部分内容。</li>
+            <li>我读书时很清楚书中的内容，可是放下书后什么都不记得了。</li>
+            <li>同样主题的书我只读最经典的一本，其他的书都没什么用。</li>
+          </ul>
+          <div class="summary-panel">
+            <div class="summary-title">应对建议</div>
+            <p>阅读的"如何"本无标准答案，但<strong>更强烈的动机、更有效的专注力、更大胆的批注、更主动的评论、更灵活的略读</strong>，是改善阅读体验的五大方向。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 第二章 -->
+    <section class="section" id="ch2">
+      <div class="chapter-header chapter-2">
+        <div class="chapter-num">CHAPTER TWO</div>
+        <h2 class="chapter-title">深处种菱浅种稻<span class="sub">——阅读的层次</span></h2>
+        <div class="chapter-intro">清代阮元《吴兴杂诗》："深处种菱浅种稻，不深不浅种荷花。"阅读也有层次——不同层次适用于不同的书籍与不同的方法。</div>
+      </div>
+
+      <article class="topic-card" id="ch2-adler">
+        <h3 class="topic-title"><span class="marker"></span>艾德勒：基础、检视、分析、主题四层次</h3>
+        <div class="topic-content">
+          <p>美国学者、教育家艾德勒提出著名的"阅读的四个层次"：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">基础阅读（Elementary Reading）</span>处于识字阶段的阅读，认识文字并了解文字的意思。提问："这些语句是什么意思？"</li>
+            <li><span class="sub-title">检视阅读（Inspectional Reading）</span>在规定时间内快速把握一本书的全貌。强调"在一定时间之内，抓到一本书的重点"。</li>
+            <li><span class="sub-title">分析阅读（Analytical Reading）</span>全盘、完整的阅读，追求理解与质量。需要回答"这本书讲了什么、解决了什么问题、说得有道理吗、跟我有何关系"。</li>
+            <li><span class="sub-title">主题阅读（Syntopical Reading）</span>又称比较阅读，就同一主题阅读多本书，搭建自己的分析框架。这是阅读的最高层次。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch2-zou">
+        <h3 class="topic-title"><span class="marker"></span>邹韬奋与分层次阅读</h3>
+        <div class="topic-content">
+          <div class="quote">
+            特别为自己所喜欢的，便在题目上做个记号，再看第二次，尤其喜欢的，再看第三次，最喜欢的，一遇着偷闲的时候就常常看。<span class="quote-author">——邹韬奋</span>
+          </div>
+          <p>更为普遍的分层定义是：泛读、略读、精读三层：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">第一层 · 泛读</span>浏览，没明确目的，随便翻翻，有兴趣就往下看，无兴趣就中止。初步确认此书是否值得进一步阅读。</li>
+            <li><span class="sub-title">第二层 · 略读</span>将泛读选出的书粗略地读一遍，也称通读。先看结构，再看首尾，按层次顺序阅读。</li>
+            <li><span class="sub-title">第三层 · 精读</span>对重要书籍进行逐字逐句、深入细致的研读，是耗时最长、收获最大的阅读方式。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch2-wangguowei">
+        <h3 class="topic-title"><span class="marker"></span>王国维《人间词话》中的三重境界</h3>
+        <div class="topic-content">
+          <div class="quote">
+            古今之成大事业、大学问者，必经过三种之境界。<span class="quote-author">——王国维《人间词话》</span>
+          </div>
+          <ul class="sub-list">
+            <li><span class="sub-title">第一重境界</span>昨夜西风凋碧树，独上高楼，望尽天涯路。<br>对应<span class="highlight">基础阅读</span>——初窥门径，寻求方法。</li>
+            <li><span class="sub-title">第二重境界</span>衣带渐宽终不悔，为伊消得人憔悴。<br>对应<span class="highlight">分析阅读</span>——深入理解、用功细读。</li>
+            <li><span class="sub-title">第三重境界</span>众里寻他千百度，蓦然回首，那人却在灯火阑珊处。<br>对应<span class="highlight">主题阅读</span>——广泛探寻、终有结论。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch2-four-asks">
+        <h3 class="topic-title"><span class="marker"></span>阅读层次与读书四问</h3>
+        <div class="topic-content">
+          <p>四个核心问题贯穿检视阅读、分析阅读与主题阅读：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">第一问</span>这本书究竟讲了什么？——主题与结构</li>
+            <li><span class="sub-title">第二问</span>作者通过这本书解决了什么问题？——主旨与意图</li>
+            <li><span class="sub-title">第三问</span>这本书说得有道理吗？——评价与思辨</li>
+            <li><span class="sub-title">第四问</span>这本书与我有什么关系？——联系与运用</li>
+          </ul>
+          <p>回答这四问的过程，构成了阅读的全部经过。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch2-staple">
+        <h3 class="topic-title"><span class="marker"></span>"主食"类图书与主题阅读</h3>
+        <div class="topic-content">
+          <p>"主食"类图书最适合也最有必要进行主题阅读：</p>
+          <ul class="sub-list">
+            <li>阅读者通常有<strong>强烈动机</strong>，这是主题阅读的前提。</li>
+            <li>需要<strong>更主动地阅读</strong>，形成自己的体系。</li>
+            <li>主题阅读得出的结论最<strong>深刻</strong>也最<strong>有效用</strong>。</li>
+          </ul>
+          <p>然而，主题阅读存在一个矛盾：书越多效率越受影响。要解决这个矛盾，需要<span class="highlight">保持对主题的专注</span>，对每一本书都只取其与主题相关的部分。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch2-delicacy">
+        <h3 class="topic-title"><span class="marker"></span>"美食"类图书与分析阅读</h3>
+        <div class="topic-content">
+          <p>"美食"类图书重在精细与稀少，适合进行分析阅读。可依"读书四问"的步骤进行：</p>
+          <ul class="numbered-list">
+            <li>先确定主题、分门别类</li>
+            <li>按序阅读、列出大纲</li>
+            <li>理解各部分内容</li>
+            <li>在阅读中理解作者观点并进行评价</li>
+            <li>阅读之后思索回味，使之融入自己的思想</li>
+          </ul>
+          <p>不同类型的"美食"——历史、理论科学、哲学——阅读体验各不相同，但都应<strong>放慢节奏、深入理解</strong>。</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- 第三章 -->
+    <section class="section" id="ch3">
+      <div class="chapter-header chapter-3">
+        <div class="chapter-num">CHAPTER THREE</div>
+        <h2 class="chapter-title">一目十行，过目不忘<span class="sub">——速读法</span></h2>
+        <div class="chapter-intro">《梁书》记载简文帝"读书十行俱下"。只要进行适当练习，普通人也能成为阅读高手。速读是快速、高效的阅读，不局限于任何阅读层次。</div>
+      </div>
+
+      <article class="topic-card" id="ch3-misread">
+        <h3 class="topic-title"><span class="marker"></span>我们是否误解了速读</h3>
+        <div class="topic-content">
+          <p>速读 = 一目十行 + 过目不忘，核心是<span class="highlight">快速理解</span>。四种常见误解：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">速读并非一意求快</span>在获取同样信息的前提下，速读越快越好；但若不求甚解则不是速读。</li>
+            <li><span class="sub-title">速读不只是熟能生巧</span>仅靠多读不能成为速读高手，需掌握系统方法。</li>
+            <li><span class="sub-title">速读不等于快速记忆</span>速读首先是快速理解，再兼顾记忆；快速记忆有其独立方法。</li>
+            <li><span class="sub-title">速读没那么神秘</span>速读有科学依据，主要通过训练眼脑协调实现。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-silent">
+        <h3 class="topic-title"><span class="marker"></span>基本要求：视读不声读</h3>
+        <div class="topic-content">
+          <p>阅读时一定不要读出声，原因有二：</p>
+          <ul class="sub-list">
+            <li>一般人的语速约<span class="highlight">140字/分钟</span>，远低于视读速度。</li>
+            <li>声音会对阅读者造成干扰，影响阅读效果。</li>
+          </ul>
+          <p>科学研究表明，人在阅读时眼球以<strong>跳动（saccade）</strong>的模式工作：视线焦点跳动一次，获取一个定焦视野中的信息；非定焦视野中也能获取信息，但需要焦点移动到位才能确认。阅读能力越强，定焦时间越短。</p>
+          <div class="summary-panel">
+            <div class="summary-title">练习要点</div>
+            <p>视读时不可读出声、不可在心中默念，要直接通过视觉-大脑通路处理信息。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-hand">
+        <h3 class="topic-title"><span class="marker"></span>阅读时，手和身体做什么</h3>
+        <div class="topic-content">
+          <ul class="sub-list">
+            <li><span class="sub-title">手持笔引导视线</span>笔尖所指即视线焦点，引导节奏，避免回读和走神。</li>
+            <li><span class="sub-title">阅读的正确姿势</span>上身挺直、书本平放、光线充足、保持舒适距离。</li>
+          </ul>
+          <p>通过手部动作的配合，可以有效<span class="highlight">防止回读、控制节奏、提高专注度</span>。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-view">
+        <h3 class="topic-title"><span class="marker"></span>拓宽视野的练习</h3>
+        <div class="topic-content">
+          <p>视野越开阔，眼睛一次定焦摄取的信息量越大，视野直接影响阅读速度。</p>
+          <p>常见说法：女性视野天生比男性宽（视角180度 vs 30度），反映了男女视觉特点差异——男性精准捕捉单个目标，女性粗略记录大范围形貌。然而，这种差异更多是<strong>认知风格</strong>而非生理能力，后天训练完全可以突破。</p>
+          <p>练习方法：</p>
+          <ul class="numbered-list">
+            <li>固定视线焦点，尝试辨认焦点周围的内容</li>
+            <li>逐步扩大辨认范围，从短语到句子</li>
+            <li>用余光抓取关键词，训练周边视觉</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-jump">
+        <h3 class="topic-title"><span class="marker"></span>跳跃视线，摆脱逐字阅读的弊端</h3>
+        <div class="topic-content">
+          <p>逐字阅读是初学者的习惯，许多阅读经历丰富的人仍难摆脱——尤其在阅读难以理解的内容时。</p>
+          <p>眼球<strong>定焦</strong>是眼球工作中最耗时的步骤，逐字阅读会增加定焦次数。要加快阅读速度，应：</p>
+          <ul class="sub-list">
+            <li>按<span class="highlight">短语结构</span>阅读</li>
+            <li>按<span class="highlight">短句</span>甚至<span class="highlight">整句</span>阅读</li>
+            <li>视线在短句之间跳跃，一次摄入整句含义</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-vertical">
+        <h3 class="topic-title"><span class="marker"></span>视野垂直扩展：尝试一目数行</h3>
+        <div class="topic-content">
+          <p>水平移动视线仍停留在逐行阅读的层次。要成为速读高手，应尝试<strong>一目数行</strong>——一眼摄取焦点及其上下左右能看清的所有文字。</p>
+          <p>难点：相邻数行的内容语义变化较大，单凭机械记忆还原内容有难度。解决之道是<span class="highlight">先把握段意再扫描</span>。</p>
+          <p>训练路径：</p>
+          <ul class="numbered-list">
+            <li>逐行 → 一目两行 → 一目三行</li>
+            <li>配合思维导图，在脑中成"块"地理解</li>
+            <li>配合预测与略读，跳过非关键信息</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-flip">
+        <h3 class="topic-title"><span class="marker"></span>快速翻页阅读</h3>
+        <div class="topic-content">
+          <p>翻页动作最容易造成阅读中断。练习翻页阅读的核心是<span class="highlight">让翻页不影响节奏</span>：</p>
+          <ul class="sub-list">
+            <li>双手配合，一只手引导视线，一只手提前准备翻页</li>
+            <li>翻页时视线不离开文本</li>
+            <li>选择<strong>轻便的纸质书</strong>或电子设备</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-no-rewind">
+        <h3 class="topic-title"><span class="marker"></span>永远不要回读</h3>
+        <div class="topic-content">
+          <p>回读是阅读的大忌——它会打乱阅读节奏，让注意力全部集中在难懂处而忽略其他内容。高效阅读要戒掉回读。</p>
+          <p>正确做法：</p>
+          <ul class="sub-list">
+            <li>遇到难懂处先<strong>标记下来</strong>，继续往下读</li>
+            <li>读完全章后，回看标记处是否已理解</li>
+            <li>若仍未理解，再针对性地查阅资料</li>
+            <li>结合上下文、用<strong>语境推测</strong>陌生词义</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-focus">
+        <h3 class="topic-title"><span class="marker"></span>提高专注度的方法</h3>
+        <div class="topic-content">
+          <p>集中注意力是速读所需的精神状态。有意识地思考是克服走神的最好办法。</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">按标题预读</span>在阅读前对各级标题进行简单划分，建立预期。</li>
+            <li><span class="sub-title">带着问题阅读</span>把"读书四问"具体化为当前章节的问题。</li>
+            <li><span class="sub-title">保持主动思考</span>不停留在"读到了什么"，而追问"作者为什么这样说"。</li>
+            <li><span class="sub-title">用思维导图锁定结构</span>用图把"散点"串成"网络"。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-negative">
+        <h3 class="topic-title"><span class="marker"></span>警惕阅读的负面情绪</h3>
+        <div class="topic-content">
+          <ul class="sub-list">
+            <li><span class="sub-title">克服畏惧之心</span>畏惧源于未知。可事先做功课，定合理目标，针对性训练，恢复平常状态。要做书籍的主人，而不能成为它的奴隶。</li>
+            <li><span class="sub-title">别对书籍及作者产生情绪</span>避免"光环效应"或"成见效应"，客观对待作者观点。</li>
+            <li><span class="sub-title">负罪感从何而来</span>未读完的书、跳过的章节、读不懂的段落常引发负罪感，应放下完美主义，享受阅读本身。</li>
+            <li><span class="sub-title">放松心情，克服焦虑</span>焦虑降低理解效率，深呼吸、短暂休息、转换阅读内容都有帮助。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-understand">
+        <h3 class="topic-title"><span class="marker"></span>快速理解更重要</h3>
+        <div class="topic-content">
+          <p>速读本质上就是<strong>快速理解</strong>。理解包括"理"（条理、梳理）和"解"（拆解、解剖）：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">理</span>梳理文章脉络，明白作者创作思路</li>
+            <li><span class="sub-title">解</span>将作者的观点及相关依据拆解下来，按自己的思路再次整理成章</li>
+          </ul>
+          <p>将"书上的""作者的"转化为"自己的"——这是速读理解的最高境界。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-ask">
+        <h3 class="topic-title"><span class="marker"></span>速读提问技巧</h3>
+        <div class="topic-content">
+          <p>快速理解书中内容的最好方法就是提问——读书四问中的前两问：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">第一问 · 讲了什么</span>理解阅读篇章的主题和结构</li>
+            <li><span class="sub-title">第二问 · 作者的主旨</span>试图还原作者的思路</li>
+          </ul>
+          <p>速读提问最大的难题是<strong>怎样提问才能不干扰阅读</strong>。答案是——我们需要"提问模式"的思考方式，而不是"提问"这一具体行动。</p>
+          <p>主动型阅读者会：联想已有经验、判定命题真伪、寻找支持论据、最终形成自己的判断。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-mmap">
+        <h3 class="topic-title"><span class="marker"></span>阅读"思维导图"</h3>
+        <div class="topic-content">
+          <p>理解的过程，就是在大脑中画"思维导图"的过程。若无法在脑中画出，可用纸笔画一幅真实的"思维导图"。</p>
+          <p>绘制要点：</p>
+          <ul class="numbered-list">
+            <li>准备一张白纸横放，中央写主题</li>
+            <li>从中央向外引出分支，写关键词</li>
+            <li>用箭头表示逻辑关系（因果、并列、对照）</li>
+            <li>用<strong>符号、图形、颜色</strong>代替文字</li>
+            <li>线条比文字的引导作用更大</li>
+          </ul>
+          <p>思维导图以视觉的形象强化记忆，是速读与精读都受益的工具。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch3-memory">
+        <h3 class="topic-title"><span class="marker"></span>快速记忆的条件反射</h3>
+        <div class="topic-content">
+          <ul class="sub-list">
+            <li><span class="sub-title">存储信息的条件反射</span>善用五感，多角度存储。"望梅止渴"即大脑调用已储备的味觉信息。多重感官参与使记忆更深刻立体。</li>
+            <li><span class="sub-title">读取信息的条件反射</span>建立有规律的提取线索，如固定时间复习、联想场景、关键图像法等。</li>
+          </ul>
+          <div class="summary-panel">
+            <div class="summary-title">核心原理</div>
+            <p>记忆和回想是相辅相成的——存储越有结构，读取越有路径。形成"存"与"读"的条件反射，记忆力大幅提升。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 第四章 -->
+    <section class="section" id="ch4">
+      <div class="chapter-header chapter-4">
+        <div class="chapter-num">CHAPTER FOUR</div>
+        <h2 class="chapter-title">"四到""五用"，提要钩玄<span class="sub">——精读法</span></h2>
+        <div class="chapter-intro">读书宜"心到、眼到、口到、手到、脑到"——阅读时的基本习惯。读记叙性作品宜"提出纲要"，读理论性作品宜"钩取奥义"——阅读时的操作方法。</div>
+      </div>
+
+      <article class="topic-card" id="ch4-ancient">
+        <h3 class="topic-title"><span class="marker"></span>古人的精读方法</h3>
+        <div class="topic-content">
+          <div class="quote">
+            臣平生所知，诚不出此，昔以其半辅太祖定天下，今欲以其半辅陛下致太平。<span class="quote-author">——赵普"半部论语治天下"</span>
+          </div>
+          <ul class="sub-list">
+            <li><span class="sub-title">三到（朱熹）</span>心到、眼到、口到</li>
+            <li><span class="sub-title">四到（胡适）</span>在"三到"基础上加"手到"——强调做笔记</li>
+            <li><span class="sub-title">五用（鲁迅）</span>在"四到"基础上加"脑到"——强调思考、发现规律、提出问题、勇于创造</li>
+            <li><span class="sub-title">提要钩玄（韩愈）</span>"记事者必提其要，纂言者必钩其玄"——读记叙文要提炼纲要，读理论文要钩取深意</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch4-notes">
+        <h3 class="topic-title"><span class="marker"></span>记得怎样写读书笔记吗</h3>
+        <div class="topic-content">
+          <div class="quote">
+            他只是好读书，肯下功夫，不仅读，还做笔记；不仅读一遍两遍，还会读三遍四遍，笔记上不断地添补。所以他读的书虽然很多，也不易遗忘。<span class="quote-author">——杨绛评钱钟书</span>
+          </div>
+          <p>好记性不如烂笔头。读书笔记可锻炼思考能力、积累素材、提高文字表达能力。读书笔记分四类：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">摘抄型</span>把阅读中有用的语句、段落按原文准确抄录，便于学习语言素材。</li>
+            <li><span class="sub-title">感悟型</span>记录阅读时的所思所感，倾注个人情感与联想，是最自由的笔记。</li>
+            <li><span class="sub-title">评注型</span>对原文进行批注、评论、质疑，是"以写促读"的典型方式。</li>
+            <li><span class="sub-title">综合型</span>将摘抄、感悟、评注整合在一起，形成结构化的笔记。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch4-base">
+        <h3 class="topic-title"><span class="marker"></span>精读的基本要求：识文解义</h3>
+        <div class="topic-content">
+          <p>精读最基本也最直接的要求：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">识文</span>知道书中说的是什么意思（对应"这本书究竟讲了什么"）</li>
+            <li><span class="sub-title">解义</span>知道作者想要表达什么观点（对应"作者通过这本书解决了什么问题"）</li>
+          </ul>
+          <p>针对精读，不必细化到一字一词，最小语言单位划分到短语或句子即可。需要掌握基本的语言知识：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">短语类型</span>主谓、偏正、动宾、动补、并列、介宾短语</li>
+            <li><span class="sub-title">句子成分</span>主语、谓语、宾语、定语、状语、补语</li>
+          </ul>
+          <p>这些语言基础知识是提高阅读速度与理解能力的关键。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch4-repeat">
+        <h3 class="topic-title"><span class="marker"></span>反复阅读的方法</h3>
+        <div class="topic-content">
+          <div class="quote">
+            旧书不厌百回读，熟读深思子自知。<span class="quote-author">——苏轼</span>
+          </div>
+          <p>反复阅读是精读最重要、最常用的方式。它需要有<strong>强烈的动机、明确的目的、有顺序、有详略</strong>。需克服三大障碍：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">障碍一：已经读过，再无新意</span>喜新厌旧是人之常情。从阅读方法入手，力求创新——结合实际需要、跨学科视角、批判性思考。</li>
+            <li><span class="sub-title">障碍二：已经吃透，随手翻阅</span>看似"已吃透"实则理解不深。可尝试撰写读书笔记、给别人讲解、联系实际应用来检验。</li>
+            <li><span class="sub-title">障碍三：重读未尽，半途而废</span>为每次重读设定明确目标，如"这次只为提炼主题""这次只为理解论证"。</li>
+          </ul>
+          <p>"主食"型书：阅读—实践—反思—再阅读—再实践。"美食"型书：反复思考与钻研才能领悟深意。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch4-web">
+        <h3 class="topic-title"><span class="marker"></span>精读一本书，像织一张网</h3>
+        <div class="topic-content">
+          <p>精读一本书，要层层剖析，深入理解——这就需要把握<span class="highlight">结构</span>。结构是主题与材料之间的纽带。</p>
+          <p>常见文章结构：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">总分式</span>有总述+分述，开头结尾相呼应</li>
+            <li><span class="sub-title">并列式</span>各章内容并列，重要性等同</li>
+            <li><span class="sub-title">对照式</span>双线叙事或正反两方面说理</li>
+            <li><span class="sub-title">递进式</span>层层深入，环环相扣</li>
+          </ul>
+          <p>经典比喻："凤头、豹尾、猪肚子"——开头精致有吸引力，结尾短小精悍升华主题，中段材料丰富言之有物。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch4-speak">
+        <h3 class="topic-title"><span class="marker"></span>用自己的话把内容讲出来</h3>
+        <div class="topic-content">
+          <p>用自己的话讲出书的内容，是精读时常做的功课。三种方式：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">复述式</span>把文字内容复制下来然后说出来（即背诵）。准确、完整、不偷换概念、不遗漏重要观点。考验记忆力，但对思考方式帮助不大。</li>
+            <li><span class="sub-title">转述式</span>换个人称、换种叙述方式或替换部分词句，必须加入许多个人思考。还包括"翻译"——将生涩语句替换为易于理解的语言。</li>
+            <li><span class="sub-title">演说式</span>面向他人的表达，需要严密的逻辑、生动的语言、贴合听众需求。是精读能力的最高体现。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch4-form">
+        <h3 class="topic-title"><span class="marker"></span>也有"形式"重于"内容"时</h3>
+        <div class="topic-content">
+          <div class="quote">
+            读史使人明智，读诗使人灵透，数学使人精细，物理学使人深沉，伦理学使人庄重，逻辑修辞则使人善辩。<span class="quote-author">——培根《谈读书》</span>
+          </div>
+          <p>有些书值得精读，并不是因为内容多么重要，而是因为它可以教给我们<strong>不同的思维方式</strong>。这样的书是"美食"而非"主食"，有精读的必要。</p>
+          <p>三种精读策略：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">不迷信权威，也不迷信自己</span>开放心态，理性评估</li>
+            <li><span class="sub-title">不钻牛角尖，换角度思考</span>多视角审视，跨学科类比</li>
+            <li><span class="sub-title">不要忘记对自己提问</span>持续追问"我是谁、我在哪里、我要去哪里"</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch4-review">
+        <h3 class="topic-title"><span class="marker"></span>如何评论一本书</h3>
+        <div class="topic-content">
+          <p>评论是阅读的必要步骤。基本态度是：<span class="highlight">不读懂，不妄评；读懂了，必须评</span>。</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">不读懂，不妄评</span>走马观花看过一遍不能讲出大意时，不宜评论。"谈论没读过的书"不是社交技巧，是欺骗。</li>
+            <li><span class="sub-title">有理有据，求同存异</span>正面或负面评论都应基于书中具体内容，不可断章取义。</li>
+            <li><span class="sub-title">说出来或写下来</span>口头或书面的评论能让思考更深入，<strong>写书评是最好的精读训练</strong>。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch4-doubt">
+        <h3 class="topic-title"><span class="marker"></span>无疑不读书，读书必有疑</h3>
+        <div class="topic-content">
+          <p>"这本书和我有什么关系""这本书有什么用"——是精读时必须思考的问题。人都是心中有疑问时才会有针对性地读一本书。</p>
+          <p>疑问通常分三类：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">是什么（What）</span>对客观事实的疑问</li>
+            <li><span class="sub-title">为什么（Why）</span>对原因与动机的疑问</li>
+            <li><span class="sub-title">怎么办（How）</span>对方法与行动的疑问</li>
+          </ul>
+          <p>在阅读之后自问是否获得解答——这是检验阅读效果的最佳方式。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch4-if-i-write">
+        <h3 class="topic-title"><span class="marker"></span>如果让我写这本书</h3>
+        <div class="topic-content">
+          <p>读完后思考"如果让我写"——这是对阅读的总结检验。读者心中会有一连串问题：</p>
+          <ul class="sub-list">
+            <li>读了这本书，我获得了什么知识？</li>
+            <li>受到了什么启发？</li>
+            <li>可以用在哪些方面？</li>
+            <li>若让我写，我会怎样安排结构？</li>
+            <li>我会补充哪些内容？</li>
+          </ul>
+          <p>能回答这些问题，说明你真正读懂了这本书。</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- 第五章 -->
+    <section class="section" id="ch5">
+      <div class="chapter-header chapter-5">
+        <div class="chapter-num">CHAPTER FIVE</div>
+        <h2 class="chapter-title">八面受敌，一意求之<span class="sub">——主题阅读法</span></h2>
+        <div class="chapter-intro">主题阅读是艾德勒四层次中最深层次的方式，又称"研究性阅读"。只要掌握方法，每个人都可以围绕感兴趣的主题进行多本书的阅读。</div>
+      </div>
+
+      <article class="topic-card" id="ch5-sushi">
+        <h3 class="topic-title"><span class="marker"></span>苏轼的"八面受敌"读书法</h3>
+        <div class="topic-content">
+          <p>宋代沈作喆《寓简》记载：王庠准备科举时向苏轼请教读书方法，苏轼介绍"八面受敌"法——</p>
+          <div class="quote">
+            读书要围绕一个中心，每次只从一个角度去读，把书读"破"——所谓"每一书皆作数过尽之"。<br>
+            比如读《汉书》，第一遍只读治乱兴亡之事，第二遍只读官制沿革，第三遍只读财赋，如此反复多次。
+            <span class="quote-author">——苏轼</span>
+          </div>
+          <p>"八面受敌"是主题阅读的具体实践：以<strong>一个核心问题</strong>为敌，每读一遍都集中解决一面问题，反复多遍方能<strong>读通、读透</strong>。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch5-prepare">
+        <h3 class="topic-title"><span class="marker"></span>做好主题阅读的准备</h3>
+        <div class="topic-content">
+          <p>正式阅读前需从<strong>思想和行为</strong>两方面准备：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">思想上的准备</span>对选定主题有强烈的阅读意愿；培养强烈的好奇心作为原动力；明确阅读目的；做好长期阅读的心理准备。</li>
+            <li><span class="sub-title">行为上的准备</span>通过检视阅读建立初步书单；将书分主次（核心与辅助）；准备好参考资料与笔记工具；规划阅读时间表。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch5-theme-first">
+        <h3 class="topic-title"><span class="marker"></span>始终把主题排在第一位</h3>
+        <div class="topic-content">
+          <p>主题阅读因为涉及多本书，读者可能因某本书吸引力太大而"跑偏"。应<strong>始终把阅读的主题放在第一位</strong>。</p>
+          <p>操作要点：</p>
+          <ul class="numbered-list">
+            <li>选定主题后，先浏览所有相关书，确定每本书的相关章节</li>
+            <li>阅读时只关注与主题相关的内容，其余略过</li>
+            <li>对每本书都提出<strong>同样的主题问题</strong></li>
+            <li>建立一份"主题笔记"，汇集各书相关内容</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch5-find">
+        <h3 class="topic-title"><span class="marker"></span>检视出需要的内容</h3>
+        <div class="topic-content">
+          <p>正式阅读的第一步是<strong>把书目中的所有书检视阅读一遍</strong>。此时检视阅读的目的是<span class="highlight">找出每本书中与主题极为相关的具体章节</span>。</p>
+          <p>书目中的书通常不可能全书都在谈论这个主题，需要：</p>
+          <ul class="sub-list">
+            <li>先看目录、前言、索引</li>
+            <li>快速翻到可能与主题相关的章节</li>
+            <li>记录关键章节的页码或位置</li>
+            <li>对每本书与主题的相关度进行评估</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch5-language">
+        <h3 class="topic-title"><span class="marker"></span>创设主题阅读的语言体系</h3>
+        <div class="topic-content">
+          <p>主题阅读需要阅读多本书，所以有一个<strong>统一的语言体系</strong>很重要，这个体系通常要靠自己创设。</p>
+          <p>不同作者用不同术语表达相似概念，主题阅读者需要：</p>
+          <ul class="sub-list">
+            <li>识别<strong>不同书中的关键词</strong>与对应关系</li>
+            <li>建立<strong>自己的术语表</strong></li>
+            <li>用<strong>统一语言</strong>记笔记、思考、讨论</li>
+            <li>保持语言体系的<strong>开放性</strong>，随阅读推进而调整</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch5-thesis">
+        <h3 class="topic-title"><span class="marker"></span>建立自己的主旨</h3>
+        <div class="topic-content">
+          <p>经过阅读之前的准备，前期勘察设计工作已完成；语言体系已建立——接下来就要开始<strong>基础施工</strong>。</p>
+          <p>在主题阅读中，建立<strong>自己的主旨</strong>就是基础。具体步骤：</p>
+          <ul class="sub-list">
+            <li>在各书中寻找<strong>共有的主旨</strong>（用统一语言体系表达）</li>
+            <li>识别作者们的<strong>共识</strong>与<strong>分歧</strong></li>
+            <li>用<strong>自己的话</strong>陈述这些主旨</li>
+            <li>形成<strong>自己的判断</strong>而非简单复述</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch5-priority">
+        <h3 class="topic-title"><span class="marker"></span>界定论点的主次</h3>
+        <div class="topic-content">
+          <p>主题阅读中，论点的主次通常根据<strong>论证它的难易程度</strong>划分：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">易成立的论点</span>不同书中能找到相同支持，赞成或反对的意见明确</li>
+            <li><span class="sub-title">争议的论点</span>不同作者持不同意见，深入讨论但存在较大争议</li>
+          </ul>
+          <p>对争议论点，需要自己分类，发现问题的关键所在，再做深入研究。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch5-discuss">
+        <h3 class="topic-title"><span class="marker"></span>论点的分析讨论</h3>
+        <div class="topic-content">
+          <p>论点分析讨论 = 解决问题。两种分析方法：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">由浅入深分析</span>从基本共识入手，逐步进入更深层的争议问题。先建立基础，再深入剖析。</li>
+            <li><span class="sub-title">由深至浅分析</span>从核心争议入手，向上溯源到基本共识。从最复杂的问题倒推回最基础的事实。</li>
+          </ul>
+          <p>最终的答案并不是最重要的——我们需要的是可以令自己信服的答案，或者可以说服他人的答案。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch5-research">
+        <h3 class="topic-title"><span class="marker"></span>完成"研究性"阅读</h3>
+        <div class="topic-content">
+          <p>完成分析讨论后，还要回答读书四问中的后两问：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">第三问 · 这些分析讨论是否有道理</span>综合各书观点，结合自己的分析，得出独立判断。评价不是简单的"对"或"错"，而是看其<strong>逻辑链是否完整、证据是否充分、视角是否合理</strong>。</li>
+            <li><span class="sub-title">第四问 · 这与我有什么关系</span>把研究结论融入自己的知识体系，决定下一步行动。</li>
+          </ul>
+          <p>完成以上步骤，就完成了一次完整的主题阅读——也即一次"研究性"阅读。</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- 第六章 -->
+    <section class="section" id="ch6">
+      <div class="chapter-header chapter-6">
+        <div class="chapter-num">CHAPTER SIX</div>
+        <h2 class="chapter-title">知己知彼，举一反三<span class="sub">——写与读</span></h2>
+        <div class="chapter-intro">写与读关系密切，互为因果。了解作品"怎样写"，就可以据此确定"怎样读"。不同体裁的作品有不同的阅读方法，由"写"入手、换位思考，有助于理解各类书籍。</div>
+      </div>
+
+      <article class="topic-card" id="ch6-rel">
+        <h3 class="topic-title"><span class="marker"></span>写与读的关系</h3>
+        <div class="topic-content">
+          <div class="quote">
+            读书破万卷，下笔如有神。<span class="quote-author">——杜甫</span>
+          </div>
+          <p>读与写是相互促进的：先学阅读后学作文，作文达到一定程度后阅读水平就会提升。善读者往往能写出好文章。</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">读是写的目的</span>阅读为写作提供素材、范式与灵感。写作能力反映阅读积淀。</li>
+            <li><span class="sub-title">以"写"促"读"</span>写作练习帮助读者从作者视角审视作品，加深理解。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch6-story">
+        <h3 class="topic-title"><span class="marker"></span>怎样写一个故事</h3>
+        <div class="topic-content">
+          <p>小说、戏剧、叙事散文、叙事诗歌等都可视为<strong>故事类图书</strong>。一个故事包含：<span class="highlight">时间、地点、环境、人物、事件、感情、主题</span>等要素。</p>
+          <p>不同叙事手法：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">顺叙</span>按时间先后叙事</li>
+            <li><span class="sub-title">倒叙</span>从结果或中间开始，再回顾前因</li>
+            <li><span class="sub-title">插叙</span>主线中插入相关情节</li>
+            <li><span class="sub-title">多线叙事</span>多个视角并行</li>
+          </ul>
+          <p><strong>阅读故事的方法</strong>：抓住六要素，理清情节线，体会人物关系，感悟作者情感。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch6-arg">
+        <h3 class="topic-title"><span class="marker"></span>阅读论说性作品的方法</h3>
+        <div class="topic-content">
+          <p>论说性作品通过事实和逻辑推理来阐明观点，论证一个问题。完整议论文包含：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">论点</span>作者的主张与立场</li>
+            <li><span class="sub-title">论据</span>支持论点的事实、数据、案例</li>
+            <li><span class="sub-title">论证</span>连接论据与论点的逻辑过程</li>
+          </ul>
+          <p>不同论证方法：归纳、演绎、类比、对比、因果、引证、喻证。</p>
+          <p><strong>阅读论说性作品的方法</strong>：先找论点，再核论据，最后审视论证——三个层次逐步深入。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch6-explain">
+        <h3 class="topic-title"><span class="marker"></span>阅读说明性文字的方法</h3>
+        <div class="topic-content">
+          <p>说明性文字的特征：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">说物</span>介绍事物的形状、性质、构造、功能</li>
+            <li><span class="sub-title">说理</span>解释现象的原理、规律、成因</li>
+          </ul>
+          <p>说明的方法：举例子、列数字、打比方、作比较、分类别、引用。</p>
+          <p><strong>阅读说明性文字的方法</strong>：把握说明对象、识别说明顺序、提取关键信息、联系实际应用。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch6-lyric">
+        <h3 class="topic-title"><span class="marker"></span>阅读抒情类作品的方法</h3>
+        <div class="topic-content">
+          <ul class="sub-list">
+            <li><span class="sub-title">直接抒情</span>作者直抒胸臆，"我"字开头表达情感</li>
+            <li><span class="sub-title">间接抒情</span>借景抒情、借物抒情、借事抒情，含蓄蕴藉</li>
+          </ul>
+          <p><strong>阅读抒情类作品的方法</strong>：感受情感、识别意象、联想背景、体会言外之意。</p>
+          <p>诗歌和散文中抒情最多；论说性作品中抒情少见但并非绝对——议论中夹抒情常起到<strong>升华主题</strong>的作用。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch6-layout">
+        <h3 class="topic-title"><span class="marker"></span>一本书的布局谋篇</h3>
+        <div class="topic-content">
+          <p>布局谋篇就是确定作品的结构。需解决：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">开篇和结尾</span>凤头—豹尾，前置悬念与后置升华</li>
+            <li><span class="sub-title">章节、层次、过渡、照应</span>保证结构清晰，逻辑连贯</li>
+            <li><span class="sub-title">主次和详略</span>突出核心内容，简略次要信息</li>
+          </ul>
+          <p>结构是主题与材料之间的纽带——掌握结构才能在阅读的"空间"里自由前行。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch6-web">
+        <h3 class="topic-title"><span class="marker"></span>网络、写作和阅读</h3>
+        <div class="topic-content">
+          <p>网络将作者从高高在上的位置拉到了与读者平等的位置，作者在创作时会越来越多地考虑读者的因素。</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">远了还是近了</span>网络让作者与读者的距离<strong>前所未有地近</strong>，互动即时，反馈丰富。</li>
+            <li><span class="sub-title">选书还是选人</span>网络时代选作者比选书更重要——跟对人比读对书更关键。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch6-apply">
+        <h3 class="topic-title"><span class="marker"></span>跳出书本外，学以致用</h3>
+        <div class="topic-content">
+          <ul class="sub-list">
+            <li><span class="sub-title">写有定式，读无套路</span>写作是把无拘束的内容放到方寸之间；阅读是把有限的方寸无限地展开。</li>
+            <li><span class="sub-title">书中之言，皆为人言</span>书是作者人格的延伸，理解书要先理解作者。</li>
+            <li><span class="sub-title">学以致用，方为正道</span>读懂之后还要会用——这是阅读的最终目的。</li>
+          </ul>
+          <div class="summary-panel">
+            <div class="summary-title">核心理念</div>
+            <p>"以写促读"不仅是为了阅读，更是为了跳出书本外，从另一个角度看待一本书。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 第七章 -->
+    <section class="section" id="ch7">
+      <div class="chapter-header chapter-7">
+        <div class="chapter-num">CHAPTER SEVEN</div>
+        <h2 class="chapter-title">纸上得来终觉浅<span class="sub">——阅读的效用</span></h2>
+        <div class="chapter-intro">陆游："纸上得来终觉浅，绝知此事要躬行。"读书不只是获得纸上的信息，要发挥阅读的效用，就要付诸实践。</div>
+      </div>
+
+      <article class="topic-card" id="ch7-tool">
+        <h3 class="topic-title"><span class="marker"></span>阅读不是目的，只是工具</h3>
+        <div class="topic-content">
+          <p>阅读不是目的，只是工具。每一个阅读者都应有这样的认识。阅读是工具，可以是：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">求知的工具</span>阅读就是为了获得知识，这是最浅层的阅读目的，也是最传统、最朴素的阅读诉求。</li>
+            <li><span class="sub-title">提升的阶梯</span>从知识到能力，从能力到素养，阅读是终身成长的阶梯。</li>
+            <li><span class="sub-title">联系的纽带</span>通过阅读建立与作者、与时代、与文化的联系。</li>
+            <li><span class="sub-title">创新的助力</span>在自身理念与技术领先的基础上，阅读提供创新灵感。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch7-know">
+        <h3 class="topic-title"><span class="marker"></span>为知：绝知此事要躬行</h3>
+        <div class="topic-content">
+          <div class="quote">
+            纸上得来终觉浅，绝知此事要躬行。<span class="quote-author">——陆游</span>
+          </div>
+          <p>读书四问中的前两问对应"为知"这一效用：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">第一问 · 这本书讲了什么</span>了解内容</li>
+            <li><span class="sub-title">第二问 · 作者解决了什么问题</span>理解主旨</li>
+          </ul>
+          <p>但"为知"并不停留于此：</p>
+          <ul class="sub-list">
+            <li>要使知识创造价值，需思考<strong>"这些知识可以用在哪些方面"</strong></li>
+            <li>要有改进和提高的空间，需思考<strong>"作者的论述有无遗漏"</strong></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch7-self">
+        <h3 class="topic-title"><span class="marker"></span>为己：书籍是全世界的营养品</h3>
+        <div class="topic-content">
+          <div class="quote">
+            书籍是全世界的营养品。<span class="quote-author">——莎士比亚</span>
+          </div>
+          <p>"为己"不是一切为了自己，而是<strong>提升自己的思想水平和精神境界</strong>，培养不能直接使用却可间接体现、不能带来直接收益却有隐性价值的能力。</p>
+          <p>"为己"效用：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">精神滋养</span>陶冶情操，涵养心灵</li>
+            <li><span class="sub-title">气质养成</span>"腹有诗书气自华"</li>
+            <li><span class="sub-title">隐性价值</span>长期沉淀为底蕴与智慧</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch7-share">
+        <h3 class="topic-title"><span class="marker"></span>为人：分享与影响</h3>
+        <div class="topic-content">
+          <p>人具有群体性，渴望获得群体的认同，也渴望拥有改变甚至主导群体的能力。阅读的"为人"效用体现在两方面：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">分享</span>读了一本书觉得很有道理就想分享；分享的方式包括：口头推荐、撰写书评、组织读书会、改编演讲等。</li>
+            <li><span class="sub-title">影响</span>通过分享影响他人的认知、决策、行为——这是阅读效用的高级形态。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch7-continue">
+        <h3 class="topic-title"><span class="marker"></span>延续：创新与传承</h3>
+        <div class="topic-content">
+          <p>在三大效用之外，阅读还有一个<strong>间接效用</strong>——满足创新与传承的需要。</p>
+          <p>要创新，首先需要自身处于某一领域前列——在自身理念与技术落后的情况下不可能创新。要保持领先地位，<span class="highlight">持续阅读</span>是必要条件。</p>
+          <p>创新不是凭空创造，而是建立在对前人成果的充分理解之上。传承让创新有根基，创新让传承有活力。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch7-leverage">
+        <h3 class="topic-title"><span class="marker"></span>浅析"杠杆阅读术"</h3>
+        <div class="topic-content">
+          <p>日本作者本田直之在《杠杆阅读术》中提出以效益为导向的阅读方法。</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">什么是"杠杆阅读术"</span>借鉴物理学"杠杆原理"，用最小成本获得最大阅读收益——以"投资回报率"看待阅读。</li>
+            <li><span class="sub-title">"杠杆阅读术"的弊端</span>过度追求效率可能导致阅读浅尝辄止、忽略深度思考、需要思考沉淀的"美食"被错过。</li>
+            <li><span class="sub-title">"杠杆阅读术"的通用方法</span>选书精准化、阅读目的化、知识内化、实践应用化。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch7-ria">
+        <h3 class="topic-title"><span class="marker"></span>浅析"RIA拆书阅读法"</h3>
+        <div class="topic-content">
+          <p>赵周《这样读书就够了》提出"RIA拆书阅读法"——</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">什么是"RIA拆书阅读法"</span>R（Read，阅读片段）+ I（Interpretation，拆书家讲解）+ A（Appropriation，学习者联系经验并应用）。阅读对象是<strong>实用型书</strong>。</li>
+            <li><span class="sub-title">"RIA"的误区</span>不能机械应用，要真正联系自身经验；不能跳过"I"环节直接应用。</li>
+            <li><span class="sub-title">"RIA"的通用方法</span>选实用型书、找关键片段、拆解要点、内化为自己的行动方案。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch7-practical">
+        <h3 class="topic-title"><span class="marker"></span>怎样阅读实用型书</h3>
+        <div class="topic-content">
+          <p>实用型书阅读要点：</p>
+          <ul class="numbered-list">
+            <li><strong>明确阅读目的</strong>先问自己"我需要解决什么问题"</li>
+            <li><strong>选对书</strong>实用型书分多种，要选与自己需求匹配的</li>
+            <li><strong>关注作者资质</strong>作者是否有该领域的实践经验和专业积累</li>
+            <li><strong>边读边实践</strong>实用型书的价值在应用，而不只是了解</li>
+            <li><strong>形成自己的方法</strong>不照搬照抄，根据实际情况调整</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <!-- 第八章 -->
+    <section class="section" id="ch8">
+      <div class="chapter-header chapter-8">
+        <div class="chapter-num">CHAPTER EIGHT</div>
+        <h2 class="chapter-title">众里寻他千百度<span class="sub">——"鱼"与"渔"</span></h2>
+        <div class="chapter-intro">我们对阅读方法的孜孜以求，是要解决明面上的问题。然而在阅读行为之外，仍有一些相关问题值得关注——藏而不读、选书为难、结伴同行等。本章为有效阅读锦上添花。</div>
+      </div>
+
+      <article class="topic-card" id="ch8-fish">
+        <h3 class="topic-title"><span class="marker"></span>"鱼"不如"渔"，"藏"不如"读"</h3>
+        <div class="topic-content">
+          <div class="quote">
+            授之以鱼，不如授之以渔。
+          </div>
+          <p>灌输再多内容也不如教会学习的方法。阅读也是一样——学习再多阅读方法也不如选择一种方法亲自读一本书。</p>
+          <p>很多人手机里装着阅读App，收藏夹里存了几百篇文章，买了大量电子书却没时间读——这是典型的<span class="highlight">"藏而不读"</span>。再好的方法也不过是纸上谈兵。</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">从"收藏"到"读完"</span>给每篇文章、每本书一个真正的归宿：要么读，要么删。</li>
+            <li><span class="sub-title">从"知道"到"做到"</span>读完不意味着完成，转化为自己的认知与行动才是。</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch8-bookstore">
+        <h3 class="topic-title"><span class="marker"></span>眼见大厦倾，又见高楼起</h3>
+        <div class="topic-content">
+          <p>实体书店与网络书店的兴衰在互联网时代上演。北京第三极书局等大型书店的兴衰令人感慨，现状是<strong>网络书店完胜实体书店</strong>。</p>
+          <p>实体书店在夹缝中求生存、寻求新的出路——</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">体验式书店</span>融合咖啡、文创、活动的复合空间</li>
+            <li><span class="sub-title">主题书店</span>聚焦特定读者群，提供深度服务</li>
+            <li><span class="sub-title">社区书店</span>深入社区，建立稳定读者关系</li>
+          </ul>
+          <p>无论形态如何变化，<strong>书与人的连接</strong>始终是书店存在的根本理由。</p>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch8-borrow">
+        <h3 class="topic-title"><span class="marker"></span>书非借不能读也</h3>
+        <div class="topic-content">
+          <div class="quote">
+            书非借不能读也。<span class="quote-author">——袁枚《黄生借书说》</span>
+          </div>
+          <p>如今借书已不是读者的主要书籍来源。但"书非借不能读"这一难题仍困扰着"藏而不读"的人。克服之道：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">明确阅读目标</span>把每一本书当成借的来阅读——设定归还期限</li>
+            <li><span class="sub-title">制造阅读紧迫感</span>加入读书会、约人共读、定期分享</li>
+            <li><span class="sub-title">阅读与输出结合</span>读完就写笔记、做分享，让阅读成果"流转"</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch8-shelf">
+        <h3 class="topic-title"><span class="marker"></span>整理自己的书架</h3>
+        <div class="topic-content">
+          <p>整理书架、书柜对阅读有积极意义：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">接触、回顾与想象</span>整理过程拉近人与书的距离</li>
+            <li><span class="sub-title">发现漏读</span>看见自己"藏而不读"的部分</li>
+            <li><span class="sub-title">建立结构</span>对藏书进行分类，是一次知识的再整理</li>
+            <li><span class="sub-title">触发阅读欲望</span>翻开一本书的瞬间，可能就是下一次阅读的开始</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch8-companion">
+        <h3 class="topic-title"><span class="marker"></span>书山寻路，结伴同行</h3>
+        <div class="topic-content">
+          <p>阅读如登险峰，独行难免寂寞，<strong>结伴同行</strong>不失为一种好的选择。共同阅读者为书友，唯有一起读书才算真的交心朋友。</p>
+          <p>结伴阅读的形式：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">读书会</span>定期共读、分享、讨论</li>
+            <li><span class="sub-title">网络共读</span>微博、豆瓣、微信群等线上平台</li>
+            <li><span class="sub-title">家庭阅读</span>亲子共读、夫妻共读</li>
+            <li><span class="sub-title">主题共读</span>围绕一本书或一个主题集中阅读</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic-card" id="ch8-three-paths">
+        <h3 class="topic-title"><span class="marker"></span>三条阅读之路</h3>
+        <div class="topic-content">
+          <p>勤奋是态度不是方法。在阅读过程中，每个人大概都会经过以下三条路：</p>
+          <ul class="sub-list">
+            <li><span class="sub-title">其一 · 信马由缰、兴尽而返的漫步之路</span>《世说新语》记载王徽之"雪夜访戴"——兴之所至，兴致尽而返，不强求结果。</li>
+            <li><span class="sub-title">其二 · 兴趣使然、笔耕不辍的专攻之路</span>出于强烈的兴趣或专业需要，对某领域长期深入研究，最终成为该领域的行家。</li>
+            <li><span class="sub-title">其三 · 解决具体问题、为己所用的致用之路</span>为解决具体问题而读，瞄准目标，效率优先，读以致用。</li>
+          </ul>
+          <div class="quote">
+            众里寻他千百度，蓦然回首，那人却在灯火阑珊处。<span class="quote-author">——辛弃疾</span>
+          </div>
+          <p>三条路并不互斥——漫步中偶遇专攻、专攻中归结致用、致用中重启漫步，循环往复，阅读之路越走越宽。</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- 后记 -->
+    <section class="section front-back-section" id="postscript">
+      <div class="chapter-header" style="border-left-color: #4a8c8c;">
+        <div class="chapter-num">POSTSCRIPT</div>
+        <h2 class="chapter-title">后记 · 书卷多情似故人</h2>
+        <div class="chapter-intro">编写组一直试图从纯理性角度分析每一种可用的阅读方法，然而，阅读终究是理性与感性交织的行为。</div>
+      </div>
+      <div class="topic-card" style="background: linear-gradient(135deg, #faf6ec 0%, #f3e9d0 100%);">
+        <div class="topic-content" style="text-align: center; font-family: var(--font-serif); font-size: 16px; line-height: 2.4;">
+          <p>欢喜时，读书如同<span class="highlight">拈花微笑</span>，然后从云端跌入尘下。</p>
+          <p>悲伤时，读书恰似<span class="highlight">长歌当哭</span>，然后从伤口长出新芽。</p>
+          <p>早起读书如<span class="highlight">清风拂面</span>，获得一天的活力。</p>
+          <p>睡前读书如<span class="highlight">温水浸沐</span>，洗去满心的浮躁。</p>
+          <p>读一本好书，<span class="highlight">如遇故人</span>，三生有幸。</p>
+        </div>
+        <div class="summary-panel" style="margin-top: 24px;">
+          <div class="summary-title">结语</div>
+          <p>阅读不只是方法，更是生活的方式。愿每一位读者都能在书中找到自己的故人，与书同行，与知识为伴，与智慧共生。</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<div class="toolbar">
+  <div class="tool-btn" title="回到顶部" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</div>
+  <div class="tool-btn" title="打印" onclick="window.print()">🖨</div>
+</div>
+
+<script>
+// 导航点击平滑滚动
+document.querySelectorAll('.nav-section').forEach(item => {
+  item.addEventListener('click', (e) => {
+    const target = item.getAttribute('data-target');
+    if (target) {
+      const el = document.getElementById(target);
+      if (el) {
+        // 移动端关闭侧边栏
+        if (window.innerWidth <= 900) {
+          document.querySelector('.sidebar').classList.remove('open');
+        }
+        const offset = el.getBoundingClientRect().top + window.pageYOffset - 20;
+        window.scrollTo({ top: offset, behavior: 'smooth' });
+      }
+    }
+  });
+});
+
+// 高亮当前阅读位置
+const sections = document.querySelectorAll('.section, .topic-card[id]');
+const navItems = document.querySelectorAll('.nav-section');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(it => {
+        if (it.getAttribute('data-target') === id) {
+          it.classList.add('active');
+        } else if (it.classList.contains('active') && it.getAttribute('data-target') !== id) {
+          // 不立即移除，避免闪烁
+        }
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// 进度条
+const progressBar = document.getElementById('progressBar');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const progress = (scrollTop / scrollHeight) * 100;
+  progressBar.style.width = progress + '%';
+});
+
+// 搜索过滤
+function filterNav(query) {
+  query = query.trim().toLowerCase();
+  const items = document.querySelectorAll('.nav-section, .nav-chapter');
+  items.forEach(it => {
+    const text = it.textContent.toLowerCase();
+    if (!query || text.includes(query)) {
+      it.style.display = '';
+    } else {
+      it.style.display = 'none';
+    }
+  });
+}
+</script>
+</body>
+</html>
