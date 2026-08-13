@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>深入理解Android内核设计思想(第2版) - 知识脑图</title>
+<style>
+:root {
+  color-scheme: light;
+  --primary: #1a73e8;
+  --primary-dark: #0d47a1;
+  --secondary: #34a853;
+  --accent: #fbbc04;
+  --warning: #ea4335;
+  --bg-page: #f8f9fa;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-hover: #e8f0fe;
+  --bg-active: #d2e3fc;
+  --text-primary: #202124;
+  --text-secondary: #5f6368;
+  --text-light: #80868b;
+  --border: #dadce0;
+  --border-light: #e8eaed;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 2px 6px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,0.10), 0 8px 24px rgba(0,0,0,0.08);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: 320px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid var(--border-light);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.sidebar-header h1 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+
+.sidebar-header p {
+  font-size: 12px;
+  opacity: 0.85;
+  font-weight: 400;
+}
+
+.sidebar-search {
+  padding: 12px 20px;
+  background: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 84px;
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  outline: none;
+  transition: var(--transition);
+  background: var(--bg-page);
+}
+
+.search-input:focus {
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.12);
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 0;
+  overflow-y: auto;
+}
+
+.nav-group {
+  margin-bottom: 4px;
+}
+
+.nav-group-title {
+  padding: 8px 20px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-light);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 20px 8px 28px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: var(--transition);
+  border-left: 3px solid transparent;
+  user-select: none;
+}
+
+.nav-item:hover {
+  background: var(--bg-hover);
+  color: var(--primary);
+}
+
+.nav-item.active {
+  background: var(--bg-active);
+  color: var(--primary-dark);
+  border-left-color: var(--primary);
+  font-weight: 600;
+}
+
+.nav-item .icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  background: var(--border-light);
+  border-radius: 4px;
+  font-size: 9px;
+  text-align: center;
+  line-height: 16px;
+  color: var(--text-light);
+  flex-shrink: 0;
+}
+
+.nav-item.active .icon {
+  background: var(--primary);
+  color: #fff;
+}
+
+.nav-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+}
+
+.nav-toggle:hover {
+  background: var(--bg-hover);
+}
+
+.nav-toggle .arrow {
+  transition: transform 0.2s ease;
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.nav-toggle.collapsed .arrow {
+  transform: rotate(-90deg);
+}
+
+.nav-children {
+  overflow: hidden;
+  max-height: 2000px;
+  transition: max-height 0.3s ease;
+}
+
+.nav-children.collapsed {
+  max-height: 0;
+}
+
+/* ===== Main content ===== */
+.main {
+  margin-left: 320px;
+  flex: 1;
+  padding: 40px 60px 80px;
+  max-width: 1200px;
+}
+
+.breadcrumb {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumb a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.book-header {
+  background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+  color: #fff;
+  padding: 36px 40px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.book-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.book-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.book-header .subtitle {
+  font-size: 15px;
+  opacity: 0.9;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.book-header .meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  opacity: 0.9;
+  position: relative;
+}
+
+.book-header .meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.book-overview {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+.book-overview h2 {
+  color: var(--primary-dark);
+  font-size: 20px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--bg-hover);
+}
+
+.book-overview p {
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.book-overview .features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.feature-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  transition: var(--transition);
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.feature-card .icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: 10px;
+  background: var(--bg-hover);
+  color: var(--primary);
+}
+
+.feature-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.feature-card p {
+  font-size: 12.5px;
+  color: var(--text-light);
+  margin: 0;
+}
+
+/* ===== Parts (篇) ===== */
+.part {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  scroll-margin-top: 20px;
+}
+
+.part-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid var(--bg-hover);
+}
+
+.part-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.part-badge.p1 { background: linear-gradient(135deg, #4285f4 0%, #1a73e8 100%); }
+.part-badge.p2 { background: linear-gradient(135deg, #ea4335 0%, #c5221f 100%); }
+.part-badge.p3 { background: linear-gradient(135deg, #fbbc04 0%, #f29900 100%); }
+.part-badge.p4 { background: linear-gradient(135deg, #34a853 0%, #188038 100%); }
+
+.part-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.part-subtitle {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+/* ===== Chapter ===== */
+.chapter {
+  margin-bottom: 24px;
+  border-left: 3px solid var(--border-light);
+  padding-left: 18px;
+  transition: var(--transition);
+  scroll-margin-top: 20px;
+}
+
+.chapter:hover {
+  border-left-color: var(--primary);
+}
+
+.chapter:last-child {
+  margin-bottom: 0;
+}
+
+.chapter-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.chapter-title .num {
+  background: var(--bg-hover);
+  color: var(--primary);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.chapter-intro {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  line-height: 1.7;
+  background: var(--bg-page);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent);
+}
+
+/* ===== Sections (小节) ===== */
+.sections {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.section {
+  background: var(--bg-page);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  transition: var(--transition);
+}
+
+.section:hover {
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  border-color: var(--primary);
+  transform: translateX(4px);
+}
+
+.section-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::before {
+  content: '▸';
+  color: var(--primary);
+  font-size: 12px;
+}
+
+.section-content {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.section-content ul {
+  list-style: none;
+  margin-top: 8px;
+  padding-left: 4px;
+}
+
+.section-content ul li {
+  padding: 3px 0 3px 18px;
+  position: relative;
+}
+
+.section-content ul li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 9px;
+  top: 8px;
+}
+
+.section-content code {
+  background: var(--border-light);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: "SF Mono", "Monaco", "Consolas", monospace;
+  font-size: 12.5px;
+  color: var(--primary-dark);
+}
+
+/* ===== Topic grid ===== */
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.topic-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.topic-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--primary);
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.topic-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.topic-card:hover::before {
+  opacity: 1;
+}
+
+.topic-card h4 {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.topic-card p {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--bg-hover);
+  color: var(--primary);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-right: 4px;
+  margin-top: 4px;
+}
+
+.tag.warn { background: #fce8e6; color: var(--warning); }
+.tag.ok { background: #e6f4ea; color: var(--secondary); }
+.tag.warn2 { background: #fef7e0; color: #f29900; }
+
+/* ===== Footer ===== */
+.footer {
+  margin-top: 48px;
+  padding: 24px 32px;
+  text-align: center;
+  color: var(--text-light);
+  font-size: 13px;
+  border-top: 1px solid var(--border-light);
+}
+
+/* ===== Back to top ===== */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 44px;
+  height: 44px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: var(--transition);
+  z-index: 50;
+}
+
+.back-to-top:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.back-to-top.visible {
+  display: flex;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+  .sidebar { width: 280px; }
+  .main { margin-left: 280px; padding: 30px 40px 60px; }
+}
+
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 24px 20px 60px; }
+  .menu-toggle { display: flex !important; }
+}
+
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  width: 40px;
+  height: 40px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+/* Highlight for search */
+.highlight {
+  background: #fff3cd;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h1>📚 知识脑图</h1>
+    <p>深入理解Android内核设计思想（第2版）</p>
+  </div>
+
+  <div class="sidebar-search">
+    <input type="text" class="search-input" id="searchInput" placeholder="🔍 搜索章节、主题...">
+  </div>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <div class="nav-group">
+      <div class="nav-item" data-target="overview" style="padding-left: 20px;">
+        <span class="icon">📖</span>全书概览
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-toggle" data-toggle="part1">
+        <span>第1篇 · Android编译篇</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="nav-children" id="part1">
+        <div class="nav-item" data-target="ch1"><span class="icon">1</span>第1章 系统简介</div>
+        <div class="nav-item" data-target="ch2"><span class="icon">2</span>第2章 源码下载及编译</div>
+        <div class="nav-item" data-target="ch3"><span class="icon">3</span>第3章 编译系统</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-toggle" data-toggle="part2">
+        <span>第2篇 · Android原理篇</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="nav-children" id="part2">
+        <div class="nav-item" data-target="ch4"><span class="icon">4</span>第4章 操作系统基础</div>
+        <div class="nav-item" data-target="ch5"><span class="icon">5</span>第5章 进程/线程和内存优化</div>
+        <div class="nav-item" data-target="ch6"><span class="icon">6</span>第6章 Binder进程间通信</div>
+        <div class="nav-item" data-target="ch7"><span class="icon">7</span>第7章 Android启动过程</div>
+        <div class="nav-item" data-target="ch8"><span class="icon">8</span>第8章 AMS</div>
+        <div class="nav-item" data-target="ch9"><span class="icon">9</span>第9章 SurfaceFlinger</div>
+        <div class="nav-item" data-target="ch10"><span class="icon">10</span>第10章 WMS</div>
+        <div class="nav-item" data-target="ch11"><span class="icon">11</span>第11章 View体系</div>
+        <div class="nav-item" data-target="ch12"><span class="icon">12</span>第12章 InputManagerService</div>
+        <div class="nav-item" data-target="ch13"><span class="icon">13</span>第13章 音频系统</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-toggle" data-toggle="part3">
+        <span>第3篇 · 应用原理篇</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="nav-children" id="part3">
+        <div class="nav-item" data-target="ch14"><span class="icon">14</span>第14章 Intent匹配规则</div>
+        <div class="nav-item" data-target="ch15"><span class="icon">15</span>第15章 资源适配</div>
+        <div class="nav-item" data-target="ch16"><span class="icon">16</span>第16章 字符编码格式</div>
+        <div class="nav-item" data-target="ch17"><span class="icon">17</span>第17章 OpenGL ES</div>
+        <div class="nav-item" data-target="ch18"><span class="icon">18</span>第18章 SystemUI</div>
+        <div class="nav-item" data-target="ch19"><span class="icon">19</span>第19章 Widget机制</div>
+        <div class="nav-item" data-target="ch20"><span class="icon">20</span>第20章 应用编译和打包</div>
+        <div class="nav-item" data-target="ch21"><span class="icon">21</span>第21章 Android虚拟机</div>
+        <div class="nav-item" data-target="ch22"><span class="icon">22</span>第22章 安全机制透析</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-toggle" data-toggle="part4">
+        <span>第4篇 · Android系统工具</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="nav-children" id="part4">
+        <div class="nav-item" data-target="ch23"><span class="icon">23</span>第23章 IDE和Gradle</div>
+        <div class="nav-item" data-target="ch24"><span class="icon">24</span>第24章 软件版本管理</div>
+        <div class="nav-item" data-target="ch25"><span class="icon">25</span>第25章 系统调试辅助工具</div>
+      </div>
+    </div>
+  </nav>
+</aside>
+
+<main class="main">
+
+  <div class="book-header">
+    <h1>深入理解Android内核设计思想（第2版）</h1>
+    <div class="subtitle">林学森 · 2017 · 上下册合集</div>
+    <div class="meta">
+      <span>📘 共4篇</span>
+      <span>📑 共25章</span>
+      <span>🔬 涵盖系统源码、原理剖析、应用开发</span>
+      <span>🎯 适合中高级Android开发者</span>
+    </div>
+  </div>
+
+  <section id="overview" class="book-overview">
+    <h2>📖 全书概览</h2>
+    <p>本书从Android编译系统入手，层层深入到操作系统原理、进程管理、Binder IPC、系统服务、GUI、音频、应用层框架等核心主题，全面剖析Android系统的内部设计思想与实现细节。</p>
+    <p>作者以"庖丁解牛"式的源码分析为线索，强调从硬件架构到上层应用的纵向贯通，让读者不仅"知其然"更"知其所以然"。</p>
+    <div class="features">
+      <div class="feature-card">
+        <div class="icon-box">🏗️</div>
+        <h3>编译篇</h3>
+        <p>从Makefile基础到Android编译系统全流程，掌握源码从下载到产物输出的完整链路。</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-box">⚙️</div>
+        <h3>原理篇</h3>
+        <p>操作系统基础、进程线程、Binder IPC、AMS/SurfaceFlinger/WMS等核心系统服务深度解析。</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-box">📱</div>
+        <h3>应用篇</h3>
+        <p>Intent匹配、资源适配、OpenGL ES、虚拟机、安全机制，应用层全方位原理剖析。</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-box">🛠️</div>
+        <h3>工具篇</h3>
+        <p>Gradle构建、版本管理、调试工具，开发者必备的工程化技能一网打尽。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== 第1篇 ============== -->
+  <section id="part1-section" class="part">
+    <div class="part-header">
+      <div class="part-badge p1">P1</div>
+      <div>
+        <div class="part-title">第1篇 · Android编译篇</div>
+        <div class="part-subtitle">从源码下载到编译产物：构建系统的全貌</div>
+      </div>
+    </div>
+
+    <article id="ch1" class="chapter">
+      <h3 class="chapter-title"><span class="num">第1章</span>Android系统简介</h3>
+      <p class="chapter-intro">从2008年Android 1.0发布至今，Android已走过十余年发展历程。本章以发展史为主线，为后续原理分析提供背景知识。截至Google I/O 2016大会，全球激活设备已达9亿，Play商店收录超70万应用，安装量达480亿次。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">Android发展简史与生态现状</div>
+          <div class="section-content">2008年9月Google发布Android 1.0，凭借开放联盟和Linux内核迅速与iOS、Windows Phone形成三足鼎立，渗透至手机、平板、电视、MP4等各类电子设备。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Android的独特魅力来源</div>
+          <div class="section-content">从系统架构演进、生态圈建设、开放合作联盟（OHA）三个维度探讨Android"势不可当"的原因，为后续原理分析铺垫背景。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch2" class="chapter">
+      <h3 class="chapter-title"><span class="num">第2章</span>Android源码下载及编译</h3>
+      <p class="chapter-intro">分析Android源码前的准备工作。本章完整呈现源码下载流程、常见问题及处理方法，并从开发者角度讲解如何正确编译原生态系统及定制设备。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">源码下载全流程</div>
+          <div class="section-content">涵盖repo工具使用、manifest仓库配置、git协议选择、网络问题排查、磁盘空间规划等关键环节。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">编译环境准备</div>
+          <div class="section-content">JDK版本选择、依赖工具链安装、操作系统适配（Ubuntu/CentOS/macOS）、驱动二进制提取等。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">常见编译问题及处理</div>
+          <div class="section-content">Java版本不匹配、磁盘空间不足、并发任务数配置、源码同步冲突等典型问题排查思路。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch3" class="chapter">
+      <h3 class="chapter-title"><span class="num">第3章</span>Android编译系统</h3>
+      <p class="chapter-intro">"庖丁解牛"式还原庞大而严谨的Android编译系统。Makefile提供了一种"规则"执行机制，从最简单的GNU make规则不断扩展堆叠，最终形成可编译整个Android工程的庞大体系。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">Makefile基础规则</div>
+          <div class="section-content">
+            <strong>TARGET: PREREQUISITES</strong> + <strong>COMMANDS</strong>，每个COMMAND前必须有TAB。理解TARGET、PREREQUISITES、COMMANDS三要素及其依赖推导逻辑。
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">高级Makefile特性</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>Target-Specific Variable</strong>：目标私有变量，如<code>PRIVATE_DEX_FILE</code>，解决依赖构建中变量值漂移问题</li>
+              <li><strong>Static Pattern Rules</strong>：静态模式规则，多目标场景下统一处理依赖关系</li>
+              <li><strong>隐含规则</strong>：自动推导简化依赖编写</li>
+              <li><strong>变量与函数</strong>：避免重复输入，构建灵活脚本</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Android编译系统全景</div>
+          <div class="section-content">从Android.mk到Android.bp（Soong），从Makefile到Blueprint/Ninja的演进路径，剖析大型工程编译系统的设计哲学。</div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============== 第2篇 ============== -->
+  <section id="part2-section" class="part">
+    <div class="part-header">
+      <div class="part-badge p2">P2</div>
+      <div>
+        <div class="part-title">第2篇 · Android原理篇</div>
+        <div class="part-subtitle">从硬件架构到系统服务：Android核心机制深度剖析</div>
+      </div>
+    </div>
+
+    <article id="ch4" class="chapter">
+      <h3 class="chapter-title"><span class="num">第4章</span>操作系统基础</h3>
+      <p class="chapter-intro">硬件是软件的基石。本章为后续Android原理分析提供扎实的理论根基，从计算机体系结构到操作系统核心概念一应俱全。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">计算机体系结构</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>冯·诺依曼结构</strong>：二进制 + 程序存储思想，运算器/控制器/输入输出设备</li>
+              <li><strong>哈佛结构</strong>：指令与数据分开存储，可并行访问，吞吐量更高，ARM9/ARM11/AVR等采用</li>
+              <li>计算机基本元素：CPU、内存储器、I/O设备</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">操作系统核心定义</div>
+          <div class="section-content">"负责管理系统硬件，并为上层应用提供稳定编程接口和人机交互界面的软件集合"。两大重任：面向下层管理硬件、面向上层提供API与UI。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">操作系统分类</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>按应用领域</h4><p>桌面型 / 服务器型 / 嵌入式</p></div>
+            <div class="topic-card"><h4>按实时性</h4><p>RTOS（实时） / 分时系统</p></div>
+            <div class="topic-card"><h4>按源码开放</h4><p>开源（Linux/Android） / 闭源（Windows）</p></div>
+            <div class="topic-card"><h4>按POSIX兼容</h4><p>兼容 / 不兼容或不完全兼容</p></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Android为何选择Linux Kernel</div>
+          <div class="section-content">Patrick Brady在2008年Google I/O《Android Anatomy and Physiology》中指出：优秀的内存与进程管理、基于权限的安全模型、成熟的驱动模型、对共享库的支持、已是开源项目。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch5" class="chapter">
+      <h3 class="chapter-title"><span class="num">第5章</span>Android进程/线程和程序内存优化</h3>
+      <p class="chapter-intro">通过4个递进实验：Activity工程、Service工程、同包多组件、同包同进程，揭示四大组件与进程的真实关系。主线程由ZygoteInit启动，最终执行ActivityThread.main()。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">进程与线程基本概念</div>
+          <div class="section-content">进程是程序运行实例，线程是CPU调度基本单位。多任务分时执行，时间片调度让用户感觉"同时"运行。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">四大组件与进程的关系</div>
+          <div class="section-content">Activity/Service等组件只是<code>application</code>的"零件"，并非完整进程实例。一个简单的Activity工程就启动了包括main thread + 2个Binder Thread在内的多线程。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">主线程ActivityThread.main()</div>
+          <div class="section-content">
+            <ul>
+              <li>由ZygoteInit启动，经一系列调用执行onCreate()</li>
+              <li><code>Looper.prepareMainLooper()</code>：仅主线程可调用</li>
+              <li><code>Looper.loop()</code>：主循环开始，处理消息队列</li>
+              <li>主线程Handler用于UI消息处理</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">程序内存优化策略</div>
+          <div class="section-content">避免内存泄露、合理使用对象池、关注Bitmap内存占用、减少不必要对象创建、采用弱引用等机制。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch6" class="chapter">
+      <h3 class="chapter-title"><span class="num">第6章</span>进程间通信——Binder</h3>
+      <p class="chapter-intro">Binder是Android中使用最广泛的IPC机制。它既是"捆绑者"也是"黏合剂"，让Android系统中形形色色的进程与组件统一成有机整体。与TCP/IP网络惊人相似：Binder驱动≈路由器、Service Manager≈DNS、Binder Client/Server≈客户端/服务器。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">智能指针（Smart Pointer）</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>设计动机</strong>：解决C/C++中指针未初始化、new/delete不配对、野指针三大顽疾</li>
+              <li><strong>核心机制</strong>：引用计数（Reference Counting）</li>
+              <li><strong>轻量级指针sp&lt;T&gt;</strong>：在生命周期内自动管理</li>
+              <li><strong>强指针wp&lt;T&gt;</strong>：弱引用，需promote后才能使用</li>
+              <li><strong>引用计数控制类</strong>：RefBase提供onFirstRef/onLastStrongRef等生命周期回调</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Binder驱动与协议</div>
+          <div class="section-content">
+            <ul>
+              <li>注册为<strong>misc device</strong>，主设备号10，通过<code>/dev/binder</code>节点访问</li>
+              <li>使用<code>device_initcall(binder_init)</code>而非module_init</li>
+              <li>提供6个核心接口：open/ioctl/mmap/poll/flush/release</li>
+              <li><code>binder_open</code>：分配binder_proc结构体，记录进程信息</li>
+              <li><code>binder_mmap</code>：内核虚拟地址与用户虚拟地址映射，数据零拷贝</li>
+              <li><code>binder_ioctl</code>：核心命令处理（BINDER_WRITE_READ等）</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Service Manager</div>
+          <div class="section-content">Binder中的"DNS"，全局唯一标志为0。管理Binder实体与名字的映射，提供查询服务，所有Server必须先向ServiceManager注册才能被Client找到。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Binder Client与Server通信</div>
+          <div class="section-content">
+            <ul>
+              <li>Client通过ServiceManager查询获得Server的Binder句柄</li>
+              <li>通过ioctl(BINDER_WRITE_READ)发起跨进程调用</li>
+              <li>数据经Binder驱动路由到目标进程</li>
+              <li>Server进程中的Binder线程负责处理请求</li>
+              <li>返回值通过相同路径回传给Client</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch7" class="chapter">
+      <h3 class="chapter-title"><span class="num">第7章</span>Android启动过程</h3>
+      <p class="chapter-intro">Android设备的启动经历3个阶段：Boot Loader、Linux Kernel、Android系统服务。Android实际是运行于Linux内核之上的一系列"服务进程"，它们的"老祖宗"是init进程（PID=0）。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">第一个系统进程init</div>
+          <div class="section-content">通过解析init.rc脚本来构建系统初始运行状态。其他Android服务大多在rc脚本中描述并被相继启动。init.rc采用纯文本格式，可读性高，是厂商控制启动状态的关键。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">init.rc语法规则</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>Action（动作）</strong>：on &lt;trigger&gt; + 多个command</li>
+              <li><strong>Command（命令）</strong>：class_start、mount、setprop、chmod、mkdir、symlink等</li>
+              <li><strong>Service（服务）</strong>：service &lt;name&gt; &lt;path&gt; + 多个option</li>
+              <li><strong>Options（选项）</strong>：class、user、group、critical、onrestart等</li>
+              <li><strong>常用触发事件</strong>：boot、&lt;name&gt;=&lt;value&gt;、device-added/removed、service-exited</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Android启动流程</div>
+          <div class="section-content">BootLoader → Kernel → init进程 → Zygote（孵化器）→ SystemServer（核心服务）→ Launcher（桌面）。Zygote通过fork方式快速创建应用进程，大幅提升启动效率。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch8" class="chapter">
+      <h3 class="chapter-title"><span class="num">第8章</span>ActivityManagerService（AMS）</h3>
+      <p class="chapter-intro">AMS是Android用于管理Activity和其他组件运行状态的系统进程，是编写APK时使用最频繁的系统服务。从功能概述到ActivityStack、ActivityTask的核心实现，层层深入。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">AMS功能概述</div>
+          <div class="section-content">统一管理与Activity、Service、BroadcastReceiver、ContentProvider相关的进程、任务栈、内存、权限等，是整个应用层的"调度中心"。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">ActivityStack（Activity栈）</div>
+          <div class="section-content">Activity的记录者与管理者。维护Activity任务栈、生命周期调度、状态保存恢复、Task关联等。理解ActivityStack是理解Activity启动模式（standard/singleTop/singleTask/singleInstance）的基础。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">ActivityTask（任务）</div>
+          <div class="section-content">Task是Android应用程序中的逻辑容器。一个Task可包含多个Activity，来自不同应用，体现"任务"概念。涉及Activity affinity、Intent flag、launch mode等复杂逻辑。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">AMS的进程管理</div>
+          <div class="section-content">维护LRU进程列表、根据优先级回收内存、LowMemory Killer机制、OomAdj调整等核心调度能力。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch9" class="chapter">
+      <h3 class="chapter-title"><span class="num">第9章</span>GUI系统——SurfaceFlinger</h3>
+      <p class="chapter-intro">GUI即图形用户界面。评判GUI系统优劣的三个核心条件：流畅性（Project Butter）、友好性、可扩展性。Android的GUI系统基于OpenGL/EGL实现。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">GUI系统基础</div>
+          <div class="section-content">图形用户界面的三大评判准则：流畅性（避免画面滞后）、友好性（人性化与一致性）、可扩展性（支持无限创意）。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">SurfaceFlinger核心职责</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>合成多个Layer</strong>：接收各应用Surface，进行混合（Composition）</li>
+              <li><strong>投递到显示设备</strong>：通过OpenGL/EGL/HWComposer输出</li>
+              <li><strong>VSync同步</strong>：配合Project Butter保证画面流畅（Choreographer机制）</li>
+              <li><strong>BufferQueue管理</strong>：GraphicBuffer跨进程传递</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Surface与Layer</div>
+          <div class="section-content">每个窗口对应一个Surface，SurfaceFlinger内部以Layer管理。Surface本质是生产者-消费者模型的BufferQueue。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch10" class="chapter">
+      <h3 class="chapter-title"><span class="num">第10章</span>GUI系统之"窗口管理员"——WMS</h3>
+      <p class="chapter-intro">"Window"+"Manager"=窗口管理员。WMS既负责"输出"——全局窗口管理，也负责"输入"——事件管理与派发，是SurfaceFlinger(ViewRoot/WMS三者中的"导演"角色。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">WMS与SurfaceFlinger、ViewRoot的协作</div>
+          <div class="section-content">SurfaceFlinger=摄像机、WMS=导演、ViewRoot=演员个体。三者各司其职，呈现"视觉盛宴"：SurfaceFlinger负责客观捕获与呈现，WMS负责编排与排序，ViewRoot负责自身展现。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">WMS的输出功能——窗口管理</div>
+          <div class="section-content">管理WindowState（窗口状态对象），维护窗口层级（Z-Order）、位置、尺寸、可见性等属性。处理窗口添加、删除、调整、焦点切换等请求。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">WMS的输入功能——事件派发</div>
+          <div class="section-content">管理多种事件源：键盘、触摸屏、鼠标、轨迹球等。通过InputManagerService将事件派发给目标窗口。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Window的多种视角</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>用户视角</h4><p>一个"界面"（如拨号面板）</p></div>
+            <div class="topic-card"><h4>SurfaceFlinger视角</h4><p>一个Layer，承载界面数据和属性</p></div>
+            <div class="topic-card"><h4>WMS视角</h4><p>一个WindowState，用于管理状态</p></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch11" class="chapter">
+      <h3 class="chapter-title"><span class="num">第11章</span>让你的界面炫彩起来的GUI系统——View体系</h3>
+      <p class="chapter-intro">真正与终端用户产生直接联系的部分。几乎所有APK应用的UI界面都由View体系描述。理解View体系是从"应用层"角度理解Android GUI的关键。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">View树结构</div>
+          <div class="section-content">ViewGroup作为容器，View作为叶子节点。整个UI界面构成一棵View树，遍历和测量机制（如measure/layout/draw三阶段）都基于此结构。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">ViewRoot与Window连接</div>
+          <div class="section-content">ViewRoot是View树与WMS/SurfaceFlinger之间的桥梁。负责UI渲染、事件分发根节点、Traversal调度等核心工作。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">事件分发机制</div>
+          <div class="section-content">MotionEvent从Activity → Window → DecorView → ViewGroup → View的传递链，涉及dispatchTouchEvent、onInterceptTouchEvent、onTouchEvent等关键方法。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">自定义View</div>
+          <div class="section-content">onMeasure（测量）、onLayout（布局）、onDraw（绘制）三方法是自定义View的核心。理解MeasureSpec、ViewGroup.LayoutParams等概念。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch12" class="chapter">
+      <h3 class="chapter-title"><span class="num">第12章</span>InputManagerService与输入事件</h3>
+      <p class="chapter-intro">"问渠哪得清如许，为有源头活水来"——事件就是Android系统的"活水源头"。Android具备从Linux内核到上层应用的完整事件产生、投递及处理机制。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">IMS的架构与职责</div>
+          <div class="section-content">InputManagerService（IMS）作为系统服务，运行在SystemServer进程中。负责从EventHub读取输入事件，分发给对应的窗口。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">事件处理流程</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>1. 事件读取</h4><p>EventHub监听/dev/input设备节点</p></div>
+            <div class="topic-card"><h4>2. 事件封装</h4><p>RawEvent → KeyEvent/MotionEvent</p></div>
+            <div class="topic-card"><h4>3. 事件分发</h4><p>通过InputChannel跨进程传递</p></div>
+            <div class="topic-card"><h4>4. 事件消费</h4><p>由目标View消费或继续派发</p></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">应用层消息处理</div>
+          <div class="section-content">Handler-Looper-MessageQueue机制构成应用层消息循环。Choreographer配合VSync实现60fps流畅渲染。理解消息处理是掌握Android异步编程的基础。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch13" class="chapter">
+      <h3 class="chapter-title"><span class="num">第13章</span>应用不再同质化——音频系统</h3>
+      <p class="chapter-intro">多媒体（Multi-Media）是多种形式媒体内容的组合，是产品在"同质化"市场中脱颖而出的关键。本章以音频回放为重点，自下而上分析整个音频系统。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">音频基础知识</div>
+          <div class="section-content">采样率、位深、声道数、编码格式等核心概念。理解音频处理的目标是正确还原/录制声音信号，并保证时序同步。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">三大核心模块</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>AudioFlinger</h4><p>系统服务，驻留mediaserver进程，负责音频混音、路由到设备</p></div>
+            <div class="topic-card"><h4>AudioPolicyService</h4><p>系统服务，负责音频策略管理（音量、设备选择、流的优先级）</p></div>
+            <div class="topic-card"><h4>AudioTrack/AudioRecorder</h4><p>应用层API，实现音频回放和录制</p></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">音频数据流核心问题</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>路径规划</strong>：AudioPolicy正确规划音频流路径，处理混音与设备选择</li>
+              <li><strong>速度控制</strong>：保证音频流以合理速度传输到音频设备</li>
+              <li><strong>跨进程数据传递</strong>：从MediaPlayer创建到真正回放涉及多进程通信</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">音频系统上层建筑</div>
+          <div class="section-content">MediaPlayer和MediaRecorder是应用开发中最常用的多媒体API。理解其背后的AudioFlinger/AudioPolicyService实现，对于性能调优、问题排查至关重要。</div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============== 第3篇 ============== -->
+  <section id="part3-section" class="part">
+    <div class="part-header">
+      <div class="part-badge p3">P3</div>
+      <div>
+        <div class="part-title">第3篇 · 应用原理篇</div>
+        <div class="part-subtitle">从Intent到虚拟机：应用层核心机制全面解构</div>
+      </div>
+    </div>
+
+    <article id="ch14" class="chapter">
+      <h3 class="chapter-title"><span class="num">第14章</span>Intent的匹配规则</h3>
+      <p class="chapter-intro">如果说Binder是程序间的"沟通媒介"，那么Intent就是系统判断需要在哪两个进程间建立Binder关联的重要考量因素。本章借"婚介所"类比，详细解释Intent匹配过程。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">Intent的组成</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>Component name</strong>：目标组件的完整类名（显式Intent）</li>
+              <li><strong>Action</strong>：要执行的动作（如ACTION_VIEW）</li>
+              <li><strong>Data</strong>：URI和MIME类型数据</li>
+              <li><strong>Category</strong>：类别信息（如CATEGORY_LAUNCHER）</li>
+              <li><strong>Extras</strong>：附加键值对数据</li>
+              <li><strong>Flags</strong>：启动标志位</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Intent匹配算法</div>
+          <div class="section-content">系统在PackageManagerService中查询符合Intent条件的组件。匹配规则包括Action匹配、Category匹配、Data匹配（含MIME和URI scheme/host/path等）。多个匹配项时弹出选择器由用户决定。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">显式Intent vs 隐式Intent</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>显式Intent</h4><p>明确指定Component name，直接启动目标组件，效率高</p></div>
+            <div class="topic-card"><h4>隐式Intent</h4><p>通过action/category/data描述意图，由系统匹配目标，灵活</p></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch15" class="chapter">
+      <h3 class="chapter-title"><span class="num">第15章</span>APK应用程序的资源适配</h3>
+      <p class="chapter-intro">Android设备种类繁多、硬件配置五花八门，特别是层出不穷的屏幕分辨率和尺寸，对应用UI影响巨大。本章结合Android的通用适配方案，学习在项目开发初期控制适配问题。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">设备资源适配的通用流程</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>1. 未知设备</h4><p>应用发布后运行在什么配置设备上是未知数</p></div>
+            <div class="topic-card"><h4>2. 提取设备参数</h4><p>屏幕尺寸、密度、系统语言、系统版本等</p></div>
+            <div class="topic-card"><h4>3. 资源池</h4><p>应用程序提供的"可选资源"集合</p></div>
+            <div class="topic-card"><h4>4. 最佳匹配</h4><p>通过匹配算法从资源池遴选最合适资源</p></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">资源限定符体系</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>屏幕尺寸</strong>：small/normal/large/xlarge</li>
+              <li><strong>屏幕密度</strong>：ldpi/mdpi/hdpi/xhdpi/xxhdpi/xxxhdpi</li>
+              <li><strong>方向</strong>：land/port</li>
+              <li><strong>语言区域</strong>：en/zh-rCN/ja等</li>
+              <li><strong>API Level</strong>：v21、v23等</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">最佳匹配规则</div>
+          <div class="section-content">Android采用一套优先级匹配算法，依次按配置限定符筛选，最终选出最匹配设备配置的资源。理解该算法是处理复杂适配场景的前提。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch16" class="chapter">
+      <h3 class="chapter-title"><span class="num">第16章</span>Android字符编码格式</h3>
+      <p class="chapter-intro">字符编码问题是让不少工程师头痛的"乱码"问题，特别是产品涉及国际化时。本章从字符串编码基础入手，过渡到Android项目的实际解决方案。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">字符编码基础</div>
+          <div class="section-content">ASCII、ISO-8859-1、GBK/GB2312、Unicode、UTF-8/UTF-16等编码格式的发展历史与特点。理解字符集与字符编码的区别。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Java中的字符串处理</div>
+          <div class="section-content">Java的String内部使用UTF-16编码，InputStreamReader/OutputStreamWriter进行字节流与字符流转换，Charset类管理各种字符集。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Android中的字符编码实践</div>
+          <div class="section-content">XML资源的UTF-8编码、网络数据编解码、文件I/O、本地化字符串资源（res/values-zh-rCN等）的处理策略。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch17" class="chapter">
+      <h3 class="chapter-title"><span class="num">第17章</span>Android和OpenGL ES</h3>
+      <p class="chapter-intro">Surface、SurfaceFlinger、View体系都直接或间接以OpenGL ES为设计核心。本章引导学习与Android设计相关的OpenGL ES知识，揭开GUI底层图形库的奥秘。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">OpenGL与Khronos组织</div>
+          <div class="section-content">OpenGL最初由SGI开发，现由Khronos组织管理。下设OpenGL SC、OpenKODE、OpenGL ES、EGL、OpenGL VG、OpenML、WebGL、Vision等多个工作组。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">OpenGL ES版本演进</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>ES 1.0/1.1</h4><p>Fixed function hardware，Android 1.0开始支持</p></div>
+            <div class="topic-card"><h4>ES 2.0</h4><p>Programmable hardware，支持可编程着色器，Android 2.2开始</p></div>
+            <div class="topic-card"><h4>ES 3.0/3.1/3.2</h4><p>更多新特性：统一纹理压缩、几何体实例化等，Android 4.3开始</p></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">OpenGL ES基础概念</div>
+          <div class="section-content">着色器（Shader）、顶点缓冲对象（VBO）、纹理（Texture）、矩阵变换（MVP）、渲染管线（Pipeline）等核心元素。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">EGL接口层</div>
+          <div class="section-content">EGL是Rendering API（如OpenGL ES）与本地窗口平台之间的接口层。负责创建/管理OpenGL上下文、Surface，以及与显示设备的连接。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch18" class="chapter">
+      <h3 class="chapter-title"><span class="num">第18章</span>"系统的UI"——SystemUI</h3>
+      <p class="chapter-intro">SystemUI以应用程序（标准APK）形式提供系统UI界面的统一管理方案，需要同时支持Phone和Tablet两类产品。理解SystemUI是理解Android系统级UI的关键。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">System Bars（系统栏）</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>Status Bar（状态栏）</h4><p>手机屏幕上方，划分左右部分：左为通知图标、右为系统状态（时间/电量/信号）</p></div>
+            <div class="topic-card"><h4>Navigation Bar（导航栏）</h4><p>Android 4.0后加入，提供Home/Back/Recents/Menu功能</p></div>
+            <div class="topic-card"><h4>Combined Bar</h4><p>专为Tablet设计，合并状态栏与导航栏</p></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Notifications（通知栏）</div>
+          <div class="section-content">下拉显示通知条目。新特性包括：通知信息格式可定制、支持更多手势操作（左右滑动删除）、支持更多常用功能（如截图分享）。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">其他系统UI功能</div>
+          <div class="section-content">最近运行的应用程序（Recents）、ScreenShot截屏、壁纸（Wallpaper）、锁屏（Keyguard）等实用系统功能。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch19" class="chapter">
+      <h3 class="chapter-title"><span class="num">第19章</span>Android常用的工具"小插件"——Widget机制</h3>
+      <p class="chapter-intro">Widget俗称"小插件"，给Android带来更便捷的用户体验。Android定义了一套完整的Widget添加/移除和显示机制，使任何应用都能充当"Widget提供者"或"Widget容器"。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">Widget架构三要素</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>AppWidgetProvider</h4><p>Widget提供者（如天气插件），继承自BroadcastReceiver</p></div>
+            <div class="topic-card"><h4>AppWidgetHost</h4><p>Widget容器（如Launcher），负责承载显示Widget</p></div>
+            <div class="topic-card"><h4>AppWidgetService</h4><p>全局Widget管理器，跨进程管理所有Widget</p></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Widget实现原理</div>
+          <div class="section-content">通过RemoteViews实现跨进程UI更新。Provider提供RemoteViews，Host端通过AppWidgetHostView承载，并通过bind机制实现数据刷新。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Widget使用场景</div>
+          <div class="section-content">音乐播放器控制、天气时钟、快捷开关、日程提醒等，Widget是Android桌面的重要扩展能力。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch20" class="chapter">
+      <h3 class="chapter-title"><span class="num">第20章</span>Android应用程序的编译和打包</h3>
+      <p class="chapter-intro">APK应用程序有三种编译方式：系统编译、IDE工具（ADT/AS）、命令行。本章系统讲解隐藏在"ADT"背后的细节，包括编译、打包、签名等完整流程。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">APK编译流程</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>1. 资源处理</h4><p>aapt/aapt2编译资源，生成R.java/资源表</p></div>
+            <div class="topic-card"><h4>2. 代码编译</h4><p>Java/Kotlin编译为.class字节码</p></div>
+            <div class="topic-card"><h4>3. DEX转换</h4><p>dx/d8将class转换为.dex格式</p></div>
+            <div class="topic-card"><h4>4. 打包签名</h4><p>apkbuilder+签名生成最终APK</p></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">APK签名机制</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>v1签名</strong>：基于JAR签名（MANIFEST.MF/CERT.SF/CERT.RSA）</li>
+              <li><strong>v2签名</strong>：Android 7.0引入，针对整个APK的签名</li>
+              <li><strong>v3签名</strong>：支持密钥轮换</li>
+              <li><strong>签名验证</strong>：安装时验证、应用升级时验证</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">APK结构剖析</div>
+          <div class="section-content">META-INF（签名信息）、AndroidManifest.xml（应用声明）、classes.dex（字节码）、resources.arsc（资源表）、res/（资源文件）、lib/（原生库）、assets/（资产文件）。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch21" class="chapter">
+      <h3 class="chapter-title"><span class="num">第21章</span>Android虚拟机</h3>
+      <p class="chapter-intro">Java凭借"Write once, Run anywhere"征服了无数开发者。Android选择Java作为首选应用语言，但又无法直接使用商用JVM，因此自研Dalvik/ART运行时环境。本章是理解Android应用运行机制的核心。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">Java虚拟机核心概念</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>JVM规范</strong>：Oracle官方的Java虚拟机协议规范</li>
+              <li><strong>JVM实现</strong>：如HotSpot等</li>
+              <li><strong>JVM实例</strong>：运行时态的虚拟机进程</li>
+              <li><strong>JVM内部模型</strong>：while(true) { 取指令→执行→调整PC }</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">JVM运行时结构</div>
+          <div class="section-content">ClassLoader（类加载器）、运行时数据区（方法区/堆/栈/PC寄存器/本地方法栈）、执行引擎（Interpreter/JIT）、本地方法接口JNI等。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">ClassLoader与双亲委派模型</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>Bootstrap ClassLoader</h4><p>C/C++实现，加载[JAVA_HOME]/lib核心类</p></div>
+            <div class="topic-card"><h4>Extension ClassLoader</h4><p>加载[JAVA_HOME]/lib/ext扩展类</p></div>
+            <div class="topic-card"><h4>System ClassLoader</h4><p>应用程序类加载器，加载CLASSPATH</p></div>
+            <div class="topic-card"><h4>User ClassLoader</h4><p>用户自定义加载器</p></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">双亲委派机制</div>
+          <div class="section-content">用户自定义ClassLoader优先委派parent加载，直到Bootstrap ClassLoader。避免类关系混乱，保证基础类唯一性。Android中ClassLoader.loadClass()遵循此机制。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Dalvik与ART</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>Dalvik VM</h4><p>Android 5.0前默认虚拟机，基于寄存器架构，使用.dex字节码</p></div>
+            <div class="topic-card"><h4>ART（Android Runtime）</h4><p>Android 5.0后默认，支持AOT预编译和JIT，安装时将dex编译为oat</p></div>
+            <div class="topic-card"><h4>DEX文件格式</h4><p>专为移动设备优化的字节码格式，共享常量池，节省内存</p></div>
+            <div class="topic-card"><h4>GC机制</h4><p>标记-清除、复制算法；CMS、G1等不同GC策略</p></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch22" class="chapter">
+      <h3 class="chapter-title"><span class="num">第22章</span>Android安全机制透析</h3>
+      <p class="chapter-intro">安全性是Android系统重点改进方向之一。本章从Kernel层和应用程序层两个角度，透析Android系统的安全设计与实现。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">Kernel层安全保障</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>UID/GID机制</strong>：每个Android程序对内核是独立进程</li>
+              <li><strong>Android特色Sandbox</strong>：所有应用都有唯一User ID</li>
+              <li><strong>文件系统UGO模型</strong>：应用私有数据受保护</li>
+              <li><strong>SELinux/SEAndroid</strong>：即便Root也降低重要资源破坏力</li>
+              <li><strong>DAC</strong>：自主访问控制</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">应用程序层安全保障</div>
+          <div class="section-content">默认仅能访问有限资源：Camera、Location(GPS)、Bluetooth、Telephony、SMS/MMS、Network/Data等。严格控制涉及费用、隐私的操作。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Permission机制</div>
+          <div class="section-content">权限分为normal/dangerous/signature等级。开发者在AndroidManifest.xml中声明，应用安装时用户授权，运行时动态检查。理解Permission是理解Android安全模型的核心。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Android安全拓展话题</div>
+          <div class="section-content">设备Root原理、程序加固方案、程序注入与防护、密钥管理与证书体系、移动安全生态演进。</div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============== 第4篇 ============== -->
+  <section id="part4-section" class="part">
+    <div class="part-header">
+      <div class="part-badge p4">P4</div>
+      <div>
+        <div class="part-title">第4篇 · Android系统工具</div>
+        <div class="part-subtitle">开发者必备的工程化工具集</div>
+      </div>
+    </div>
+
+    <article id="ch23" class="chapter">
+      <h3 class="chapter-title"><span class="num">第23章</span>IDE和Gradle</h3>
+      <p class="chapter-intro">Android Studio带红了Gradle这个新一代自动化编译工具。本章回答：Gradle为什么受Google青睐？与Ant、Maven相比有什么区分？如何快速掌握Gradle核心要点？</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">Gradle核心特性</div>
+          <div class="section-content">基于Groovy DSL的构建脚本、强大的任务依赖管理、灵活的插件体系、增量构建与构建缓存、多模块项目支持。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Gradle vs Maven vs Ant</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>Ant</h4><p>过程式构建，灵活但无约定</p></div>
+            <div class="topic-card"><h4>Maven</h4><p>约定优于配置，强依赖管理</p></div>
+            <div class="topic-card"><h4>Gradle</h4><p>融合两者优点：约定+灵活性</p></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Android Gradle Plugin</div>
+          <div class="section-content">AGP是Gradle的Android插件，封装了大量Android构建逻辑。理解build.gradle、settings.gradle、gradle.properties等关键配置。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch24" class="chapter">
+      <h3 class="chapter-title"><span class="num">第24章</span>软件版本管理</h3>
+      <p class="chapter-intro">对于Android这种规模的大项目，软件版本管理非常重要。本章介绍相关知识，适合已熟悉版本管理的读者快速了解，或新手入门。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">版本管理核心概念</div>
+          <div class="section-content">工作区、暂存区、本地仓库、远程仓库、分支（branch）、标签（tag）、合并（merge）、冲突（conflict）等基础概念。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Git工作流</div>
+          <div class="section-content">
+            <ul>
+              <li><strong>集中式工作流</strong>：类似SVN的简单模式</li>
+              <li><strong>功能分支工作流</strong>：每个功能一个分支</li>
+              <li><strong>GitFlow</strong>：master/develop/feature/release/hotfix的经典模式</li>
+              <li><strong>Forking工作流</strong>：开源项目常用</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">AOSP的代码管理</div>
+          <div class="section-content">Android Open Source Project使用repo + git管理数百个git仓库，manifest文件描述仓库关系，是大型分布式代码管理的典范。</div>
+        </div>
+      </div>
+    </article>
+
+    <article id="ch25" class="chapter">
+      <h3 class="chapter-title"><span class="num">第25章</span>系统调试辅助工具</h3>
+      <p class="chapter-intro">Android系统调试需要用到几个核心工具：Emulator、ADB（Android Debug Bridge）等。掌握这些工具是日常开发和问题排查的基础。</p>
+      <div class="sections">
+        <div class="section">
+          <div class="section-title">Emulator（模拟器）</div>
+          <div class="section-content">Android Emulator基于QEMU，可模拟各种设备和Android版本。支持硬件加速、传感器仿真、网络仿真。是日常开发、测试的必备工具。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">ADB核心命令</div>
+          <div class="topic-grid">
+            <div class="topic-card"><h4>设备管理</h4><p>adb devices / connect / disconnect</p></div>
+            <div class="topic-card"><h4>应用管理</h4><p>adb install / uninstall / shell pm</p></div>
+            <div class="topic-card"><h4>文件传输</h4><p>adb push / pull / shell</p></div>
+            <div class="topic-card"><h4>调试相关</h4><p>adb logcat / bugreport / forward</p></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">高级调试工具</div>
+          <div class="section-content">Systrace（性能分析）、TraceView（方法耗时）、Hierarchy Viewer（UI层级）、MAT（内存分析）、Stetho（网络监听）、LeakCanary（内存泄露检测）等。</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Log系统</div>
+          <div class="section-content">logcat是Android核心日志工具。V/D/I/W/E五级日志，配合tag过滤，结合bugreport可全面分析系统问题。</div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <div class="footer">
+    <p>📚 深入理解Android内核设计思想（第2版）· 知识脑图</p>
+    <p style="margin-top:6px;">作者：林学森 · 2017年版 · 整理用于学习参考</p>
+  </div>
+</main>
+
+<button class="back-to-top" id="backToTop" title="返回顶部">↑</button>
+
+<script>
+  // ===== Smooth scroll for navigation =====
+  const navItems = document.querySelectorAll('.nav-item[data-target]');
+  const sections = document.querySelectorAll('section[id], article[id]');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = item.getAttribute('data-target');
+      const target = document.getElementById(targetId);
+      if (target) {
+        // Expand all parent nav groups
+        let parent = item.closest('.nav-children');
+        if (parent && parent.classList.contains('collapsed')) {
+          parent.classList.remove('collapsed');
+          const toggle = document.querySelector(`[data-toggle="${parent.id}"]`);
+          if (toggle) toggle.classList.remove('collapsed');
+        }
+        // Active state
+        navItems.forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+        // Scroll
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Close mobile sidebar
+        if (window.innerWidth < 768) {
+          document.querySelector('.sidebar').classList.remove('open');
+        }
+      }
+    });
+  });
+
+  // ===== Toggle nav groups =====
+  document.querySelectorAll('.nav-toggle').forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      const targetId = toggle.getAttribute('data-toggle');
+      const children = document.getElementById(targetId);
+      if (children) {
+        children.classList.toggle('collapsed');
+        toggle.classList.toggle('collapsed');
+      }
+    });
+  });
+
+  // ===== Active section on scroll =====
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navItems.forEach(n => {
+          n.classList.toggle('active', n.getAttribute('data-target') === id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // ===== Search =====
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', (e) => {
+    const term = e.target.value.trim().toLowerCase();
+    if (!term) {
+      // Clear highlights
+      document.querySelectorAll('.highlight').forEach(el => {
+        el.outerHTML = el.innerHTML;
+      });
+      return;
+    }
+    // Search in nav items
+    navItems.forEach(item => {
+      const text = item.textContent.toLowerCase();
+      item.style.display = text.includes(term) ? 'flex' : 'none';
+    });
+    // Search content
+    document.querySelectorAll('.section, .topic-card, .chapter').forEach(el => {
+      const text = el.textContent.toLowerCase();
+      el.style.opacity = text.includes(term) ? '1' : '0.3';
+    });
+  });
+
+  // ===== Back to top =====
+  const backToTop = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+      backToTop.classList.add('visible');
+    } else {
+      backToTop.classList.remove('visible');
+    }
+  });
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ===== Initial active =====
+  const overviewItem = document.querySelector('[data-target="overview"]');
+  if (overviewItem) overviewItem.classList.add('active');
+</script>
+
+</body>
+</html>
