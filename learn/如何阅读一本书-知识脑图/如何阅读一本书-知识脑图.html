@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>如何阅读一本书 · 知识脑图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* 图书馆调色板 */
+    --ink: #1a1612;
+    --ink-soft: #3a342c;
+    --ink-mute: #6b6256;
+    --paper: #f5f0e6;
+    --paper-warm: #ebe3d2;
+    --paper-cool: #faf6ed;
+    --rule: #c9bfa9;
+    --rule-soft: #dcd3bc;
+    --burgundy: #7a1e1e;
+    --burgundy-soft: #9a3a3a;
+    --ink-blue: #1e3a5f;
+    --gold: #a87b3f;
+    --gold-soft: #c89b5f;
+    --leaf: #2d4a2b;
+
+    /* 类型 */
+    --serif: 'Noto Serif SC', 'Source Han Serif SC', '宋体', SimSun, serif;
+    --sans: 'Noto Sans SC', 'PingFang SC', '微软雅黑', sans-serif;
+    --mono: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.7;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(168, 123, 63, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(122, 30, 30, 0.03) 0%, transparent 50%);
+  }
+
+  /* ============ 顶部封面 ============ */
+  .cover {
+    min-height: 92vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    justify-items: center;
+    padding: 80px 40px;
+    background:
+      linear-gradient(180deg, var(--paper-cool) 0%, var(--paper) 100%);
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg,
+      var(--burgundy) 0%, var(--burgundy) 33%,
+      var(--ink-blue) 33%, var(--ink-blue) 66%,
+      var(--gold) 66%, var(--gold) 100%);
+  }
+
+  .cover::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background:
+      radial-gradient(circle, transparent 60%, var(--paper) 70%, transparent 100%);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .cover-inner {
+    max-width: 1100px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 80px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cover-text .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--burgundy);
+    margin-bottom: 32px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .cover-text h1 {
+    font-family: var(--serif);
+    font-size: clamp(48px, 6vw, 84px);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .cover-text h1 .accent {
+    color: var(--burgundy);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .cover-text .subtitle {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 500px;
+  }
+
+  .cover-text .author {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .author-line {
+    width: 60px;
+    height: 1px;
+    background: var(--ink);
+  }
+
+  .author-name {
+    font-family: var(--serif);
+    font-size: 16px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .meta-item .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .meta-item .value {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* 书籍封面装饰 */
+  .book-cover {
+    position: relative;
+    width: 360px;
+    height: 480px;
+    background: linear-gradient(135deg, #2a1810 0%, #4a2a1a 100%);
+    border-radius: 4px 12px 12px 4px;
+    box-shadow:
+      0 30px 60px -20px rgba(26, 22, 18, 0.4),
+      0 10px 30px -10px rgba(26, 22, 18, 0.3),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    padding: 48px 36px;
+    color: var(--paper);
+    transform: rotate(-3deg);
+    transition: transform 0.6s ease;
+    margin: 0 auto;
+  }
+
+  .book-cover:hover {
+    transform: rotate(0deg) translateY(-8px);
+  }
+
+  .book-cover::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg,
+      transparent 0%, rgba(168, 123, 63, 0.6) 30%, rgba(168, 123, 63, 0.6) 70%, transparent 100%);
+  }
+
+  .book-cover .spine {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 16px;
+    background: linear-gradient(90deg, #1a0e08 0%, #2a1810 100%);
+    border-radius: 4px 0 0 4px;
+  }
+
+  .book-cover .cover-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold-soft);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  .book-cover .cover-title {
+    font-family: var(--serif);
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--paper);
+    margin-bottom: 16px;
+  }
+
+  .book-cover .cover-title-en {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--gold-soft);
+    margin-bottom: 32px;
+    letter-spacing: 0.05em;
+  }
+
+  .book-cover .cover-rule {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin: 24px 0;
+  }
+
+  .book-cover .cover-author {
+    font-family: var(--serif);
+    font-size: 14px;
+    color: var(--paper);
+    line-height: 1.5;
+  }
+
+  .book-cover .cover-year {
+    position: absolute;
+    bottom: 36px;
+    right: 36px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--gold-soft);
+    letter-spacing: 0.1em;
+  }
+
+  /* ============ 主体内容 ============ */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* 目录侧边栏 */
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 80px;
+    padding: 80px 0;
+  }
+
+  .toc {
+    position: sticky;
+    top: 40px;
+    align-self: start;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    padding-right: 20px;
+  }
+
+  .toc-header {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--burgundy);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .toc-list {
+    list-style: none;
+  }
+
+  .toc-list li {
+    margin-bottom: 4px;
+  }
+
+  .toc-list a {
+    display: block;
+    padding: 8px 12px 8px 0;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.5;
+    border-left: 2px solid transparent;
+    padding-left: 12px;
+    transition: all 0.2s ease;
+  }
+
+  .toc-list a:hover {
+    color: var(--burgundy);
+    border-left-color: var(--burgundy);
+  }
+
+  .toc-list .toc-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-mute);
+    margin-right: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  /* 主要内容区 */
+  main {
+    min-width: 0;
+  }
+
+  /* 章节块 */
+  .chapter {
+    margin-bottom: 100px;
+    scroll-margin-top: 40px;
+  }
+
+  .chapter-header {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--ink);
+    position: relative;
+  }
+
+  .chapter-num {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--burgundy);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+
+  .chapter h2 {
+    font-family: var(--serif);
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .chapter-tagline {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-top: 12px;
+  }
+
+  /* 段落标题 */
+  .section {
+    margin: 48px 0 32px 0;
+  }
+
+  .section h3 {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .section h3 .num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+
+  .section h4 {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin: 28px 0 12px 0;
+    padding-left: 16px;
+    border-left: 3px solid var(--burgundy);
+  }
+
+  .section p {
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+    text-align: justify;
+  }
+
+  .section ul {
+    list-style: none;
+    margin: 16px 0 16px 0;
+    padding-left: 0;
+  }
+
+  .section ul li {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink-soft);
+    padding-left: 24px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  .section ul li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 10px;
+    top: 8px;
+  }
+
+  .section ul ul {
+    margin-top: 8px;
+    padding-left: 24px;
+  }
+
+  .section ul ul li::before {
+    content: '·';
+    color: var(--ink-mute);
+  }
+
+  /* 卡片样式 */
+  .card {
+    background: var(--paper-cool);
+    border: 1px solid var(--rule-soft);
+    border-left: 4px solid var(--burgundy);
+    padding: 24px 28px;
+    margin: 24px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .card.burgundy { border-left-color: var(--burgundy); }
+  .card.blue { border-left-color: var(--ink-blue); }
+  .card.gold { border-left-color: var(--gold); }
+  .card.leaf { border-left-color: var(--leaf); }
+
+  .card-title {
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--burgundy);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  .card.burgundy .card-title { color: var(--burgundy); }
+  .card.blue .card-title { color: var(--ink-blue); }
+  .card.gold .card-title { color: var(--gold); }
+  .card.leaf .card-title { color: var(--leaf); }
+
+  .card p, .card li {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink-soft);
+  }
+
+  /* 表格 */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 24px 0;
+    border: 1px solid var(--rule-soft);
+    border-radius: 4px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--paper-cool);
+    font-family: var(--serif);
+    font-size: 14px;
+  }
+
+  th {
+    text-align: left;
+    padding: 14px 20px;
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+
+  td {
+    padding: 12px 20px;
+    border-top: 1px solid var(--rule-soft);
+    color: var(--ink-soft);
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td {
+    background: rgba(168, 123, 63, 0.04);
+  }
+
+  /* 引用块 */
+  blockquote {
+    margin: 32px 0;
+    padding: 24px 32px;
+    background: var(--paper-warm);
+    border-left: 4px solid var(--gold);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--ink);
+    border-radius: 0 4px 4px 0;
+  }
+
+  blockquote .cite {
+    display: block;
+    margin-top: 12px;
+    font-style: normal;
+    font-size: 13px;
+    color: var(--ink-mute);
+    letter-spacing: 0.05em;
+  }
+
+  /* 四个层次视觉化 */
+  .level-pyramid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin: 32px 0;
+    background: var(--paper-cool);
+    border: 1px solid var(--rule-soft);
+    border-radius: 4px;
+    padding: 32px;
+  }
+
+  .level {
+    padding: 20px 24px;
+    border-left: 4px solid;
+    margin-bottom: 8px;
+    background: var(--paper);
+    border-radius: 0 4px 4px 0;
+    position: relative;
+  }
+
+  .level:last-child { margin-bottom: 0; }
+
+  .level.l1 { border-left-color: var(--ink-mute); }
+  .level.l2 { border-left-color: var(--gold); }
+  .level.l3 { border-left-color: var(--burgundy); }
+  .level.l4 { border-left-color: var(--ink); background: var(--ink); color: var(--paper); }
+
+  .level-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    opacity: 0.7;
+  }
+
+  .level.l4 .level-label { color: var(--gold-soft); }
+
+  .level-name {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .level-desc {
+    font-family: var(--serif);
+    font-size: 14px;
+    opacity: 0.85;
+  }
+
+  /* 15个规则 */
+  .rules {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .rule {
+    background: var(--paper-cool);
+    border: 1px solid var(--rule-soft);
+    padding: 16px 20px;
+    border-radius: 4px;
+    position: relative;
+  }
+
+  .rule-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--burgundy);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .rule-content {
+    font-family: var(--serif);
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  /* 引用块 */
+  .epigraph {
+    margin: 0 0 48px 0;
+    padding: 24px 0;
+    text-align: center;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .epigraph blockquote {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-style: italic;
+    font-size: 19px;
+    color: var(--ink);
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* 阅读规则特殊展示 */
+  .highlight-box {
+    background: linear-gradient(135deg, var(--paper-cool) 0%, var(--paper-warm) 100%);
+    border: 1px solid var(--rule);
+    padding: 28px 32px;
+    margin: 32px 0;
+    border-radius: 4px;
+    text-align: center;
+  }
+
+  .highlight-box .quote {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  .highlight-box .source {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    margin-top: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  /* 章末分隔 */
+  .chapter-end {
+    margin-top: 60px;
+    text-align: center;
+    color: var(--ink-mute);
+  }
+
+  .chapter-end::before {
+    content: '❦ ❦ ❦';
+    letter-spacing: 1em;
+    font-size: 14px;
+  }
+
+  /* 底部 */
+  footer {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 80px 40px 40px;
+    text-align: center;
+  }
+
+  footer .footer-inner {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  footer h3 {
+    font-family: var(--serif);
+    font-size: 28px;
+    margin-bottom: 16px;
+    color: var(--paper);
+  }
+
+  footer p {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(245, 240, 230, 0.75);
+    margin-bottom: 32px;
+  }
+
+  footer .signature {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--gold-soft);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(245, 240, 230, 0.15);
+  }
+
+  /* 响应式 */
+  @media (max-width: 980px) {
+    .cover-inner {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .book-cover {
+      width: 280px;
+      height: 380px;
+    }
+    .book-cover .cover-title {
+      font-size: 28px;
+    }
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .toc {
+      position: static;
+      max-height: none;
+    }
+    .container {
+      padding: 0 24px;
+    }
+    .meta-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .cover {
+      padding: 60px 24px;
+    }
+    .chapter h2 {
+      font-size: 28px;
+    }
+    .rules {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================== 封面 ================== -->
+<section class="cover">
+  <div class="cover-inner">
+    <div class="cover-text">
+      <div class="eyebrow">A Knowledge Mind Map · 知识脑图</div>
+      <h1>如何阅读<br>一本<span class="accent">书</span></h1>
+      <p class="subtitle">阅读是一门艺术，通过系统的训练，可以增进我们对世界和自我的理解力。</p>
+      <div class="author">
+        <div class="author-line"></div>
+        <div class="author-name">莫提默·J·艾德勒 & 查尔斯·范多伦</div>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item">
+          <div class="label">初版</div>
+          <div class="value">1940</div>
+        </div>
+        <div class="meta-item">
+          <div class="label">修订</div>
+          <div class="value">1972</div>
+        </div>
+        <div class="meta-item">
+          <div class="label">核心</div>
+          <div class="value">四个层次</div>
+        </div>
+      </div>
+    </div>
+    <div class="book-cover">
+      <div class="spine"></div>
+      <div class="cover-eyebrow">Mortimer J. Adler</div>
+      <div class="cover-title">如何阅读<br>一本书</div>
+      <div class="cover-title-en">HOW TO READ A BOOK</div>
+      <div class="cover-rule"></div>
+      <div class="cover-author">莫提默·J·艾德勒<br>查尔斯·范多伦 著</div>
+      <div class="cover-year">MMXXVI</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================== 主体内容 ================== -->
+<div class="container">
+<div class="layout">
+
+  <!-- 目录 -->
+  <aside class="toc">
+    <div class="toc-header">目 录 · Contents</div>
+    <ul class="toc-list">
+      <li><a href="#ch1"><span class="toc-num">01</span>核心概念与阅读观</a></li>
+      <li><a href="#ch2"><span class="toc-num">02</span>阅读的活力与艺术</a></li>
+      <li><a href="#ch3"><span class="toc-num">03</span>阅读的四个层次</a></li>
+      <li><a href="#ch4"><span class="toc-num">04</span>主动阅读的四个问题</a></li>
+      <li><a href="#ch5"><span class="toc-num">05</span>分析阅读的15个规则</a></li>
+      <li><a href="#ch6"><span class="toc-num">06</span>自我要求的读者</a></li>
+      <li><a href="#ch7"><span class="toc-num">07</span>不同类型书的读法</a></li>
+      <li><a href="#ch8"><span class="toc-num">08</span>辅助阅读</a></li>
+      <li><a href="#ch9"><span class="toc-num">09</span>主题阅读</a></li>
+      <li><a href="#ch10"><span class="toc-num">10</span>阅读与心智成长</a></li>
+      <li><a href="#ch11"><span class="toc-num">11</span>核心法则速查表</a></li>
+      <li><a href="#ch12"><span class="toc-num">12</span>关键引用与总结</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ====== 章节1：核心概念 ====== -->
+    <section class="chapter" id="ch1">
+      <div class="chapter-header">
+        <div class="chapter-num">第 一 章 · Foundation</div>
+        <h2>核心概念与阅读观</h2>
+        <div class="chapter-tagline">阅读是艺术——可学习，可训练</div>
+      </div>
+
+      <div class="epigraph">
+        <blockquote>
+          蒙田说："初学者的无知在于未学，而学者的无知在于学后。"<br>
+          一种无知是连字母都没学过，另一种却是读错了许多书。
+        </blockquote>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">1.1</span>全书的中心命题</h3>
+        <p>本书是一本为"想把读书的主要目的当作是增进理解能力的人"而写的书。它主张：阅读不是被动的接收，而是一种主动的艺术。这种艺术与写作相对应——作者抛球，读者接球；只有双方密切合作，沟通才能成功。</p>
+
+        <div class="card burgundy">
+          <div class="card-title">核心理念</div>
+          <p>一个读者比另一个读者更主动一些，他在阅读世界里的探索能力就更强一些，收获更多一些，因而也更高明一些。读者对他自己，以及自己面前的书籍，要求的越多，获得的就越多。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">1.2</span>两种阅读目的</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 25%;">类型</th>
+                <th>描述</th>
+                <th>效果</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>为获得资讯而读</strong></td>
+                <td>双方的头脑在同一个模子里铸造出来</td>
+                <td>仅增加资讯，不增进理解力</td>
+              </tr>
+              <tr>
+                <td><strong>为求得理解而读</strong></td>
+                <td>书的水平超过读者，作者有读者所无的洞见</td>
+                <td>增进理解力，提升自我</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>只有一种方式是真正地在阅读：没有任何外力的帮助，你就是要读这本书。你什么都没有，只凭着内心的力量，玩味着眼前的字句，慢慢地提升自己，从只有模糊的概念到更清楚地理解为止。</p>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">1.3</span>阅读就是学习</h3>
+        <p>所谓吸收资讯，就只是知道某件事发生了。想要被启发，就是要去理解，搞清楚这到底是怎么回事。要能被启发，除了知道作者所说的话之外，还要明白他的意思，懂得他为什么会这么说。</p>
+
+        <h4>两种学习类型</h4>
+        <ul>
+          <li><strong>指导型学习</strong>（辅助型自我发现学习）：阅读与倾听</li>
+          <li><strong>自我发现型学习</strong>（非辅助型）：研究、调查、思考</li>
+          <li>无论哪种方式，只有真正学习到的人才是主动的学习者</li>
+        </ul>
+
+        <div class="highlight-box">
+          <div class="quote">"我们一定要从比我们'更高杆'的人身上学习。<br>我们一定要知道他们是谁，如何跟他们学习。"</div>
+          <div class="source">— 莫提默·J·艾德勒</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 章节2：阅读的活力与艺术 ====== -->
+    <section class="chapter" id="ch2">
+      <div class="chapter-header">
+        <div class="chapter-num">第 二 章 · Vitality</div>
+        <h2>阅读的活力与艺术</h2>
+        <div class="chapter-tagline">读者如捕手，作者如投手</div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">2.1</span>主动阅读：捕手的艺术</h3>
+        <p>既然阅读有主动、被动之对比，那么我们的目标就是：第一提醒读者，阅读可以是一件多少主动的事。第二要指出的是，阅读越主动，效果越好。</p>
+
+        <div class="card blue">
+          <div class="card-title">棒球比喻</div>
+          <ul>
+            <li><strong>投手/作者</strong>：负责"发送"工作，让球动起来</li>
+            <li><strong>捕手/读者</strong>：负责"接收"工作，让球停下来</li>
+            <li><strong>球/作品</strong>：被主动、有活力的双方所共有</li>
+            <li>球可以被接住得多一点或少一点；阅读者想"接住"多少意念完全看他多么主动</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">2.2</span>老师缺席的阅读</h3>
+        <p>向活老师学习：可以回答问题，但容易让人偷懒。向书本（缺席老师）学习：必须自己回答问题。当你提出问题时，只有等你自己作了思考与分析之后，才会在书本上找到答案。</p>
+
+        <blockquote>
+          一个人不应该花四年的时间留在研究所中只是为了学习如何阅读。四年研究所时间，再加上十二年的中、小学教育，四年的大学教育，总共加起来是整整二十年的学校教育。其实不该花这么长的时间来学习阅读。
+        </blockquote>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">2.3</span>现代媒体的隐忧</h3>
+        <p>现代的媒体正以压倒性的泛滥资讯阻碍了我们的理解力。电视观众、收音机听众、杂志读者所面对的是一种复杂的组成——从独创的华丽辞藻到经过审慎挑选的资料与统计——目的都在让人不需要面对困难或努力，很容易就整理出"自己"的思绪。</p>
+      </div>
+    </section>
+
+    <!-- ====== 章节3：四个层次 ====== -->
+    <section class="chapter" id="ch3">
+      <div class="chapter-header">
+        <div class="chapter-num">第 三 章 · Levels</div>
+        <h2>阅读的四个层次</h2>
+        <div class="chapter-tagline">累积渐进的阅读阶梯</div>
+      </div>
+
+      <div class="section">
+        <p>一共有四种层次的阅读。我们称之为层次，而不称为种类的原因是，严格来说，种类是样样都不相同的，而层次却是再高的层次也包含了较低层次的特性。第四层是最高的阅读层次，包括了所有的阅读层次，也超过了所有的层次。</p>
+
+        <div class="level-pyramid">
+          <div class="level l1">
+            <div class="level-label">Level 1 · 基础层次</div>
+            <div class="level-name">基础阅读（Elementary Reading）</div>
+            <div class="level-desc">摆脱文盲状态，开始认字。问题："这个句子在说什么？"</div>
+          </div>
+          <div class="level l2">
+            <div class="level-label">Level 2 · 系统化略读</div>
+            <div class="level-name">检视阅读（Inspectional Reading）</div>
+            <div class="level-desc">在有限时间内抓出重点。问题："这本书在谈什么？"</div>
+          </div>
+          <div class="level l3">
+            <div class="level-label">Level 3 · 全盘阅读</div>
+            <div class="level-name">分析阅读（Analytical Reading）</div>
+            <div class="level-desc">追求理解力，咀嚼与消化一本书。15个规则。</div>
+          </div>
+          <div class="level l4">
+            <div class="level-label">Level 4 · 最高层次</div>
+            <div class="level-name">主题阅读（Syntopical Reading）</div>
+            <div class="level-desc">最复杂也最系统化的阅读。读很多书，架构主题分析。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">3.1</span>层次一：基础阅读</h3>
+        <h4>四个学习阶段</h4>
+        <ul>
+          <li><strong>阅读准备阶段</strong>：出生至六七岁</li>
+          <li><strong>认字阶段</strong>：学习读简单读物，一年级约300-400字</li>
+          <li><strong>字汇增长阶段</strong>：从上下文"揭发"不熟悉的字眼</li>
+          <li><strong>精练与增进阶段</strong>：开始能消化阅读经验</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">3.2</span>层次二：检视阅读</h3>
+        <p>检视阅读是一种在有限的时间当中，充分了解一本书的艺术。</p>
+
+        <h4>子层次A：有系统的略读（6步骤）</h4>
+        <ol style="padding-left: 24px; margin: 12px 0;">
+          <li style="margin-bottom: 6px;">先看书名页，如果有序就先看序</li>
+          <li style="margin-bottom: 6px;">研究目录页</li>
+          <li style="margin-bottom: 6px;">如果书中附有索引，也要检阅一下</li>
+          <li style="margin-bottom: 6px;">读一下出版者的介绍</li>
+          <li style="margin-bottom: 6px;">挑几个看来跟主题息息相关的篇章来看</li>
+          <li style="margin-bottom: 6px;">把书打开来，东翻翻西翻翻，念一两段</li>
+        </ol>
+
+        <h4>子层次B：粗浅的阅读</h4>
+        <div class="card gold">
+          <div class="card-title">最重要的规则</div>
+          <p>头一次面对一本难读的书的时候，从头到尾先读完一遍，碰到不懂的地方不要停下来查询或思索。只注意你能理解的部分，不要为一些没法立即了解的东西而停顿。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">3.3</span>层次三：分析阅读</h3>
+        <p>分析阅读就是全盘的阅读、完整的阅读，或是说优质的阅读——你能做到的最好的阅读方式。如果说检视阅读是在有限的时间内，最好也最完整的阅读，那么分析阅读就是在无限的时间里，最好也最完整的阅读。</p>
+
+        <div class="card leaf">
+          <div class="card-title">弗兰西斯·培根</div>
+          <p>"有些书可以浅尝即止，有些书是要生吞活剥，只有少数的书是要咀嚼与消化的。"分析阅读就是要咀嚼与消化一本书。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">3.4</span>层次四：主题阅读</h3>
+        <p>这是所有阅读中最复杂也最系统化的阅读。主题阅读涉及的远不止比较书本字里行间。借助他所阅读的书籍，主题阅读者要能够架构出一个可能在哪一本书里都没提过的主题分析。</p>
+        <p>主题阅读是最主动、也最花力气的一种阅读。虽然规则并不广为人知，却可能是所有阅读活动中最有收获的。</p>
+      </div>
+    </section>
+
+    <!-- ====== 章节4：四个基本问题 ====== -->
+    <section class="chapter" id="ch4">
+      <div class="chapter-header">
+        <div class="chapter-num">第 四 章 · Questions</div>
+        <h2>主动阅读的四个基本问题</h2>
+        <div class="chapter-tagline">在阅读时，你一定要尝试去回答的问题</div>
+      </div>
+
+      <div class="section">
+        <p>任何一种超越基础阅读的阅读层次，核心就在你要努力提出问题（然后尽你可能地找出答案）。这是绝不可或忘的原则。这也是有自我要求的阅读者，与没有自我要求的阅读者之间，有天壤之别的原因。</p>
+
+        <div class="card burgundy">
+          <div class="card-title">关于一本书，你一定要提出四个主要的问题</div>
+          <ul>
+            <li><strong>Q1 · 整体来说，这本书到底在谈些什么？</strong><br>找出主题，作者如何依次发展这个主题，如何逐步从核心主题分解出从属的关键议题来</li>
+            <li><strong>Q2 · 作者细部说了什么，怎么说的？</strong><br>找出主要的想法、声明与论点，组合成作者想要传达的特殊讯息</li>
+            <li><strong>Q3 · 这本书说得有道理吗？</strong><br>是全部有道理，还是部分有道理？除非你能回答前两个问题，否则你没法回答这个问题</li>
+            <li><strong>Q4 · 这本书跟你有什么关系？</strong><br>如果这本书给了你一些资讯，你一定要问问这些资讯有什么意义</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 章节5：分析阅读15个规则 ====== -->
+    <section class="chapter" id="ch5">
+      <div class="chapter-header">
+        <div class="chapter-num">第 五 章 · Rules</div>
+        <h2>分析阅读的15个规则</h2>
+        <div class="chapter-tagline">全书的精华所在</div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">5.1</span>阶段一：找出一本书在谈些什么</h3>
+        <p>这四个规则在一起，能提供读者对一本书架构的认识。它们是有整体性的，有同一个目标的。</p>
+
+        <div class="rules">
+          <div class="rule">
+            <div class="rule-num">规则一</div>
+            <div class="rule-content">依照书本的种类与主题作分类（越早知道越好）</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">规则二</div>
+            <div class="rule-content">使用最简短的句子（最多几句话）说出整本书在谈些什么</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">规则三</div>
+            <div class="rule-content">将主要部分按顺序与关联性列举出来，列出全书与各部分的大纲</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">规则四</div>
+            <div class="rule-content">找出作者在问的问题，或作者想要解决的问题</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">5.2</span>阶段二：诠释一本书的内容</h3>
+        <p>目标不是列出一本书的架构纲要，而是诠释内容与讯息。</p>
+
+        <div class="rules">
+          <div class="rule">
+            <div class="rule-num">规则五</div>
+            <div class="rule-content">找出重要单字（关键字），透过它们与作者达成共识</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">规则六</div>
+            <div class="rule-content">从最重要的句子中抓出作者的重要主旨</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">规则七</div>
+            <div class="rule-content">找出作者的论述，重新架构这些论述的前因后果</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">规则八</div>
+            <div class="rule-content">确定作者已经解决了哪些问题，还有哪些是未解决的</div>
+          </div>
+        </div>
+
+        <h4>重要的概念区分</h4>
+        <div class="card blue">
+          <div class="card-title">关键字、主旨与论述</div>
+          <ul>
+            <li><strong>单字（word）</strong> vs <strong>词义（term）</strong>：词义是单字在使用时没有模糊地带的特定意义</li>
+            <li><strong>主旨（proposition）</strong>：作者在表达他对某件事的判断，是知识的声明</li>
+            <li><strong>论述（argument）</strong>：用理由支持结论，"因为"两个字就代表了一个理由</li>
+            <li><strong>共识（coming to terms）</strong>：双方对字义达成一致理解</li>
+          </ul>
+        </div>
+
+        <h4>主旨的三个测验方法</h4>
+        <ol style="padding-left: 24px; margin: 12px 0;">
+          <li style="margin-bottom: 6px;">"用你自己的话来说"——是否理解句子的主旨</li>
+          <li style="margin-bottom: 6px;">能否举出主旨所形容的经验或例子</li>
+          <li style="margin-bottom: 6px;">翻译测试：能翻译成另一种语言</li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">5.3</span>阶段三：评论一本书</h3>
+        <p>前面两个阶段是彼此连贯的，就是初学者也能将两者合并到某种程度。光是知道作者的想法是不够的；你必须能够以自己的判断来掌握这本书的整体或部分道理与意义，才算真正完成了阅读。</p>
+
+        <h4>智慧礼节的一般规则</h4>
+        <div class="rules">
+          <div class="rule">
+            <div class="rule-num">规则九</div>
+            <div class="rule-content">暂缓评论的重要性：在你说"我同意"、"我不同意"或"我暂缓评论"之前，你一定要能肯定地说"我了解了"</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">规则十</div>
+            <div class="rule-content">避免争强好辩的重要性：不要无理地辩驳或争论</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">规则十一</div>
+            <div class="rule-content">化解争议：尊重知识与个人观点的不同</div>
+          </div>
+        </div>
+
+        <h4>批评观点的特别标准</h4>
+        <div class="rules">
+          <div class="rule">
+            <div class="rule-num">规则十二</div>
+            <div class="rule-content">证明作者的知识不足（uninformed）</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">规则十三</div>
+            <div class="rule-content">证明作者的知识有错误（misinformed）</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">规则十四</div>
+            <div class="rule-content">证明作者不合逻辑——你的推论无法令人信服</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">规则十五</div>
+            <div class="rule-content">证明作者的分析与理由是不完整的</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 章节6：自我要求的读者 ====== -->
+    <section class="chapter" id="ch6">
+      <div class="chapter-header">
+        <div class="chapter-num">第 六 章 · Self-Discipline</div>
+        <h2>自我要求的读者</h2>
+        <div class="chapter-tagline">让一本书真正属于你自己</div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">6.1</span>让一本书真正属于你自己</h3>
+        <p>你买了一本书，就像是买了一项资产。但是就一本书来说，付钱购买的动作却不过是真正拥有这本书的前奏而已。要真正完全拥有一本书，必须把这本书变成你自己的一部分才行。</p>
+
+        <div class="card burgundy">
+          <div class="card-title">做笔记的七种方法</div>
+          <ol style="padding-left: 24px;">
+            <li style="margin-bottom: 6px;"><strong>画底线</strong>——在主要的重点，或重要又有力量的句子下画线</li>
+            <li style="margin-bottom: 6px;"><strong>在画底线处的栏外再加画一道线</strong>——把你已经画线的部分再强调一遍</li>
+            <li style="margin-bottom: 6px;"><strong>在空白处做星号或其他符号</strong>——慎用，只用于十来个最重要的声明</li>
+            <li style="margin-bottom: 6px;"><strong>在空白处编号</strong>——作者的论点发展出一连串重要陈述时</li>
+            <li style="margin-bottom: 6px;"><strong>在空白处记下其他的页码</strong>——强调相关或对立观点（用Cf）</li>
+            <li style="margin-bottom: 6px;"><strong>将关键字或句子圈出来</strong></li>
+            <li style="margin-bottom: 6px;"><strong>在书页的空白处做笔记</strong>——记下问题或答案</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">6.2</span>三种做笔记的方法</h3>
+        <p>在读一本书时，你可能会有三种不同的观点，因此做笔记时也会有三种不同的方式。你会用哪一种方式做笔记，完全依你阅读的层次而定。</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>类型</th>
+                <th>适用场景</th>
+                <th>重点</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>结构笔记</strong></td>
+                <td>检视阅读</td>
+                <td>记录全书的架构，而非内容细节</td>
+              </tr>
+              <tr>
+                <td><strong>概念笔记</strong></td>
+                <td>分析阅读</td>
+                <td>记录作者的观点与你自己的观点</td>
+              </tr>
+              <tr>
+                <td><strong>辩证笔记</strong></td>
+                <td>主题阅读</td>
+                <td>从好多本书中摘要出来的，针对一场讨论情境</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">6.3</span>培养阅读的习惯</h3>
+        <p>所谓艺术或技巧，只属于那个能养成习惯，而且能依照规则来运作的人。这也是艺术家或任何领域的工匠与众不同之处。</p>
+
+        <div class="highlight-box">
+          <div class="quote">"为了要忘掉这些单一的动作，一开始你必须先分别学会每一个单一的动作。"<br>只有这样，你才能将所有的动作连结起来，变成一个优秀的滑雪高手。</div>
+          <div class="source">— 比喻：阅读如滑雪</div>
+        </div>
+
+        <p>规则的多样化，意味着要养成一个习惯的复杂度，而非表示要形成许多个不同的习惯。当所有相关动作都能相当自然地做出来时，你就已经养成做这件事的习惯了。</p>
+      </div>
+    </section>
+
+    <!-- ====== 章节7：不同类型书的读法 ====== -->
+    <section class="chapter" id="ch7">
+      <div class="chapter-header">
+        <div class="chapter-num">第 七 章 · Different Genres</div>
+        <h2>不同类型书的阅读方法</h2>
+        <div class="chapter-tagline">每种书都有其独特的阅读规则</div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">7.1</span>如何阅读实用型的书</h3>
+        <div class="card burgundy">
+          <div class="card-title">核心原则</div>
+          <p>任何实用性的书都不能解决该书所关心的实际问题。一本理论性的作品可以解决自己提出的问题。但是实际的问题却只能靠行动来解决。</p>
+        </div>
+
+        <h4>两种实用性的书</h4>
+        <ul>
+          <li><strong>规则为主型</strong>：本书、烹饪书、驾驶指南——基本上都是在说明规则的</li>
+          <li><strong>原理为主型</strong>：经济、政治、道德巨著——主要在阐述形成规则的原理</li>
+        </ul>
+
+        <h4>阅读实用书的两个主要问题</h4>
+        <ol style="padding-left: 24px; margin: 12px 0;">
+          <li style="margin-bottom: 6px;">作者的目的是什么？</li>
+          <li style="margin-bottom: 6px;">他建议用什么方法达到这个目的？</li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">7.2</span>如何阅读想象文学</h3>
+
+        <div class="card gold">
+          <div class="card-title">三个"不要"</div>
+          <ul>
+            <li><strong>不要抗拒想象文学带给你的影响力</strong></li>
+            <li><strong>在想象文学中，不要去找共识、主旨或论述</strong>（那是逻辑的，不是诗的）</li>
+            <li><strong>不要用适用于传递知识的、与真理一致的标准来批评小说</strong></li>
+          </ul>
+        </div>
+
+        <p>亚里士多德强调："诗与政治对正确的标准是不一致的。"诗的真实性是一种写实，一种内在可能性，或与真实的神似——那一定要像个故事，但用不着像在做研究或实验一样来形容生活的事实或社会的真相。</p>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">7.3</span>如何阅读故事、戏剧与诗</h3>
+
+        <h4>阅读故事书</h4>
+        <ul>
+          <li>第一个建议：<strong>快读，并且全心全意地读</strong></li>
+          <li>理想一口气读完</li>
+          <li>在故事书中，公理正义确实是存在的（诗的正义）</li>
+        </ul>
+
+        <h4>阅读戏剧</h4>
+        <ul>
+          <li>假装看到演出的实景</li>
+          <li>主动"导演"这个剧本</li>
+          <li>莎士比亚的剧本需要特别主动地阅读</li>
+          <li>建议<strong>大声读出来</strong></li>
+        </ul>
+
+        <h4>阅读抒情诗</h4>
+        <div class="highlight-box">
+          <div class="quote">规则一：不论懂不懂，都要一口气读完，不要停<br>规则二：重读一遍——大声读出来</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">7.4</span>如何阅读历史书</h3>
+        <p>如果非要分类不可的话，我们应该把历史——过去的<strong>故事</strong>——归类为小说，而非科学——就算不分类，如果能让历史停格在这两类书之中的话，那么通常我们会承认，历史比较接近小说，而非科学。</p>
+
+        <h4>传记与自传</h4>
+        <ul>
+          <li><strong>定案本传记</strong>：详尽完整的学术性报告（读法同历史）</li>
+          <li><strong>授权本传记</strong>：可能有偏见，需谨慎</li>
+          <li><strong>一般传记</strong>：最适阅读</li>
+          <li><strong>教诲式传记</strong>：如普鲁塔克《希腊罗马名人传》</li>
+        </ul>
+
+        <h4>阅读当前事件五问</h4>
+        <ol style="padding-left: 24px; margin: 12px 0;">
+          <li style="margin-bottom: 6px;">这个作者想要证明什么？</li>
+          <li style="margin-bottom: 6px;">他想要说服谁？</li>
+          <li style="margin-bottom: 6px;">他具有的特殊知识是什么？</li>
+          <li style="margin-bottom: 6px;">他使用的特殊语言是什么？</li>
+          <li style="margin-bottom: 6px;">他真的知道自己在说些什么吗？</li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">7.5</span>如何阅读科学与数学</h3>
+        <ul>
+          <li><strong>阅读目的</strong>：了解科学的历史与哲学，而非成为专家</li>
+          <li><strong>区分假设与结论</strong></li>
+          <li><strong>数学是一种语言</strong>——可以像学习自己的语言一样学习</li>
+          <li>从<strong>欧几里得《几何原理》</strong>开始——所有这类作品中最清晰也最优美的</li>
+          <li>经典实验就跟经典作品一样重要</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">7.6</span>如何阅读哲学书</h3>
+        <p>根据亚里士多德的说法，哲学来自怀疑。哲学所询问的不只是现象之间的联系，更要追寻潜藏在其中的最终原因与条件。</p>
+
+        <h4>哲学家提的两组问题</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>类型</th>
+                <th>问题领域</th>
+                <th>分支</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>思辨型/理论型</strong></td>
+                <td>存在与变化</td>
+                <td>形上学、自然哲学、认识论</td>
+              </tr>
+              <tr>
+                <td><strong>规范型/实用型</strong></td>
+                <td>善与恶，对与错</td>
+                <td>伦理学、政治学/政治哲学</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>五种哲学论述风格</h4>
+        <ul>
+          <li><strong>哲学对话</strong>：柏拉图《对话录》</li>
+          <li><strong>哲学论文或散文</strong>：亚里士多德、康德</li>
+          <li><strong>面对异议</strong>：阿奎那《神学大全》</li>
+          <li><strong>哲学系统化</strong>：笛卡尔、斯宾诺莎</li>
+          <li><strong>格言形式</strong>：尼采《查拉图斯特拉如是说》</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">7.7</span>如何阅读社会科学</h3>
+        <p>社会科学的成长与普及，最重要的因素是在高中与大专教育中引进了社会科学。事实上，选修社会科学课程的学生，远比选修传统文学或语言课程的学生还要多很多。</p>
+        <p>阅读社会科学作品最困难的地方在于：事实上，在这个领域中的作品是混杂的，而不是纯粹的论说性作品。太多社会科学的作品混杂了科学、哲学与历史，甚至为了加强效果，通常还会带点虚构的色彩。</p>
+      </div>
+    </section>
+
+    <!-- ====== 章节8：辅助阅读 ====== -->
+    <section class="chapter" id="ch8">
+      <div class="chapter-header">
+        <div class="chapter-num">第 八 章 · Auxiliary</div>
+        <h2>辅助阅读</h2>
+        <div class="chapter-tagline">内在阅读之外的外在助力</div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">8.1</span>四种外在辅助来源</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>来源</th>
+                <th>要点</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. 相关经验</strong></td>
+                <td>一般经验（哲学、小说）vs 特殊经验（科学、历史）</td>
+              </tr>
+              <tr>
+                <td><strong>2. 其他的书</strong></td>
+                <td>按写作时间顺序阅读相关的著作</td>
+              </tr>
+              <tr>
+                <td><strong>3. 导论与摘要</strong></td>
+                <td>尽量少用；最好读完全书后看</td>
+              </tr>
+              <tr>
+                <td><strong>4. 工具书</strong></td>
+                <td>字典与百科全书；使用前要有四个前提</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">8.2</span>使用工具书的四个前提</h3>
+        <ol style="padding-left: 24px; margin: 12px 0;">
+          <li style="margin-bottom: 6px;">你必须有一些想法，能问一个明智的问题</li>
+          <li style="margin-bottom: 6px;">你必须知道在哪里找到答案</li>
+          <li style="margin-bottom: 6px;">你必须知道这本书是怎么组织的</li>
+          <li style="margin-bottom: 6px;">你必须知道你想要找的是什么</li>
+        </ol>
+
+        <blockquote>
+          工具书对矫正无知的功能是有限的。那并不能帮助文盲，也不能代替你思考。
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- ====== 章节9：主题阅读 ====== -->
+    <section class="chapter" id="ch9">
+      <div class="chapter-header">
+        <div class="chapter-num">第 九 章 · Syntopical</div>
+        <h2>主题阅读</h2>
+        <div class="chapter-tagline">最高层次的阅读艺术</div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">9.1</span>主题阅读的两个阶段</h3>
+
+        <h4>准备阶段</h4>
+        <ol style="padding-left: 24px; margin: 12px 0;">
+          <li style="margin-bottom: 6px;">针对你要研究的主题，设计一份试验性的书目</li>
+          <li style="margin-bottom: 6px;">浏览这份书目上所有的书，确定哪些与你的主题相关</li>
+        </ol>
+
+        <h4>五个步骤</h4>
+        <div class="rules">
+          <div class="rule">
+            <div class="rule-num">步骤一</div>
+            <div class="rule-content">找到相关的章节</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">步骤二</div>
+            <div class="rule-content">带引作者与你达成共识（建立中立的词汇）</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">步骤三</div>
+            <div class="rule-content">厘清问题（建立中立的主旨）</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">步骤四</div>
+            <div class="rule-content">界定议题（区分主要及次要议题）</div>
+          </div>
+          <div class="rule">
+            <div class="rule-num">步骤五</div>
+            <div class="rule-content">分析讨论（按顺序排列，突显主题）</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">9.2</span>核心原则</h3>
+        <div class="card burgundy">
+          <div class="card-title">辩证的客观</div>
+          <p>主题阅读要能面面俱到，而自己并不预设立场。主题阅读是一种大量的翻译工作——将一种共通的词汇加诸在许多作者身上，无论他们所使用的是不是相同的语言。</p>
+          <p style="margin-top: 12px;">在主题阅读中，是书在服务你，而不是你在服务书。因此，主题阅读是最主动的一种阅读法。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">9.3</span>主题工具书（Syntopicon）</h3>
+        <p>《西方世界的经典名著》这套书包含了三千种话题或主题，就每一个讨论到的主题，你可以按照页码找到相关的参考资料。这是我们称为"主题阅读"的层次命名由来。</p>
+        <p>主题工具书能从三方面帮助刚开始做研究的人：<strong>启动阅读、建议阅读、指导阅读</strong>。</p>
+      </div>
+    </section>
+
+    <!-- ====== 章节10：阅读与心智成长 ====== -->
+    <section class="chapter" id="ch10">
+      <div class="chapter-header">
+        <div class="chapter-num">第 十 章 · Growth</div>
+        <h2>阅读与心智的成长</h2>
+        <div class="chapter-tagline">一本好书能教你了解这个世界以及你自己</div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">10.1</span>书的金字塔</h3>
+
+        <div class="level-pyramid">
+          <div class="level l4">
+            <div class="level-label">The Great Books</div>
+            <div class="level-name">伟大的书（不到100本）</div>
+            <div class="level-desc">读再多次也读不尽。书会与你一起成长——你会在其中看到新的事物。</div>
+          </div>
+          <div class="level l3">
+            <div class="level-label">Worthy of Analytical Reading</div>
+            <div class="level-name">值得分析的书（几千本）</div>
+            <div class="level-desc">读一次就够。读过后发现书中的内容好像比记忆中的少了许多。</div>
+          </div>
+          <div class="level l2">
+            <div class="level-label">For Entertainment / Information</div>
+            <div class="level-name">消遣/资讯书（99%）</div>
+            <div class="level-desc">扫描便够。只会让你脑袋里多了一些讯息，但心智没什么两样。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">10.2</span>关键洞见</h3>
+        <div class="card leaf">
+          <div class="card-title">人类心智的特质</div>
+          <ul>
+            <li>人类的心智有很奇怪的一点，主要是这一点划分了我们心智与身体的截然不同</li>
+            <li>我们的<strong>身体是有限制的，心智却没有限制</strong></li>
+            <li>人们到了30岁左右，身体状况就达到了巅峰；我们的头脑却能无限地成长与发展下去</li>
+            <li><strong>心智就跟肌肉一样，如果不常运用就会萎缩</strong></li>
+            <li>心智的萎缩就是在惩罚我们不经常动脑</li>
+          </ul>
+        </div>
+
+        <div class="highlight-box">
+          <div class="quote">"好的阅读，也就是主动的阅读，不只是对阅读本身有用，<br>也不只是对我们的工作或事业有帮助，<br>更能帮助我们的心智保持活力与成长。"</div>
+          <div class="source">— 莫提默·J·艾德勒</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 章节11：核心法则速查表 ====== -->
+    <section class="chapter" id="ch11">
+      <div class="chapter-header">
+        <div class="chapter-num">第 十一 章 · Quick Ref</div>
+        <h2>核心法则速查表</h2>
+        <div class="chapter-tagline">随时回顾的精华总结</div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">11.1</span>四个阅读层次对比</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>层次</th>
+                <th>名称</th>
+                <th>核心问题</th>
+                <th>目标</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>基础阅读</td><td>这个句子在说什么？</td><td>摆脱文盲</td></tr>
+              <tr><td>2</td><td>检视阅读</td><td>这本书在谈什么？</td><td>在短时间内了解</td></tr>
+              <tr><td>3</td><td>分析阅读</td><td>如何理解这本书？</td><td>增进理解力</td></tr>
+              <tr><td>4</td><td>主题阅读</td><td>不同书如何围绕主题？</td><td>形成主题分析</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">11.2</span>类型对比</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>类型</th>
+                <th>目标</th>
+                <th>阅读方法</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>实用书</td><td>指导行动</td><td>找出方法与目的</td></tr>
+              <tr><td>想象文学</td><td>阐述经验本身</td><td>体验，不要抗拒</td></tr>
+              <tr><td>理论书</td><td>传达知识</td><td>分析与评论</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">11.3</span>三种笔记类型</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>类型</th>
+                <th>适用阅读层次</th>
+                <th>重点</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>结构笔记</td><td>检视阅读</td><td>记录全书架构</td></tr>
+              <tr><td>概念笔记</td><td>分析阅读</td><td>记录作者与自己的观点</td></tr>
+              <tr><td>辩证笔记</td><td>主题阅读</td><td>记录多作者参与的讨论</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 章节12：关键引用与总结 ====== -->
+    <section class="chapter" id="ch12">
+      <div class="chapter-header">
+        <div class="chapter-num">第 十二 章 · Coda</div>
+        <h2>关键引用与最终总结</h2>
+        <div class="chapter-tagline">本书的核心信念</div>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">12.1</span>关键引用</h3>
+
+        <blockquote>
+          蒙田：初学者的无知在于未学，学者的无知在于学后。<br>
+          第一种的无知是连字母都没学过，第二种的无知却是读错了许多书。
+          <span class="cite">— 蒙田</span>
+        </blockquote>
+
+        <blockquote>
+          有些书可以浅尝即止，有些书是要生吞活剥，只有少数的书是要咀嚼与消化的。
+          <span class="cite">— 弗兰西斯·培根</span>
+        </blockquote>
+
+        <blockquote>
+          诗比历史更有哲学性。诗更具一般性，更有普遍影响力。
+          <span class="cite">— 亚里士多德</span>
+        </blockquote>
+
+        <blockquote>
+          全部西方哲学，不过是柏拉图的注脚。
+          <span class="cite">— 怀特海</span>
+        </blockquote>
+
+        <blockquote>
+          如果我像一般人一样读那么多书，我就跟他们一样愚蠢了。
+          <span class="cite">— 霍布斯</span>
+        </blockquote>
+
+        <blockquote>
+          未反省的生活是不值得过的生活。
+          <span class="cite">— 苏格拉底（柏拉图《申辩篇》）</span>
+        </blockquote>
+      </div>
+
+      <div class="section">
+        <h3><span class="num">12.2</span>核心理念总结</h3>
+        <ol style="padding-left: 24px;">
+          <li style="margin-bottom: 8px;"><strong>阅读是艺术</strong>——可学习，可训练</li>
+          <li style="margin-bottom: 8px;"><strong>主动阅读优于被动阅读</strong></li>
+          <li style="margin-bottom: 8px;"><strong>理解力的增进</strong>是阅读的最高目标</li>
+          <li style="margin-bottom: 8px;"><strong>阅读与思考密不可分</strong></li>
+          <li style="margin-bottom: 8px;"><strong>四种层次是累积渐进的</strong></li>
+          <li style="margin-bottom: 8px;"><strong>好书值得一读再读</strong></li>
+          <li style="margin-bottom: 8px;"><strong>心智不常运用就会萎缩</strong></li>
+          <li style="margin-bottom: 8px;"><strong>阅读是通往心智成长的道路</strong></li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <div class="highlight-box">
+          <div class="quote">"如果你的阅读目的是想变成一个更好的阅读者，<br>你就不能摸到任何书或文章都读。<br>如果你所读的书都在你的能力范围之内，<br>你就没法提升自己的阅读能力。<br>你必须能操纵超越你能力的书。"</div>
+          <div class="source">— 莫提默·J·艾德勒</div>
+        </div>
+      </div>
+
+      <div class="chapter-end"></div>
+    </section>
+
+  </main>
+</div>
+</div>
+
+<!-- ================== 页脚 ================== -->
+<footer>
+  <div class="footer-inner">
+    <h3>读一本书，如同经历一种新的人生</h3>
+    <p>本书是阅读的经典之作，<br>它不仅教你如何读书，更教你如何成为一个更智慧的人。<br>愿这份知识脑图能帮助你开启更深入的阅读之旅。</p>
+    <div class="signature">How To Read A Book · Mortimer J. Adler & Charles Van Doran</div>
+  </div>
+</footer>
+
+</body>
+</html>

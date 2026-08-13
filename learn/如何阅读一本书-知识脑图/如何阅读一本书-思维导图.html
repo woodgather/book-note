@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《如何阅读一本书》交互式思维导图</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1612;
+    --ink-soft: #3a342c;
+    --ink-mute: #6b6256;
+    --paper: #f5f0e6;
+    --paper-warm: #ebe3d2;
+    --paper-cool: #faf6ed;
+    --rule: #c9bfa9;
+    --rule-soft: #dcd3bc;
+    --burgundy: #7a1e1e;
+    --burgundy-soft: #9a3a3a;
+    --ink-blue: #1e3a5f;
+    --gold: #a87b3f;
+    --gold-soft: #c89b5f;
+    --leaf: #2d4a2b;
+    --serif: 'Noto Serif SC', 'Source Han Serif SC', '宋体', SimSun, serif;
+    --sans: 'Noto Sans SC', 'PingFang SC', '微软雅黑', sans-serif;
+    --mono: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--paper);
+    min-height: 100vh;
+    overflow: hidden;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(168, 123, 63, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(122, 30, 30, 0.03) 0%, transparent 50%);
+  }
+
+  /* ===== 顶部控制栏 ===== */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 64px;
+    background: var(--paper-cool);
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    z-index: 100;
+    box-shadow: 0 1px 8px rgba(26, 22, 18, 0.04);
+  }
+
+  .topbar .title {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .topbar .title .accent { color: var(--burgundy); }
+
+  .topbar .stats {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 0.05em;
+    margin-right: 24px;
+  }
+
+  .topbar .stats strong { color: var(--burgundy); font-weight: 500; }
+
+  .topbar .controls { display: flex; gap: 8px; }
+
+  .btn {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    color: var(--ink-soft);
+    padding: 6px 14px;
+    font-family: var(--serif);
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.15s;
+  }
+  .btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .btn.primary {
+    background: var(--burgundy);
+    color: var(--paper);
+    border-color: var(--burgundy);
+  }
+  .btn.primary:hover {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  /* ===== 主布局 ===== */
+  .layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    height: calc(100vh - 64px);
+    margin-top: 64px;
+  }
+
+  /* ===== 侧边栏目录 ===== */
+  .sidebar {
+    background: var(--paper-cool);
+    border-right: 1px solid var(--rule);
+    overflow-y: auto;
+    padding: 24px 20px;
+  }
+
+  .sidebar-header {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--burgundy);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .tree { list-style: none; font-family: var(--serif); }
+
+  .tree-node { margin: 2px 0; }
+
+  .tree-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 6px 4px 4px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    transition: background 0.1s;
+    user-select: none;
+  }
+
+  .tree-item:hover {
+    background: var(--paper-warm);
+  }
+
+  .tree-item.active {
+    background: var(--burgundy);
+    color: var(--paper);
+  }
+
+  .tree-toggle {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    line-height: 16px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-mute);
+    margin-right: 4px;
+    transition: transform 0.15s;
+  }
+
+  .tree-item.active .tree-toggle { color: var(--paper); }
+
+  .tree-item.has-children .tree-toggle {
+    cursor: pointer;
+  }
+
+  .tree-item.has-children.expanded .tree-toggle {
+    transform: rotate(90deg);
+  }
+
+  .tree-children {
+    display: none;
+    padding-left: 18px;
+    border-left: 1px dashed var(--rule-soft);
+    margin-left: 7px;
+  }
+
+  .tree-node.expanded > .tree-children {
+    display: block;
+  }
+
+  .tree-item .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--gold);
+    margin-left: 4px;
+    opacity: 0.7;
+  }
+
+  .tree-item.active .badge { color: var(--gold-soft); opacity: 1; }
+
+  .tree-item.leaf .tree-toggle { color: transparent; }
+
+  /* ===== 画布区域 ===== */
+  .canvas {
+    position: relative;
+    overflow: hidden;
+    background:
+      linear-gradient(135deg, var(--paper-cool) 0%, var(--paper) 100%);
+  }
+
+  .canvas-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle, var(--rule-soft) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.3;
+  }
+
+  /* 缩放容器 */
+  .zoom-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0 0;
+    transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+    will-change: transform;
+  }
+
+  /* 中央节点 */
+  .center-node {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    left: -100px;
+    top: -100px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow:
+      0 12px 40px rgba(26, 22, 18, 0.25),
+      0 0 0 6px var(--paper),
+      0 0 0 7px var(--rule),
+      inset 0 0 0 1px rgba(245, 240, 230, 0.1);
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    z-index: 10;
+  }
+
+  .center-node:hover {
+    transform: scale(1.05);
+    box-shadow:
+      0 20px 60px rgba(26, 22, 18, 0.35),
+      0 0 0 6px var(--paper),
+      0 0 0 7px var(--gold),
+      inset 0 0 0 1px rgba(245, 240, 230, 0.2);
+  }
+
+  .center-node .label {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--paper);
+  }
+
+  .center-node .label small {
+    display: block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--gold-soft);
+    margin-bottom: 4px;
+    font-weight: 400;
+  }
+
+  /* 围绕主分支 - 圆形轨道 */
+  .branch-orbit {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px dashed var(--rule-soft);
+    pointer-events: none;
+  }
+
+  /* 主分支节点 */
+  .branch-node {
+    position: absolute;
+    width: 200px;
+    background: var(--paper-cool);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--burgundy);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(26, 22, 18, 0.08);
+    transition: all 0.2s;
+    z-index: 5;
+  }
+
+  .branch-node:hover {
+    background: var(--paper-warm);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(26, 22, 18, 0.15);
+    z-index: 6;
+  }
+
+  .branch-node.active {
+    background: var(--burgundy);
+    color: var(--paper);
+    border-color: var(--burgundy);
+  }
+
+  .branch-node .num {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--burgundy);
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .branch-node.active .num { color: var(--gold-soft); }
+
+  .branch-node .title {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+
+  .branch-node.active .title { color: var(--paper); }
+
+  .branch-node .count {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-mute);
+    margin-top: 4px;
+  }
+
+  .branch-node.active .count { color: var(--gold-soft); }
+
+  /* 连接线 */
+  .connection {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ===== 详情面板 ===== */
+  .detail-panel {
+    position: absolute;
+    right: 24px;
+    top: 24px;
+    width: 360px;
+    max-height: calc(100% - 48px);
+    background: var(--paper-cool);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(26, 22, 18, 0.1);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    z-index: 50;
+  }
+
+  .detail-panel.visible { display: flex; }
+
+  .detail-header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 18px 22px;
+    position: relative;
+  }
+
+  .detail-header .breadcrumb {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--gold-soft);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .detail-header .node-title {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--paper);
+  }
+
+  .detail-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: 1px solid rgba(245, 240, 230, 0.2);
+    color: var(--paper);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .detail-close:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .detail-body {
+    padding: 20px 22px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .detail-body .meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .detail-body .children-list {
+    list-style: none;
+  }
+
+  .detail-body .children-list li {
+    font-family: var(--serif);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    padding: 8px 0 8px 16px;
+    border-bottom: 1px solid var(--rule-soft);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.1s;
+  }
+
+  .detail-body .children-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 9px;
+    top: 13px;
+  }
+
+  .detail-body .children-list li:hover {
+    color: var(--burgundy);
+  }
+
+  .detail-body .children-list li:last-child { border-bottom: none; }
+
+  .detail-body .leaf-message {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-mute);
+    text-align: center;
+    padding: 20px;
+    line-height: 1.7;
+  }
+
+  /* 缩放控制 */
+  .zoom-controls {
+    position: absolute;
+    right: 24px;
+    bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 30;
+  }
+
+  .zoom-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--paper-cool);
+    border: 1px solid var(--rule);
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+  }
+
+  .zoom-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .zoom-level {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-mute);
+    padding: 2px 0;
+  }
+
+  /* 帮助提示 */
+  .hint {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    background: rgba(26, 22, 18, 0.85);
+    color: var(--paper);
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-family: var(--serif);
+    font-size: 12px;
+    line-height: 1.6;
+    max-width: 280px;
+    backdrop-filter: blur(8px);
+    z-index: 30;
+  }
+
+  .hint .key {
+    display: inline-block;
+    background: rgba(245, 240, 230, 0.15);
+    border: 1px solid rgba(245, 240, 230, 0.3);
+    border-radius: 2px;
+    padding: 1px 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    margin: 0 2px;
+  }
+
+  /* 响应式 */
+  @media (max-width: 980px) {
+    .layout { grid-template-columns: 240px 1fr; }
+    .branch-node { width: 160px; }
+    .center-node { width: 160px; height: 160px; }
+    .center-node .label { font-size: 18px; }
+    .detail-panel { width: 300px; }
+  }
+
+  @media (max-width: 720px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .branch-node { width: 140px; font-size: 13px; }
+  }
+
+  /* 打印 */
+  @media print {
+    .topbar, .zoom-controls, .hint, .detail-panel { display: none; }
+    .layout { display: block; height: auto; margin-top: 0; }
+    .sidebar { display: none; }
+    .canvas { height: auto; min-height: 100vh; }
+    .zoom-container { transform: scale(0.6) !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 顶部栏 -->
+<div class="topbar">
+  <div class="title">《如何阅读一本书》· <span class="accent">交互式思维导图</span></div>
+  <div class="stats">共 <strong id="stat-total">0</strong> 个节点 · <strong id="stat-branches">0</strong> 个主分支</div>
+  <div class="controls">
+    <button class="btn" onclick="expandAll()">全部展开</button>
+    <button class="btn" onclick="collapseAll()">全部收起</button>
+    <button class="btn primary" onclick="resetView()">重置视图</button>
+  </div>
+</div>
+
+<!-- 主布局 -->
+<div class="layout">
+
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="sidebar-header">目 录 · Contents</div>
+    <ul class="tree" id="tree"></ul>
+  </aside>
+
+  <!-- 画布 -->
+  <div class="canvas" id="canvas">
+    <div class="canvas-bg"></div>
+
+    <div class="zoom-container" id="zoomContainer">
+      <!-- 连接线SVG -->
+      <svg class="connection" id="connections" width="0" height="0" style="position:absolute; left:0; top:0; pointer-events:none;">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#a87b3f" opacity="0.4"/>
+          </marker>
+        </defs>
+      </svg>
+
+      <!-- 中央节点 -->
+      <div class="center-node" id="centerNode">
+        <div class="label">
+          <small>How To Read A Book</small>
+          如何阅读<br>一本书
+        </div>
+      </div>
+
+      <!-- 主分支容器 -->
+      <div id="branches"></div>
+    </div>
+
+    <!-- 缩放控制 -->
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoomIn()">+</button>
+      <div class="zoom-level" id="zoomLevel">100%</div>
+      <button class="zoom-btn" onclick="zoomOut()">−</button>
+    </div>
+
+    <!-- 帮助 -->
+    <div class="hint">
+      <strong>操作提示</strong><br>
+      • 点击节点查看详情<br>
+      • 拖动空白处可平移<br>
+      • 滚轮可缩放<br>
+      • 键盘 <span class="key">+</span> <span class="key">−</span> <span class="key">0</span> 调整视图
+    </div>
+
+    <!-- 详情面板 -->
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-header">
+        <div class="breadcrumb" id="detailBreadcrumb"></div>
+        <div class="node-title" id="detailTitle"></div>
+        <button class="detail-close" onclick="closeDetail()">×</button>
+      </div>
+      <div class="detail-body" id="detailBody"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 思维导图数据
+  const MINDMAP_DATA = {"title": "如何阅读一本书", "children": [{"title": "一、核心概念", "children": [{"title": "阅读是艺术——可学习、可训练", "children": []}, {"title": "主动阅读优于被动阅读", "children": []}, {"title": "增进理解力是阅读的最高目标", "children": []}, {"title": "阅读与思考密不可分", "children": []}]}, {"title": "二、阅读的活力与艺术", "children": [{"title": "主动阅读：读者如捕手", "children": []}, {"title": "两种阅读目的：获资讯 vs 增理解", "children": []}, {"title": "阅读就是学习", "children": []}, {"title": "老师缺席的阅读", "children": []}]}, {"title": "三、阅读的四个层次（核心框架）", "children": [{"title": "层次一：基础阅读", "children": [{"title": "目标：摆脱文盲", "children": []}, {"title": "四阶段：准备→认字→字汇→精练", "children": []}, {"title": "问题：这个句子在说什么？", "children": []}]}, {"title": "层次二：检视阅读", "children": [{"title": "目标：短时间内了解一本书", "children": []}, {"title": "子层次1：有系统的略读（6步骤）", "children": []}, {"title": "子层次2：粗浅的阅读", "children": []}, {"title": "问题：这本书在谈什么？", "children": []}]}, {"title": "层次三：分析阅读", "children": [{"title": "全书的重点章节", "children": []}, {"title": "目标：追求理解力", "children": []}, {"title": "比喻：咀嚼与消化一本书", "children": []}, {"title": "三个阶段共15个规则", "children": []}]}, {"title": "层次四：主题阅读", "children": [{"title": "最高、最复杂的阅读", "children": []}, {"title": "别称：比较阅读", "children": []}, {"title": "读多本书，架构主题分析", "children": []}, {"title": "最主动、最花力气", "children": []}]}]}, {"title": "四、主动阅读的四个基本问题", "children": [{"title": "Q1：整体来说，这本书在谈些什么？", "children": []}, {"title": "Q2：作者细部说了什么，怎么说的？", "children": []}, {"title": "Q3：这本书说得有道理吗？", "children": []}, {"title": "Q4：这本书跟你有什么关系？", "children": []}]}, {"title": "五、分析阅读15个规则", "children": [{"title": "阶段一：找出一本书在谈些什么", "children": [{"title": "规则一：依种类与主题分类", "children": []}, {"title": "规则二：简述整本书内容", "children": []}, {"title": "规则三：列举主要部分与大纲", "children": []}, {"title": "规则四：找出作者要问的问题", "children": []}]}, {"title": "阶段二：诠释一本书的内容", "children": [{"title": "规则五：找出关键字，与作者达成共识", "children": []}, {"title": "规则六：从重要句子中抓主旨", "children": []}, {"title": "规则七：找出作者论述", "children": []}, {"title": "规则八：确定作者已解决/未解决的问题", "children": []}]}, {"title": "阶段三：像是沟通知识一样地评论", "children": [{"title": "智慧礼节规则", "children": []}, {"title": "  规则九：暂缓评论的重要性", "children": []}, {"title": "  规则十：避免争强好辩", "children": []}, {"title": "  规则十一：区别知识与个人观点", "children": []}, {"title": "批评观点的特别标准", "children": []}, {"title": "  规则十二：证明作者知识不足", "children": []}, {"title": "  规则十三：证明作者知识错误", "children": []}, {"title": "  规则十四：证明作者不合逻辑", "children": []}, {"title": "  规则十五：证明作者分析不完整", "children": []}]}]}, {"title": "六、自我要求的读者", "children": [{"title": "做笔记的七种方法", "children": []}, {"title": "三种笔记类型", "children": [{"title": "结构笔记（检视阅读用）", "children": []}, {"title": "概念笔记（分析阅读用）", "children": []}, {"title": "辩证笔记（主题阅读用）", "children": []}]}, {"title": "培养阅读习惯：如滑雪般熟练", "children": []}, {"title": "三种做笔记的方法：依层次而定", "children": []}]}, {"title": "七、不同类型书的阅读方法", "children": [{"title": "1. 实用型的书", "children": [{"title": "两种：规则为主 vs 原理为主", "children": []}, {"title": "核心：实用书不能解决实际问题", "children": []}, {"title": "两个问题：目的？方法？", "children": []}, {"title": "注意雄辩与宣传", "children": []}]}, {"title": "2. 想象文学", "children": [{"title": "三个不要：", "children": []}, {"title": "  不要抗拒想象文学的影响", "children": []}, {"title": "  不要找共识、主旨或论述", "children": []}, {"title": "  不要用知识真理标准批评", "children": []}, {"title": "阅读规则：分类、情节、要素、世界", "children": []}]}, {"title": "3. 故事、戏剧与诗", "children": [{"title": "故事：快读，全心投入", "children": []}, {"title": "戏剧：假装看到演出，自己导演", "children": []}, {"title": "抒情诗：", "children": []}, {"title": "  规则一：一口气读完", "children": []}, {"title": "  规则二：大声读出来", "children": []}, {"title": "史诗：荷马/维吉尔/但丁/弥尔顿", "children": []}]}, {"title": "4. 历史书", "children": [{"title": "历史更接近小说，非科学", "children": []}, {"title": "史实是世上最难以捉摸的", "children": []}, {"title": "传记三种：定案本/授权本/一般", "children": []}, {"title": "阅读当前事件五问：", "children": []}, {"title": "  作者想证明什么？", "children": []}, {"title": "  想说服谁？", "children": []}, {"title": "  特殊知识？特殊语言？真知吗？", "children": []}, {"title": "警告：读者要擦亮眼睛", "children": []}]}, {"title": "5. 科学、数学", "children": [{"title": "目的：了解科学历史与哲学", "children": []}, {"title": "区分假设与结论", "children": []}, {"title": "数学是一种语言", "children": []}, {"title": "从欧几里得《几何原理》开始", "children": []}, {"title": "经典实验与经典作品同样重要", "children": []}]}, {"title": "6. 哲学书", "children": [{"title": "哲学来自怀疑", "children": []}, {"title": "孩子气的单纯问题", "children": []}, {"title": "两组问题：", "children": []}, {"title": "  存在与变化（思辨型）", "children": []}, {"title": "  善与恶（规范型）", "children": []}, {"title": "五种论述风格：", "children": []}, {"title": "  对话（柏拉图）", "children": []}, {"title": "  论文（亚里士多德、康德）", "children": []}, {"title": "  面对异议（阿奎那）", "children": []}, {"title": "  哲学系统化（笛卡尔、斯宾诺莎）", "children": []}, {"title": "  格言形式（尼采）", "children": []}, {"title": "神学：自然神学 vs 教义神学", "children": []}]}, {"title": "7. 社会科学", "children": [{"title": "核心：人类学/经济/政治/社会", "children": []}, {"title": "容易处：熟悉的经验与术语", "children": []}, {"title": "困难处：混杂体裁，难以定义", "children": []}, {"title": "需要用主题阅读", "children": []}]}]}, {"title": "八、辅助阅读", "children": [{"title": "1. 相关经验", "children": []}, {"title": "  一般经验 vs 特殊经验", "children": []}, {"title": "2. 其他的书（按写作时间顺序）", "children": []}, {"title": "3. 导论与摘要（读完全书再看）", "children": []}, {"title": "4. 工具书（字典与百科全书）", "children": []}, {"title": "使用工具书的四个前提", "children": []}]}, {"title": "九、主题阅读（最高层次）", "children": [{"title": "准备阶段", "children": [{"title": "1. 设计试验性书目", "children": []}, {"title": "2. 浏览所有书，确定相关", "children": []}]}, {"title": "五个步骤", "children": [{"title": "步骤一：找到相关章节", "children": []}, {"title": "步骤二：带引作者与你达成共识", "children": []}, {"title": "步骤三：厘清问题", "children": []}, {"title": "步骤四：界定议题", "children": []}, {"title": "步骤五：分析讨论", "children": []}]}, {"title": "核心：辩证的客观", "children": []}, {"title": "主题工具书（Syntopicon）", "children": []}, {"title": "  《西方世界的经典名著》", "children": []}, {"title": "  3000种话题/主题", "children": []}]}, {"title": "十、阅读与心智的成长", "children": [{"title": "书的金字塔", "children": [{"title": "伟大的书（<100本）", "children": []}, {"title": "  读再多次也读不尽", "children": []}, {"title": "值得分析的书（几千本）", "children": []}, {"title": "  读一次就够", "children": []}, {"title": "消遣/资讯书（99%）", "children": []}, {"title": "  扫描便够", "children": []}]}, {"title": "关键洞见", "children": [{"title": "人类心智没有限制", "children": []}, {"title": "心智不常运用就会萎缩", "children": []}, {"title": "外界刺激作用有限", "children": []}, {"title": "需要内在的生命力量", "children": []}]}]}, {"title": "十一、核心法则速查", "children": [{"title": "四个阅读层次对比", "children": [{"title": "基础阅读→认字", "children": []}, {"title": "检视阅读→短时了解", "children": []}, {"title": "分析阅读→增进理解", "children": []}, {"title": "主题阅读→形成分析", "children": []}]}, {"title": "类型对比", "children": [{"title": "实用书→指导行动", "children": []}, {"title": "想象文学→阐述经验", "children": []}, {"title": "理论书→传达知识", "children": []}]}, {"title": "三种笔记", "children": [{"title": "结构笔记→检视阅读", "children": []}, {"title": "概念笔记→分析阅读", "children": []}, {"title": "辩证笔记→主题阅读", "children": []}]}]}, {"title": "十二、关键引用", "children": [{"title": "蒙田：初学者无知于未学，学者无知于学后", "children": []}, {"title": "培根：有些书浅尝即止，有些生吞活剥，少数要咀嚼消化", "children": []}, {"title": "亚里士多德：诗比历史更有哲学性", "children": []}, {"title": "柏拉图：未反省的生活不值得过", "children": []}, {"title": "笛卡尔：清楚又独立的思想", "children": []}, {"title": "怀特海：全部西方哲学不过是柏拉图的注脚", "children": []}, {"title": "霍布斯：读得多≠读得精", "children": []}, {"title": "亚里士多德：诗的正义", "children": []}, {"title": "柏拉图：追求真理是人最深沉的尊严", "children": []}]}]};
+
+  // 状态
+  let scale = 1;
+  let panX = 0;
+  let panY = 0;
+  let isDragging = false;
+  let dragStart = { x: 0, y: 0 };
+  let activeNode = null;
+
+  // ====== 工具：统计节点数 ======
+  function countNodes(node) {
+    return 1 + node.children.reduce((sum, c) => sum + countNodes(c), 0);
+  }
+
+  // ====== 工具：找路径 ======
+  function findPath(target, current, path = []) {
+    if (current === target) return [...path, current];
+    for (let child of current.children) {
+      const result = findPath(target, child, [...path, current]);
+      if (result) return result;
+    }
+    return null;
+  }
+
+  // ====== 工具：获取根节点 ======
+  function getRoot() { return MINDMAP_DATA; }
+
+  // ====== 渲染：侧边栏树形目录 ======
+  function renderTree() {
+    const tree = document.getElementById('tree');
+    tree.innerHTML = '';
+    const root = getRoot();
+    tree.appendChild(buildTreeNode(root, true));
+  }
+
+  function buildTreeNode(node, isRoot = false) {
+    const li = document.createElement('li');
+    li.className = 'tree-node' + (isRoot ? ' expanded' : '');
+
+    const item = document.createElement('div');
+    item.className = 'tree-item' + (node.children.length > 0 ? ' has-children' : ' leaf');
+    item.dataset.title = node.title;
+
+    const toggle = document.createElement('span');
+    toggle.className = 'tree-toggle';
+    toggle.textContent = node.children.length > 0 ? '▶' : '·';
+    item.appendChild(toggle);
+
+    const label = document.createElement('span');
+    label.classContent = label.textContent = node.title;
+    item.appendChild(label);
+
+    if (node.children.length > 0) {
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.textContent = node.children.length;
+      item.appendChild(badge);
+    }
+
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (node.children.length > 0) {
+        li.classList.toggle('expanded');
+        item.classList.toggle('expanded');
+      }
+      showNodeDetail(node);
+      if (node.children.length > 0) {
+        focusOnNode(node);
+      }
+    });
+
+    li.appendChild(item);
+
+    if (node.children.length > 0) {
+      const ul = document.createElement('ul');
+      ul.className = 'tree-children';
+      node.children.forEach(child => {
+        ul.appendChild(buildTreeNode(child));
+      });
+      li.appendChild(ul);
+    }
+
+    return li;
+  }
+
+  // ====== 渲染：画布主分支（环形布局） ======
+  function renderCanvas() {
+    const branchesContainer = document.getElementById('branches');
+    branchesContainer.innerHTML = '';
+    const root = getRoot();
+    const branchCount = root.children.length;
+    const radius = 380; // 中心到主分支的距离
+
+    root.children.forEach((branch, i) => {
+      // 计算位置（12个分支均匀分布）
+      const angle = (i / branchCount) * 2 * Math.PI - Math.PI / 2;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+
+      // 创建分支节点
+      const node = document.createElement('div');
+      node.className = 'branch-node';
+      node.style.left = (x - 100) + 'px'; // 居中
+      node.style.top = (y - 30) + 'px';
+
+      const num = document.createElement('div');
+      num.className = 'num';
+      num.textContent = 'BRANCH ' + String(i + 1).padStart(2, '0');
+      node.appendChild(num);
+
+      const title = document.createElement('div');
+      title.className = 'title';
+      title.textContent = branch.title;
+      node.appendChild(title);
+
+      const count = document.createElement('div');
+      count.className = 'count';
+      const subCount = countNodes(branch) - 1;
+      count.textContent = subCount + ' 个子节点';
+      node.appendChild(count);
+
+      // 保存位置用于连线
+      branch._angle = angle;
+      branch._x = x;
+      branch._y = y;
+
+      node.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showNodeDetail(branch);
+        highlightBranch(node);
+        // 展开树
+        const treeNodes = document.querySelectorAll('.tree-node');
+        // 自动展开到对应节点
+        const treeNode = findTreeNode(branch);
+        if (treeNode) {
+          expandToNode(treeNode);
+        }
+      });
+
+      branchesContainer.appendChild(node);
+
+      // 创建连接线
+      const svg = document.getElementById('connections');
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', '0');
+      line.setAttribute('y1', '0');
+      line.setAttribute('x2', x);
+      line.setAttribute('y2', y);
+      line.setAttribute('stroke', '#a87b3f');
+      line.setAttribute('stroke-width', '1');
+      line.setAttribute('stroke-dasharray', '4 4');
+      line.setAttribute('opacity', '0.4');
+      svg.appendChild(line);
+
+      // 调整SVG尺寸
+      const minX = Math.min(0, x) - 50;
+      const minY = Math.min(0, y) - 50;
+      const maxX = Math.max(0, x) + 50;
+      const maxY = Math.max(0, y) + 50;
+      svg.setAttribute('width', Math.abs(maxX - minX));
+      svg.setAttribute('height', Math.abs(maxY - minY));
+      svg.style.left = minX + 'px';
+      svg.style.top = minY + 'px';
+    });
+  }
+
+  // ====== 工具：树中找节点 ======
+  function findTreeNode(target) {
+    const items = document.querySelectorAll('.tree-item');
+    for (let item of items) {
+      if (item.dataset.title === target.title) {
+        return item.closest('.tree-node');
+      }
+    }
+    return null;
+  }
+
+  function expandToNode(treeNode) {
+    let parent = treeNode.parentElement;
+    while (parent && parent.classList.contains('tree-node')) {
+      parent.classList.add('expanded');
+      const item = parent.querySelector(':scope > .tree-item');
+      if (item) item.classList.add('expanded');
+      parent = parent.parentElement;
+    }
+  }
+
+  // ====== 高亮分支 ======
+  function highlightBranch(node) {
+    document.querySelectorAll('.branch-node').forEach(n => n.classList.remove('active'));
+    node.classList.add('active');
+  }
+
+  // ====== 详情面板 ======
+  function showNodeDetail(node) {
+    const panel = document.getElementById('detailPanel');
+    const breadcrumb = document.getElementById('detailBreadcrumb');
+    const title = document.getElementById('detailTitle');
+    const body = document.getElementById('detailBody');
+
+    // 计算路径
+    const root = getRoot();
+    const path = findPath(node, root) || [node];
+
+    breadcrumb.textContent = path.map(n => n.title).join(' › ');
+    title.textContent = node.title;
+
+    body.innerHTML = '';
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    const totalDescendants = countNodes(node) - 1;
+    meta.innerHTML = '总节点数 <strong>' + countNodes(node) + '</strong> · 子节点 <strong>' + totalDescendants + '</strong>';
+    body.appendChild(meta);
+
+    if (node.children && node.children.length > 0) {
+      const list = document.createElement('ul');
+      list.className = 'children-list';
+      node.children.forEach(child => {
+        const li = document.createElement('li');
+        li.textContent = child.title;
+        li.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showNodeDetail(child);
+          // 树中展开
+          const tn = findTreeNode(child);
+          if (tn) expandToNode(tn);
+        });
+        list.appendChild(li);
+      });
+      body.appendChild(list);
+    } else {
+      const msg = document.createElement('div');
+      msg.className = 'leaf-message';
+      msg.textContent = '· 此为叶子节点 ·';
+      body.appendChild(msg);
+    }
+
+    panel.classList.add('visible');
+  }
+
+  function closeDetail() {
+    document.getElementById('detailPanel').classList.remove('visible');
+    document.querySelectorAll('.branch-node').forEach(n => n.classList.remove('active'));
+  }
+
+  // ====== 缩放与平移 ======
+  function updateTransform() {
+    const container = document.getElementById('zoomContainer');
+    container.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    document.getElementById('zoomLevel').textContent = Math.round(scale * 100) + '%';
+  }
+
+  function zoomIn() {
+    scale = Math.min(scale * 1.2, 3);
+    updateTransform();
+  }
+
+  function zoomOut() {
+    scale = Math.max(scale / 1.2, 0.3);
+    updateTransform();
+  }
+
+  function resetView() {
+    scale = 1;
+    panX = 0;
+    panY = 0;
+    updateTransform();
+    closeDetail();
+  }
+
+  function focusOnNode(node) {
+    if (node._x !== undefined) {
+      panX = -node._x * scale;
+      panY = -node._y * scale;
+      updateTransform();
+    }
+  }
+
+  // ====== 全部展开/收起 ======
+  function expandAll() {
+    document.querySelectorAll('.tree-node').forEach(n => {
+      if (n.querySelector('.tree-children')) {
+        n.classList.add('expanded');
+        const item = n.querySelector(':scope > .tree-item');
+        if (item) item.classList.add('expanded');
+      }
+    });
+  }
+
+  function collapseAll() {
+    document.querySelectorAll('.tree-node').forEach(n => {
+      if (n !== document.querySelector('.tree-node')) {
+        n.classList.remove('expanded');
+        const item = n.querySelector(':scope > .tree-item');
+        if (item) item.classList.remove('expanded');
+      }
+    });
+  }
+
+  // ====== 交互：拖动与缩放 ======
+  const canvas = document.getElementById('canvas');
+
+  canvas.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.branch-node, .center-node, .detail-panel, .tree, .zoom-controls, .btn, .hint')) return;
+    isDragging = true;
+    dragStart.x = e.clientX - panX;
+    dragStart.y = e.clientY - panY;
+    canvas.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    panX = e.clientX - dragStart.x;
+    panY = e.clientY - dragStart.y;
+    updateTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false;
+    canvas.style.cursor = '';
+  });
+
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left - rect.width / 2;
+    const mouseY = e.clientY - rect.top - rect.height / 2;
+    const oldScale = scale;
+    if (e.deltaY < 0) {
+      scale = Math.min(scale * 1.1, 3);
+    } else {
+      scale = Math.max(scale / 1.1, 0.3);
+    }
+    // 调整 pan 让缩放围绕鼠标
+    panX = mouseX - (mouseX - panX) * (scale / oldScale);
+    panY = mouseY - (mouseY - panY) * (scale / oldScale);
+    updateTransform();
+  }, { passive: false });
+
+  // ====== 键盘快捷键 ======
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '+' || e.key === '=') { zoomIn(); }
+    else if (e.key === '-' || e.key === '_') { zoomOut(); }
+    else if (e.key === '0') { resetView(); }
+    else if (e.key === 'Escape') { closeDetail(); }
+  });
+
+  // ====== 中央节点点击 ======
+  document.getElementById('centerNode').addEventListener('click', () => {
+    showNodeDetail(getRoot());
+  });
+
+  // ====== 初始化 ======
+  function init() {
+    renderTree();
+    renderCanvas();
+    updateTransform();
+    document.getElementById('stat-total').textContent = countNodes(getRoot());
+    document.getElementById('stat-branches').textContent = getRoot().children.length;
+  }
+
+  init();
+</script>
+</body>
+</html>
