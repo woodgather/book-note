@@ -1,0 +1,2720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《高效能阅读》知识脑图 | 原尻淳一</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg-primary: #f7f5f0;
+  --bg-card: #ffffff;
+  --bg-sidebar: #1f2937;
+  --bg-sidebar-hover: #374151;
+  --bg-sidebar-active: #3b82f6;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-light: #9ca3af;
+  --text-sidebar: #e5e7eb;
+  --text-sidebar-active: #ffffff;
+  --accent: #3b82f6;
+  --accent-light: #dbeafe;
+  --accent-warm: #f59e0b;
+  --accent-warm-light: #fef3c7;
+  --accent-green: #10b981;
+  --accent-green-light: #d1fae5;
+  --accent-purple: #8b5cf6;
+  --accent-purple-light: #ede9fe;
+  --accent-rose: #ec4899;
+  --accent-rose-light: #fce7f3;
+  --accent-cyan: #06b6d4;
+  --accent-cyan-light: #cffafe;
+  --border: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== Sidebar (Vertical Navigation) ===== */
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding: 24px 0;
+  z-index: 100;
+  box-shadow: var(--shadow-lg);
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.sidebar-header {
+  padding: 0 24px 20px;
+  border-bottom: 1px solid #374151;
+  margin-bottom: 12px;
+}
+
+.sidebar-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-subtitle {
+  font-size: 12px;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+
+.sidebar-search {
+  padding: 0 16px 12px;
+}
+
+.sidebar-search input {
+  width: 100%;
+  padding: 8px 12px;
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 6px;
+  color: #e5e7eb;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.sidebar-search input:focus {
+  border-color: var(--accent);
+  background: #4b5563;
+}
+
+.sidebar-search input::placeholder {
+  color: #9ca3af;
+}
+
+.sidebar-controls {
+  display: flex;
+  gap: 6px;
+  padding: 0 16px 12px;
+}
+
+.sidebar-controls button {
+  flex: 1;
+  padding: 6px 8px;
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  color: #d1d5db;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.sidebar-controls button:hover {
+  background: #4b5563;
+  color: #ffffff;
+  border-color: #6b7280;
+}
+
+.sidebar-controls button:active {
+  transform: scale(0.97);
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+}
+
+.nav-item {
+  margin: 0;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  color: var(--text-sidebar);
+  text-decoration: none;
+  font-size: 13.5px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  line-height: 1.4;
+}
+
+.nav-link:hover {
+  background: var(--bg-sidebar-hover);
+  color: #ffffff;
+}
+
+.nav-link.active {
+  background: var(--bg-sidebar-active);
+  color: var(--text-sidebar-active);
+  border-left-color: #fbbf24;
+  font-weight: 600;
+}
+
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  color: #ffffff;
+}
+
+.nav-chapter {
+  font-weight: 600;
+  padding: 12px 24px 8px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin-top: 8px;
+  border-top: 1px solid #374151;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s;
+}
+.nav-chapter:hover {
+  color: #fbbf24;
+}
+.nav-chapter:first-child {
+  border-top: none;
+  margin-top: 0;
+}
+
+.nav-chapter::after {
+  content: "▼";
+  font-size: 9px;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.nav-chapter.collapsed::after {
+  transform: rotate(-90deg);
+}
+
+.nav-chapter > .chapter-label {
+  flex: 1;
+}
+
+.nav-group {
+  overflow: hidden;
+  max-height: 2000px;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+  opacity: 1;
+}
+
+.nav-group.collapsed {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav-chapter .chapter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== Main Content ===== */
+.main {
+  margin-left: 300px;
+  flex: 1;
+  padding: 48px 56px;
+  max-width: 1100px;
+}
+
+.breadcrumb {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.breadcrumb a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.book-hero {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 40px 48px;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.book-hero::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.book-hero h1 {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+  position: relative;
+}
+
+.book-hero .author {
+  font-size: 16px;
+  opacity: 0.95;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.book-hero .author strong {
+  font-weight: 600;
+}
+
+.book-hero .tagline {
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.7;
+  max-width: 800px;
+  position: relative;
+}
+
+.book-hero .stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+  position: relative;
+}
+
+.book-hero .stat {
+  display: flex;
+  flex-direction: column;
+}
+.book-hero .stat-num {
+  font-size: 24px;
+  font-weight: 700;
+}
+.book-hero .stat-label {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+/* ===== Section ===== */
+.section {
+  margin-bottom: 56px;
+  scroll-margin-top: 24px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border);
+}
+
+.section-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.section-header.chapter-1 .section-num { background: #3b82f6; }
+.section-header.chapter-2 .section-num { background: #f59e0b; }
+.section-header.chapter-3 .section-num { background: #10b981; }
+.section-header.chapter-4 .section-num { background: #8b5cf6; }
+.section-header.chapter-5 .section-num { background: #ec4899; }
+.section-header.chapter-6 .section-num { background: #06b6d4; }
+.section-header.chapter-7 .section-num { background: #ef4444; }
+.section-header.intro .section-num { background: #6366f1; }
+
+.section-title-block h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.section-title-block .subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.section-intro {
+  background: #ffffff;
+  border-left: 4px solid var(--accent);
+  padding: 18px 22px;
+  border-radius: 8px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  line-height: 1.75;
+  color: var(--text-primary);
+}
+
+.chapter-1 .section-intro { border-left-color: #3b82f6; }
+.chapter-2 .section-intro { border-left-color: #f59e0b; }
+.chapter-3 .section-intro { border-left-color: #10b981; }
+.chapter-4 .section-intro { border-left-color: #8b5cf6; }
+.chapter-5 .section-intro { border-left-color: #ec4899; }
+.chapter-6 .section-intro { border-left-color: #06b6d4; }
+.chapter-7 .section-intro { border-left-color: #ef4444; }
+.intro .section-intro { border-left-color: #6366f1; }
+
+/* ===== Cards Grid ===== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent);
+}
+
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.card-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 13px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.chapter-1 .card-num { background: #3b82f6; }
+.chapter-2 .card-num { background: #f59e0b; }
+.chapter-3 .card-num { background: #10b981; }
+.chapter-4 .card-num { background: #8b5cf6; }
+.chapter-5 .card-num { background: #ec4899; }
+.chapter-6 .card-num { background: #06b6d4; }
+.chapter-7 .card-num { background: #ef4444; }
+.intro .card-num { background: #6366f1; }
+
+.card-title {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.45;
+}
+
+.card-content {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.card-content p {
+  margin-bottom: 8px;
+}
+
+.card-content p:last-child {
+  margin-bottom: 0;
+}
+
+.card-content strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.card-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+
+.card-content ul li {
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 4px;
+}
+
+.card-content ul li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 11px;
+  top: 2px;
+}
+
+.chapter-1 .card-content ul li::before { color: #3b82f6; }
+.chapter-2 .card-content ul li::before { color: #f59e0b; }
+.chapter-3 .card-content ul li::before { color: #10b981; }
+.chapter-4 .card-content ul li::before { color: #8b5cf6; }
+.chapter-5 .card-content ul li::before { color: #ec4899; }
+.chapter-6 .card-content ul li::before { color: #06b6d4; }
+.chapter-7 .card-content ul li::before { color: #ef4444; }
+.intro .card-content ul li::before { color: #6366f1; }
+
+.quote {
+  background: #f9fafb;
+  border-left: 3px solid var(--accent);
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-style: italic;
+  color: var(--text-primary);
+  font-size: 13px;
+  border-radius: 0 6px 6px 0;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--accent-light);
+  color: var(--accent);
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  margin-right: 4px;
+  margin-top: 4px;
+}
+
+.chapter-1 .tag { background: #dbeafe; color: #1d4ed8; }
+.chapter-2 .tag { background: #fef3c7; color: #b45309; }
+.chapter-3 .tag { background: #d1fae5; color: #047857; }
+.chapter-4 .tag { background: #ede9fe; color: #6d28d9; }
+.chapter-5 .tag { background: #fce7f3; color: #be185d; }
+.chapter-6 .tag { background: #cffafe; color: #0e7490; }
+.chapter-7 .tag { background: #fee2e2; color: #b91c1c; }
+.intro .tag { background: #e0e7ff; color: #4338ca; }
+
+/* ===== Concept block ===== */
+.concept-block {
+  background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin: 24px 0;
+  border: 1px solid #c7d2fe;
+}
+
+.concept-block h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3730a3;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.concept-block h3::before {
+  content: "★";
+  color: #f59e0b;
+}
+
+.concept-block p {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-primary);
+}
+
+/* ===== Mind Map Diagram (top section) ===== */
+.mindmap-diagram {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.mindmap-diagram h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.mm-tree {
+  display: flex;
+  justify-content: center;
+  min-width: 800px;
+}
+
+.mm-root {
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  color: #ffffff;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.mm-level-1 {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.mm-branch {
+  background: var(--bg-card);
+  border: 2px solid;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  min-width: 110px;
+  flex: 1;
+}
+
+.mm-branch.ch1 { border-color: #3b82f6; color: #1d4ed8; }
+.mm-branch.ch2 { border-color: #f59e0b; color: #b45309; }
+.mm-branch.ch3 { border-color: #10b981; color: #047857; }
+.mm-branch.ch4 { border-color: #8b5cf6; color: #6d28d9; }
+.mm-branch.ch5 { border-color: #ec4899; color: #be185d; }
+.mm-branch.ch6 { border-color: #06b6d4; color: #0e7490; }
+.mm-branch.ch7 { border-color: #ef4444; color: #b91c1c; }
+.mm-branch.intro { border-color: #6366f1; color: #4338ca; }
+
+/* ===== Footer ===== */
+.footer {
+  margin-top: 60px;
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-light);
+  font-size: 12px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+  }
+  .main {
+    margin-left: 0;
+    padding: 24px 18px;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+  }
+  .book-hero {
+    padding: 24px;
+  }
+  .book-hero h1 {
+    font-size: 24px;
+  }
+}
+
+/* Print */
+@media print {
+  .sidebar {
+    display: none;
+  }
+  .main {
+    margin-left: 0;
+    max-width: 100%;
+  }
+}
+
+/* Highlight on scroll-target */
+.section:target {
+  animation: highlight 1.5s ease;
+}
+
+@keyframes highlight {
+  0% { background: rgba(59, 130, 246, 0.1); }
+  100% { background: transparent; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar Vertical Navigation -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">📚 高效能阅读</div>
+      <div class="sidebar-subtitle">原尻淳一 著 · 89个读书技巧全解</div>
+    </div>
+
+    <div class="sidebar-search">
+      <input type="text" id="searchInput" placeholder="🔍 搜索章节或技巧..." />
+    </div>
+
+    <div class="sidebar-controls">
+      <button type="button" id="expandAllBtn" title="全部展开">⊞ 全部展开</button>
+      <button type="button" id="collapseAllBtn" title="全部折叠">⊟ 全部折叠</button>
+    </div>
+
+    <ul class="nav-list" id="navList">
+      <li class="nav-chapter" data-target="group-preface">📖 序章</li>
+      <div class="nav-group" id="group-preface">
+        <li class="nav-item"><a class="nav-link" href="#preface"><span class="nav-icon" style="background:#6366f1">序</span>前言：信息洪流与读书革命</a></li>
+      </div>
+
+      <li class="nav-chapter collapsed" data-target="group-ch1">第1章 · 读书体质改善</li>
+      <div class="nav-group collapsed" id="group-ch1">
+        <li class="nav-item"><a class="nav-link" href="#ch1"><span class="nav-icon" style="background:#3b82f6">1</span>第1章 概述：刺激与习惯的时间轴</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t01"><span class="nav-icon" style="background:#3b82f6">01</span>读者权利十条</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t02"><span class="nav-icon" style="background:#3b82f6">02</span>学习的引擎与读书能量</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t03"><span class="nav-icon" style="background:#3b82f6">03</span>从2D学习到3D学习</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t04"><span class="nav-icon" style="background:#3b82f6">04</span>"实验"读书法</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t05"><span class="nav-icon" style="background:#3b82f6">05</span>不为读书而读书</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t06"><span class="nav-icon" style="background:#3b82f6">06</span>"听现场"降低门槛</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t07"><span class="nav-icon" style="background:#3b82f6">07</span>追溯作者人脉</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t08"><span class="nav-icon" style="background:#3b82f6">08</span>从名人的薄书读起</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t09"><span class="nav-icon" style="background:#3b82f6">09</span>参加读书会</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t10"><span class="nav-icon" style="background:#3b82f6">10</span>游牧读书</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t11"><span class="nav-icon" style="background:#3b82f6">11</span>全年读书活动</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t12"><span class="nav-icon" style="background:#3b82f6">12</span>给爱书排名</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t13"><span class="nav-icon" style="background:#3b82f6">13</span>本章总结</a></li>
+      </div>
+
+      <li class="nav-chapter collapsed" data-target="group-ch2">第2章 · 沉迷读书技巧</li>
+      <div class="nav-group collapsed" id="group-ch2">
+        <li class="nav-item"><a class="nav-link" href="#ch2"><span class="nav-icon" style="background:#f59e0b">2</span>第2章 概述：跟书谈恋爱</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t14"><span class="nav-icon" style="background:#f59e0b">14</span>维基百科读作者轶事</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t15"><span class="nav-icon" style="background:#f59e0b">15</span>倾听作者的声音</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t16"><span class="nav-icon" style="background:#f59e0b">16</span>利用播客</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t17"><span class="nav-icon" style="background:#f59e0b">17</span>TED激发内在动机</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t18"><span class="nav-icon" style="background:#f59e0b">18</span>与作者对话做第一读者</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t19"><span class="nav-icon" style="background:#f59e0b">19</span>把握作者读书履历</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t20"><span class="nav-icon" style="background:#f59e0b">20</span>采访报道获知结论</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t21"><span class="nav-icon" style="background:#f59e0b">21</span>实地前禁止读书</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t22"><span class="nav-icon" style="background:#f59e0b">22</span>"千夜千册"选拔</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t23"><span class="nav-icon" style="background:#f59e0b">23</span>"刷牙读书"分散恐惧</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t24"><span class="nav-icon" style="background:#f59e0b">24</span>"仪式"模式化专注</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t25"><span class="nav-icon" style="background:#f59e0b">25</span>两种"契机管理"总结</a></li>
+      </div>
+
+      <li class="nav-chapter collapsed" data-target="group-ch3">第3章 · 读书环境技巧</li>
+      <div class="nav-group collapsed" id="group-ch3">
+        <li class="nav-item"><a class="nav-link" href="#ch3"><span class="nav-icon" style="background:#10b981">3</span>第3章 概述：环境即动力</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t26"><span class="nav-icon" style="background:#10b981">26</span>打造家庭图书馆</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t27"><span class="nav-icon" style="background:#10b981">27</span>无印良品改造餐厅</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t28"><span class="nav-icon" style="background:#10b981">28</span>用"书脉"构建思维</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t29"><span class="nav-icon" style="background:#10b981">29</span>Booklog云端书架</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t30"><span class="nav-icon" style="background:#10b981">30</span>搬到图书馆附近</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t31"><span class="nav-icon" style="background:#10b981">31</span>不被亚马逊评论迷惑</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t32"><span class="nav-icon" style="background:#10b981">32</span>兴趣相投的书店</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t33"><span class="nav-icon" style="background:#10b981">33</span>手机里的"书单"</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t34"><span class="nav-icon" style="background:#10b981">34</span>大型书店活动</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t35"><span class="nav-icon" style="background:#10b981">35</span>书店附近的休息场所</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t36"><span class="nav-icon" style="background:#10b981">36</span>Facebook读书社群</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t37"><span class="nav-icon" style="background:#10b981">37</span>本章总结</a></li>
+      </div>
+
+      <li class="nav-chapter collapsed" data-target="group-ch4">第4章 · 速读技巧</li>
+      <div class="nav-group collapsed" id="group-ch4">
+        <li class="nav-item"><a class="nav-link" href="#ch4"><span class="nav-icon" style="background:#8b5cf6">4</span>第4章 概述：假设与验证</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t38"><span class="nav-icon" style="background:#8b5cf6">38</span>关键词发气与假设验证</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t39"><span class="nav-icon" style="background:#8b5cf6">39</span>通过目录预测内容</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t40"><span class="nav-icon" style="background:#8b5cf6">40</span>速读的基本技巧与阶段</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t41"><span class="nav-icon" style="background:#8b5cf6">41</span>"黑体字"读书法</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t42"><span class="nav-icon" style="background:#8b5cf6">42</span>便利贴标记重点</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t43"><span class="nav-icon" style="background:#8b5cf6">43</span>区分文末小结</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t44"><span class="nav-icon" style="background:#8b5cf6">44</span>活用"指针"找重点</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t45"><span class="nav-icon" style="background:#8b5cf6">45</span>索引阅读精准定位</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t46"><span class="nav-icon" style="background:#8b5cf6">46</span>摘要阅读彻底预习</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t47"><span class="nav-icon" style="background:#8b5cf6">47</span>无趣的书立刻停止</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t48"><span class="nav-icon" style="background:#8b5cf6">48</span>读书家导师的"邂逅"</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t49"><span class="nav-icon" style="background:#8b5cf6">49</span>Sokudoku软件</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t50"><span class="nav-icon" style="background:#8b5cf6">50</span>"读书套件"抓间隙</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t51"><span class="nav-icon" style="background:#8b5cf6">51</span>本章总结</a></li>
+      </div>
+
+      <li class="nav-chapter collapsed" data-target="group-ch5">第5章 · 类比读书技巧</li>
+      <div class="nav-group collapsed" id="group-ch5">
+        <li class="nav-item"><a class="nav-link" href="#ch5"><span class="nav-icon" style="background:#ec4899">5</span>第5章 概述：垂直×水平阅读</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t52"><span class="nav-icon" style="background:#ec4899">52</span>垂直型与水平型阅读</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t53"><span class="nav-icon" style="background:#ec4899">53</span>营造"思考的主场"</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t54"><span class="nav-icon" style="background:#ec4899">54</span>成为"部门的专才"</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t55"><span class="nav-icon" style="background:#ec4899">55</span>观察前辈的书架</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t56"><span class="nav-icon" style="background:#ec4899">56</span>以产出型读书为基本</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t57"><span class="nav-icon" style="background:#ec4899">57</span>七成投资在垂直阅读</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t58"><span class="nav-icon" style="background:#ec4899">58</span>谷歌联想检索技术</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t59"><span class="nav-icon" style="background:#ec4899">59</span>图书馆检索数据库</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t60"><span class="nav-icon" style="background:#ec4899">60</span>笔记积累"自己的教训"</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t61"><span class="nav-icon" style="background:#ec4899">61</span>类比读书建议</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t62"><span class="nav-icon" style="background:#ec4899">62</span>叔本华为多读敲响警钟</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t63"><span class="nav-icon" style="background:#ec4899">63</span>客场洞彻本质</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t64"><span class="nav-icon" style="background:#ec4899">64</span>对照过往人生的文脉</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t65"><span class="nav-icon" style="background:#ec4899">65</span>本章总结</a></li>
+      </div>
+
+      <li class="nav-chapter collapsed" data-target="group-ch6">第6章 · 解剖读书技巧</li>
+      <div class="nav-group collapsed" id="group-ch6">
+        <li class="nav-item"><a class="nav-link" href="#ch6"><span class="nav-icon" style="background:#06b6d4">6</span>第6章 概述：拆解书籍</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t66"><span class="nav-icon" style="background:#06b6d4">66</span>达·芬奇的解剖笔记</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t67"><span class="nav-icon" style="background:#06b6d4">67</span>确定标记术解剖书</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t68"><span class="nav-icon" style="background:#06b6d4">68</span>杂志汇集优质片段</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t69"><span class="nav-icon" style="background:#06b6d4">69</span>重视图表与结构图</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t70"><span class="nav-icon" style="background:#06b6d4">70</span>Slideshare解剖企划</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t71"><span class="nav-icon" style="background:#06b6d4">71</span>找到恒久的文体风格</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t72"><span class="nav-icon" style="background:#06b6d4">72</span>Gunosy策展信息</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t73"><span class="nav-icon" style="background:#06b6d4">73</span>对业界关键人物定点观测</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t74"><span class="nav-icon" style="background:#06b6d4">74</span>读书前预先假定目标</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t75"><span class="nav-icon" style="background:#06b6d4">75</span>对过去的资料版本升级</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t76"><span class="nav-icon" style="background:#06b6d4">76</span>本章总结：黑泽明的剪辑</a></li>
+      </div>
+
+      <li class="nav-chapter collapsed" data-target="group-ch7">第7章 · 数据库技巧</li>
+      <div class="nav-group collapsed" id="group-ch7">
+        <li class="nav-item"><a class="nav-link" href="#ch7"><span class="nav-icon" style="background:#ef4444">7</span>第7章 概述：超级产出</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t77"><span class="nav-icon" style="background:#ef4444">77</span>梅棹忠夫的知识生产革命</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t78"><span class="nav-icon" style="background:#ef4444">78</span>鹤见良行的"三本巨大数据"</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t79"><span class="nav-icon" style="background:#ef4444">79</span>云端聚合知识生产系统</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t80"><span class="nav-icon" style="background:#ef4444">80</span>Dropbox活用术</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t81"><span class="nav-icon" style="background:#ef4444">81</span>无印良品500日元数据库</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t82"><span class="nav-icon" style="background:#ef4444">82</span>头脑风暴读书突破壁障</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t83"><span class="nav-icon" style="background:#ef4444">83</span>收集"和缘"的文献</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t84"><span class="nav-icon" style="background:#ef4444">84</span>在图书馆一口气做读书卡</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t85"><span class="nav-icon" style="background:#ef4444">85</span>用书夹解放双手</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t86"><span class="nav-icon" style="background:#ef4444">86</span>文件夹统一管理材料</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t87"><span class="nav-icon" style="background:#ef4444">87</span>产出集中在早晨</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t88"><span class="nav-icon" style="background:#ef4444">88</span>终极目的：著书立说</a></li>
+        <li class="nav-item"><a class="nav-link" href="#t89"><span class="nav-icon" style="background:#ef4444">89</span>本章总结</a></li>
+      </div>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- Hero -->
+    <div class="book-hero">
+      <h1>《高效能阅读》</h1>
+      <div class="author"><strong>原尻淳一</strong> 著 · 程亮 译 · 后浪出版公司</div>
+      <div class="tagline">
+        任何人都能实践的"完全阅读术"大公开！<br>
+        在根源上终结失败的读书体验，从一本书中获得读懂所有书的技巧。
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-num">89</div><div class="stat-label">读书技巧</div></div>
+        <div class="stat"><div class="stat-num">7</div><div class="stat-label">核心章节</div></div>
+        <div class="stat"><div class="stat-num">3D×2D</div><div class="stat-label">学习公式</div></div>
+        <div class="stat"><div class="stat-num">21</div><div class="stat-label">世纪型读书论</div></div>
+      </div>
+    </div>
+
+    <!-- Mind Map Diagram (Overview) -->
+    <div class="mindmap-diagram">
+      <h3>📊 全书知识地图总览</h3>
+      <div class="mm-tree">
+        <div style="text-align: center;">
+          <div class="mm-root">高效能阅读<br><span style="font-size:11px;opacity:0.85;font-weight:400">89个读书技巧</span></div>
+          <div class="mm-level-1">
+            <div class="mm-branch intro">📖 前言<br><span style="font-weight:400;font-size:11px">信息洪水</span></div>
+            <div class="mm-branch ch1">🔵 第1章<br><span style="font-weight:400;font-size:11px">读书体质</span></div>
+            <div class="mm-branch ch2">🟡 第2章<br><span style="font-weight:400;font-size:11px">沉迷读书</span></div>
+            <div class="mm-branch ch3">🟢 第3章<br><span style="font-weight:400;font-size:11px">环境技巧</span></div>
+            <div class="mm-branch ch4">🟣 第4章<br><span style="font-weight:400;font-size:11px">速读技巧</span></div>
+            <div class="mm-branch ch5">🔴 第5章<br><span style="font-weight:400;font-size:11px">类比读书</span></div>
+            <div class="mm-branch ch6">🔷 第6章<br><span style="font-weight:400;font-size:11px">解剖读书</span></div>
+            <div class="mm-branch ch7">🟥 第7章<br><span style="font-weight:400;font-size:11px">数据库</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== 前言 ============== -->
+    <section class="section intro" id="preface">
+      <div class="breadcrumb">📍 当前位置：<a href="#preface">前言</a></div>
+      <div class="section-header intro">
+        <div class="section-num">序</div>
+        <div class="section-title-block">
+          <h2>前言：信息洪流时代的读书革命</h2>
+          <div class="subtitle">Preface · 时代的读书课题</div>
+        </div>
+      </div>
+
+      <div class="section-intro">
+        <p>21世纪是一个被"信息洪水"淹没的时代。从大众传媒到互联网、智能手机，信息的爆炸性增长让人们身处每秒数千兆字节的洪流之中。仅仅掌握传统的"投入型"读书已经远远不够，<strong>如何为产出而快速阅读、如何获取高质量信息</strong>，成为了这个时代每个人的新课题。</p>
+        <p style="margin-top:10px">作者原尻淳一基于多年读书与教学经验，提出了一种<strong>"21世纪型读书论"</strong>——以好奇心为引擎、连接行动与读书的循环系统。</p>
+      </div>
+
+      <div class="concept-block">
+        <h3>核心公式：真正的学习 = 3D × 2D</h3>
+        <p>日本现行教育以教科书（<strong>2D 平面信息</strong>）为主，学生"空有理解而缺乏实际感受"。<br>
+        作者主张真正的学习必须将<strong>2D学习（读书·文字信息）</strong>与<strong>3D学习（现实·体验·现场）</strong>结合起来：</p>
+        <p style="margin-top:10px">
+          <span class="tag">3D</span> 在生活与商务实践中找到兴趣 → 带着问题回学校研究
+          <br>
+          <span class="tag">2D</span> 大量阅读、彻底调查 → 产生新问题 → 回到实践
+        </p>
+        <p style="margin-top:10px">只有形成"<strong>3D×2D</strong>"的循环结构，求知兴奋度才能持续，读书才能从痛苦变为"令人兴奋的事"。</p>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-num">核</span>
+            <div class="card-title">时代的读书课题</div>
+          </div>
+          <div class="card-content">
+            <p>2009年信息流通量达 <strong>7.6ZB</strong>（约每天2.9亿张DVD），2008年一年增量超过2001—2006年6年总和。</p>
+            <p>博客、Twitter、Facebook等自媒体崛起，使"为写而读""为产出而投入"成为新刚需。</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="card-num">★</span>
+            <div class="card-title">贯穿全书的关键词</div>
+          </div>
+          <div class="card-content">
+            <ul>
+              <li><strong>内在动机</strong>：好奇心是读书的原点</li>
+              <li><strong>读者权利</strong>：拒绝"必须通读"的强迫观念</li>
+              <li><strong>垂直×水平型阅读</strong>：使知识立体化</li>
+              <li><strong>产出型读书</strong>：读书的终极目的在于著书立说</li>
+              <li><strong>数据库化</strong>：让知识真正成为自己</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="card-num">A</span>
+            <div class="card-title">本书结构（从初级到高级）</div>
+          </div>
+          <div class="card-content">
+            <ul>
+              <li><strong>读书初级篇</strong>：第1—3章（体质→沉迷→环境）</li>
+              <li><strong>读书中级篇</strong>：第4章（速读术）</li>
+              <li><strong>读书高级篇</strong>：第5—7章（类比→解剖→数据库）</li>
+            </ul>
+            <p style="margin-top:8px">读者可按自身水平自由选择起点，已掌握的内容可略过。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第1章 ============== -->
+    <section class="section chapter-1" id="ch1">
+      <div class="breadcrumb">📍 当前位置：<a href="#ch1">第1章 读书体质改善技巧</a></div>
+      <div class="section-header chapter-1">
+        <div class="section-num">1</div>
+        <div class="section-title-block">
+          <h2>读书体质改善技巧</h2>
+          <div class="subtitle">刺激与习惯的时间轴 · 13个读书技巧</div>
+        </div>
+      </div>
+
+      <div class="section-intro">
+        <p>本章针对的是<strong>"不善读书的人"</strong>。这类人常被"必须通读"的强迫观念束缚，使读书变得痛苦、麻烦、讨厌。本章的核心任务是<strong>转变读书意识</strong>——从"痛苦的义务"变成"令人兴奋的事"。</p>
+        <p style="margin-top:10px">成为读书体质的第一个关键，<strong>完全在于从好奇心出发</strong>。对于挑起好奇心的事物，本书称之为"<strong>内在动机</strong>"，而读书便是探求内在动机的一种手段。这里是原点。</p>
+      </div>
+
+      <div class="cards">
+        <div class="card" id="t01">
+          <div class="card-head">
+            <span class="card-num">01</span>
+            <div class="card-title">达尼埃尔·佩纳克的"读者权利十条"</div>
+          </div>
+          <div class="card-content">
+            <p>法国作家佩纳克在《宛如一部小说》中提出"读者权利十条"，斩断"必须通读症"的恶性循环：</p>
+            <ul>
+              <li>① 不读的权利</li>
+              <li>② 跳读的权利</li>
+              <li>③ 不读完的权利</li>
+              <li>④ 重读的权利</li>
+              <li>⑤ 读不择书的权利</li>
+              <li>⑥ 包法利症（易被小说感染）的权利</li>
+              <li>⑦ 读不择地的权利</li>
+              <li>⑧ 随意选读的权利</li>
+              <li>⑨ 朗读的权利</li>
+              <li>⑩ 默读的权利</li>
+            </ul>
+            <p style="margin-top:8px">这些权利不是为优等生提出的，而是为给"劣等生"增勇气。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t02">
+          <div class="card-head">
+            <span class="card-num">02</span>
+            <div class="card-title">学习的引擎与读书的能量</div>
+          </div>
+          <div class="card-content">
+            <p>学习的引擎 = <strong>内在动机 = 好奇心</strong>。汽油 = <strong>读书</strong>。</p>
+            <p>当"我想成为新闻记者"这样的志向与授课产生联系，<strong>产出（创建网站）和投入（上课）的循环</strong>就开始运转。这个循环越久，学习的引擎就越强劲。</p>
+            <p>反之，没有内在动机的学生会陷入"知识未能成为自己的事"的恶性循环。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t03">
+          <div class="card-head">
+            <span class="card-num">03</span>
+            <div class="card-title">从"2D学习"到"3D学习"</div>
+          </div>
+          <div class="card-content">
+            <p><strong>2D学习</strong>：基于教科书的平面信息记忆，主流教育的痛点。</p>
+            <p><strong>3D学习</strong>：现实（现场）的体验信息——大学应从3D开始，帮助学生尽快培养兴趣和好奇心的萌芽。</p>
+            <div class="quote">学生的兴趣并非源自2D，而是来自真实的现场，即3D。</div>
+          </div>
+        </div>
+
+        <div class="card" id="t04">
+          <div class="card-head">
+            <span class="card-num">04</span>
+            <div class="card-title">"实验"读书——以行动为中心的阅读</div>
+          </div>
+          <div class="card-content">
+            <p>梅棹忠夫在《我的读书法》中指出：读书已拓展到"<strong>为行动所做的准备</strong>"这一出人意料的领域。</p>
+            <p>例如盖房子：先有土地→银行贷款→关注利率→建材选择→施工→装修……每一步都需要"读书"作为前提。读书的质量决定行动的质量。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t05">
+          <div class="card-head">
+            <span class="card-num">05</span>
+            <div class="card-title">不为读书而读书</div>
+          </div>
+          <div class="card-content">
+            <p>读书目的是<strong>产出</strong>。将读书定位为"产出"的前置准备，并进行"<strong>产出型读书</strong>"：</p>
+            <ul>
+              <li>先确定<strong>读者设定</strong>（写给谁看？）</li>
+              <li>先确定<strong>主题</strong>（解决什么问题？）</li>
+              <li>再据此选择阅读素材</li>
+            </ul>
+            <p>这样一来，读书就不再是苦差，而是"令人兴奋的探究工具"。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t06">
+          <div class="card-head">
+            <span class="card-num">06</span>
+            <div class="card-title">"听现场"能降低读书的门槛</div>
+          </div>
+          <div class="card-content">
+            <p>先去<strong>研讨会、演讲会、读书会</strong>现场听作者本人的声音，再回去读他的书。这种"<strong>现场的魔力</strong>"会拉近你与作者的距离，让文字不再是冰冷的铅字。</p>
+            <p>声音承载着那个人的"气场"和节奏感，比书页更立体。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t07">
+          <div class="card-head">
+            <span class="card-num">07</span>
+            <div class="card-title">追溯作者人脉，发掘知识的本质</div>
+          </div>
+          <div class="card-content">
+            <p>读完一本好书后，<strong>继续阅读作者喜欢的书、影响作者的书</strong>。这样可以多角度理解作者的思考背景，发掘知识的本质。</p>
+            <p>把"人脉"作为读书的"导游"，一本书变十本书。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t08">
+          <div class="card-head">
+            <span class="card-num">08</span>
+            <div class="card-title">从名人的薄书开始读起</div>
+          </div>
+          <div class="card-content">
+            <p>文学家丸谷才一建议：<strong>"阅读伟大学者的薄书"</strong>。</p>
+            <p>作者回忆自己曾在看不懂的情况下读完汤川秀树的《眼睛看不见的东西》。传奇商人或文豪也该从薄书开始——例如先读芥川龙之介的短篇，而不是贸然挑战长篇。</p>
+            <p>薄书读完后感到格外充实，能"切实感受到伟大学者之伟大"。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t09">
+          <div class="card-head">
+            <span class="card-num">09</span>
+            <div class="card-title">参加读书会，了解他人的观点</div>
+          </div>
+          <div class="card-content">
+            <p>读书会提供<strong>多元视角</strong>，帮助你从他人反馈中获得自己看不到的解读。</p>
+            <ul>
+              <li>选书前：可参考读书会推荐书单</li>
+              <li>读完后：可与他人碰撞观点</li>
+              <li>长期：结识"书友"，构建持续学习社群</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="t10">
+          <div class="card-head">
+            <span class="card-num">10</span>
+            <div class="card-title">"游牧读书"——家里读不进去就出门</div>
+          </div>
+          <div class="card-content">
+            <p>对某些人而言，家=放松的地方，难以进入工作模式。试试"游牧读书"：</p>
+            <ul>
+              <li>☕ 咖啡馆</li>
+              <li>📚 图书馆</li>
+              <li>🚃 通勤电车</li>
+              <li>🌳 公园长椅</li>
+            </ul>
+            <p>环境变化带来心境变化，让读书变成"探险"。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t11">
+          <div class="card-head">
+            <span class="card-num">11</span>
+            <div class="card-title">开展全年读书活动</div>
+          </div>
+          <div class="card-content">
+            <p>将读书<strong>仪式化、日常化</strong>：</p>
+            <ul>
+              <li>设定每月固定读书日</li>
+              <li>每月选一个主题（如"管理学月""心理学月"）</li>
+              <li>记录读书时长与页数，形成可视化数据</li>
+            </ul>
+            <p>把"读书"从偶发行为变成<strong>可持续的生活习惯</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t12">
+          <div class="card-head">
+            <span class="card-num">12</span>
+            <div class="card-title">给爱书排名</div>
+          </div>
+          <div class="card-content">
+            <p>每隔一段时间（季度/年度）给自己的"爱书"做<strong>TOP10排名</strong>。</p>
+            <p>好处：</p>
+            <ul>
+              <li>强化对"好书"的印象</li>
+              <li>回顾自己的兴趣演化</li>
+              <li>形成可推荐的"个人品牌书单"</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="t13">
+          <div class="card-head">
+            <span class="card-num">13</span>
+            <div class="card-title">本章总结：变成读书体质的窍门和习惯</div>
+          </div>
+          <div class="card-content">
+            <p>成为读书体质的<strong>第一个关键</strong>，完全在于从<strong>好奇心</strong>出发。请高举"读者权利十条"，不要被书所困，大胆采用适合自己的读法。</p>
+            <p>光是做到这一点，就能感到轻松。从"不爱读书的我"到"现在的我"，靠的正是一系列被实践验证的<strong>窍门和习惯</strong>。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第2章 ============== -->
+    <section class="section chapter-2" id="ch2">
+      <div class="breadcrumb">📍 当前位置：<a href="#ch2">第2章 沉迷读书技巧</a></div>
+      <div class="section-header chapter-2">
+        <div class="section-num">2</div>
+        <div class="section-title-block">
+          <h2>沉迷读书技巧</h2>
+          <div class="subtitle">跟书谈恋爱与契机管理 · 12个读书技巧</div>
+        </div>
+      </div>
+
+      <div class="section-intro">
+        <p>不善读书的人往往有着<strong>仅靠文字理解一切的强烈倾向</strong>，所以容易疲累，更何况原本就不感兴趣，集中力也无法长时间保持。</p>
+        <p style="margin-top:10px">本章介绍"<strong>沉迷读书=契机管理</strong>"的方法——不直接阅读原文，而是先向<strong>周边</strong>寻找感兴趣的对象（人物轶事、播客声音、TED演讲等），然后再进入原文。这就是"<strong>绕道读书</strong>"。</p>
+      </div>
+
+      <div class="cards">
+        <div class="card" id="t14">
+          <div class="card-head">
+            <span class="card-num">14</span>
+            <div class="card-title">通过维基百科阅读作者的轶事</div>
+          </div>
+          <div class="card-content">
+            <p>读书前，先在<strong>维基百科</strong>输入作者名字，浏览其履历和轶事。</p>
+            <p>例如：苏格拉底的妻子赞西佩是"世界三大悍妇之一"。看过这些可爱的背景再去读书，对书的喜爱度和持续性<strong>截然不同</strong>。</p>
+            <p>把感兴趣的对象从原文转移到<strong>人物、主题等周边事物</strong>上——这就是"契机管理"的基本形式。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t15">
+          <div class="card-head">
+            <span class="card-num">15</span>
+            <div class="card-title">先倾听作者的声音</div>
+          </div>
+          <div class="card-content">
+            <p>听作者本人的声音（YouTube演讲、研讨会录音）能拉近距离。声音承载着那个人的"气场"和"节奏感"，比书页更立体。</p>
+            <p>作者称之为"<strong>现场的魔力</strong>"。接触歌手或作家的原声，你们之间的距离就会骤然拉近。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t16">
+          <div class="card-head">
+            <span class="card-num">16</span>
+            <div class="card-title">利用播客，耳听心记</div>
+          </div>
+          <div class="card-content">
+            <p>具体应用"听声音"的方法是 <strong>iTunes的播客</strong>：</p>
+            <ul>
+              <li>名人对话</li>
+              <li>大学公开课（iTunes U）</li>
+              <li>免费教育内容</li>
+            </ul>
+            <p>东京大学等15所日本大学在iTunes U上上传了免费课程。通勤路上"耳听心记"，把碎片时间利用起来。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t17">
+          <div class="card-head">
+            <span class="card-num">17</span>
+            <div class="card-title">书读累了看看TED，激发"内在动机"</div>
+          </div>
+          <div class="card-content">
+            <p><strong>TED大会</strong>邀请学者、政治家、企业家、艺术家等所有领域知名人士，用18分钟做"演示"。</p>
+            <p>读书热情陷入低潮的疲劳期，观看TED能 <strong>重启"求知兴奋"</strong>。</p>
+            <p>TED的演示本身也是教科书级别的——幽默感、幻灯片娱乐性、内容组织都值得学习。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t18">
+          <div class="card-head">
+            <span class="card-num">18</span>
+            <div class="card-title">通过互联网与作者对话，做"第一读者"</div>
+          </div>
+          <div class="card-content">
+            <p>在读书的持续性上，最好的技巧是 <strong>与作者对话</strong>。</p>
+            <p>具体方法：</p>
+            <ul>
+              <li>评论、转发作者博客</li>
+              <li>给作者写读后感</li>
+              <li>通过SNS与作者互动</li>
+            </ul>
+            <p>争取做"<strong>第一读者</strong>"，建立持续关注的关系。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t19">
+          <div class="card-head">
+            <span class="card-num">19</span>
+            <div class="card-title">事先把握作者的读书履历和人际关系</div>
+          </div>
+          <div class="card-content">
+            <p>最能体现作者"为人"的工具：<strong>博客、Facebook、Twitter</strong>。这些是窥视作者当前心境和本性的最佳工具。</p>
+            <p>关注作者日记中关于人际交往的内容——这是了解其思维和人格形成的线索。</p>
+            <p>书，如同自作者的人生经验中凝结并滑落的<strong>水滴</strong>。事先把握作者的读书履历和人际关系至关重要。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t20">
+          <div class="card-head">
+            <span class="card-num">20</span>
+            <div class="card-title">提前通过采访报道获知大概"结论"</div>
+          </div>
+          <div class="card-content">
+            <p>报纸上的新闻都有"<strong>标题</strong>"。标题好比压缩内容所得的精华，即相当于<strong>结论概要</strong>。</p>
+            <p>事先记住标题再去阅读，就不用从文章中刻意寻找关键词和结论了。<strong>标题就是关键词</strong>，它是加速理解文章内部隐藏信息的装置。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t21">
+          <div class="card-head">
+            <span class="card-num">21</span>
+            <div class="card-title">去实地前禁止读书</div>
+          </div>
+          <div class="card-content">
+            <p>进行实地（现场）考察之前，<strong>最好不要读书</strong>。</p>
+            <p>如果去实地前读了书，在现场就会下意识地验证书中内容，因而无暇去发现研究素材和问题。</p>
+            <p>作者曾用两天从京都高濑川的起点到终点进行实地考察。如果事先读了《高濑舟》，考察就会变成"对作品的现场验证"，失去独立发现的能力。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t22">
+          <div class="card-head">
+            <span class="card-num">22</span>
+            <div class="card-title">阅读网络书评"千夜千册"选拔的书籍</div>
+          </div>
+          <div class="card-content">
+            <p>"<strong>千夜千册</strong>"是日本著名网络书评，由书评家<strong>千野帽子</strong>主持。某代理教师甚至购买了"千夜千册"挑选出的所有书籍，在家里建了一个专题书架。</p>
+            <p>作者曾任代理教师时，每天下班前在公司上网查看"千夜千册"，然后在路上去书店买书，坐在回家电车里迅速读完。这种修行般的读书持续了好几年。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t23">
+          <div class="card-head">
+            <span class="card-num">23</span>
+            <div class="card-title">通过"刷牙读书"分散恐惧意识</div>
+          </div>
+          <div class="card-content">
+            <p>对"读不完""读不懂"的恐惧会让人逃避。分散这种恐惧的窍门是 <strong>把读书与日常行为绑定</strong>：</p>
+            <ul>
+              <li>刷牙时听书的播客</li>
+              <li>吃饭时翻杂志</li>
+              <li>通勤时读电子书</li>
+            </ul>
+            <p>用"无意识的日常"承载读书，恐惧自然消失。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t24">
+          <div class="card-head">
+            <span class="card-num">24</span>
+            <div class="card-title">使进入专注状态的"仪式"模式化</div>
+          </div>
+          <div class="card-content">
+            <p>专注技巧之一是"<strong>举行仪式</strong>"，也称"自我暗示的模式化"：</p>
+            <ul>
+              <li>🎵 唱主题歌</li>
+              <li>🪑 坐到特定位置</li>
+              <li>☕ 冲一杯特定饮品</li>
+              <li>📓 打开特定的笔记本</li>
+            </ul>
+            <p>重复几次后，仪式本身就成为"<strong>进入专注状态的开关</strong>"。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t25">
+          <div class="card-head">
+            <span class="card-num">25</span>
+            <div class="card-title">本章总结：两种"契机管理"</div>
+          </div>
+          <div class="card-content">
+            <p>本章集中介绍了"沉迷读书的技巧=<strong>契机管理</strong>"，分为两种：</p>
+            <ul>
+              <li><strong>绕道读书</strong>：不直接阅读原文，而是先向周边寻找感兴趣的对象，然后再进入原文。</li>
+              <li><strong>凯洛斯时间</strong>（kairos）：发生创新或创造性瞬间流经身体的时间感觉——把读书变成"创造性瞬间"。</li>
+            </ul>
+            <p>通过契机管理，把读书从"24小时奋战的客观时间"中解放出来。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第3章 ============== -->
+    <section class="section chapter-3" id="ch3">
+      <div class="breadcrumb">📍 当前位置：<a href="#ch3">第3章 读书环境技巧</a></div>
+      <div class="section-header chapter-3">
+        <div class="section-num">3</div>
+        <div class="section-title-block">
+          <h2>读书环境技巧</h2>
+          <div class="subtitle">求知兴奋 × 环境设定 × 实体书店的刺激 · 12个读书技巧</div>
+        </div>
+      </div>
+
+      <div class="section-intro">
+        <p>本章介绍如何创造<strong>能够维持读书热情的环境</strong>。从书房、书架、喜欢的书店，到参加作者签售活动……好的环境是读书热情的"<strong>外置引擎</strong>"。</p>
+        <p style="margin-top:10px">需要管理好三种刺激：<strong>① 物理空间 ② 在家环境 ③ 书店</strong>。把为读书而进行的环境整备当作一场"愉悦的演出"。</p>
+      </div>
+
+      <div class="cards">
+        <div class="card" id="t26">
+          <div class="card-head">
+            <span class="card-num">26</span>
+            <div class="card-title">打造家庭图书馆</div>
+          </div>
+          <div class="card-content">
+            <p>渡部升一先生从海外留学归来后，曾以值宿员身份住在图书馆员工房间里两年。</p>
+            <p>建议先从<strong>小事做起</strong>：买个书架和沙发，在家里打造一个图书角。打造家庭影院得花费数十万到一百万日元，而购买宜家家居的书架和沙发只要十万日元就够了。</p>
+            <p>2011年东日本大地震时，作者家中的书"一本也没掉下来"——稳定的书架也是安心的来源。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t27">
+          <div class="card-head">
+            <span class="card-num">27</span>
+            <div class="card-title">利用无印良品的小物件，将餐厅变成书房</div>
+          </div>
+          <div class="card-content">
+            <p>从信息角度考虑，读书行为属于"<strong>投入</strong>"。更多时候，投入与"产出"相关。</p>
+            <p>推荐：</p>
+            <ul>
+              <li>餐桌下面摆放<strong>隐藏式书柜</strong></li>
+              <li>聚氨酯泡沫<strong>慢回弹腰垫</strong>+ 弹性坐垫（不到5000日元）</li>
+              <li>保护腰背、减轻坐骨负担</li>
+            </ul>
+            <p>餐厅立刻变书房，工作也能变得相当舒服。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t28">
+          <div class="card-head">
+            <span class="card-num">28</span>
+            <div class="card-title">利用"书脉"，使自己的思维体现在书架上</div>
+          </div>
+          <div class="card-content">
+            <p>"<strong>书脉</strong>"指书架上书籍的排列方式与相互关系。</p>
+            <p>编辑工学研究所的"不可思议的书架"——百看不厌。把书架当作"<strong>思维的物理化</strong>"，让它反映你的知识结构。</p>
+            <p>让书架成为你的"第二大脑"。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t29">
+          <div class="card-head">
+            <span class="card-num">29</span>
+            <div class="card-title">利用网站"Booklog"，在云端创建自己的书架</div>
+          </div>
+          <div class="card-content">
+            <p>类似服务：</p>
+            <ul>
+              <li><strong>Booklog</strong>：在云端创建书架</li>
+              <li><strong>Mediamarker</strong>：登记CD、DVD、游戏、杂志</li>
+              <li><strong>Bookmeter</strong>：以图表形式管理读书量</li>
+            </ul>
+            <p>云端书架的好处：外出时通过手机就能调出笔记，迅速变成有效且便利的<strong>数据库</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t30">
+          <div class="card-head">
+            <span class="card-num">30</span>
+            <div class="card-title">搬到大学或图书馆附近居住</div>
+          </div>
+          <div class="card-content">
+            <p>家里不大、没地方作书房？不必在家的内部安排空间，而应设法实现<strong>"外部化"</strong>。</p>
+            <p>选择住所时检查要点：</p>
+            <ul>
+              <li>◎ 附近要有几家咖啡馆</li>
+              <li>◎ 离车站近，方便下班回家时顺路过去</li>
+              <li>◎ 绿化好</li>
+            </ul>
+            <p>早晨按平日上班时间出门，在图书馆附近咖啡馆吃完早餐，单手拿笔记本电脑走向图书馆。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t31">
+          <div class="card-head">
+            <span class="card-num">31</span>
+            <div class="card-title">不要被亚马逊网站的用户评论所迷惑</div>
+          </div>
+          <div class="card-content">
+            <p>作者二十多岁时，把没时间当借口，想要的书几乎都通过亚马逊购买，结果买了很多<strong>根本不会读的书</strong>。</p>
+            <p>亚马逊评论者的意见：</p>
+            <ul>
+              <li>对自己喜欢的作者的书会抱着<strong>极力维护的态度</strong></li>
+              <li>如果被这些评论吸引，就会买下原本不必买的书</li>
+            </ul>
+            <p>重要的不是外部评价，而是能否意识到<strong>自己所面临的问题</strong>，并尽力寻找相应对策的线索。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t32">
+          <div class="card-head">
+            <span class="card-num">32</span>
+            <div class="card-title">在兴趣相投的书店里，有"美好的邂逅"等着你</div>
+          </div>
+          <div class="card-content">
+            <p>亲自去书店逛逛就会发现，还是<strong>书在眼前触手可及</strong>的感觉更加有趣。</p>
+            <p>最近都市里出现了不少个性十足的书店——例如<strong>代官山茑屋书店</strong>。在精心设计的空间里，"美好的邂逅"就在转角处等着你。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t33">
+          <div class="card-head">
+            <span class="card-num">33</span>
+            <div class="card-title">时刻在手机里暗藏"书单"</div>
+          </div>
+          <div class="card-content">
+            <p>踏入书店，各种信息闯入眼帘，容易叫人忘记来意。事先备好"<strong>书单</strong>"——相当于亚马逊上的"心愿单"——就方便了。</p>
+            <p>关键：</p>
+            <ul>
+              <li>在手机上保留"这本书自己需不需要？好在哪儿"的感觉片段</li>
+              <li>瞬间保存，<strong>不要让直觉流失</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="t34">
+          <div class="card-head">
+            <span class="card-num">34</span>
+            <div class="card-title">参加大型书店的活动，保持"热情"充沛</div>
+          </div>
+          <div class="card-content">
+            <p>书店每天都举办作者活动。经作者验证的书店有四家：</p>
+            <ul>
+              <li>📚 丸善丸之内总店</li>
+              <li>📚 淳久堂池袋总店</li>
+              <li>📚 茑屋书店代官山</li>
+              <li>📚 另一家大型连锁</li>
+            </ul>
+            <p>经常参加这些知名作家的谈话活动，能持续充电。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t35">
+          <div class="card-head">
+            <span class="card-num">35</span>
+            <div class="card-title">在书店附近有常去的休息场所</div>
+          </div>
+          <div class="card-content">
+            <p>正所谓<strong>趁热打铁</strong>，读书亦然——得趁着"想读"的热情开始。</p>
+            <p>下班路上顺道去趟书店，那么在回家电车里就会开始读书。</p>
+            <p>首先要做的是 <strong>踏进书的世界</strong>。在书店附近找一家可以喝咖啡的休息场所，把买书 → 翻阅 → 沉浸的流程串起来。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t36">
+          <div class="card-head">
+            <span class="card-num">36</span>
+            <div class="card-title">在Facebook上创建"读书社群"</div>
+          </div>
+          <div class="card-content">
+            <p>活用社交媒体维持读书热情的方法——在Facebook上创建<strong>"读书社群"</strong>：</p>
+            <ul>
+              <li>接待为你介绍好书的前辈</li>
+              <li>和爱书的友人互动</li>
+              <li>看对方的读后感及推荐的好书</li>
+              <li>每月开展一次"推荐一本书"活动</li>
+            </ul>
+            <p>书也是连接自己与伙伴的<strong>桥梁和媒介</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t37">
+          <div class="card-head">
+            <span class="card-num">37</span>
+            <div class="card-title">本章总结：营造刺激环境与维持动力</div>
+          </div>
+          <div class="card-content">
+            <p>本章介绍"<strong>实现可持续的快乐读书</strong>"的技巧。需要考虑的重点只有一个：<strong>如何激发读书的动力</strong>。</p>
+            <p>管理好三种刺激：</p>
+            <ul>
+              <li><strong>① 物理空间</strong>：寻找常去的咖啡馆、图书室</li>
+              <li><strong>② 在家环境</strong>：把房间变成图书室——"愉悦的演出"</li>
+              <li><strong>③ 书店</strong>：提高书店的利用率，避免网上随便买书导致热情降低</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第4章 ============== -->
+    <section class="section chapter-4" id="ch4">
+      <div class="breadcrumb">📍 当前位置：<a href="#ch4">第4章 速读技巧</a></div>
+      <div class="section-header chapter-4">
+        <div class="section-num">4</div>
+        <div class="section-title-block">
+          <h2>速读技巧</h2>
+          <div class="subtitle">"假设"与"验证"的互相追逐 · 14个读书技巧</div>
+        </div>
+      </div>
+
+      <div class="section-intro">
+        <p>本章以速读为主题。速读术的关键在于<strong>"快速、多次阅读"</strong>——事先对关键词有所意识，然后快速将正文里与关键词有关的部分填入意识的技术。</p>
+        <p style="margin-top:10px">速读分三步：<strong>① 关键词发气（把握关键词）→ ② 假设验证型读书（快速阅读关键词附近）→ ③ 写下自己的意见、新假设或创意</strong>。这些内容将是实现原创产出的重要信息。</p>
+      </div>
+
+      <div class="cards">
+        <div class="card" id="t38">
+          <div class="card-head">
+            <span class="card-num">38</span>
+            <div class="card-title">速读术的诀窍——关键词发气与假设验证</div>
+          </div>
+          <div class="card-content">
+            <p>立花隆在《我的读书履历》中断言：<strong>掌握速读术吧</strong>。要想在短时间内涉猎大量资料，非速读不能实现。</p>
+            <p>速读三步：</p>
+            <ul>
+              <li><strong>① 关键词发气</strong>：事先对关键词做到心中大致有数</li>
+              <li><strong>② 假设验证</strong>：快速阅读关键词附近内容，对假设进行验证</li>
+              <li><strong>③ 对比分析</strong>：分析自己假设与作者想法的不同，做好笔记</li>
+            </ul>
+            <p>若有新创意浮现，立刻记录下来——直接写在书上即可。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t39">
+          <div class="card-head">
+            <span class="card-num">39</span>
+            <div class="card-title">通过目录读书把握结构，预测内容</div>
+          </div>
+          <div class="card-content">
+            <p>目录是作者的"<strong>思考骨架</strong>"。先读目录，能把握：</p>
+            <ul>
+              <li>全书结构与逻辑线</li>
+              <li>作者想表达的核心</li>
+              <li>哪些章节与自己的目的相关</li>
+            </ul>
+            <p>通过目录<strong>预测内容</strong>，可以决定先读哪部分、跳过哪部分。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t40">
+          <div class="card-head">
+            <span class="card-num">40</span>
+            <div class="card-title">速读的基本技巧和阶段论</div>
+          </div>
+          <div class="card-content">
+            <p>速读并非"快"那么简单，它有阶段：</p>
+            <ul>
+              <li><strong>第一阶段</strong>：通读目录和前言，预测结构</li>
+              <li><strong>第二阶段</strong>：重点章节细读关键段落</li>
+              <li><strong>第三阶段</strong>：根据关键词快速浏览其他部分</li>
+              <li><strong>第四阶段</strong>：合上书，复述核心内容</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="t41">
+          <div class="card-head">
+            <span class="card-num">41</span>
+            <div class="card-title">"黑体字"读书法：1小时读完商业书籍</div>
+          </div>
+          <div class="card-content">
+            <p>商业书籍的<strong>黑体字</strong>（加粗标题）= 作者最想强调的核心。</p>
+            <p>任何人都能在一小时内读完商业书籍的方法：</p>
+            <ul>
+              <li>只读黑体字及其前后文</li>
+              <li>跳过论证与案例</li>
+              <li>把握作者骨架思路</li>
+            </ul>
+            <p>之后如需深入，再回头读感兴趣的部分。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t42">
+          <div class="card-head">
+            <span class="card-num">42</span>
+            <div class="card-title">用便利贴在重要位置做标记</div>
+          </div>
+          <div class="card-content">
+            <p>速读时用<strong>彩色便利贴</strong>标记重要位置：</p>
+            <ul>
+              <li>🟥 红色：核心论点</li>
+              <li>🟨 黄色：重要数据/案例</li>
+              <li>🟦 蓝色：与自己业务的关联点</li>
+              <li>🟩 绿色：待查证的疑问</li>
+            </ul>
+            <p>回头查阅时一目了然。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t43">
+          <div class="card-head">
+            <span class="card-num">43</span>
+            <div class="card-title">区分文末小结与正文</div>
+          </div>
+          <div class="card-content">
+            <p>商业书籍常在文末有<strong>"小结""要点回顾""本章总结"</strong>等部分。</p>
+            <p>速读时：</p>
+            <ul>
+              <li>先读文末小结 → 把握作者结论</li>
+              <li>再带着结论回读正文 → 验证逻辑</li>
+              <li>效率提升 3-5 倍</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="t44">
+          <div class="card-head">
+            <span class="card-num">44</span>
+            <div class="card-title">活用"指针"，快速找到重要位置</div>
+          </div>
+          <div class="card-content">
+            <p>"<strong>指针</strong>"是商业书籍中的关键指引：</p>
+            <ul>
+              <li>📌 <strong>题注/小标题</strong>：每章的小节标题</li>
+              <li>📌 <strong>项目符号</strong>：作者列举的重点</li>
+              <li>📌 <strong>图说</strong>：图表的简要说明</li>
+              <li>📌 <strong>页眉/页脚</strong>：章节主题提示</li>
+            </ul>
+            <p>活用指针，在十几秒内找到"想读的位置"。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t45">
+          <div class="card-head">
+            <span class="card-num">45</span>
+            <div class="card-title">通过索引阅读，进行精准定位</div>
+          </div>
+          <div class="card-content">
+            <p>作家丸谷才一在《思考的课堂》中介绍的"<strong>索引阅读法</strong>"：</p>
+            <p>仔细阅读书中索引，选出重要的字句和有趣的部分进行阅读。这种技术也称"<strong>精准扫描</strong>"，简直就是查字典般的读书法。</p>
+            <p>两个优点：</p>
+            <ul>
+              <li>① 能够了解贯穿全书的主题</li>
+              <li>② 既留意该书针对什么，又留意没针对什么</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="t46">
+          <div class="card-head">
+            <span class="card-num">46</span>
+            <div class="card-title">摘要阅读，彻底预习</div>
+          </div>
+          <div class="card-content">
+            <p>在正式阅读前，先通过<strong>摘要/概要</strong>了解全书：</p>
+            <ul>
+              <li>📖 书的封底介绍</li>
+              <li>📰 出版社的官方摘要</li>
+              <li>🌐 网上书评（豆瓣、亚马逊）</li>
+              <li>📑 读书笔记网站（如Booklog）</li>
+            </ul>
+            <p>带着摘要的"已知框架"进入正文，理解速度大幅提升。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t47">
+          <div class="card-head">
+            <span class="card-num">47</span>
+            <div class="card-title">无趣的书应立刻停止阅读</div>
+          </div>
+          <div class="card-content">
+            <p>这是"读者权利十条"的应用——<strong>不读完的权利</strong>。</p>
+            <p>判断标准：</p>
+            <ul>
+              <li>前 30 页没有"心动点" → 放下</li>
+              <li>翻 3 次仍无兴趣 → 放弃</li>
+              <li>不是"必读"的书 → 直接停下</li>
+            </ul>
+            <p>把时间投入到真正有价值的书中——<strong>沉没成本不是成本</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t48">
+          <div class="card-head">
+            <span class="card-num">48</span>
+            <div class="card-title">读书家导师将为你带来"命运的邂逅"</div>
+          </div>
+          <div class="card-content">
+            <p>找到<strong>自己的"读书家导师"</strong>——一个你欣赏其读书品味的人。</p>
+            <p>导师的价值：</p>
+            <ul>
+              <li>推荐对的书，避开错的书</li>
+              <li>提供阅读方法论的示范</li>
+              <li>带来"命运的邂逅"——改变人生轨迹的那一本书</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="t49">
+          <div class="card-head">
+            <span class="card-num">49</span>
+            <div class="card-title">利用软件"Sokudoku"把握读书速度</div>
+          </div>
+          <div class="card-content">
+            <p><strong>Sokudoku</strong>（速读）软件能：</p>
+            <ul>
+              <li>按设定速度逐字显示文本</li>
+              <li>训练眼球移动速度</li>
+              <li>客观测量每分钟阅读字数</li>
+              <li>逐步提高速度阈值</li>
+            </ul>
+            <p>类似工具：Spritz、Reasy等。把速读能力<strong>数据化</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t50">
+          <div class="card-head">
+            <span class="card-num">50</span>
+            <div class="card-title">利用"读书套件"抓住间隙时间</div>
+          </div>
+          <div class="card-content">
+            <p>对现代商务人士而言，想确保完整的几小时读书时间几乎不可能。但 <strong>15分钟左右的间隙时间</strong>则有很多：</p>
+            <ul>
+              <li>☕ 餐后的咖啡时间</li>
+              <li>⏰ 碰头间歇</li>
+              <li>🚃 上下班等电车</li>
+              <li>👫 约会等待时间</li>
+            </ul>
+            <p>作者开发了<strong>"读书套件"</strong>——可随身携带的多本书组合。养成利用间隙时间读书的习惯。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t51">
+          <div class="card-head">
+            <span class="card-num">51</span>
+            <div class="card-title">本章总结：实验积累教训带来好运</div>
+          </div>
+          <div class="card-content">
+            <p>速读术的关键在于 <strong>"快速、多次阅读"</strong>——事先对关键词有所意识，然后快速将正文里与关键词有关的部分填入意识的技术。</p>
+            <p>通过<strong>实验积累教训</strong>，将为人生带来好运。速读不是天生的技能，而是 <strong>训练出来的肌肉记忆</strong>。</p>
+            <p>建议：先从感兴趣的书开始练起，再扩展到专业书。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第5章 ============== -->
+    <section class="section chapter-5" id="ch5">
+      <div class="breadcrumb">📍 当前位置：<a href="#ch5">第5章 类比读书技巧</a></div>
+      <div class="section-header chapter-5">
+        <div class="section-num">5</div>
+        <div class="section-title-block">
+          <h2>加快理解的"类比读书"技巧</h2>
+          <div class="subtitle">垂直型阅读 × 水平型阅读 · 14个读书技巧</div>
+        </div>
+      </div>
+
+      <div class="section-intro">
+        <p>本章介绍<strong>使知识立体化</strong>的读书法。商务人士的首要目标是成为"<strong>部门的专才</strong>"——围绕一个专业领域深入阅读、积累实战知识，这就是<strong>垂直型阅读</strong>。</p>
+        <p style="margin-top:10px">在此基础上，再进行 <strong>水平型阅读</strong>——从所有体裁中找出与专业共通的本质。两种阅读相乘，使知识从"点"变成"体"。</p>
+      </div>
+
+      <div class="cards">
+        <div class="card" id="t52">
+          <div class="card-head">
+            <span class="card-num">52</span>
+            <div class="card-title">垂直型阅读与水平型阅读</div>
+          </div>
+          <div class="card-content">
+            <p><strong>垂直型阅读</strong>：在同一专业领域内深挖——"成为专家"。</p>
+            <p><strong>水平型阅读</strong>：跨越领域，寻找共通本质——"具备通识"。</p>
+            <p>两类技能的差异：</p>
+            <ul>
+              <li><strong>企业特殊技能</strong>：公司固有的知识 → 向前辈请教最快</li>
+              <li><strong>普记技能</strong>：跨行业的通用知识 → 读书是最直接的方式</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="t53">
+          <div class="card-head">
+            <span class="card-num">53</span>
+            <div class="card-title">营造"思考的主场"的垂直型阅读</div>
+          </div>
+          <div class="card-content">
+            <p>自就业以来，作者专注于市场营销已有十多年。不管思考什么，都会下意识地从<strong>营销思维</strong>出发——这就是他的"思考的主场"。</p>
+            <p>走进咖啡馆，浏览菜单，点杯咖啡——他都会做出"招牌咖啡是哪个""布局值得学习""待客真棒"等评价，思考该店的<strong>战略要点</strong>。</p>
+            <p>形成主场后，<strong>所有信息都能被自己的专业框架解读</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t54">
+          <div class="card-head">
+            <span class="card-num">54</span>
+            <div class="card-title">商务人士的首要目标：成为"部门的专才"</div>
+          </div>
+          <div class="card-content">
+            <p>新人刚进公司时，应该<strong>先成为部门的专才</strong>，再向其他领域扩展。</p>
+            <p>路径：</p>
+            <ul>
+              <li>① 锁定一个领域（你工作的部门）</li>
+              <li>② 持续垂直阅读 3-5 年</li>
+              <li>③ 形成自己的"思考主场"</li>
+              <li>④ 再开始水平扩展</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="t55">
+          <div class="card-head">
+            <span class="card-num">55</span>
+            <div class="card-title">观察业务能力强的前辈的书架</div>
+          </div>
+          <div class="card-content">
+            <p>前辈的书架是<strong>他们多年阅读品味的结晶</strong>。观察：</p>
+            <ul>
+              <li>📚 哪些书被翻得最旧</li>
+              <li>📚 哪些书有折角和便利贴</li>
+              <li>📚 书籍的<strong>领域分布</strong></li>
+              <li>📚 是否有公司"内训"之外的"私货"</li>
+            </ul>
+            <p>这是<strong>最直观的"专业速成地图"</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t56">
+          <div class="card-head">
+            <span class="card-num">56</span>
+            <div class="card-title">以产出型的读书方式为基本</div>
+          </div>
+          <div class="card-content">
+            <p>读书的根本目的是<strong>产出</strong>。每读一本书之前，明确：</p>
+            <ul>
+              <li>🎯 <strong>读者设定</strong>：写给谁看？</li>
+              <li>🎯 <strong>主题</strong>：解决什么问题？</li>
+              <li>🎯 <strong>形式</strong>：博客/PPT/论文/企划书？</li>
+              <li>🎯 <strong>截止日期</strong>：何时产出？</li>
+            </ul>
+            <p>带着"产出目标"读书，效率与吸收率都会大幅提升。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t57">
+          <div class="card-head">
+            <span class="card-num">57</span>
+            <div class="card-title">把读书的七成投资在垂直型阅读上</div>
+          </div>
+          <div class="card-content">
+            <p>建议的<strong>读书投资比例</strong>：</p>
+            <ul>
+              <li><strong>70%</strong> 垂直型阅读（专业领域）</li>
+              <li><strong>20%</strong> 水平型阅读（跨领域）</li>
+              <li><strong>10%</strong> 自由阅读（兴趣、放松）</li>
+            </ul>
+            <p>商务人士的"核心竞争力"来自垂直深度的积累。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t58">
+          <div class="card-head">
+            <span class="card-num">58</span>
+            <div class="card-title">谷歌检索的进阶——联想检索技术</div>
+          </div>
+          <div class="card-content">
+            <p>基础的关键词检索不够用。进阶方法：<strong>联想检索</strong>：</p>
+            <ul>
+              <li>用"<strong>同义词</strong>"重新检索</li>
+              <li>用"<strong>上位概念/下位概念</strong>"扩展</li>
+              <li>用"<strong>相关人物/事件</strong>"间接定位</li>
+              <li>从<strong>英文术语</strong>反查中文资料</li>
+            </ul>
+            <p>配合垂直阅读，让"广度"和"深度"兼备。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t59">
+          <div class="card-head">
+            <span class="card-num">59</span>
+            <div class="card-title">利用图书馆扩大数据库知识</div>
+          </div>
+          <div class="card-content">
+            <p>大学或公共图书馆的<strong>OPAC检索系统</strong>，能让你发现意想不到的相关书籍：</p>
+            <ul>
+              <li>📚 <strong>同主题图书</strong>横向扩展</li>
+              <li>📚 <strong>同作者其他作品</strong></li>
+              <li>📚 <strong>引用本书的文献</strong></li>
+              <li>📚 <strong>被本书引用的文献</strong></li>
+            </ul>
+            <p>图书馆是<strong>免费的"知识图谱导航仪"</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t60">
+          <div class="card-head">
+            <span class="card-num">60</span>
+            <div class="card-title">通过笔记积累"属于自己的教训"</div>
+          </div>
+          <div class="card-content">
+            <p>读书笔记不是<strong>摘抄</strong>，而是<strong>"属于自己的教训"</strong>：</p>
+            <ul>
+              <li>✏️ 摘录：作者原话（注明页码）</li>
+              <li>✏️ 改写：用自己的话重述</li>
+              <li>✏️ 联想：自己过去的经验</li>
+              <li>✏️ 行动：明天能做什么</li>
+            </ul>
+            <p>作者推荐的笔记工具：<strong>康奈尔笔记法 / Zettelkasten（卡片盒笔记法）</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t61">
+          <div class="card-head">
+            <span class="card-num">61</span>
+            <div class="card-title">类比读书的建议——用主场的知识看待一切</div>
+          </div>
+          <div class="card-content">
+            <p>类比读书的核心：<strong>用主场的知识解读客场</strong>。</p>
+            <p>例子：营销人员看棒球 → 联想到"球迷运营""品牌资产"；工程师看交响乐 → 联想到"系统架构""并行处理"。</p>
+            <p>类比是 <strong>创新的源泉</strong>——它让两个无关领域碰撞出火花。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t62">
+          <div class="card-head">
+            <span class="card-num">62</span>
+            <div class="card-title">叔本华为多读敲响的警钟</div>
+          </div>
+          <div class="card-content">
+            <p>商业阅读的基本要点是多读。获取各种信息，使之成为业务的血肉——至关重要，但<strong>单纯以为多读肯定好，那就危险了</strong>。</p>
+            <div class="quote">读书或阅读资料只不过是去看他人已经想到的事情，哪怕读了再多，终究不过是拾人牙慧罢了。</div>
+            <p>多读最可怕的地方在于：<strong>你会在无意识中对书产生依赖，从而放弃自己思考</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t63">
+          <div class="card-head">
+            <span class="card-num">63</span>
+            <div class="card-title">通过客场洞彻本质——使专业变得更强</div>
+          </div>
+          <div class="card-content">
+            <p>单纯主场容易"当局者迷"。通过<strong>客场的视角</strong>反观主场：</p>
+            <ul>
+              <li>读<strong>外行写的本专业书</strong>（如营销人读《营销的终结》）</li>
+              <li>读<strong>其他领域的类似问题</strong>（如医学的"误诊"与管理的"决策失误"）</li>
+              <li>读<strong>反对自己观点的书</strong></li>
+            </ul>
+            <p>客场的"陌生感"反而能让本质浮现。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t64">
+          <div class="card-head">
+            <span class="card-num">64</span>
+            <div class="card-title">养成对照过往人生文脉的习惯</div>
+          </div>
+          <div class="card-content">
+            <p>每读一本书时，<strong>对照自己的过往人生</strong>：</p>
+            <ul>
+              <li>"这本书的内容，与我过去的哪段经历相似？"</li>
+              <li>"如果当时读过这本书，我会做出不同的选择吗？"</li>
+              <li>"十年后回看今天，我会怎么评价？"</li>
+            </ul>
+            <p>把书中的<strong>他者经验</strong>转化为<strong>自己的文脉</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t65">
+          <div class="card-head">
+            <span class="card-num">65</span>
+            <div class="card-title">本章总结：垂直×水平，使知识立体化</div>
+          </div>
+          <div class="card-content">
+            <p>目标 = <strong>垂直型阅读 × 水平型阅读</strong>，使知识立体化。</p>
+            <p>具体方法：</p>
+            <ul>
+              <li>📐 <strong>七三原则</strong>：70%专业深耕，30%跨领域扩展</li>
+              <li>📐 <strong>主客逆转</strong>：用主场解读客场，用客场反观主场</li>
+              <li>📐 <strong>类比笔记</strong>：用自己的话重述，建立"个人化的知识图谱"</li>
+            </ul>
+            <p>商务人士最终要<strong>具备通识的同时成为专家</strong>。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第6章 ============== -->
+    <section class="section chapter-6" id="ch6">
+      <div class="breadcrumb">📍 当前位置：<a href="#ch6">第6章 解剖读书技巧</a></div>
+      <div class="section-header chapter-6">
+        <div class="section-num">6</div>
+        <div class="section-title-block">
+          <h2>"解剖读书"技巧</h2>
+          <div class="subtitle">将书分解、收集线索的技术 · 11个读书技巧</div>
+        </div>
+      </div>
+
+      <div class="section-intro">
+        <p>本章以如何截取可活用于自身产出的"<strong>信息片段</strong>"为主题。我们必须向<strong>达·芬奇</strong>学习如何正确"投入"，创造杰出的表现（产出）。</p>
+        <p style="margin-top:10px">达·芬奇在笔记中记载了数学、几何学、天文学、植物学、动物学、土木工程学、军事技术、教会建筑、鸟的飞翔机制、光学、水力学……所有分析和创意。<strong>吸收并积蓄可成为产出食粮的有用信息</strong>——这已超越单纯的读书，是本书的最终目的。</p>
+      </div>
+
+      <div class="cards">
+        <div class="card" id="t66">
+          <div class="card-head">
+            <span class="card-num">66</span>
+            <div class="card-title">达·芬奇：解剖并积蓄一切信息</div>
+          </div>
+          <div class="card-content">
+            <p>达·芬奇在《哈姆雷特手稿》（Codex Hamlet）中展示了<strong>"信息解剖学"</strong>：</p>
+            <ul>
+              <li>🍞 <strong>菜谱信息</strong>：可复用的方法论、框架</li>
+              <li>🥕 <strong>食材信息</strong>：可单独使用的事实、数据</li>
+              <li>🍽️ <strong>装盘信息</strong>：呈现技巧、视觉表达</li>
+            </ul>
+            <p>三类的有机组合，构成了"<strong>原创产出</strong>"。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t67">
+          <div class="card-head">
+            <span class="card-num">67</span>
+            <div class="card-title">确定适合自己的标记术，将书解剖</div>
+          </div>
+          <div class="card-content">
+            <p>每个人都需要建立<strong>个性化的标记系统</strong>：</p>
+            <ul>
+              <li>✏️ <strong>铅笔直线</strong>：重要观点</li>
+              <li>✏️ <strong>铅笔波浪线</strong>：关键句</li>
+              <li>✏️ <strong>星号</strong>：必读段落</li>
+              <li>✏️ <strong>问号</strong>：有疑问</li>
+              <li>✏️ <strong>感叹号</strong>：联想到自己</li>
+            </ul>
+            <p>固定的标记法让"<strong>二次阅读</strong>"时迅速定位。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t68">
+          <div class="card-head">
+            <span class="card-num">68</span>
+            <div class="card-title">杂志通过"解剖读书"汇集优质信息</div>
+          </div>
+          <div class="card-content">
+            <p>杂志编辑每天都在做<strong>"解剖读书"</strong>：</p>
+            <ul>
+              <li>📖 通读数十本书</li>
+              <li>🔪 切割出"可独立成立的片段"</li>
+              <li>📑 重新组合成专题</li>
+              <li>🎨 通过版式设计"装盘"</li>
+            </ul>
+            <p>杂志是<strong>"解剖读书"的活教材</strong>——学它的方法，应用到自己的产出中。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t69">
+          <div class="card-head">
+            <span class="card-num">69</span>
+            <div class="card-title">阅读商业书籍和杂志时重视图表</div>
+          </div>
+          <div class="card-content">
+            <p>图表（结构图）是作者的<strong>"思维精华"</strong>。读图的方法：</p>
+            <ul>
+              <li>📊 先看标题，猜作者意图</li>
+              <li>📊 默读一遍，重新画一遍</li>
+              <li>📊 思考"为什么这样组织"</li>
+              <li>📊 收藏"可借鉴的结构"</li>
+            </ul>
+            <p>一个好的图表胜过一千字。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t70">
+          <div class="card-head">
+            <span class="card-num">70</span>
+            <div class="card-title">利用Slideshare解剖优秀企划</div>
+          </div>
+          <div class="card-content">
+            <p><strong>Slideshare</strong>上有大量<strong>已公开的企划书、提案PPT</strong>：</p>
+            <ul>
+              <li>🎯 看别人的"装盘"方式</li>
+              <li>🎯 拆解"菜谱信息"（方法论）</li>
+              <li>🎯 收集"装盘信息"（表达技巧）</li>
+              <li>🎯 建立自己的"模板库"</li>
+            </ul>
+            <p><strong>拆解别人的产出，构造自己的产出</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t71">
+          <div class="card-head">
+            <span class="card-num">71</span>
+            <div class="card-title">找到恒久的文体风格</div>
+          </div>
+          <div class="card-content">
+            <p>一旦开始关注产出，就会考虑<strong>以怎样的文体展开</strong>来安排文章。读书的目的不只是习得他人的教训，还有"<strong>找到文章的范本</strong>"。</p>
+            <p>鹤见良行起初研究柳田国男的文体，但觉得有些不对劲，又参考了宫本常一，<strong>经过不断实践，才形成了自己的文体</strong>。</p>
+            <p>找到"自己的文体"需要 <strong>大量阅读 + 大量写作 + 反复修订</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t72">
+          <div class="card-head">
+            <span class="card-num">72</span>
+            <div class="card-title">每天早晨七点半，通过Gunosy获取策展信息</div>
+          </div>
+          <div class="card-content">
+            <p><strong>Gunosy</strong>等策展服务能：</p>
+            <ul>
+              <li>📰 基于你的阅读历史推荐文章</li>
+              <li>📰 每天早晨7:30 推送</li>
+              <li>📰 节省"找信息"的时间</li>
+              <li>📰 帮你发现"和缘"的新内容</li>
+            </ul>
+            <p>把"信息获取"自动化，<strong>把"信息消化"留给读书</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t73">
+          <div class="card-head">
+            <span class="card-num">73</span>
+            <div class="card-title">对业界关键人物进行定点观测</div>
+          </div>
+          <div class="card-content">
+            <p>选定<strong>10-20位业界关键人物</strong>，持续关注：</p>
+            <ul>
+              <li>📡 Twitter / X</li>
+              <li>📡 博客 / Newsletter</li>
+              <li>📡 YouTube / Podcast</li>
+              <li>📡 新书 / 演讲</li>
+            </ul>
+            <p>把他们当作"<strong>长期饭票</strong>"——<strong>他们看什么，你就看什么</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t74">
+          <div class="card-head">
+            <span class="card-num">74</span>
+            <div class="card-title">开始读书前预先假定目标</div>
+          </div>
+          <div class="card-content">
+            <p>开始一本书之前，<strong>先问自己</strong>：</p>
+            <ul>
+              <li>🎯 <strong>目标1</strong>：我为什么要读这本书？</li>
+              <li>🎯 <strong>目标2</strong>：读完要输出什么？</li>
+              <li>🎯 <strong>目标3</strong>：一周后我要记住哪3点？</li>
+            </ul>
+            <p>带着<strong>明确的产出目标</strong>进入阅读，避免"读完就忘"。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t75">
+          <div class="card-head">
+            <span class="card-num">75</span>
+            <div class="card-title">对过去的资料进行版本升级</div>
+          </div>
+          <div class="card-content">
+            <p>定期<strong>回顾和升级</strong>过去的资料：</p>
+            <ul>
+              <li>🔄 每月：回顾当月读书笔记</li>
+              <li>🔄 每季：整理、更新卡片盒</li>
+              <li>🔄 每年：跨年度对比演化</li>
+            </ul>
+            <p>知识需要"<strong>版本管理</strong>"——同Git的commit一样，每次回顾都是一次升级。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t76">
+          <div class="card-head">
+            <span class="card-num">76</span>
+            <div class="card-title">本章总结：黑泽明导演的剪辑习惯</div>
+          </div>
+          <div class="card-content">
+            <p>科波拉在拍摄《现代启示录》时迟迟无法完成剪辑，黑泽明导演告诉他：<strong>"当天拍完的部分要当天剪辑"</strong>。</p>
+            <p>仿照黑泽明的话：<strong>"当天分配的资料当天解剖，为第二天做好准备"</strong>。</p>
+            <p>解剖的三类信息：</p>
+            <ul>
+              <li>🍞 <strong>菜谱信息</strong> = 企划书的种类</li>
+              <li>🥕 <strong>食材信息</strong> = 单独成立的事实</li>
+              <li>🍽️ <strong>装盘信息</strong> = 呈现技巧</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第7章 ============== -->
+    <section class="section chapter-7" id="ch7">
+      <div class="breadcrumb">📍 当前位置：<a href="#ch7">第7章 用于超级产出的数据库技巧</a></div>
+      <div class="section-header chapter-7">
+        <div class="section-num">7</div>
+        <div class="section-title-block">
+          <h2>用于超级产出的数据库技巧</h2>
+          <div class="subtitle">13个读书技巧 · 读书的终极目的</div>
+        </div>
+      </div>
+
+      <div class="section-intro">
+        <p>本章探讨"<strong>数据库化</strong>"——把所有读过的、看过的、想到的、收集的资料，<strong>结构化、可检索、可持续积累</strong>。</p>
+        <p style="margin-top:10px">作者从2006年起活用博客上传<strong>"读书卡"</strong>：</p>
+        <ul>
+          <li>◎ 值得引用的出色文章摘录和页码</li>
+          <li>◎ 由此浮现的假说</li>
+          <li>◎ 可用于企划的创意</li>
+        </ul>
+        <p>读书的<strong>终极目的在于著书立说</strong>。让我们一起打造"用于超级产出的数据库"。</p>
+      </div>
+
+      <div class="cards">
+        <div class="card" id="t77">
+          <div class="card-head">
+            <span class="card-num">77</span>
+            <div class="card-title">梅棹忠夫的知识生产革命</div>
+          </div>
+          <div class="card-content">
+            <p>梅棹忠夫在《智识的生产技术》中提出"<strong>知识生产</strong>"的概念：</p>
+            <ul>
+              <li>📦 把知识当作"<strong>可加工的素材</strong>"</li>
+              <li>📦 用<strong>卡片、文件夹、抽屉</strong>管理</li>
+              <li>📦 不同主题的<strong>交叉引用</strong></li>
+              <li>📦 让知识在<strong>长期积累中增值</strong></li>
+            </ul>
+            <p>这是日本知识管理的<strong>开山鼻祖</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t78">
+          <div class="card-head">
+            <span class="card-num">78</span>
+            <div class="card-title">鹤见良行的"三本巨大数据"</div>
+          </div>
+          <div class="card-content">
+            <p>民俗学家<strong>鹤见良行</strong>的笔记方法：<strong>"三本巨大数据"</strong></p>
+            <ul>
+              <li>📕 <strong>第一本</strong>：摘录（直接引用）</li>
+              <li>📗 <strong>第二本</strong>：感想（自己的思考）</li>
+              <li>📘 <strong>第三本</strong>：行动（可执行的计划）</li>
+            </ul>
+            <p>三本并行使用，<strong>让读书的"投入"自然流向"产出"</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t79">
+          <div class="card-head">
+            <span class="card-num">79</span>
+            <div class="card-title">在云端聚合知识生产系统</div>
+          </div>
+          <div class="card-content">
+            <p>推荐工具组合：</p>
+            <ul>
+              <li>☁️ <strong>Evernote / Notion</strong>：知识库</li>
+              <li>☁️ <strong>Dropbox / Google Drive</strong>：文件存储</li>
+              <li>☁️ <strong>Pocket / Instapaper</strong>：稍后读</li>
+              <li>☁️ <strong>Roam Research / Obsidian</strong>：双向链接</li>
+            </ul>
+            <p>让数据"<strong>可跨设备、跨时间、跨项目</strong>"使用。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t80">
+          <div class="card-head">
+            <span class="card-num">80</span>
+            <div class="card-title">Dropbox活用术：2天收集300条商品开发线索</div>
+          </div>
+          <div class="card-content">
+            <p>作者在2天内通过Dropbox收集了近 <strong>300 条商品开发线索</strong>：</p>
+            <ul>
+              <li>📂 浏览器截图直接同步到Dropbox</li>
+              <li>📂 用文件夹分类（按品类/按用户）</li>
+              <li>📂 加上"日期+关键词"命名</li>
+              <li>📂 周末统一整理、归纳</li>
+            </ul>
+            <p>把"灵感"变成"可检索的资产"。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t81">
+          <div class="card-head">
+            <span class="card-num">81</span>
+            <div class="card-title">无印良品500日元小型数据库</div>
+          </div>
+          <div class="card-content">
+            <p>用<strong>无印良品的塑料盒（500日元）</strong>做实体数据库：</p>
+            <ul>
+              <li>📦 一个盒 = 一个主题</li>
+              <li>📦 盒内放相关剪报、便签、卡片</li>
+              <li>📦 盒子外贴标签，注明主题</li>
+              <li>📦 定期翻阅，<strong>低成本的"知识具象化"</strong></li>
+            </ul>
+            <p>实体感带来"<strong>拥有感</strong>"，比纯电子数据更让人珍惜。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t82">
+          <div class="card-head">
+            <span class="card-num">82</span>
+            <div class="card-title">头脑风暴读书突破壁障</div>
+          </div>
+          <div class="card-content">
+            <p>遇到难题时，<strong>刻意读无关领域的书</strong>来打破思维定式：</p>
+            <p>从板坂元先生的发言可以看出：通过广泛阅读<strong>完全不同领域</strong>的信息，能从多种角度把握对象，从而<strong>突破壁障</strong>。</p>
+            <ul>
+              <li>🎭 戏剧的表演方法里可能有做演示的关键</li>
+              <li>⚽ 团体运动的练习中可能有总结业务项目的诀窍</li>
+              <li>🎼 音乐的节奏结构里可能有软件架构的灵感</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="t83">
+          <div class="card-head">
+            <span class="card-num">83</span>
+            <div class="card-title">查信直觉，收集"和缘"的文献</div>
+          </div>
+          <div class="card-content">
+            <p>日本文化中的"<strong>和缘</strong>"（にお缘）指<strong>看似无关却命中注定的关联</strong>。</p>
+            <p>读书时要<strong>相信直觉</strong>：</p>
+            <ul>
+              <li>📖 看到书名就心动 → 买</li>
+              <li>📖 读到一半突然联想 → 暂停，记下</li>
+              <li>📖 一本书反复出现 → 必读</li>
+            </ul>
+            <p>这些"<strong>和缘</strong>"往往就是<strong>创新的种子</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t84">
+          <div class="card-head">
+            <span class="card-num">84</span>
+            <div class="card-title">在图书馆一口气制作读书卡</div>
+          </div>
+          <div class="card-content">
+            <p>到图书馆时，<strong>集中处理多本书</strong>：</p>
+            <ul>
+              <li>📑 选定5-10本相关书籍</li>
+              <li>📑 快速翻阅，标记重点</li>
+              <li>📑 现场制作<strong>读书卡</strong></li>
+              <li>📑 离开时带走完整的<strong>"信息包"</strong></li>
+            </ul>
+            <p>利用图书馆的"沉浸环境"，把多本书的精华一次性收割。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t85">
+          <div class="card-head">
+            <span class="card-num">85</span>
+            <div class="card-title">用书夹解放双手</div>
+          </div>
+          <div class="card-content">
+            <p>使用<strong>书夹</strong>代替传统的书签和手指：</p>
+            <ul>
+              <li>📎 双手解放，便于做笔记</li>
+              <li>📎 长时间阅读不疲劳</li>
+              <li>📎 适合通勤电车、床上阅读</li>
+              <li>📎 推荐无印良品或King Jim的书夹</li>
+            </ul>
+            <p>小工具带来<strong>大舒适度</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t86">
+          <div class="card-head">
+            <span class="card-num">86</span>
+            <div class="card-title">产出时用文件夹统一管理材料</div>
+          </div>
+          <div class="card-content">
+            <p>写文章/做企划时，<strong>先建一个产出文件夹</strong>：</p>
+            <ul>
+              <li>📁 01_素材：原始资料、截图</li>
+              <li>📁 02_笔记：读书卡、想法</li>
+              <li>📁 03_草稿：初稿、二稿</li>
+              <li>📁 04_引用：参考文献</li>
+              <li>📁 05_成品：最终输出</li>
+            </ul>
+            <p>让产出的<strong>每一步都有迹可循</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t87">
+          <div class="card-head">
+            <span class="card-num">87</span>
+            <div class="card-title">产出集中在早晨</div>
+          </div>
+          <div class="card-content">
+            <p>从韦伯式习惯的有效性和商业环境看，<strong>早晨加班确实比晚上加班效率更高</strong>。</p>
+            <p>凌晨时的公司空无一人，电话也不会响，<strong>真的能够集中精神</strong>。作者回忆高中时每次测验前一周，<strong>早晨六点半去学校教室</strong>，和朋友进行"集中测验学习"，直至开始上课。</p>
+            <ul>
+              <li>🌅 6:00 - 7:00 起床、准备工作</li>
+              <li>🌅 7:00 - 9:00 集中产出（最关键的2小时）</li>
+              <li>🌅 9:00 之后处理会议、邮件等</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="t88">
+          <div class="card-head">
+            <span class="card-num">88</span>
+            <div class="card-title">读书的终极目的：著书立说</div>
+          </div>
+          <div class="card-content">
+            <p>所有读书技巧最终都指向<strong>著书立说</strong>。这不是说每个人都要当作家，而是：</p>
+            <ul>
+              <li>📝 把你"<strong>读过</strong>"的整理成"可被他人阅读"的形态</li>
+              <li>📝 把"<strong>想到</strong>"的整理成"可被他人理解"的形态</li>
+              <li>📝 把"<strong>做到</strong>"的整理成"可被他人复用"的形态</li>
+            </ul>
+            <p>著书立说 = <strong>把自己活过的证据，留给世界</strong>。</p>
+          </div>
+        </div>
+
+        <div class="card" id="t89">
+          <div class="card-head">
+            <span class="card-num">89</span>
+            <div class="card-title">本章总结：备好用于产出的数据库</div>
+          </div>
+          <div class="card-content">
+            <p>本章的核心：<strong>"备好用于产出的数据库"</strong>。</p>
+            <p>三大支柱：</p>
+            <ul>
+              <li>🗄️ <strong>云端化</strong>：Evernote + Dropbox + Notion</li>
+              <li>🗄️ <strong>结构化</strong>：文件夹系统 + 标签 + 双向链接</li>
+              <li>🗄️ <strong>常态化</strong>：每天早晨2小时持续产出</li>
+            </ul>
+            <p>让知识"<strong>流动起来</strong>"——从书本到卡片，从卡片到文章，从文章到书籍。</p>
+            <div class="quote">读书的终极目的在于著书立说。<br>——原尻淳一</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final Summary -->
+    <div class="concept-block" style="margin-top: 60px;">
+      <h3>🎯 全书核心心法</h3>
+      <p>《高效能阅读》不是教人"快速读更多书"，而是教人<strong>"为产出而读书"</strong>。</p>
+      <p style="margin-top:10px">
+        真正的读书循环：<strong>3D（体验）→ 好奇心（内在动机）→ 2D（读书）→ 笔记 → 产出 → 分享</strong>
+      </p>
+      <p style="margin-top:10px">
+        从第1章的"变成读书体质"到第7章的"超级产出数据库"，作者呈现的并非89个零散技巧，而是<strong>一个完整的"读书人生系统"</strong>。
+      </p>
+      <p style="margin-top:14px; text-align:center; font-weight:600; color:#3730a3">
+        📚 任何人都能实践的"完全阅读术"——在根源上终结失败的读书体验 ✨
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>《高效能阅读》知识脑图 · 由 Claude 自动整理生成 · 基于原尻淳一著作（后浪出版公司）</p>
+      <p style="margin-top:4px">📌 提示：点击左侧导航栏可快速跳转到任意章节或读书技巧</p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ===== Smooth scroll for nav links =====
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) {
+        // Update active state
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+        // Auto-expand parent chapter
+        const group = this.closest('.nav-group');
+        if (group) {
+          expandGroup(group);
+          const chapter = document.querySelector(`.nav-chapter[data-target="${group.id}"]`);
+          if (chapter) chapter.classList.remove('collapsed');
+        }
+        // Scroll
+        const offset = 20;
+        const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+        // Update hash
+        history.pushState(null, '', href);
+      }
+    }
+  });
+});
+
+// ===== Collapse / expand logic =====
+const navChapters = document.querySelectorAll('.nav-chapter');
+
+navChapters.forEach(chapter => {
+  chapter.addEventListener('click', function() {
+    const targetId = this.getAttribute('data-target');
+    const group = document.getElementById(targetId);
+    if (!group) return;
+    const isCollapsed = this.classList.contains('collapsed');
+    if (isCollapsed) {
+      this.classList.remove('collapsed');
+      expandGroup(group);
+    } else {
+      this.classList.add('collapsed');
+      collapseGroup(group);
+    }
+  });
+});
+
+function collapseGroup(group) {
+  // Get current height for smooth animation
+  group.style.maxHeight = group.scrollHeight + 'px';
+  // Force reflow
+  group.offsetHeight;
+  group.style.maxHeight = '0px';
+  group.classList.add('collapsed');
+  setTimeout(() => {
+    if (group.classList.contains('collapsed')) {
+      group.style.maxHeight = '';
+    }
+  }, 320);
+}
+
+function expandGroup(group) {
+  group.classList.remove('collapsed');
+  group.style.maxHeight = group.scrollHeight + 'px';
+  setTimeout(() => {
+    if (!group.classList.contains('collapsed')) {
+      group.style.maxHeight = '';
+    }
+  }, 320);
+}
+
+// ===== Expand all / Collapse all =====
+document.getElementById('expandAllBtn').addEventListener('click', function() {
+  document.querySelectorAll('.nav-group').forEach(g => expandGroup(g));
+  document.querySelectorAll('.nav-chapter').forEach(c => c.classList.remove('collapsed'));
+});
+
+document.getElementById('collapseAllBtn').addEventListener('click', function() {
+  document.querySelectorAll('.nav-group').forEach(g => collapseGroup(g));
+  document.querySelectorAll('.nav-chapter').forEach(c => c.classList.add('collapsed'));
+});
+
+// ===== Map section id -> group id =====
+function groupIdForSection(sectionId) {
+  if (sectionId === 'preface') return 'group-preface';
+  if (/^ch\d+$/.test(sectionId)) return 'group-' + sectionId;
+  if (/^t\d+$/.test(sectionId)) {
+    // t01-t13 -> ch1, t14-t25 -> ch2, ...
+    const num = parseInt(sectionId.slice(1), 10);
+    if (num <= 13) return 'group-ch1';
+    if (num <= 25) return 'group-ch2';
+    if (num <= 37) return 'group-ch3';
+    if (num <= 51) return 'group-ch4';
+    if (num <= 65) return 'group-ch5';
+    if (num <= 76) return 'group-ch6';
+    return 'group-ch7';
+  }
+  return null;
+}
+
+// ===== Active section highlighting on scroll =====
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link');
+let currentGroupId = 'group-preface';
+
+function updateActiveNav() {
+  const scrollPos = window.scrollY + 120;
+  let current = '';
+  sections.forEach(section => {
+    if (section.offsetTop <= scrollPos) {
+      current = '#' + section.id;
+    }
+  });
+  if (current) {
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === current) {
+        link.classList.add('active');
+        // Auto-expand the chapter containing the active section
+        const sectionId = current.slice(1);
+        const groupId = groupIdForSection(sectionId);
+        if (groupId && groupId !== currentGroupId) {
+          // Collapse previous group
+          if (currentGroupId) {
+            const prevGroup = document.getElementById(currentGroupId);
+            const prevChapter = document.querySelector(`.nav-chapter[data-target="${currentGroupId}"]`);
+            // Only auto-collapse if user hasn't manually expanded
+            if (prevGroup && !prevGroup.dataset.userExpanded) {
+              collapseGroup(prevGroup);
+              if (prevChapter) prevChapter.classList.add('collapsed');
+            }
+          }
+          // Expand current group
+          if (groupId) {
+            const group = document.getElementById(groupId);
+            const chapter = document.querySelector(`.nav-chapter[data-target="${groupId}"]`);
+            if (group && group.classList.contains('collapsed')) {
+              expandGroup(group);
+              if (chapter) chapter.classList.remove('collapsed');
+            }
+          }
+          currentGroupId = groupId;
+        }
+        // Scroll sidebar to keep active item visible
+        const sidebar = document.getElementById('sidebar');
+        const rect = link.getBoundingClientRect();
+        if (rect.top < 80 || rect.bottom > window.innerHeight - 50) {
+          link.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+      }
+    });
+  }
+}
+
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+updateActiveNav();
+
+// ===== Search functionality =====
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', function() {
+  const query = this.value.toLowerCase().trim();
+  const navItems = document.querySelectorAll('.nav-item');
+  const navGroups = document.querySelectorAll('.nav-group');
+  const chapters = document.querySelectorAll('.nav-chapter');
+
+  if (!query) {
+    navItems.forEach(item => item.style.display = '');
+    chapters.forEach(ch => ch.style.display = '');
+    navGroups.forEach(g => g.classList.remove('collapsed'));
+    document.querySelectorAll('.nav-chapter').forEach(c => c.classList.remove('collapsed'));
+    return;
+  }
+
+  navItems.forEach(item => {
+    const text = item.textContent.toLowerCase();
+    const visible = text.includes(query);
+    item.style.display = visible ? '' : 'none';
+  });
+
+  // Show all chapters and groups, hide chapter headers if no items visible
+  navGroups.forEach(g => g.classList.remove('collapsed'));
+  document.querySelectorAll('.nav-chapter').forEach(c => c.classList.remove('collapsed'));
+
+  chapters.forEach(ch => {
+    let next = ch.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('nav-chapter')) {
+      const items = next.querySelectorAll ? next.querySelectorAll('.nav-item') : [];
+      items.forEach(i => {
+        if (i.style.display !== 'none') hasVisible = true;
+      });
+      next = next.nextElementSibling;
+    }
+    ch.style.display = hasVisible ? '' : 'none';
+  });
+});
+</script>
+
+</body>
+</html>
