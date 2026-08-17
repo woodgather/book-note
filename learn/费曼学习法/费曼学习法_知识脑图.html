@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>费曼学习法 · 知识脑图</title>
+<style>
+  :root {
+    --color-bg: #fafaf7;
+    --color-bg-soft: #f4f1ec;
+    --color-card: #ffffff;
+    --color-border: #e6e0d5;
+    --color-text: #2a2a2a;
+    --color-text-soft: #6b6b6b;
+    --color-text-muted: #9a9a9a;
+    --color-accent: #b85c38;
+    --color-accent-soft: #f3e3da;
+    --color-secondary: #2c5e5e;
+    --color-secondary-soft: #dde9e9;
+    --color-step-1: #b85c38;
+    --color-step-2: #2c5e5e;
+    --color-step-3: #6b5b95;
+    --color-step-4: #c08552;
+    --color-step-5: #4a6b3a;
+    --color-step-6: #8b5a3c;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.08);
+    --radius: 10px;
+    --radius-sm: 6px;
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans CN", sans-serif;
+    color: var(--color-text);
+    background: var(--color-bg);
+    line-height: 1.7;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== Layout ===== */
+  .layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar {
+    background: var(--color-bg-soft);
+    border-right: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 32px 0;
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+  .sidebar::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+  .brand {
+    padding: 0 28px 24px;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 20px;
+  }
+
+  .brand-tag {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .brand h1 {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+
+  .brand-sub {
+    font-size: 12px;
+    color: var(--color-text-soft);
+  }
+
+  .nav { list-style: none; }
+
+  .nav-item { margin-bottom: 4px; }
+
+  .nav-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 28px;
+    color: var(--color-text-soft);
+    text-decoration: none;
+    font-size: 13.5px;
+    line-height: 1.5;
+    transition: var(--transition);
+    border-left: 3px solid transparent;
+    cursor: pointer;
+  }
+
+  .nav-link:hover {
+    color: var(--color-text);
+    background: rgba(184, 92, 56, 0.04);
+  }
+
+  .nav-link.active {
+    color: var(--color-accent);
+    background: var(--color-accent-soft);
+    border-left-color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .nav-link .num {
+    color: var(--color-text-muted);
+    font-size: 11px;
+    font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
+    min-width: 28px;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .nav-link.active .num { color: var(--color-accent); }
+
+  .nav-group {
+    margin-top: 14px;
+  }
+
+  .nav-group:first-child { margin-top: 0; }
+
+  .nav-group-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .nav-group-title::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 14px;
+    border-radius: 2px;
+  }
+
+  .nav-group[data-step="step1"] .nav-group-title::before { background: var(--color-step-1); }
+  .nav-group[data-step="step2"] .nav-group-title::before { background: var(--color-step-2); }
+  .nav-group[data-step="step3"] .nav-group-title::before { background: var(--color-step-3); }
+  .nav-group[data-step="step4"] .nav-group-title::before { background: var(--color-step-4); }
+  .nav-group[data-step="step5"] .nav-group-title::before { background: var(--color-step-5); }
+  .nav-group[data-step="step6"] .nav-group-title::before { background: var(--color-step-6); }
+
+  .nav-group[data-step="step1"] .nav-group-title { color: var(--color-step-1); }
+  .nav-group[data-step="step2"] .nav-group-title { color: var(--color-step-2); }
+  .nav-group[data-step="step3"] .nav-group-title { color: var(--color-step-3); }
+  .nav-group[data-step="step4"] .nav-group-title { color: var(--color-step-4); }
+  .nav-group[data-step="step5"] .nav-group-title { color: var(--color-step-5); }
+  .nav-group[data-step="step6"] .nav-group-title { color: var(--color-step-6); }
+
+  .nav-group-label {
+    display: block;
+    font-size: 9.5px;
+    color: var(--color-text-muted);
+    letter-spacing: 0.5px;
+    margin-top: 1px;
+    font-weight: 500;
+  }
+
+  /* ===== Collapsible groups ===== */
+  .nav-group-title {
+    cursor: pointer;
+    user-select: none;
+    transition: var(--transition);
+    position: relative;
+  }
+
+  .nav-group-title:hover {
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  .nav-group-toggle {
+    margin-left: auto;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s ease;
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+  }
+
+  .nav-group-toggle::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    margin-top: -3px;
+    transition: transform 0.25s ease;
+  }
+
+  .nav-group.collapsed .nav-group-toggle::before {
+    transform: rotate(-45deg);
+    margin-top: 0;
+  }
+
+  .nav-group-content {
+    overflow: hidden;
+    max-height: 1500px;
+    transition: max-height 0.3s ease, opacity 0.25s ease;
+    opacity: 1;
+  }
+
+  .nav-group.collapsed .nav-group-content {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  /* ===== Toolbar ===== */
+  .nav-toolbar {
+    display: flex;
+    gap: 6px;
+    padding: 0 28px 16px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .nav-toolbar-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 8px;
+    font-size: 11px;
+    color: var(--color-text-soft);
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+  }
+
+  .nav-toolbar-btn:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+  }
+
+  .nav-toolbar-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .nav-link.sub {
+    padding-left: 56px;
+    font-size: 12.5px;
+    color: var(--color-text-muted);
+  }
+
+  .nav-link.sub .num { display: none; }
+
+  .nav-link.sub.active {
+    color: var(--color-secondary);
+    background: var(--color-secondary-soft);
+    border-left-color: var(--color-secondary);
+  }
+
+  /* ===== Main ===== */
+  .main {
+    padding: 56px 64px;
+    max-width: 980px;
+  }
+
+  .hero {
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .hero-label {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--color-accent);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 16px;
+    color: var(--color-text);
+  }
+
+  .hero p {
+    font-size: 16px;
+    color: var(--color-text-soft);
+    line-height: 1.8;
+  }
+
+  .hero-meta {
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+
+  /* ===== Step Sections ===== */
+  .step {
+    margin-bottom: 80px;
+    scroll-margin-top: 32px;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .step[data-step="step1"] .step-header { border-bottom-color: var(--color-step-1); }
+  .step[data-step="step2"] .step-header { border-bottom-color: var(--color-step-2); }
+  .step[data-step="step3"] .step-header { border-bottom-color: var(--color-step-3); }
+  .step[data-step="step4"] .step-header { border-bottom-color: var(--color-step-4); }
+  .step[data-step="step5"] .step-header { border-bottom-color: var(--color-step-5); }
+  .step[data-step="step6"] .step-header { border-bottom-color: var(--color-step-6); }
+
+  .step-label {
+    font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .step[data-step="step1"] .step-label { color: var(--color-step-1); }
+  .step[data-step="step2"] .step-label { color: var(--color-step-2); }
+  .step[data-step="step3"] .step-label { color: var(--color-step-3); }
+  .step[data-step="step4"] .step-label { color: var(--color-step-4); }
+  .step[data-step="step5"] .step-label { color: var(--color-step-5); }
+  .step[data-step="step6"] .step-label { color: var(--color-step-6); }
+
+  .step h2 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+    flex: 1;
+  }
+
+  .step-keyword {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 4px 12px;
+    background: var(--color-bg-soft);
+    border-radius: 20px;
+    color: var(--color-text-soft);
+    margin-left: 8px;
+    font-weight: 500;
+  }
+
+  .step-keyword::before {
+    content: "关键词：";
+    font-size: 10px;
+    color: var(--color-text-muted);
+  }
+
+  .step-intro {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-accent);
+    padding: 18px 22px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 32px;
+    color: var(--color-text-soft);
+    font-size: 14.5px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .step[data-step="step1"] .step-intro { border-left-color: var(--color-step-1); }
+  .step[data-step="step2"] .step-intro { border-left-color: var(--color-step-2); }
+  .step[data-step="step3"] .step-intro { border-left-color: var(--color-step-3); }
+  .step[data-step="step4"] .step-intro { border-left-color: var(--color-step-4); }
+  .step[data-step="step5"] .step-intro { border-left-color: var(--color-step-5); }
+  .step[data-step="step6"] .step-intro { border-left-color: var(--color-step-6); }
+
+  /* ===== Chapter ===== */
+  .chapter {
+    margin-bottom: 48px;
+    scroll-margin-top: 32px;
+  }
+
+  .chapter-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .chapter-num {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .chapter h3 {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--color-text);
+  }
+
+  .chapter-content {
+    background: var(--color-card);
+    padding: 20px 24px;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-text-soft);
+    line-height: 1.85;
+    margin-bottom: 24px;
+    font-size: 14.5px;
+  }
+
+  /* ===== Sections ===== */
+  .section {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    scroll-margin-top: 32px;
+  }
+
+  .section:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--color-border);
+  }
+
+  .section-title::before {
+    content: "▍";
+    color: var(--color-accent);
+    font-size: 14px;
+  }
+
+  .section-body {
+    color: var(--color-text-soft);
+    line-height: 1.85;
+    font-size: 14.5px;
+    white-space: pre-line;
+  }
+
+  /* ===== Misc ===== */
+  .preface, .postscript {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-sm);
+    scroll-margin-top: 32px;
+  }
+
+  .preface h2, .postscript h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .preface h2::before, .postscript h2::before {
+    content: "■";
+    color: var(--color-accent);
+    font-size: 14px;
+  }
+
+  .preface-section {
+    margin-bottom: 20px;
+  }
+
+  .preface-section:last-child { margin-bottom: 0; }
+
+  .preface-section h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: 10px;
+  }
+
+  .preface-section p, .postscript p {
+    color: var(--color-text-soft);
+    line-height: 1.85;
+    font-size: 14.5px;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 1024px) {
+    .layout { grid-template-columns: 280px 1fr; }
+    .main { padding: 40px 36px; }
+  }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar {
+      position: relative;
+      height: auto;
+      max-height: 50vh;
+      border-right: none;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .main { padding: 32px 24px; }
+    .hero h1 { font-size: 28px; }
+    .step h2 { font-size: 22px; }
+    .chapter h3 { font-size: 18px; }
+  }
+
+  /* ===== Print ===== */
+  @media print {
+    .sidebar { display: none; }
+    .layout { grid-template-columns: 1fr; }
+    .main { padding: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-tag">知识脑图</div>
+      <h1>费曼学习法</h1>
+      <div class="brand-sub">用输出倒逼输入 · 尹红心 李伟</div>
+    </div>
+
+    <div class="nav-toolbar">
+      <button class="nav-toolbar-btn" id="btn-expand-all" title="展开所有分组">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6 L8 2 L12 6"/>
+          <path d="M4 10 L8 14 L12 10"/>
+        </svg>
+        <span>展开</span>
+      </button>
+      <button class="nav-toolbar-btn" id="btn-collapse-all" title="折叠所有分组">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 6 L8 12 L14 6"/>
+        </svg>
+        <span>折叠</span>
+      </button>
+    </div>
+
+    <nav>
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link" href="#preface"><span class="num">序</span><span>前言</span></a>
+        </li>
+
+        <li class="nav-item">
+          <div class="nav-group" data-step="step1">
+            <div class="nav-group-title">
+              <span>STEP ONE</span>
+              <span style="flex:1">学习的本质</span>
+              <span class="nav-group-toggle"></span>
+            </div>
+            <div class="nav-group-content">
+              <a class="nav-link sub" href="#ch1">第一章 · 掌握一门知识有多难</a>
+              <a class="nav-link sub" href="#ch1-1">两种学习，你是哪一种？</a>
+              <a class="nav-link sub" href="#ch1-2">与真实的世界建立有效联系</a>
+              <a class="nav-link sub" href="#ch1-3">远见·穿透力·智慧</a>
+              <a class="nav-link sub" href="#ch2">第二章 · 何为"费曼学习法"</a>
+              <a class="nav-link sub" href="#ch2-1">迷人的"费曼技巧"</a>
+              <a class="nav-link sub" href="#ch2-2">简单高效的思维模式</a>
+              <a class="nav-link sub" href="#ch2-3">费曼学习五部曲</a>
+            </div>
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <div class="nav-group" data-step="step2">
+            <div class="nav-group-title">
+              <span>STEP TWO</span>
+              <span style="flex:1">确立学习对象</span>
+              <span class="nav-group-toggle"></span>
+            </div>
+            <div class="nav-group-content">
+              <a class="nav-link sub" href="#ch3">第三章 · 我们为什么学习</a>
+              <a class="nav-link sub" href="#ch3-1">知道为了什么而学习</a>
+              <a class="nav-link sub" href="#ch3-2">追求四个方面的进步</a>
+              <a class="nav-link sub" href="#ch4">第四章 · 聚焦目标</a>
+              <a class="nav-link sub" href="#ch4-1">如何找到正确的方向？</a>
+              <a class="nav-link sub" href="#ch4-2">如何找到真正的兴趣？</a>
+              <a class="nav-link sub" href="#ch5">第五章 · 规划：与目标建立"强联系"</a>
+              <a class="nav-link sub" href="#ch5-1">目标是否错误？</a>
+              <a class="nav-link sub" href="#ch5-2">有没有更好的方向？</a>
+              <a class="nav-link sub" href="#ch5-3">规划高效能学习之路</a>
+              <a class="nav-link sub" href="#ch6">第六章 · 费曼技巧：目标原则</a>
+              <a class="nav-link sub" href="#ch6-1">目标的全面性原则</a>
+              <a class="nav-link sub" href="#ch6-2">目标的重点性原则</a>
+              <a class="nav-link sub" href="#ch6-3">目标的挑战性原则</a>
+              <a class="nav-link sub" href="#ch6-4">目标的可行性原则</a>
+              <a class="nav-link sub" href="#ch6-5">目标的可调性原则</a>
+            </div>
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <div class="nav-group" data-step="step3">
+            <div class="nav-group-title">
+              <span>STEP THREE</span>
+              <span style="flex:1">理解要学的知识</span>
+              <span class="nav-group-toggle"></span>
+            </div>
+            <div class="nav-group-content">
+              <a class="nav-link sub" href="#ch7">第七章 · 归类与对比知识来源</a>
+              <a class="nav-link sub" href="#ch7-1">有逻辑地系统化</a>
+              <a class="nav-link sub" href="#ch7-2">筛选可靠知识</a>
+              <a class="nav-link sub" href="#ch7-3">分辨"假知识"</a>
+              <a class="nav-link sub" href="#ch8">第八章 · 思维和流程导图</a>
+              <a class="nav-link sub" href="#ch8-1">横向拓展：可视化</a>
+              <a class="nav-link sub" href="#ch8-2">画出一个"学习流程"</a>
+              <a class="nav-link sub" href="#ch9">第九章 · 阅读与记忆的原则</a>
+              <a class="nav-link sub" href="#ch10">第十章 · 第一次复述</a>
+              <a class="nav-link sub" href="#ch10-1">建立长时记忆</a>
+              <a class="nav-link sub" href="#ch10-2">加深对知识的理解</a>
+              <a class="nav-link sub" href="#ch10-3">更加主动地学习</a>
+              <a class="nav-link sub" href="#ch10-4">对知识展开联想</a>
+              <a class="nav-link sub" href="#ch10-5">得到关于问题的反馈</a>
+              <a class="nav-link sub" href="#ch11">第十一章 · 费曼技巧：系统化原则</a>
+            </div>
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <div class="nav-group" data-step="step4">
+            <div class="nav-group-title">
+              <span>STEP FOUR</span>
+              <span style="flex:1">输出是最强的学习力</span>
+              <span class="nav-group-toggle"></span>
+            </div>
+            <div class="nav-group-content">
+              <a class="nav-link sub" href="#ch12">第十二章 · 以教代学</a>
+              <a class="nav-link sub" href="#ch12-1">谁都能听懂</a>
+              <a class="nav-link sub" href="#ch12-2">简洁和有深度的分析</a>
+              <a class="nav-link sub" href="#ch12-3">强化认知</a>
+              <a class="nav-link sub" href="#ch12-4">让7岁孩子理解高等术语？</a>
+              <a class="nav-link sub" href="#ch13">第十三章 · 用输出倒逼输入</a>
+              <a class="nav-link sub" href="#ch13-1">输出的"记忆学原理"</a>
+              <a class="nav-link sub" href="#ch13-2">场景和思维模拟</a>
+              <a class="nav-link sub" href="#ch13-3">输出是主动学习</a>
+              <a class="nav-link sub" href="#ch14">第十四章 · 第二次复述</a>
+              <a class="nav-link sub" href="#ch14-1">利用分组讨论的机会</a>
+              <a class="nav-link sub" href="#ch14-2">为知识注入你的灵魂</a>
+              <a class="nav-link sub" href="#ch15">第十五章 · 费曼技巧：输出原则</a>
+            </div>
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <div class="nav-group" data-step="step5">
+            <div class="nav-group-title">
+              <span>STEP FIVE</span>
+              <span style="flex:1">回顾和反思</span>
+              <span class="nav-group-toggle"></span>
+            </div>
+            <div class="nav-group-content">
+              <a class="nav-link sub" href="#ch16">第十六章 · 怀疑和探索</a>
+              <a class="nav-link sub" href="#ch16-1">重新对比数据和事实</a>
+              <a class="nav-link sub" href="#ch16-2">如果正确</a>
+              <a class="nav-link sub" href="#ch16-3">如果不正确</a>
+              <a class="nav-link sub" href="#ch16-4">用于修正的策略</a>
+              <a class="nav-link sub" href="#ch16-5">发现缺口</a>
+              <a class="nav-link sub" href="#ch16-6">回归知识的本质</a>
+              <a class="nav-link sub" href="#ch17">第十七章 · 寻找反证</a>
+              <a class="nav-link sub" href="#ch17-1">重视否定式证据</a>
+              <a class="nav-link sub" href="#ch17-2">当知识卡壳</a>
+              <a class="nav-link sub" href="#ch17-3">争议是深度学习的切入点</a>
+              <a class="nav-link sub" href="#ch17-4">没有"最可靠"的结论</a>
+              <a class="nav-link sub" href="#ch17-5">建立多角度类比关系</a>
+              <a class="nav-link sub" href="#ch18">第十八章 · "内容留存率"</a>
+              <a class="nav-link sub" href="#ch18-1">不是学得越多效能越高</a>
+              <a class="nav-link sub" href="#ch18-2">重复"有用的学习"</a>
+              <a class="nav-link sub" href="#ch18-3">留意知识的背后</a>
+              <a class="nav-link sub" href="#ch19">第十九章 · 费曼技巧：回顾原则</a>
+              <a class="nav-link sub" href="#ch19-1">第一步：怀疑和探索</a>
+              <a class="nav-link sub" href="#ch19-2">第二步：寻找反证</a>
+              <a class="nav-link sub" href="#ch19-3">第三步：加大"内容留存率"</a>
+            </div>
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <div class="nav-group" data-step="step6">
+            <div class="nav-group-title">
+              <span>STEP SIX</span>
+              <span style="flex:1">简化和吸收</span>
+              <span class="nav-group-toggle"></span>
+            </div>
+            <div class="nav-group-content">
+              <a class="nav-link sub" href="#ch20">第二十章 · 好东西太多也会消化不良</a>
+              <a class="nav-link sub" href="#ch20-1">如何简化知识的要点？</a>
+              <a class="nav-link sub" href="#ch20-2">如何吸收我们需要的部分？</a>
+              <a class="nav-link sub" href="#ch20-3">在线学习中如何简化知识？</a>
+              <a class="nav-link sub" href="#ch21">第二十一章 · 纵向拓展和精进</a>
+              <a class="nav-link sub" href="#ch22">第二十二章 · 深度挖掘，知识内化</a>
+              <a class="nav-link sub" href="#ch22-1">形成自己的知识体系</a>
+              <a class="nav-link sub" href="#ch22-2">费曼五条重要的建议</a>
+              <a class="nav-link sub" href="#ch23">第二十三章 · 第三次复述</a>
+              <a class="nav-link sub" href="#ch23-1">建立原创观点</a>
+              <a class="nav-link sub" href="#ch23-2">形成有影响力的新知识</a>
+              <a class="nav-link sub" href="#ch24">第二十四章 · 费曼技巧：简化原则</a>
+              <a class="nav-link sub" href="#postscript">后记</a>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <header class="hero">
+      <div class="hero-label">FEYNMAN TECHNIQUE · KNOWLEDGE MAP</div>
+      <h1>费曼学习法：用输出倒逼输入</h1>
+      <p>本书系统阐述了诺贝尔物理学奖得主理查德·费曼的学习方法论，将其提炼为五个核心步骤：确立目标、理解对象、以教代学、回顾反思、简化吸收。从思维方式的深度改造出发，帮助读者从根本上提升学习效能。</p>
+      <div class="hero-meta">尹红心 · 李伟 著 · 江苏凤凰文艺出版社</div>
+    </header>
+
+    <!-- 前言 -->
+    <section class="preface" id="preface">
+      <h2>前言</h2>
+      <div class="preface-section">
+        <h4>高效能的"费曼学习法"</h4>
+        <p>物理学家费曼一生有着足以铭刻史册的学术成就，他也因自己独特的教学方式广为人知，深受推崇。在大学教授物理学时，他总是能够深入浅出地将复杂的专业理论讲得通俗易懂，无论多么抽象、晦涩的概念，都能用非常生活化的例子表达出来。费曼学习法的核心是——当你准备学习一门新知识时，必须站在传授者的立场，假设自己要向别人讲解这门知识。那么你一定要用最简洁、清晰和易于理解的语言表达出来，才能让行外的人也能听懂。费曼说："最好是几岁的小孩也能明白你在说什么。"他制定了一个简单易行的流程：确立目标 → 理解对象 → 以教代学 → 回顾反思 → 简化吸收。</p>
+      </div>
+      <div class="preface-section">
+        <h4>学习的目的是输出</h4>
+        <p>在书中您会看到，费曼学习法亦是对"学习本质"的回归，也是对我们思维和分析方式的一次彻底改造。费曼认为，输出不仅仅是学习的最佳方式，同时也是学习的终极目的——当我们要学习一种新知识时，用最直白的语言去阐述它时，大脑就会从记忆库中提取那些熟悉的信息，在旧的知识和新的概念中产生强大的关联，新的知识便容易得到大脑彻底的理解。最重要的一步是，你要反复地进行这一过程，使大脑多进行创造性的联想，我们对新知识的吸收和应用的能力才会变得更强。</p>
+      </div>
+      <div class="preface-section">
+        <h4>本书的要点</h4>
+        <p>本书第一部分介绍学习的本质和费曼分析法的核心要素、思维模式与主要步骤；第二部分讲述如何确立和锁定学习目标；第三、四部分深入讲解理解一门知识的技巧和以输出代替输入的学习方式；最后两部分是费曼分析法中如何回顾与简化知识的两个步骤。通过对于知识输出过程的回顾，我们可以从中发现自己的弱项，重新理解和解决学习中的难点，进行再一次输出；通过简化，我们能够对已经学到的内容进行提炼总结，顺利地完成知识的内化，形成我们自己的知识体系。</p>
+      </div>
+    </section>
+
+    <!-- =================== STEP ONE =================== -->
+    <section class="step" id="step1" data-step="step1">
+      <header class="step-header">
+        <span class="step-label">STEP ONE</span>
+        <h2>学习的本质<span class="step-keyword">思维</span></h2>
+      </header>
+      <div class="step-intro">费曼学习法是一种顶级的思维方式，它能帮助我们真正掌握一门知识，因为它揭示了学习和思考的本质。</div>
+
+      <article class="chapter" id="ch1">
+        <header class="chapter-header">
+          <span class="chapter-num">第一章</span>
+          <h3>掌握一门知识有多难</h3>
+        </header>
+        <div class="chapter-content">我的好朋友、国内一家商业机构的高管唐先生，他的儿子小唐今年 25 岁，即将从美国普林斯顿大学毕业。从中学开始，小唐就拥有自己的学习小组，每个学习小组都代表了不同的兴趣和方向。到了大学时，他的学习小组只剩下了两个：环保和商业管理。小唐的学习方法与传统的学校模式迥然有异——他有目的地主动学习，在小组讨论的基础上不断地接触新信息，总结分析，消化吸收，再做出选择。这和本书倡导的费曼学习法一脉相承。</div>
+
+        <section class="section" id="ch1-1">
+          <h4 class="section-title">两种学习，你是哪一种？</h4>
+          <div class="section-body">传统的学习方法具有三个特点：第一，以输入为主——死记硬背，或叠加阅读量，量变达成质变；第二，教条主义——盲目崇信书上的理论或框架，视野狭窄；第三，标准化应用——严格按照学到的知识去实践，遇到问题生搬硬套，缺乏创新。
+
+"以输入为主"的优点是能在短时间内积淀尽可能多的信息，缺点是内容留存率低，今天记住的东西过几天便"十不留三"。"教条主义"节省了接受知识的时间，缺点是屏蔽了其他的可能性。"标准化应用"在匹配场景下能快速高效，缺点是一旦场景变换就水土不服。
+
+小唐的成功是另一种学习：用时少，效率高，结果好。"在线学习"是费曼学习法得以贯彻的一种体现。当你将输出作为输入的辅助工具时，学习的效果可以立时提升百倍。好消息是，只要找对了方法，学习就没有那么难！</div>
+        </section>
+
+        <section class="section" id="ch1-2">
+          <h4 class="section-title">与真实的世界建立有效联系</h4>
+          <div class="section-body">我们还需要明白了解知识、掌握知识的目的。真正高质量的学习，一定能够让人融入真实的世界。学习最重要的是"真实"，它必须让人可以与时代同步，理解身边正在发生的一切，促进我们对知识的运用和创新。换言之，通过学习，我们要与真实的世界建立有效的联系。
+
+从对知识的学习中获取竞争优势固然是必不可少的，但是，当你掌握一门知识的目的只是要在某些方面超越别人时——这种想法越强烈，你的起跑线就越远，学习的难度就越大。只有将学习从功利性的导向中收回来，专注于如何吃透一门知识，怎样让这些知识在今天就可以让自己变得更好，你才能真正地提高学习能力。
+
+提高学习的能力，比学到一门知识更重要。</div>
+        </section>
+
+        <section class="section" id="ch1-3">
+          <h4 class="section-title">远见 · 穿透力 · 智慧</h4>
+          <div class="section-body">费曼学习法为我们提供的是三种与众不同的能力：
+
+第一，远见——通过解读知识传递给我们的信息，判断未来的趋势，而不是仅仅记住这些信息。
+
+第二，穿透力——通过费曼分析技巧，从碎片化的知识中看清事物的本质，快速解决问题，掌握事物的规律。
+
+第三，智慧——通过以输出的方式浓缩、重演知识，汲取精华，使知识为我所用，和环境相匹配，形成自己的知识体系。
+
+学习，究其根本是思维方式的比拼，不是知识存储的较量，也不是学位的竞争。只有获取更强大的学习能力，我们才能更好地开发自我，在社会的金字塔结构中争取一个有利的位置。这不是由你学到的知识量决定的，而是由你学习、掌握、理解并运用知识的能力决定的。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch2">
+        <header class="chapter-header">
+          <span class="chapter-num">第二章</span>
+          <h3>何为"费曼学习法"</h3>
+        </header>
+        <div class="chapter-content">理查德·费曼对华而不实的东西毫无兴趣，这位不拘小节的物理学天才对知识的理解到了一种收发自如的境界。他可以轻松地向任何一个人解读最复杂的知识，并且保证对方能够听懂。当我第一次接触到费曼的学习体系时，便立刻意识到这正是中国的年轻人最需要的。在越来越快的社会节奏和海量的信息影响下，掌握一门知识相比过去变得更困难了。</div>
+
+        <section class="section" id="ch2-1">
+          <h4 class="section-title">迷人的"费曼技巧"</h4>
+          <div class="section-body">作为著名的诺贝尔奖物理学家，理查德·费曼非常理解"记住知识"和"了解知识"之间的差别。这也是他成功最重要的原因之一。费曼在研究和教学的过程中创造了费曼学习法（也被称为"费曼技巧"），确保了他比别人对于事物的了解更为透彻。
+
+费曼学习法的内涵就是这么迷人：它重新定义了学习的本质，学习不再是枯燥的书写和记忆，而是和讲故事一样简单！运用费曼学习法，我们只需要花上 20 分钟就能深入地理解一个"知识点"，形成深刻和难以遗忘的记忆。正确的学习是，我们了解了这些知识的内核，知道它们是怎么回事；我们也可以从自己的视角重新解读它们，并且向外传播，让更多的人知道。
+
+费曼学习法提供了四个关键词：Concept（概念）；Teach（以教代学）；Review（评价）；Simplify（简化）。在这个基础上，本书提炼总结出了五个步骤：确立目标；理解目标；输出；回顾；简化。</div>
+        </section>
+
+        <section class="section" id="ch2-2">
+          <h4 class="section-title">简单高效的思维模式</h4>
+          <div class="section-body">为什么费曼学习法具有这么大的魔力呢？因为它是对人的思维模式的深度改造。
+
+第一，好的思维需要正反馈。费曼学习法为我们的思维提供的便是正反馈，能够促进知识和能力在学习中的自增强。
+
+第二，输出加快思考的成熟。费曼学习法的作用就是一种"马太效应"——在对某个知识的学习和思考中，一次成功的输出也会同时增强输入的能力，从而使得下一次输出的成功可能性更大。
+
+第三，费曼学习法让思考可以量化。我们对任何问题的量化思考都体现在六个方面：方向→锁定思考的主要方向；归纳→确立思考的主要逻辑；验证→验证思考的效果；反馈→反馈正确和错误；简化→把复杂的思考过程简单化；吸收→消化思考的成果。</div>
+        </section>
+
+        <section class="section" id="ch2-3">
+          <h4 class="section-title">费曼学习五部曲</h4>
+          <div class="section-body">费曼学习法共分为五个步骤：
+
+【第一步 · 确立目标】选择自己想要掌握的知识和技能，并且要真正地理解学习它的必要性，在这个前提下产生专注力。专注是一切成功学习的基础。
+
+【第二步 · 理解对象】对我们要学习的知识、概念等进行归类、解构和对比，系统地理解这些内容，存优去劣，将我们需要的知识筛选出来，选择合适的方式进行学习。
+
+【第三步 · 以教代学】在一个需要向别人传授的场景中"以教代学"，向那些不熟悉该知识的人阐述你的见解，向他们解释这些知识，用他们能理解的方式及最简单的语言做到这一点。
+
+【第四步 · 回顾反思】通过回顾和反思，从输出的过程中发现自己不能理解的地方，或者无法简单解释之处，记录下来，回到第二步，查看资料来源，弥补薄弱的知识点，或者修正错误的、不符合实际的知识点，直到可以进行再一次的输出。
+
+【第五步 · 简化吸收】重复上面的步骤，不断地简化和吸收，直到这些知识内化为你的知识体系，能够为我所用。内化是一切学习的终极目的。</div>
+        </section>
+      </article>
+    </section>
+
+    <!-- =================== STEP TWO =================== -->
+    <section class="step" id="step2" data-step="step2">
+      <header class="step-header">
+        <span class="step-label">STEP TWO</span>
+        <h2>确立一个学习对象<span class="step-keyword">目标</span></h2>
+      </header>
+      <div class="step-intro">选择想要掌握的知识和技能只是第一步，我们还要找到学习它的必要性和重要的意义，并且强化这种内在的联系。</div>
+
+      <article class="chapter" id="ch3">
+        <header class="chapter-header">
+          <span class="chapter-num">第三章</span>
+          <h3>我们为什么学习</h3>
+        </header>
+        <div class="chapter-content">现实中，人们大部分场景下的学习都处于一种"无意识"的状态。它表现为两种典型的特征：第一，老师/父母让我学什么，我就学什么（服从式学习）；第二，就业/培训需要学什么，我就学什么（工具式学习）。在无意识的学习状态中，你从不浪费时间，也极少敷衍应付，但对知识却浅尝辄止，难以深入。</div>
+
+        <section class="section" id="ch3-1">
+          <h4 class="section-title">知道为了什么而学习</h4>
+          <div class="section-body">有位学生问："我可能一辈子也用不上几个高深的数学知识，学习还有什么用呢？"他的学习逻辑是"为了学习而学习"，再明白一点是"为了就业而学习"。这就像大部分年轻人目前的心态——学习态度无比端正，志向远大，却从根本上认为学习只是一个达到目的的手段，而不是将学习本身当作一件非常有趣的事情。
+
+认真回答"为什么学习"这个问题，到一定的阶段必然出现一个终极答案：学好一门知识的前提是必须充分地理解这门知识，包括它尚待开发的价值。沿着这条思维脉络对自己要学习的目标进行"问答测试"，能帮助你迅速地发现一个清晰的学习目标。</div>
+        </section>
+
+        <section class="section" id="ch3-2">
+          <h4 class="section-title">追求四个方面的进步</h4>
+          <div class="section-body">目标明确的学习可以极大地改变一个人的思维，对于训练和改进我们的思维方式而言，这是一个必不可少的基础。它主要体现在四个方面：
+
+第一，开放性思维——充分地了解一门知识，首先提升的是思维的开放性，能够接受新的观点，拓展新的视野，使自己跟上时代的发展。
+
+第二，批判性思维——作为主动和独立的学习技巧，运用费曼学习法可以很快了解自己所学知识的程度，并且以科学的怀疑精神寻找反证，养成批判性思考的好习惯。
+
+第三，逻辑性思维——目标专注的学习能锻炼你思维的逻辑性，这需要你长久地聚焦和沉注于一个主要的问题并且反复思考。
+
+第四，清晰凝练的表达力——以教代学的输出方式考验你的语言组织和表达能力，在输出的过程中可以对所学的知识做多次的提炼浓缩，简化成通俗易懂的版本。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch4">
+        <header class="chapter-header">
+          <span class="chapter-num">第四章</span>
+          <h3>聚焦目标</h3>
+        </header>
+        <div class="chapter-content">目标不是一个符号，也不是一个摆在那里的台阶，只要走过去、爬上去就好了。目标其实是一个动态变化的信标，它是随着人的思想、年龄的增长而变化的。许多精英人士不是天才，却是学习的高手——他们善于抓住学习的黄金时间，将全部的精力聚焦于选定的目标之上，心无旁骛地把这门知识/技能学通、学精和化为己用。</div>
+
+        <section class="section" id="ch4-1">
+          <h4 class="section-title">如何找到正确的方向？</h4>
+          <div class="section-body">学习需要一个正确的方向，问题是，当由你自己选择这个方向时，你怎样判断自己适合学习什么？
+
+第一，对自己提出一些关键的问题。这个世界所有的答案都源于问题，任何一个答案的质量都取决于问题的质量。在设定目标时，你可以沿着两条轨道提出问题：
+
+【未来的方向】"未来我在这个方面的兴趣，是 A 还是 B？""我的朋友中精通此方向的人，他们是哪个方向？""除了 X，我没有其他方向吗？""研究 X，能在其他领域帮助到我吗？"
+
+【当下的焦点】"为了研究 X，我要解决的主要问题是什么？""我需要设置一个分阶段目标吗？""在这个方面，我有哪些知识的不足？""信息来源鱼龙混杂，我该怎么收集真实信息？"
+
+未来的方向帮助你树立一个宏观的目标，当下的焦点则能指引你制订正确的行动和学习计划。
+
+第二，把"最重要的那件事"变成自己的方向。每天早上你一定要问一问自己："今天，对我最重要的那件事是什么？"</div>
+        </section>
+
+        <section class="section" id="ch4-2">
+          <h4 class="section-title">如何找到真正的兴趣？</h4>
+          <div class="section-body">兴趣和目标其实略有不同。在费曼看来，兴趣是一切高质量学习的驱动力。著名心理学家和教育学家本杰明·布卢姆说："学习的最大动力，是对学习材料的兴趣。"
+
+联系兴趣和目标的是一座"人为桥梁"，它并非天然存在，我们要注意将自己原有的知识体系与现在或一贯的爱好嫁接起来，以便从中找到真正的兴趣。如果你看到某类书籍时像看到"世界末日"一样，显然这就不是你的兴趣，这是应该放弃的目标。相反，如果你具备强烈的动机，学它让你感到愉悦，而且你有向别人讲解的冲动和语言天赋，那么，这不但是你的兴趣，还是你的特长。
+
+为了定位真正的兴趣，不妨多给自己一些宽松自由的思考空间，深入分析那些自己喜欢的领域，查阅相关的资料，然后进行初步的尝试，从中找到自己学习的对象。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch5">
+        <header class="chapter-header">
+          <span class="chapter-num">第五章</span>
+          <h3>规划：和目标建立"强联系"</h3>
+        </header>
+        <div class="chapter-content">在做传统规划时，我们习惯了先把目标放到一边，拘泥于研究计划的细节，或者先忽视具体的可行性，高唱"鸡血之歌"。时间不能倒流，知识不是食物，学进肚子里的东西肯定也吐不出来。所以，为了不辜负光阴，我总是建议人们在制订规划时先对自己的计划和目标做一次全面的剖解，在费曼学习法的第一步和第二步之间插入一个必要环节：挖掘出你和目标之间的"强联系"。</div>
+
+        <section class="section" id="ch5-1">
+          <h4 class="section-title">有没有可能，你的目标其实是错误的？</h4>
+          <div class="section-body">聪明的学习者善于反问和反省，愚蠢的学习者则喜欢自我感动，将一个错误的目标偏执地坚持到底。而一个错误的目标，会让你之前正确的积累瞬间付诸东流。
+
+著名的"SMART 原则"提供了一个简单明了的判断标准：
+• S（Specific）明确和具体的——目标必须清晰和可以形容。
+• M（Measurable）可以衡量/量化的——目标必须量化和能够评估。
+• A（Achievable）自身能力可以达到的——目标必须在能力范围内。
+• R（Rewarding）能产生满足感/成就感的——目标必须有积极的意义。
+• T（Time-bound）有时间限制的——目标必须有实现的期限。
+
+用这个标准衡量你的目标，看它在每个维度上是否真正成立——任何一个维度不成立，目标就可能是一个伪目标。</div>
+        </section>
+
+        <section class="section" id="ch5-2">
+          <h4 class="section-title">有没有更好的方向？</h4>
+          <div class="section-body">"活到老，学到老。"这句话不是教人无视学习的挫折，而是让你在自己的舒适区学习。学习的舒适区有两个标准：
+
+第一，一个正确而适合自己的学习方向，它符合自身的兴趣。
+
+第二，一个在自己能力范围内的合理目标，它符合自身的能力。
+
+如果总是撞上现实的墙，我们就要反思自己的目标是否正确。正确的目标不会太快给你回报，凡是能让你一夜暴富的知识全部是假知识，目标也是假目标。</div>
+        </section>
+
+        <section class="section" id="ch5-3">
+          <h4 class="section-title">规划一条高效能学习之路</h4>
+          <div class="section-body">做学习规划时，我们要先为三件事预留出足够的时间。
+
+★ 留出锁定最重要目标的时间。最高效的人总能锁定自己最重要的目标，把主要的精力聚焦到这个目标上。
+
+★ 留出做正确规划的时间。在兴趣、目标和规划之间找到内在的联系，建立一座坚固的桥梁，才能制订正确的学习计划。不要还没做好准备就匆匆地开始学习。
+
+★ 留出调整目标和规划的时间。在计划和行动的过程中根据反馈随时修正目标，改善或改变学习的计划，保证自己始终处在一条正确的轨道上。
+
+始终在你的能力范围内走好每一步，让自己不再因为盲目的忙碌而压力重重，这样的学习之路才是高效能的。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch6">
+        <header class="chapter-header">
+          <span class="chapter-num">第六章</span>
+          <h3>费曼技巧：目标原则</h3>
+        </header>
+        <div class="chapter-content">在 SMART 原则的基础上，费曼对制定学习的目标提出了更高的要求。尤其目标本身，它需要符合五个原则，才是一个值得投入精力为之努力的目标。假使你只是为了学习使用一个陌生 App 的技巧，我相信你不需要阅读本章。但如果想制定一个对未来可能产生重大影响的学习目标，这五个原则是你有必要充分了解并贯彻于学习过程中的。</div>
+
+        <section class="section" id="ch6-1">
+          <h4 class="section-title">目标的全面性原则</h4>
+          <div class="section-body">制定目标时要有全局和整体观念。比如，学习一门知识是从事某个行业所必需的，不是为了学而学。这就是全局和整体观念。制定的目标要能匹配你的阅历、经验和过去的知识积累，体现你一段时期内的任务。</div>
+        </section>
+
+        <section class="section" id="ch6-2">
+          <h4 class="section-title">目标的重点性原则</h4>
+          <div class="section-body">制定的目标要有侧重点。哪怕一本书，它也是千头万绪，有很多主题，你不可能面面俱到，总要侧重于学习某一个方面。因此必须明确学习的重心，拟定一个重点目标，将有限的精力用于最关键的知识点上。制定的目标也要有针对性，针对自己的某一项不足，通过学习可以切中要害。</div>
+        </section>
+
+        <section class="section" id="ch6-3">
+          <h4 class="section-title">目标的挑战性原则</h4>
+          <div class="section-body">制定的目标要具有挑战性。具有挑战性的目标才能激发我们的求知欲，增强我们学习的动力。制定的目标要能挖掘和激发自己的潜能。制定的目标不能在学习过程中人为调低难度。假如遇到点困难就垂头丧气，主动调低难度，那就失去了学习的意义。</div>
+        </section>
+
+        <section class="section" id="ch6-4">
+          <h4 class="section-title">目标的可行性原则</h4>
+          <div class="section-body">制定的目标要切实可行。目标既要有挑战性，也不能超出我们能力的范围，可行性原则与挑战性原则是辩证的统一。比如，你学的是历史专业，就不可能要求自己两个月内学会天文物理和宇宙常数的计算方法。制定的目标必须符合我们的客观实际，一个具备可行性的目标，可以让我们既充满信心，又不会掉以轻心。</div>
+        </section>
+
+        <section class="section" id="ch6-5">
+          <h4 class="section-title">目标的可调性原则</h4>
+          <div class="section-body">制定的目标要具有一定的可调性。可调性就是随着环境和内外条件的变化，我们能对学习的目标进行必要的调整，适应变化。制定的目标要在实施过程中留有余地，准备好多种学习方案和备用计划。当环境发生变化时，你能拿出适应变化的备用计划，使自己始终处于主动的地位。</div>
+        </section>
+      </article>
+    </section>
+
+    <!-- =================== STEP THREE =================== -->
+    <section class="step" id="step3" data-step="step3">
+      <header class="step-header">
+        <span class="step-label">STEP THREE</span>
+        <h2>理解我们要学习的知识<span class="step-keyword">系统化</span></h2>
+      </header>
+      <div class="step-intro">对我们要学习的知识和概念进行归类对比，系统地理解这些内容，建立筛选和学习的原则。</div>
+
+      <article class="chapter" id="ch7">
+        <header class="chapter-header">
+          <span class="chapter-num">第七章</span>
+          <h3>归类和对比知识的来源</h3>
+        </header>
+        <div class="chapter-content">学习思维的转换能为我们带来不同的学习效果，首要原则是确立一个目标后愿意并有能力理解它，将知识打散，然后进行聪明而简洁的解构，从中找到自己的方向，建立自己的逻辑。换句话说，假如你不能将知识系统化，再用一个自己能理解的框架把知识组合起来，就说明你理解得还不够透彻。</div>
+
+        <section class="section" id="ch7-1">
+          <h4 class="section-title">将知识有逻辑地系统化</h4>
+          <div class="section-body">逻辑就是你理解知识的出发点、角度、立场和思维方式；系统化则是你是否可以将这些知识纳入一个宏观的知识体系，互相印证和科学比对，对既有的知识体系形成补充。
+
+有逻辑地系统化，意味着我们在理解知识的第一阶段要做对三件事：
+
+第一，明白自己学习是为了什么。正确的目的是非功利、非倾向性和非偏执性的，要有一个单纯的愿景。
+
+第二，拥有一个足够宽阔的视野。一个人的视野受到阅历、生活工作的实际需要和世界观的多重影响。人要尽量保持童真，因为童真的心态能扩大你的视野。
+
+第三，建立最可能客观科学的逻辑。一个客观科学的逻辑能帮助我们成功地将知识系统化，保证这种系统化是有益的。系统化就是为我们准备一张学习的图纸，把材料安放到它该去的地方。</div>
+        </section>
+
+        <section class="section" id="ch7-2">
+          <h4 class="section-title">筛选和留下最可靠的知识</h4>
+          <div class="section-body">学习最重要的并不是找到那些价值千金的知识，而是通过对知识的筛选与吸收建立起自己的思维框架。
+
+筛选和提取知识——比如一本 20 万字的书，它提供的信息和知识点是海量的，你不可能用同一个标准吸收它全部的内容，只能有针对性地筛选和提取书中的某一些知识点。
+
+筛选知识的方法论——首先你要清晰地知道自己的短板是什么，要重点学习哪方面的内容，这叫锁定方向；其次你要快速准确地把相关内容找出来。推荐读者在学习之前先列一张清单，写上具体的需求。
+
+搜集和保留可靠的知识——即便一本公认非常权威的书，它的内容也并不是全都可靠的。在筛选时一个基本的逻辑是：我要找出那些与我的实际需求相匹配的知识。如果你学到的是不可靠的知识，付出越多，成效便越差。</div>
+        </section>
+
+        <section class="section" id="ch7-3">
+          <h4 class="section-title">分辨"假知识"</h4>
+          <div class="section-body">我们在自己的一生中学到的 90% 都是假知识，其中很多假知识还被人深信不疑。比如"近视矫正手术可以治愈近视"就是一个错误的医学常识——它只能控制近视，让症状不会更严重，却不能把近视这个问题消除掉。
+
+"假知识"是如何欺骗大脑从而被我们接受的？根源是大脑学习知识的原理。人的所有的行为都是靠这些意志的共识运转。大部分的"假知识"都具有刺激意志的特点，为了让人乐于接受，它们被贴上了"强意志"的标签，甫一接触便让你激情澎湃，可这种短暂的快感只是由于强意志的带动冲击了你的思维，却改变不了你的行为。
+
+屏蔽来源不确定的知识——对于来源不确定的知识，要坚决屏蔽。小心对待差异化的知识——对"差异化"内容采取务实的态度。用对比的方式挑选和分辨知识——删除重复和不可靠的信息，增加获取新知识的可信渠道。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch8">
+        <header class="chapter-header">
+          <span class="chapter-num">第八章</span>
+          <h3>形成一张思维和流程导图</h3>
+        </header>
+        <div class="chapter-content">将知识系统化的一个重要步骤，是要通过读书笔记以及思维导图等形式对学到的和即将学习的内容进行加深和巩固。我们要做的不仅是画一张思维导图，还是一个清晰的流程说明，整个过程是可视化的。</div>
+
+        <section class="section" id="ch8-1">
+          <h4 class="section-title">横向拓展：让知识"可视化"</h4>
+          <div class="section-body">思维导图的最大作用是可以让我们对知识进行横向的拓展，把不同的点以列表、图像、分支的形式展现在一张纸上，让知识的主要节点一目了然。
+
+【知识场景的可视化】通过特定的图像化的方式，我们对知识产生了强烈的"画面感"，很容易感同身受，迅速融入这个知识的场景中。
+
+【知识关系的可视化】把知识关系可视化，能助你揭示不同的信息、知识点之间的关联性——它们的不同来源，互相的因果和比证关系。
+
+【学习过程的可视化】这是费曼格外推崇的方法，他建议人们采用动图、视频等方法了解知识的原理。如果你只是用语言描述和阅读文字，你听到和看到的是枯燥无味的文字组合，夹杂着一堆晦涩难懂的学术用语，你要反复背诵和琢磨才能理解。但如果用视频，几秒钟的时间便恍然大悟。</div>
+        </section>
+
+        <section class="section" id="ch8-2">
+          <h4 class="section-title">画出一个"学习流程"</h4>
+          <div class="section-body">为了吃透一本书，我经常先给自己准备一个简易流程：
+
+第一步：短时记忆——构建一个主题系统或分析系统，让主题在大脑中形成一个短时记忆，聚焦于一个方向。
+
+第二步：心理表象——构建知识的心理表象，对知识进行视觉表达。精练的语言表述加上可以图像化的呈现，让人产生深刻的、难以磨灭的印象。
+
+第三步：双重编码——把文字形象和图片（视频）形象结合起来理解所学的知识。认知心理学认为，人的大脑中存在两种功能独立却又相互联系的信息加工系统，对信息同时进行两种加工，记忆更加牢固。
+
+第四步：长时记忆——只有双重编码顺利地成功后，信息才会被大脑转移到长时记忆。此时，我们便完成了对于知识的理解。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch9">
+        <header class="chapter-header">
+          <span class="chapter-num">第九章</span>
+          <h3>阅读与记忆的原则</h3>
+        </header>
+        <div class="chapter-content">我在读书时有个保持多年的习惯，每当要阅读一本书或了解自己不熟悉的资料，便准备一个简易的笔记本和一支笔。先将书或资料大体翻阅一遍，时间不超过 20 分钟，然后在笔记本中写下一个简短的概要。概要包含：书或资料的主题、书或资料的作者、书或资料的结构。随后再开始阅读或分析。
+
+在学习中成功地建立起自己的思维框架，对知识进行系统性的理解和吸收，也是高效地阅读与记忆的一个基本原则。在这个大的原则下，包括了两个小的原则：
+
+第一，快速地获取有益信息——充足的阅读量能让我们在大脑中建设一个"信息池"。
+
+第二，学习发现问题和分析问题的方法——建立自己的思维框架后，便拥有了一个发现问题和分析问题的成熟的工具。
+
+从长远来看，阅读和记忆并不是一场数量的比赛。我们所学知识的数量向来都是一个伪命题——不是说你读过的书越多、记下的知识越多，你的能力就越强；而是说，当你从较少的知识中也能获取到比他人更多的有益信息时，你对知识的理解和运用能力一定是更加优秀的。</div>
+      </article>
+
+      <article class="chapter" id="ch10">
+        <header class="chapter-header">
+          <span class="chapter-num">第十章</span>
+          <h3>第一次复述</h3>
+        </header>
+        <div class="chapter-content">费曼学习法格外重视"输出"的作用。简单地讲，输出就是复述你所学到并理解到的知识并让听者理解。第一次复述要做什么，是先讲给我们自己听一听。你要尝试着将学到的东西为自己讲解一遍，看能否像计划得那样理解，或者至少透彻地解读一大部分？
+
+盖普洛公司曾经做过一次调查：43% 的人读完一遍便对书弃之如敝屣；21% 的人把书放到一个醒目的位置，告诉自己有想不通的地方再回来翻阅，但也想想而已；20% 的人会做温习读书笔记的工作；仅有 16% 的人能抽时间将书中的知识以复述的方式强化认知。</div>
+
+        <section class="section" id="ch10-1">
+          <h4 class="section-title">建立长时记忆</h4>
+          <div class="section-body">一旦展开复述，我们就不得不回忆刚刚学到的内容，就像放电影一样。那些短时记忆从大脑中纷纷被调取出来，经过梳理、强化和初步形成知识系统，其中重要的部分便转化为了长时记忆。这个原理很简单——默读过的知识如果再朗读一遍，记得便尤为清楚。</div>
+        </section>
+
+        <section class="section" id="ch10-2">
+          <h4 class="section-title">加深对知识的理解</h4>
+          <div class="section-body">在复述知识时，相当于你沿着自己的学习思路和知识的逻辑又走了一遍，对知识的要点、立论和逻辑体系的认知更加明确，理解也更加深入，还可以发现很多学习时被忽视的细节。我在读书时常常温习两到三遍才能悟到原先没领会到的作者的意图。</div>
+        </section>
+
+        <section class="section" id="ch10-3">
+          <h4 class="section-title">更加主动地学习</h4>
+          <div class="section-body">当你将复述作为一项任务加入学习计划中时，学习的过程中你就能有意识和主动地对知识的重要部分加强理解，对论点、论证过程和逻辑基础也就更为敏感。这样一来，被动学习便过渡到了主动学习，提高了学习的效能。</div>
+        </section>
+
+        <section class="section" id="ch10-4">
+          <h4 class="section-title">对知识展开联想</h4>
+          <div class="section-body">复述不只是对知识背诵、整理一遍或只介绍大概，而是会让你发现过去不曾有过的想法，或者突然冒出新的思路。你自己的观点和所学的知识在复述的过程中彼此碰撞交融，产生灵感的火花。这会带来意外的收获，为你拓展学习的视野。</div>
+        </section>
+
+        <section class="section" id="ch10-5">
+          <h4 class="section-title">得到关于问题的反馈</h4>
+          <div class="section-body">有很多公认的"好知识"盛名之下其实难副，权威的观点和论证也并非不存在问题，复述能帮助你尽可能发现那些与实际应用不相符合的内容。在复述时你可以对知识中的某一个论点、论据或论证逻辑提出自己的疑问，再从温习中找到反馈。
+
+第一次复述的三个阶段：第一个阶段——凭印象复述；第二个阶段——复述中提出问题；第三个阶段——复述中加入自己的观点。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch11">
+        <header class="chapter-header">
+          <span class="chapter-num">第十一章</span>
+          <h3>费曼技巧：系统化原则</h3>
+        </header>
+        <div class="chapter-content">在费曼学习法中，一个很重要的原则就是系统思考——用系统化的思维去理解知识，归纳、筛选和分析知识，才能最终消化知识，为我所用。系统思考从本质上讲，就是从事物/知识的互动关系入手，而非从事物/知识本身入手。
+
+在执行这三项"系统化原则"时，要学会运用水平、发散和收敛这三种工具对知识展开理解：
+
+第一，水平：归类对比——从多个方面看待同一个事物，即设立不同的甚至完全对立的角度去分析知识。
+
+第二，发散：思维导图——对知识进行四处的发散、联想和分析它们的关系，在知识与知识之间建立联系，特别是让它们与不同的知识发生关系，看看有什么新的东西出现。
+
+第三，收敛：知识结构——最关键的一步，是将学到的零散的知识点和信息聚集起来。这是一个把知识结构化、系统化的过程，简化你了解到的知识，同时改善或者构建一个属于你自己的知识框架。</div>
+      </article>
+    </section>
+
+    <!-- =================== STEP FOUR =================== -->
+    <section class="step" id="step4" data-step="step4">
+      <header class="step-header">
+        <span class="step-label">STEP FOUR</span>
+        <h2>输出是最强大的学习力<span class="step-keyword">输出</span></h2>
+      </header>
+      <div class="step-intro">设定一个传授的场景，当我们要输出这些知识时，才会真正清楚自己究竟掌握了多少，发现那些还需要强化和加深理解的内容。</div>
+
+      <article class="chapter" id="ch12">
+        <header class="chapter-header">
+          <span class="chapter-num">第十二章</span>
+          <h3>以教代学</h3>
+        </header>
+        <div class="chapter-content">"以教代学"是费曼学习法的核心。他说："如果你不能向其他人简单地解释一件事，那么你就还没有真正弄懂它。"这不是空洞的大道理，而是一套科学的学习方法。物理学家费曼把它变成了一个学习系统中至关重要的部分——假设有一个外行人站在面前，你要用对方听得懂的语言把这些知识解释给他听。经过反馈，再检查自己的学习效果。</div>
+
+        <section class="section" id="ch12-1">
+          <h4 class="section-title">谁都能听懂</h4>
+          <div class="section-body">将注意力回转到你自己的行业——如果你是天体物理学家，怎样用几句话就让从未学过物理的人明白"引力波"是什么？如果你是作家，你能把一首充满生僻字的《诗经》里的短诗向从未上过学的文盲解释清楚吗？如果你是战斗机驾驶员，如何用两三句话就让一名小学生听懂飞机发动机的工作原理？如果你是软件工程师，你能让完全不懂电脑的人很快了解电脑病毒的攻击模式吗？
+
+以教代学最重要的一个要求就是，你必须做到在解释这个概念时只需把它写成一两句话，说出来，就能让一个完全不了解甚至没听说过这个领域的菜鸟听得懂，还要有很深的印象。</div>
+        </section>
+
+        <section class="section" id="ch12-2">
+          <h4 class="section-title">简洁和有深度的分析</h4>
+          <div class="section-body">在输出知识时你就不能简单地复制粘贴，而是既要总结出知识的精华，又要加上自己深刻的理解，还要用大家都能看懂、听懂的语言往外传播。这就需要做到：
+
+第一，语言简洁易懂——能否做到用最少的话表达出最多的内涵？
+
+第二，精准到位，没有歧义——要保证听者第一时间就能够领会到你的观点，而且跟知识的原义相符不会产生误解。
+
+第三，讲出一定的深度——要有深入的分析和延伸，讲出知识的应用和比较重要的价值。
+
+第四，加上自己的理解——在把知识教授给别人时适当加入自己的原创观点，或者举一反三，引入其他的知识作为比照。</div>
+        </section>
+
+        <section class="section" id="ch12-3">
+          <h4 class="section-title">强化认知</h4>
+          <div class="section-body">阐述知识的同时，我们也在强化自己对于知识尤其是重点内容的认知。这个价值一点也不难明白，看起来是你在教授别人，其实是在以输出的方式促使自己对于"重点内容"进行二次学习，直到彻底地理解和掌握这些内容。
+
+当我们需要放弃一个人学习的"默读模式"转而去教授别人，要把一个知识点分解开传递给对方，并且保证让他 100% 地理解这个知识点时，我们要切换到类似于写作的全神贯注的状态——作者一字一句地斟酌，每个字都要自圆其说，每句话都要逻辑严密，承前启后。</div>
+        </section>
+
+        <section class="section" id="ch12-4">
+          <h4 class="section-title">你能让 7 岁的孩子理解一个高等物理术语吗？</h4>
+          <div class="section-body">有一次我尝试让 7 岁的侄女知道什么是"波粒二象性"。她连词语的表意都不清楚，也从未听说过。我不能对小孩讲一堆物理术语，而是换了一种表达方式——问她："你知道光怎么运动吗？"她回答："光跑这么快，一定是直线！"我摇摇头："不是，光既跑直线，又跑曲线。有个知识叫'波粒二象性'，说的就是这个事情。"然后我用一盆水和一颗石子，向她演示水波纹的形态——尽管形容不太准确，但她大体明白了这个知识。
+
+让听者在他的能力和已知知识的范围内可以迅速地理解，是我们输出知识时的一个基础原则。否则你就是在鸡同鸭讲，对方听不懂，你自己也很累。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch13">
+        <header class="chapter-header">
+          <span class="chapter-num">第十三章</span>
+          <h3>用"输出"倒逼"输入"</h3>
+        </header>
+        <div class="chapter-content">在费曼学习法中，"输入"可以帮助"输出"，"输出"可以倒逼"输入"。输出知识就是在扮演一名老师或传道者的角色，在教别人领悟这个知识时，大脑能自动地启动检查程序，看看学到的知识哪儿有问题，哪儿还不够明白，发现知识的阻塞环节，进一步地打通已经学会的内容，让它们与自己的知识体系建立紧密而有益的连接。</div>
+
+        <section class="section" id="ch13-1">
+          <h4 class="section-title">输出的"记忆学原理"</h4>
+          <div class="section-body">倒逼输入，最直接的好处是加强了对于特定内容的"留存率"。什么是留存率？就像一张滤网，我们把所有的信息从滤网上倒下去，留下来的就是学到的知识，它除以知识的整体，得出的结果就是留存率。
+
+记忆的形成包括了识记、保持、再现和回忆四个基本环节：
+
+【识记——编码】大脑主要靠经验和感知去判断要选择哪一些作为编码的对象。我们的大脑对信息识记编码时会自动化地归类，所以要保证自己拥有一个完整的知识系统。
+
+【保持——存储】存储信息就是大脑形成神经回路的过程。先储存在"感觉区"内（短时记忆），然后把信息传入"海马区"（第一级记忆），再次加工进入"第二级记忆"，最终形成长时记忆。
+
+【再现——检索】当我们需要输出知识时，大脑将开启管理知识的新模式——从单向的输入转变为同步的输出和输入。我们不仅再现，还要二次组合，让我们的长时记忆保持得更为牢固。
+
+【回忆——巩固】我们学到的知识如果不加以复习，结果注定是遗忘。输出就是一次高质量的复习，起到巩固记忆和提炼核心知识的目的。</div>
+        </section>
+
+        <section class="section" id="ch13-2">
+          <h4 class="section-title">场景和思维模拟</h4>
+          <div class="section-body">假如在输出知识时我们能设计相应的场景，并逼真地模拟出不同场景中人们对应的思维方式，使我们如临其境，将强有力地刺激大脑的学习和记忆功能。
+
+• 模拟解说者的场景：例如演讲。
+• 模拟受询者的场景：例如面试。
+• 模拟传授者的思维：例如讲课。
+• 模拟质疑者的思维：例如辩论。
+
+美国心理学家佩沃（Paivio）在 1975 年提出了关于长期记忆的"双重编码"理论，主张对文字信息以"意码"处理，对非文字信息以"形码"处理。记忆时两种方式同时起作用。</div>
+        </section>
+
+        <section class="section" id="ch13-3">
+          <h4 class="section-title">输出是主动学习</h4>
+          <div class="section-body">费曼认为，以教代学的输出方式属于主动学习，是拒绝等待着被知识垂幸而去主动地征服，是不想被知识选择而去为知识建立一个具有自己标准的过滤器。
+
+因为在主动地输出知识时你会不停地思考："我怎样才能让对方听懂？如果要让对方听懂，我得使他明白最重要的知识点是什么，我得用他能听懂的语言。不过对这个知识点我好像也不太明白，这是为什么？"这是一种无法推卸的压力，是大脑承接的一项重大任务，它认可并主动地告诉你去查阅资料，温习知识，有针对性地理解学习的内容。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch14">
+        <header class="chapter-header">
+          <span class="chapter-num">第十四章</span>
+          <h3>第二次复述</h3>
+        </header>
+        <div class="chapter-content">第一次复述是把自己当作倾听者，第二次复述是进入一个真实的传授知识的场景，向别人甚至多个人阐述你对某项知识的看法。这不仅可以有效地学习，使学习的效益发生翻天覆地的变化，还能达到集体讨论的目的，从听者的反馈中获取有益的信息，然后开展创造性的学习。</div>
+
+        <section class="section" id="ch14-1">
+          <h4 class="section-title">利用分组讨论的机会</h4>
+          <div class="section-body">开展复述时一定要贴近自己的兴趣，围绕自己的爱好：
+
+• 我最感兴趣的部分是什么？（个人的目标）
+• 我最擅长的讲述方式是什么？（个人的优势）
+• 我最想跟对方交流的知识点是什么？（与外界的联系）
+
+第一，"分组讨论"是自主学习的一种高效方式——你可以对一个人输出，也可以对一群人输出。
+
+第二，帮助你设计复述提纲并且准备一些问题——分组讨论和一个人对自己复述不同，容错率很小，需要做好充分的准备。
+
+第三，从听者那里获得中肯的评价和异议——我除了阐述我的看法，最希望听到的就是激烈的、相反的观点。越尖锐越好，越矛盾越好。这能打开一扇全新的窗口，引发我做进一步的突破性的思考。</div>
+        </section>
+
+        <section class="section" id="ch14-2">
+          <h4 class="section-title">为知识注入你的灵魂</h4>
+          <div class="section-body">没有灵魂的知识就像路边枯萎的树叶，看似脉络分明，却早已失去生命力。日本经营学堂"盛和塾"的创办人稻盛和夫说："讲述你的梦想，必须为语言注入灵魂。"第二次的复述要求我们从心出发，在阐述知识的同时也是在建设和展示自己的心灵品质。
+
+第一，体现独具特色的语言技巧——使用你自己的语言表述知识，而不是原封不动地背诵。
+
+第二，结合现实阐述你对知识的解释——不仅把知识复述出来，还要让它在现实中落地。
+
+第三，表达出你个人的分析和见解——复述不是当复读机，学习也不是当打印机，要为知识注入你个人的理解，并且通俗易懂地对别人讲出来。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch15">
+        <header class="chapter-header">
+          <span class="chapter-num">第十五章</span>
+          <h3>费曼技巧：输出原则</h3>
+        </header>
+        <div class="chapter-content">为什么输出这么重要？因为学习要有致用的出口。有个成语说："学以致用。"这四个字包含了学习的目的，同时还告诉了我们一条学习的策略，那就是结合"致用"来学习。现实中为什么许多人学了大量的知识却感觉毫无用处？不是这些知识无用，是他还没有建立一个稳定的"输出系统"。
+
+美国物理学家本杰明·富兰克林年轻时在印刷厂做学徒，他把报纸上的文章剪下来，读完一遍再抄写一遍，打乱纸条的顺序，再重新排列它们。反复的练习后，他理解了这些文章，也懂得了如何去创作一篇好的作品。最后，他又在白纸上默写自己读过的文章，加入了自己的文字。一段时间以后，他的文章便刊登在了报纸上。
+
+在费曼技巧中，输出（以教代学）知识不是单向的一方向另一方传授知识，它是一个双向的过程。根据费曼的理论，我们可以总结出五个输出原则。这五个原则是一个递进同时又互相联系的学习过程，如果要实现学习的高效能，它们缺一不可。</div>
+      </article>
+    </section>
+
+    <!-- =================== STEP FIVE =================== -->
+    <section class="step" id="step5" data-step="step5">
+      <header class="step-header">
+        <span class="step-label">STEP FIVE</span>
+        <h2>回顾和反思<span class="step-keyword">回顾</span></h2>
+      </header>
+      <div class="step-intro">通过回顾和反思，对学习的不满意之处进行纠错，发现缺口，并用更精练的语言概括自己掌握的知识。</div>
+
+      <article class="chapter" id="ch16">
+        <header class="chapter-header">
+          <span class="chapter-num">第十六章</span>
+          <h3>怀疑和探索让我们更聪明</h3>
+        </header>
+        <div class="chapter-content">当我们学完一个知识后总以为自己懂了，可其实只摸到了皮毛。在皮毛之下，还藏有大量的东西是我们所不知道的——这些你还不知道的内容用一个专业名词来形容就是"盲维"。盲维是我们没看到的角落，也是我们未想到的地方。盲维越大，你对知识的了解就越浅，在输出知识时你的表达力就越欠缺。消除盲维的过程，正是我们对知识采取怀疑和深度探索的环节。</div>
+
+        <section class="section" id="ch16-1">
+          <h4 class="section-title">重新对比数据和事实</h4>
+          <div class="section-body">如果在对外输出时遇到了问题/麻烦，解决方法是什么？你应该做的第一件事既不是否定知识，也不是为了维护自己的正确性而竭力辩解。你应该确保自己所阐述的知识是正确的，或者必须要能够自圆其说，具有清晰无误的逻辑。为此，要重新对比已经掌握的数据和事实。
+
+第一，重新检查知识库——把它们全部调动出来，列一个清单，进行重新检查。
+
+第二，重新验证知识的关联——如果学习时你只记住了某些单一的知识点，要把这些知识点之间的关联性找出来，把不同的信息串联起来。</div>
+        </section>
+
+        <section class="section" id="ch16-2">
+          <h4 class="section-title">如果正确</h4>
+          <div class="section-body">经过对比查证，会出现两种结果。第一种结果是"知识正确"，我们再一次加强了对知识的理解。例如在重温《星际穿越》中关于虫洞的解释时，我发现科学家的分析是对的，逻辑严密，有充足的科学依据，是我自己的理解和表述有误，遗漏了关键的信息。在重温的过程中，我对正确的知识形成了深度的理解和产生了"长时记忆"。</div>
+        </section>
+
+        <section class="section" id="ch16-3">
+          <h4 class="section-title">如果不正确</h4>
+          <div class="section-body">第二种结果是"知识不正确"——这经常发生，也是需要引起格外重视的情况。出现偏差的原因是什么？
+
+第一，是自身知识的欠缺导致了理解的偏差？哈佛商学院的一项统计表明：有 68% 的人下大功夫去学习一门知识却仍然不得其门而入，原因是他的知识储备还不足以理解这个知识。
+
+第二，是原知识的观点和逻辑存在问题？你所学的知识源于开放式的分享平台，由于开放式平台人人可发布和可自由编辑的特点，决定了上面的信息鱼龙混杂，有真有假。
+
+所以，我们一定要拥有对学习的修正策略，时刻查补自己在学习中出现的各种问题。</div>
+        </section>
+
+        <section class="section" id="ch16-4">
+          <h4 class="section-title">用于修正的策略</h4>
+          <div class="section-body">除非我们准备降低学习的难度，从最基本的知识学起，否则你只能理性地评估自己的理解能力，仔细地检查和罗列出一张"学习清单"，先提高知识储备。
+
+保持一点不安分的好奇心/怀疑一切定论。在学习中，经验保证你的下限，好奇心则决定着你的上限。经验和好奇心同时在发挥作用，但又不承担责任——当你在学习中得出一个判断或结论时，大脑并不清楚这是经验的结果，还是好奇心的创造。
+
+在学习中我们应该让自己化作一只好奇心满分的猫，对所有的疑问保持一百分的探索精神，学会追根究底。</div>
+        </section>
+
+        <section class="section" id="ch16-5">
+          <h4 class="section-title">发现缺口</h4>
+          <div class="section-body">每当在读书中发现一些问题的"缺口"时，我就会感到莫名地兴奋。什么是缺口呢？首先，是较为独特的知识点，包括其他书籍没有的数据、未论述到的事实和与众不同的观点；其次，是能引发我深入思考的知识点，补充我知识盲区的论点等。
+
+古代有些绘制地图的画家为了保护自己的作品著作权，会在地图上故意画错一个无关紧要的地方。通过对比，人们就知道谁才是第一个画这幅图的人。在知识的对比中寻找像金子一样宝贵的缺口，是最能帮助我们加深对问题的理解和探寻到真正知识的方法之一。</div>
+        </section>
+
+        <section class="section" id="ch16-6">
+          <h4 class="section-title">回归知识的本质</h4>
+          <div class="section-body">费曼曾经说："我们为何学习呢？知识对我们究竟意味着什么？知识的本质又是什么？解决了这三个问题，我们也就找到了人生的答案。无论我们去学习何种知识，都能把它融入我们的生活场景中，化作属于自己的力量。"
+
+不懂得知识到底是什么，知识意味着什么，那么学得再多也只是把它们挂在墙上或摆在好看的展台上当成欣赏的玩物。只有我们意识到知识可以为人生注入的进步和成长因子，才能真正地爱上学习，并在学习中养成深度思考和辩证分析的好习惯。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch17">
+        <header class="chapter-header">
+          <span class="chapter-num">第十七章</span>
+          <h3>寻找反证</h3>
+        </header>
+        <div class="chapter-content">我们在对学习的成果进行回顾和反思时，"寻找反证"是学习过程中的一个不可缺少的环节。即：我学到的概念是否科学？我学到的理论是否实用？我学到的观点是否正确？我学到的论证是否严谨？以上内容能否从其他地方找到相反的"证据"推翻它们？</div>
+
+        <section class="section" id="ch17-1">
+          <h4 class="section-title">重视否定式证据</h4>
+          <div class="section-body">第一，相反的数据——公认或者科学的实验数据，比如数十年来被证明行之有效的计算公式、权威部门的调查数据或者科学家团队的研究报告。
+
+第二，逻辑漏洞——如果知识本身的逻辑存在问题，从其应用或输出中我们就能明显地发现这一点。
+
+第三，过时的知识——"对的知识"也未必是"有用的知识"。我们平时接触到的很多信息其实都是过时的，描述的是过去一段时期内的现象、规律或数据。
+
+第四，相反的权威观点——别因专家的名声、地位就毫不犹豫地接受，要先看看有没有其他的专家、权威人士的观点与之相反。</div>
+        </section>
+
+        <section class="section" id="ch17-2">
+          <h4 class="section-title">当知识卡壳：回到理解不清的地方，找出薄弱环节</h4>
+          <div class="section-body">对外输出知识时，我们很容易发生卡壳的"事故"，就像汽车在行驶途中突然出了故障。停下来，先梳理一遍卡壳的环节——到底是什么原因导致了自己的停顿和困惑？如果是记忆有误，便集中注意力重新温习一遍相关的内容；如果是理解有误，则要回到这段理解不清的地方，找出失误之处，重点理解，弥补薄弱的环节。
+
+比如，英语单词 lover 在多数语境中均指向"情人"而非"爱人"，busboy 其实指的是"餐厅服务人员"而不是"汽车售票员"。初学者十分容易犯下理解的错误。在学习任何知识时我们都要坚持的原则：将知识与现实相结合，使它能为己所用，解决当下的问题。</div>
+        </section>
+
+        <section class="section" id="ch17-3">
+          <h4 class="section-title">争议是深度学习的切入点</h4>
+          <div class="section-body">不管学习还是日常生活，遇到争议性的问题，人们一般有两种处理方式：
+
+第一，向上回避争议——忽略或者绕过争议，只去理解自己第一时间能处理的问题。这是一种大部分人采取的"浅学习"模式。
+
+第二，向下解决争议——沉下来化解争议，从有争议的知识点中获得宝贵的智慧。这是费曼在他的教学生涯中向人们推荐的"深度学习"模式。
+
+费曼说："最好的学习是我们能从一个问题里找到新的问题，你不喜欢、不赞赏、不认可的东西，那才是知识这顶皇冠上的宝石。如果你憎恶争议，或者没有挑刺的习惯，就如同你扔掉了这颗宝石，只戴一顶漂亮但毫无价值的帽子。"</div>
+        </section>
+
+        <section class="section" id="ch17-4">
+          <h4 class="section-title">没有"最可靠"的结论</h4>
+          <div class="section-body">这是一个正确的逻辑闭环，告诉我们别相信任何一种学术结论，哪怕是最权威的声音，也不能奉为至宝或捧上神坛。在上面的循环结构中，知识是动态变化的，一方面我们不断地解构它，理解它，另一方面也通过论证、怀疑和反思更新它的内容，使知识保持常新，尽可能地真实而客观。
+
+我们说一种知识是权威的，是说在当下的条件和环境中它是能解释和解决一些问题的，但未来呢？在其他未经论证的条件和环境中呢？我们谁都不知道。如果你学习时能拥有一种科学的怀疑精神，那么你不但能很好地掌握这些知识，还有机会去创造新的知识。</div>
+        </section>
+
+        <section class="section" id="ch17-5">
+          <h4 class="section-title">和已有的知识建立多角度的类比关系</h4>
+          <div class="section-body">第一，科学的角度——逻辑严谨，数据正确，观点合理；与其他信息和知识的对比中经得起最为苛刻的质疑。
+
+第二，实用的角度——知识的实用性就是能够落地，从书本上的枯燥的理论与文字转化为现实的具体的结果。
+
+第三，系统的角度——从系统化的角度把新知识与我们既有的知识体系进行对比，建立内在的联系。当我们新理解了一个概念时，不要把它作为孤立的个体存入大脑，要将它看作自身知识系统的一部分。
+
+在对所学的知识寻找反证的过程中，与自己已有的知识建立多角度的类比关系有助于我们发现自身的不足，还有新知识的问题，同时也能将新知识融入自身的知识体系中，把它们衔接成一体。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch18">
+        <header class="chapter-header">
+          <span class="chapter-num">第十八章</span>
+          <h3>"内容留存率"决定了我们学习的效能</h3>
+        </header>
+        <div class="chapter-content">想提高学习的效能，就要提升自己学习的"内容留存率"。只有当学习的"内容留存率"达到 90% 以上，才能算是真正的高质量的学习。什么是"内容留存率"？首先，是我们记住知识的比例；其次，是能真正理解到的知识的比例；最后，是这个比例不低于 90% 才可称得上高效能的学习。</div>
+
+        <section class="section" id="ch18-1">
+          <h4 class="section-title">不是学得越多效能就越高</h4>
+          <div class="section-body">这种现象反映了五个方面的问题：
+
+第一是在选择知识上的心态浮躁——总想一口吃成胖子，快速成功，静不下心来。
+
+第二是在学习过程中的行为盲目——看到别人的推荐或大家都在学的东西，立刻放弃自己正在进行的计划。
+
+第三是不善于学习管理——制订了学习计划却不能严格地执行。
+
+第四是没有自己的知识体系——缺乏知识体系在学习中最直观的表现是不知道为什么要学习这些知识。
+
+第五是不看重学习方法——尤其不重视获取正确高效的学习方法。
+
+我们即使从书本或知识平台中了解、阅读到了全部的内容，哪怕倒背如流，那也只是完成了学习的不足 5% 的份额。因为学习最重要的是最大限度地记住"有用的知识"。</div>
+        </section>
+
+        <section class="section" id="ch18-2">
+          <h4 class="section-title">重复"有用的学习"</h4>
+          <div class="section-body">如何甄别出那些有用的知识？一个简单易行的办法就是将知识划分成三种：
+
+第一，对具有生长能力的知识重点学习——这种知识是能帮助我们干大事的，对我们的生活和事业甚至具有无可替代的决定性。它具有完整和体系化的特点，有完善的逻辑体系，可以指导我们的实践。
+
+第二，对模块化的知识针对性学习——那些尽管不成体系、不可生长，但却具有普遍的应用价值的知识，能用来做很多事情。我们只需要在用到时针对性学习即可。
+
+第三，对碎片化的知识坚决不去学习——俞敏洪坚决反对人们平时在短视频和朋友圈里面浪费过多的时间，因为这些内容提供给人们的全部都是碎片化的信息，真假难辨，学之无益。</div>
+        </section>
+
+        <section class="section" id="ch18-3">
+          <h4 class="section-title">留意知识的背后有什么</h4>
+          <div class="section-body">在回顾与反思的过程中，一定要搞清楚一门知识、一个概念背后的逻辑、根源、因果或者其他的背景信息，因为没有任何知识是可以脱离开这些东西孤立存在的。
+
+我们在学习中要有"原理性思维"。在对知识复盘时，思考一下它的原理，搞懂它背后的结构和支柱，这对提高内容留存率具有极大的甚至决定性的作用。
+
+第一，知识的原理比知识本身对我们更有价值。
+第二，探究知识背后的东西也是非常重要的思维训练的过程。
+第三，能够简化知识体系，可以使学习既简单又直接，节省宝贵的时间。
+第四，掌握知识的原理可以帮助我们对所学的领域建立一个基本概念。
+第五，上述四点十分有助于我们在学习之后的应用实践。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch19">
+        <header class="chapter-header">
+          <span class="chapter-num">第十九章</span>
+          <h3>费曼技巧：回顾原则</h3>
+        </header>
+        <div class="chapter-content">在费曼学习法中，回顾原则起着承前启后的作用，是我们实现真正掌握一门知识的倒数两步之一。经过必要的回顾和反思，我们厘清了知识中争议的部分，获得了对学习对象较为全面和真实的阐释，但是这还远远不够——你还要再想一想：我此时的理解和阐释还能再简单直白些吗？</div>
+
+        <section class="section" id="ch19-1">
+          <h4 class="section-title">第一步：怀疑和探索</h4>
+          <div class="section-body">• 确保数据和事实是准确、精确和经过科学统计的。
+• 对未知保持强烈的好奇心，怀疑一切定论，哪怕它是权威定论。
+• 探索知识的本质和背后的问题，而不是仅记住知识的内容。</div>
+        </section>
+
+        <section class="section" id="ch19-2">
+          <h4 class="section-title">第二步：寻找反证</h4>
+          <div class="section-body">• 否定式的证据具有无比重要的作用，对此不能刻意忽略。
+• 对薄弱环节要多方搜集信息，从多个角度加强理解，并提出自己的看法。
+• 重视争议性的观点，从让人困惑的争议中获取比黄金还珍贵的知识点。</div>
+        </section>
+
+        <section class="section" id="ch19-3">
+          <h4 class="section-title">第三步：加大"内容留存率"</h4>
+          <div class="section-body">• 追求学习的效能，而不是知识的数量。
+• 将主要精力放到有用的学习上，也就是重复理解那些"有用的知识"。
+• 加大内容留存率，我们需要拥有"原理性思维"。</div>
+        </section>
+      </article>
+    </section>
+
+    <!-- =================== STEP SIX =================== -->
+    <section class="step" id="step6" data-step="step6">
+      <header class="step-header">
+        <span class="step-label">STEP SIX</span>
+        <h2>简化和吸收<span class="step-keyword">简化</span></h2>
+      </header>
+      <div class="step-intro">学习的最终目的，是抽取我们需要的东西，形成自己的知识体系。</div>
+
+      <article class="chapter" id="ch20">
+        <header class="chapter-header">
+          <span class="chapter-num">第二十章</span>
+          <h3>好东西太多，也会消化不良</h3>
+        </header>
+        <div class="chapter-content">正因如此，我们在学习中的最后一个重要的步骤是简化所学的知识。费曼说："首先是对知识的分解，把你需要的、核心的东西找出来；其次是条理化，逻辑化，把这些剩下的知识整理好，成为一个整体。做好这两项工作，我们才能吸收这些知识。如果你不能把一个科学概念梳理得逻辑简单，通俗易懂，三两句话就能讲明白，那就说明你对这个概念是一知半解的，并没有学好。"</div>
+
+        <section class="section" id="ch20-1">
+          <h4 class="section-title">如何简化知识的要点？</h4>
+          <div class="section-body">第一，打开知识的"重要性开关"——即，哪些知识很重要，哪些知识一般重要，哪些知识不重要。为它们列一个优先级，排好顺序，全力吸收那些重要的知识。
+
+第二，将知识从复杂回归简单——所有复杂的知识体系都有一个简单的核心逻辑，就像一团乱麻会有一根总的线头，找到这个线头往外一拽，这团乱麻便轻松地被化解了。简化所学知识的过程其实就是要求我们不断地用简洁的语言去解释一样东西，一直到我们的大脑像呼吸和喝水一样轻松地理解它。</div>
+        </section>
+
+        <section class="section" id="ch20-2">
+          <h4 class="section-title">如何吸收我们需要的部分？</h4>
+          <div class="section-body">"知识吸收能力"对人的竞争性越来越重要。这种能力具体指的是什么呢？用一句话概括，就是获取、简化、吸纳、转化和创新知识的能力。
+
+第一，获取知识——从外部有效地获取知识，确立学习的方向，制订学习的计划。
+第二，简化知识——以必要的筛选、整理等手段提炼出知识的骨架和要点。
+第三，吸纳知识——将那些核心的知识长久地保存在大脑中，成为一种长时记忆。
+第四，转化知识——把学到的外部知识与已有的知识有效地结合，使新知识转化为自己知识体系的一部分。
+第五，创新知识——通过有效的学习，在已有知识的基础上创造新的知识。</div>
+        </section>
+
+        <section class="section" id="ch20-3">
+          <h4 class="section-title">在线学习中如何简化知识？</h4>
+          <div class="section-body">"在线学习"中简化知识的原则：
+
+第一，以实际效果为前提——在线学习缺乏老师和同学的当面沟通，此时，我们要加强对学习成果的检查。
+第二，以实践应用为目的——必须结合现实的实践应用来简化知识。
+第三，重视可以促进联想的内容——重视那些富有联想性的内容，向问题的纵深拓展。
+第四，避免在不同平台学习重复的内容——遇到这种问题时，要及时地删除和简化所学的内容。
+第五，和我们当下的工作相结合——把工作中的学习以在线的形式完成。
+第六，重视知识的成长性——以成长性的态度对待所学的知识。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch21">
+        <header class="chapter-header">
+          <span class="chapter-num">第二十一章</span>
+          <h3>纵向拓展和精进</h3>
+        </header>
+        <div class="chapter-content">理解新的知识不只是记下基本的原理，而是要将它们纳入现有的知识系统，要充分地掌握内在的规律，成为这门知识的行家里手。大部分时候，学习低效是因为你已经习惯了横向扩展知识和进行增量学习。"横向"和"增量"都是初级学习的标签，只重广度和数量，不重视学习的深度。
+
+第一，纵向拓展——并不需要对一个问题横向地掌握它所有的知识点，只需要对其中的一两个点集中突破，深入研究，便能举一反三。
+
+第二，学习要有"绿灯思维"——事无禁止均可为。善于学习的人视野不受局限，既看得深，又看得广，拥有开放的态度。和"绿灯思维"相反的是"红灯思维"——自我中心主义。
+
+第三，学习要"以慢为快"——真正的高效学习，一定是把知识融会贯通的结果。
+
+第四，精进需要"刻意练习"——"刻意"指的是提升我们的"认知视野"，拓展对知识的"认知深度"。比如下棋，新手看到的是车、马、炮这些具体的棋子；高手看到的却是整个棋局的走势和所有可能采取的策略。</div>
+      </article>
+
+      <article class="chapter" id="ch22">
+        <header class="chapter-header">
+          <span class="chapter-num">第二十二章</span>
+          <h3>深度挖掘，实现知识的内化</h3>
+        </header>
+        <div class="chapter-content">知识的内化，本质上是将外部的智慧吸收为自身生产力的过程，与原有的知识架构完美融合，获得 1+1>2 的效果。我们对比一下有些学习高手，他们学到一个知识后，为什么就可以举一反三地解决很多实际问题？对于大多数人，他们之所以在解决问题的时候想不起应该使用哪些知识，并不是他们学得不好，而是他们所学的知识和遇到的问题之间是脱节的。</div>
+
+        <section class="section" id="ch22-1">
+          <h4 class="section-title">形成自己的知识体系</h4>
+          <div class="section-body">什么是我们自己的知识体系？通俗地说，就是我们可以将零碎分散、相对独立的知识和概念吸收转化为自己的东西，赋予它们逻辑，并且有效地运用这些知识。
+
+为了实现这个目标，我们需要养成对知识深度挖掘和深度学习的习惯。在深度挖掘和深度学习时，最好使用多种工具，比如重要内容摘录、画出知识图谱、标记核心要点、内容分类、概要总结等。
+
+评估深度的几个标准：技能的延伸和强化、对知识的前瞻性理解、对知识的系统性强化。</div>
+        </section>
+
+        <section class="section" id="ch22-2">
+          <h4 class="section-title">费曼五条重要的建议</h4>
+          <div class="section-body">第一，使用笔记记录知识的核心要素——把重点内容尤其核心的要素记录下来。
+
+第二，一定要大幅度地整理所学的知识——对输入进来的信息和资料进行一次深层次和全面的过滤，删除不需要的内容，并把高价值的知识以一种严谨的逻辑整理出来。
+
+第三，对知识进行结构化的归纳与理解——以结构化的方式对知识进行归纳与理解，形成自己的见解，并用精准的语言重新阐述。
+
+第四，输出和发布自己所理解的知识——把归纳整理好的知识发布出去，或者讲述给别人，收取人们的反馈。
+
+第五，对知识进行简化、吸收和记忆——产生自己的知识体系，创造新的知识，并且为己所用，转化为长时记忆。
+
+从第一步到第四步是递进和逐层依赖的关系，而第五步是我们的最终目的。</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch23">
+        <header class="chapter-header">
+          <span class="chapter-num">第二十三章</span>
+          <h3>第三次复述</h3>
+        </header>
+        <div class="chapter-content">费曼说："我们所有形式的学习都是为了达到三个目的：第一是解释问题，第二是解决问题，第三是预测问题。"本书倡导的第三次复述便是为了帮助读者在学习到一门知识后，可以同步实现这三个目标。请记住"预测"这个词，它对我们的学习应该具有无比神圣的意义，是所有的学习可以达到的最高境界。</div>
+
+        <section class="section" id="ch23-1">
+          <h4 class="section-title">建立原创观点</h4>
+          <div class="section-body">如果不能建立自己的原创观点，就无法称之为"100 分的学习"。美国著名心理学家阿尔伯特·班杜拉提出了"自我效能理论"，用来解释人们在特殊的情景下产生某种动机的原因。这个理论的核心观点是，一个人对自己完成某方面工作的能力总是会有一个主观评估。
+
+人类最重要的知识大部分是通过观察学习获得的——善于观察世界的 10% 人贡献了我们所学知识的 90%。在班杜拉的社会学习理论中，"观察学习"（替代性学习 vicarious learning）是一个重要的概念。通过对学习对象的行为、表征、演化和结果等进行观察，搜集信息，获取宝贵的要素，再演绎出新的知识。</div>
+        </section>
+
+        <section class="section" id="ch23-2">
+          <h4 class="section-title">形成有影响力的新知识</h4>
+          <div class="section-body">无论何时、何事，我们的重大决策都应该只在自己的能力圈中进行。学习也是如此。我们在知识中的影响力总是而且必然出现在自己擅长的领域。在这个令自己感到舒适的能力圈中，我们做得要比大部分人更好。简言之，你必须基于自己的兴趣去开发学习的能力，创造有影响力的知识。
+
+2016 年斯坦福大学的汉蒂姆教授及其团队的一项研究发现：在学校教育和自主学习的所有可控的变量中，"热情"是造成学生的学习结果最大差异的因素。
+
+汉蒂姆说："热情很难测量，但我们看到它时一定会知道。热情是一切学习的精髓，它也许不能帮助你一直获胜，但它总是能让你向前发展，驱动你比过去更加理解这个世界，掌握更多的知识。"</div>
+        </section>
+      </article>
+
+      <article class="chapter" id="ch24">
+        <header class="chapter-header">
+          <span class="chapter-num">第二十四章</span>
+          <h3>费曼技巧：简化原则</h3>
+        </header>
+        <div class="chapter-content">费曼技巧中最重要的一步就是简化并吸收所学的知识。只要做到了高效能的吸收，我们才能从根本上化解知识焦虑，也才能跟紧这个快速发展的时代。费曼的简化原则中不包括"短时间内掌握某种技能"这种功利的目的，也不会提供在学习中成功的捷径。他唯一能向我们承诺的是，通过有效的简化，我们能全面而深入地理解自己的学习对象。
+
+在今天这个时代，最有效的学习不再是机械式的记忆、重复高强度的练习和将时间开发到极致的魔鬼式学习，而是严格地遵循简单又直接的费曼学习法，尤其是最后一个步骤：简化，尽可能地简化——只学习你需要的，只学习对你重要的，只学习知识之中"最核心的知识"。
+
+苹果公司创始人史蒂夫·乔布斯说过一句话："有时候你得到的知识根本称不上知识，充其量只是一堆信息。"这就是为什么许多人经常感叹"学了这么多知识，却发现就像从没学过一样"。究其根源，是人们没有正确地对知识进行成体系的简化和吸收。</div>
+      </article>
+    </section>
+
+    <!-- 后记 -->
+    <section class="postscript" id="postscript">
+      <h2>后记</h2>
+      <p>亲爱的读者，当您即将读完本书，结束这段旅程时，有一个关于学习的规律需要我们永远地记住：</p>
+      <p style="margin: 14px 0 14px; padding: 16px 20px; background: var(--color-accent-soft); border-radius: 6px; color: var(--color-text); font-weight: 500;">主动的学习远比被动的学习重要；系统的学习远比碎片式的学习重要；向内的学习远比向外的学习重要；专业的学习远比跨界的学习重要。</p>
+      <p>在知识焦虑和"再学习"流行的时代，本书通过对费曼学习思想的阐释想表达的一个关键原则就是：不要指望知识可以速成。我并不反对在线学习或从付费平台获得知识时以碎片化的方式提高自己的能力，追求快餐式的知识应用，但我反对缺乏逻辑与系统的学习方法。</p>
+      <p>费曼曾经向普林斯顿大学数学系的所有教授发起挑战，他说："不管是多么复杂难懂的数学知识，只要你们使用简单的术语描述，我就一定会算出正确的结果。"听起来这个要求一点也不高，但很多教授却在实践中发现：这太难了。因为这意味着自己必须对相关的知识彻底地理解，能够重新组织一套语言进行精确的描述。这就是费曼学习法的精髓。</p>
+      <p>从中国古代的教育思想中，我们也能寻找到相似的方法，即"教学相长"的教育原理。最好的学习，永远是在输出的过程中实现，而不是单向的输入。首先确立一个学习的目标，锁定你的方向，然后认真地理解它；其次，用简洁的语言讲述给别人听，通过不断的复述进行对比，达到自己满意的程度；最后，对所学的知识进行系统化的简化和整理，达到吸收和内化的目的。</p>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // ===== ScrollSpy =====
+  const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+  const sections = [];
+
+  navLinks.forEach(link => {
+    const id = link.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) sections.push({ id, el, link });
+  });
+
+  function updateActiveLink() {
+    const scrollPos = window.scrollY + 120;
+    let active = null;
+    for (const s of sections) {
+      if (s.el.offsetTop <= scrollPos) {
+        active = s;
+      }
+    }
+    navLinks.forEach(l => l.classList.remove('active'));
+    if (active) active.link.classList.add('active');
+  }
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateActiveLink();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  // Initial state
+  updateActiveLink();
+
+  // Smooth scroll for sidebar links
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = link.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (el) {
+        const offset = el.offsetTop - 24;
+        window.scrollTo({ top: offset, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // ===== Collapsible nav groups =====
+  const navGroups = document.querySelectorAll('.nav-group');
+
+  // Restore collapsed state for groups that should be collapsed by default
+  // (STEP 1 is expanded by default so users see content immediately)
+  navGroups.forEach((g, idx) => {
+    if (idx > 0) g.classList.add('collapsed');
+  });
+
+  // Toggle a single group when its title is clicked
+  document.querySelectorAll('.nav-group-title').forEach(title => {
+    title.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const group = title.closest('.nav-group');
+      if (group) group.classList.toggle('collapsed');
+    });
+  });
+
+  // Expand all
+  document.getElementById('btn-expand-all').addEventListener('click', () => {
+    navGroups.forEach(g => g.classList.remove('collapsed'));
+  });
+
+  // Collapse all
+  document.getElementById('btn-collapse-all').addEventListener('click', () => {
+    navGroups.forEach(g => g.classList.add('collapsed'));
+  });
+
+  // When a sub-link is clicked, ensure its parent group is expanded
+  document.querySelectorAll('.nav-group .nav-link.sub').forEach(link => {
+    link.addEventListener('click', () => {
+      const group = link.closest('.nav-group');
+      if (group) group.classList.remove('collapsed');
+    });
+  });
+
+  // Auto-expand the group whose sub-link is currently active
+  function syncExpandedGroup() {
+    const activeLink = document.querySelector('.nav-link.sub.active');
+    if (!activeLink) return;
+    const group = activeLink.closest('.nav-group');
+    if (group && group.classList.contains('collapsed')) {
+      group.classList.remove('collapsed');
+    }
+  }
+  // Run after each scroll-driven active update
+  const origUpdate = updateActiveLink;
+  updateActiveLink = function() {
+    origUpdate();
+    syncExpandedGroup();
+  };
+  // Run once on load
+  syncExpandedGroup();
+</script>
+</body>
+</html>

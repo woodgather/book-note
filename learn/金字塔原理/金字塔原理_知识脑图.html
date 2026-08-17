@@ -1,0 +1,2239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《金字塔原理》知识脑图 - 麦肯锡40年经典培训教材</title>
+<style>
+:root {
+  --color-primary: #1e3a8a;
+  --color-primary-light: #3b82f6;
+  --color-secondary: #6366f1;
+  --color-accent: #f59e0b;
+  --color-success: #10b981;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-text: #1e293b;
+  --color-text-light: #475569;
+  --color-text-muted: #94a3b8;
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
+  --color-highlight: #fef3c7;
+  --color-tip-bg: #ecfdf5;
+  --color-tip-border: #10b981;
+  --color-warning-bg: #fef3c7;
+  --color-warning-border: #f59e0b;
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-lg: 12px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 24px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.8;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-size: 15px;
+}
+
+/* ===== 顶部 Header ===== */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  color: white;
+  padding: 16px 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1600px;
+  margin: 0 auto;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-title h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.header-title .subtitle {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+.header-search {
+  position: relative;
+  flex: 0 1 320px;
+}
+
+.header-search input {
+  width: 100%;
+  padding: 8px 14px 8px 36px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.header-search input::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+.header-search input:focus {
+  background: rgba(255,255,255,0.28);
+}
+
+.header-search::before {
+  content: "🔍";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* ===== 主体布局 ===== */
+.app-container {
+  display: flex;
+  max-width: 1600px;
+  margin: 0 auto;
+  position: relative;
+  min-height: calc(100vh - 76px);
+}
+
+/* ===== 侧边栏目录 ===== */
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  height: calc(100vh - 76px);
+  position: sticky;
+  top: 76px;
+  overflow-y: auto;
+  padding: 16px 0;
+  transition: transform 0.3s;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 88px;
+  left: 16px;
+  z-index: 99;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  font-size: 18px;
+}
+
+.toc-title {
+  padding: 8px 20px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toc-title .collapse-all {
+  cursor: pointer;
+  color: var(--color-primary-light);
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  user-select: none;
+}
+
+.toc-title .collapse-all:hover {
+  text-decoration: underline;
+}
+
+.toc {
+  list-style: none;
+}
+
+.toc-item {
+  position: relative;
+}
+
+.toc-link {
+  display: flex;
+  align-items: center;
+  padding: 8px 20px 8px 12px;
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  user-select: none;
+  line-height: 1.4;
+}
+
+.toc-link:hover {
+  background: var(--color-border-light);
+  color: var(--color-primary);
+}
+
+.toc-link.active {
+  background: #eff6ff;
+  color: var(--color-primary);
+  border-left-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.toc-toggle {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.toc-toggle.empty {
+  visibility: hidden;
+}
+
+.toc-toggle.expanded {
+  transform: rotate(90deg);
+}
+
+.toc-item.collapsed > .toc-children {
+  display: none;
+}
+
+.toc-children {
+  list-style: none;
+  margin-left: 8px;
+  border-left: 1px dashed var(--color-border);
+}
+
+.toc-level-1 > .toc-link {
+  font-weight: 600;
+  color: var(--color-primary);
+  font-size: 14px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.toc-level-2 > .toc-link {
+  padding-left: 32px;
+  font-size: 13.5px;
+}
+
+.toc-level-3 > .toc-link {
+  padding-left: 48px;
+  font-size: 13px;
+  color: var(--color-text-light);
+}
+
+/* ===== 主内容区 ===== */
+.main {
+  flex: 1;
+  padding: 32px 48px 80px;
+  max-width: 980px;
+  min-width: 0;
+}
+
+/* ===== 章节通用样式 ===== */
+.chapter {
+  margin-bottom: 48px;
+  scroll-margin-top: 100px;
+}
+
+.cover {
+  background: linear-gradient(135deg, #1e3a8a 0%, #6366f1 100%);
+  color: white;
+  border-radius: var(--radius-lg);
+  padding: 48px 40px;
+  text-align: center;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow-md);
+}
+
+.cover h1 {
+  font-size: 38px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+.cover .cover-sub {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 24px;
+  font-weight: 300;
+}
+
+.cover .cover-author {
+  font-size: 15px;
+  opacity: 0.85;
+  margin-bottom: 6px;
+}
+
+.cover .cover-press {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.part-divider {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  color: white;
+  border-radius: var(--radius-lg);
+  padding: 32px 36px;
+  margin: 48px 0 32px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.part-divider::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 200px;
+  height: 200px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+
+.part-divider::after {
+  content: "";
+  position: absolute;
+  bottom: -30%;
+  left: -5%;
+  width: 150px;
+  height: 150px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+
+.part-divider .part-num {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 8px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.part-divider h2 {
+  font-size: 28px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 32px 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.section-title .ch-num {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary-light);
+  background: #eff6ff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.section-title h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.section-title.lead h2 {
+  font-size: 22px;
+}
+
+.appendix-title {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  border-radius: var(--radius);
+  padding: 16px 24px;
+  margin: 36px 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.appendix-title h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.appendix-title .ch-num {
+  background: rgba(255,255,255,0.25);
+  padding: 3px 10px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 24px 0 12px;
+  padding-left: 12px;
+  border-left: 4px solid var(--color-primary-light);
+  line-height: 1.4;
+}
+
+h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 18px 0 10px;
+}
+
+p {
+  margin: 10px 0;
+  text-align: justify;
+}
+
+ul, ol {
+  margin: 10px 0 14px 24px;
+}
+
+li {
+  margin: 6px 0;
+  line-height: 1.75;
+}
+
+strong {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ===== 提示框 ===== */
+.tip {
+  background: var(--color-tip-bg);
+  border-left: 4px solid var(--color-tip-border);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-size: 14.5px;
+}
+
+.tip-title {
+  font-weight: 700;
+  color: var(--color-tip-border);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tip ul, .tip ol {
+  margin-left: 22px;
+}
+
+/* ===== 警告/注意框 ===== */
+.notice {
+  background: #fffbeb;
+  border-left: 4px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin: 16px 0;
+}
+
+.notice-title {
+  font-weight: 700;
+  color: #b45309;
+  margin-bottom: 6px;
+}
+
+/* ===== 概念卡片 ===== */
+.concept {
+  background: #eff6ff;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 18px 0;
+  border: 1px solid #dbeafe;
+}
+
+.concept-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+/* ===== 表格 ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  background: white;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  font-size: 14px;
+}
+
+th {
+  background: var(--color-primary);
+  color: white;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+/* ===== 引用块 ===== */
+blockquote {
+  background: #f1f5f9;
+  border-left: 4px solid var(--color-secondary);
+  padding: 12px 18px;
+  margin: 14px 0;
+  border-radius: var(--radius-sm);
+  font-style: normal;
+  color: var(--color-text-light);
+}
+
+/* ===== 示例框 ===== */
+.example {
+  background: #fef9c3;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 16px 0;
+  border: 1px solid #fde68a;
+}
+
+.example-title {
+  font-weight: 700;
+  color: #b45309;
+  margin-bottom: 8px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+/* ===== 流程图文字表示 ===== */
+.flow {
+  background: #f8fafc;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 14px 0;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--color-text-light);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* ===== 步骤编号 ===== */
+.steps {
+  counter-reset: step;
+  margin: 14px 0 14px 4px;
+}
+
+.steps > li {
+  position: relative;
+  padding-left: 36px;
+  margin: 10px 0;
+  counter-increment: step;
+  list-style: none;
+}
+
+.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 24px;
+  height: 24px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== 重点高亮 ===== */
+.highlight {
+  background: linear-gradient(transparent 60%, var(--color-highlight) 60%);
+  padding: 0 2px;
+  font-weight: 600;
+}
+
+/* ===== 角标 ===== */
+.footnote {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  margin-top: 32px;
+  padding-top: 16px;
+}
+
+/* ===== 返回顶部 ===== */
+.back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  font-size: 18px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 50;
+}
+
+.back-to-top.show {
+  display: flex;
+}
+
+.back-to-top:hover {
+  background: var(--color-secondary);
+  transform: translateY(-2px);
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 76px;
+    height: calc(100vh - 76px);
+    z-index: 90;
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-md);
+  }
+  .sidebar.show {
+    transform: translateX(0);
+  }
+  .sidebar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .main {
+    padding: 24px 20px 60px;
+  }
+  .cover h1 { font-size: 28px; }
+  .part-divider h2 { font-size: 22px; }
+}
+
+@media (max-width: 640px) {
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .header-search { flex: 1; }
+  .main { padding: 20px 16px 60px; }
+  .cover { padding: 32px 20px; }
+  .cover h1 { font-size: 24px; }
+  .section-title h2 { font-size: 20px; }
+  .part-divider h2 { font-size: 20px; }
+}
+
+/* ===== 搜索高亮 ===== */
+.search-mark {
+  background: #fde68a;
+  color: #92400e;
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+/* ===== 阅读进度条 ===== */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  z-index: 200;
+  transition: width 0.1s;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<header class="app-header">
+  <div class="header-content">
+    <div class="header-title">
+      <h1>📐 《金字塔原理》知识脑图</h1>
+      <div class="subtitle">麦肯锡40年经典培训教材 · 芭芭拉·明托 著 · 完整知识体系</div>
+    </div>
+    <div class="header-search">
+      <input type="text" id="searchInput" placeholder="搜索知识节点……">
+    </div>
+  </div>
+</header>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="app-container">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="toc-title">
+      <span>📚 目录导航</span>
+      <span class="collapse-all" id="collapseAll">全部展开</span>
+    </div>
+    <ul class="toc" id="toc">
+      <li class="toc-item toc-level-1"><a class="toc-link" href="#cover"><span class="toc-toggle empty">▶</span>📖 书籍封面</a></li>
+      <li class="toc-item toc-level-1"><a class="toc-link" href="#preface-cn"><span class="toc-toggle empty">▶</span>📜 中文版序</a></li>
+      <li class="toc-item toc-level-1"><a class="toc-link" href="#preface"><span class="toc-toggle empty">▶</span>📜 前言</a></li>
+      <li class="toc-item toc-level-1"><a class="toc-link" href="#part1"><span class="toc-toggle">▶</span>第一篇 表达的逻辑</a>
+        <ul class="toc-children">
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch1"><span class="toc-toggle empty">▶</span>第1章 为什么要用金字塔结构</a></li>
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch2"><span class="toc-toggle empty">▶</span>第2章 金字塔内部的结构</a></li>
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch3"><span class="toc-toggle empty">▶</span>第3章 如何构建金字塔</a></li>
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch4"><span class="toc-toggle empty">▶</span>第4章 序言的具体写法</a></li>
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch5"><span class="toc-toggle empty">▶</span>第5章 演绎推理与归纳推理</a></li>
+        </ul>
+      </li>
+      <li class="toc-item toc-level-1"><a class="toc-link" href="#part2"><span class="toc-toggle">▶</span>第二篇 思考的逻辑</a>
+        <ul class="toc-children">
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch6"><span class="toc-toggle empty">▶</span>第6章 应用逻辑顺序</a></li>
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch7"><span class="toc-toggle empty">▶</span>第7章 概括各组思想</a></li>
+        </ul>
+      </li>
+      <li class="toc-item toc-level-1"><a class="toc-link" href="#part3"><span class="toc-toggle">▶</span>第三篇 解决问题的逻辑</a>
+        <ul class="toc-children">
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch8"><span class="toc-toggle empty">▶</span>第8章 界定问题</a></li>
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch9"><span class="toc-toggle empty">▶</span>第9章 结构化分析问题</a></li>
+        </ul>
+      </li>
+      <li class="toc-item toc-level-1"><a class="toc-link" href="#part4"><span class="toc-toggle">▶</span>第四篇 演示的逻辑</a>
+        <ul class="toc-children">
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch10"><span class="toc-toggle empty">▶</span>第10章 在书面上呈现金字塔</a></li>
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch11"><span class="toc-toggle empty">▶</span>第11章 在PPT演示文稿中呈现金字塔</a></li>
+          <li class="toc-item toc-level-2"><a class="toc-link" href="#ch12"><span class="toc-toggle empty">▶</span>第12章 在字里行间呈现金字塔</a></li>
+        </ul>
+      </li>
+      <li class="toc-item toc-level-1"><a class="toc-link" href="#app1"><span class="toc-toggle empty">▶</span>📎 附录1 在无结构情况下解决问题的方法</a></li>
+      <li class="toc-item toc-level-1"><a class="toc-link" href="#app2"><span class="toc-toggle empty">▶</span>📎 附录2 序言结构范例</a></li>
+      <li class="toc-item toc-level-1"><a class="toc-link" href="#app3"><span class="toc-toggle empty">▶</span>📎 附录3 本书要点汇总</a></li>
+      <li class="toc-item toc-level-1"><a class="toc-link" href="#refs"><span class="toc-toggle empty">▶</span>📎 参考文献</a></li>
+    </ul>
+  </aside>
+
+  <main class="main" id="mainContent">
+
+    <!-- ============ 封面 ============ -->
+    <section id="cover" class="cover chapter">
+      <h1>金字塔原理</h1>
+      <div class="cover-sub">思考、表达和解决问题的逻辑</div>
+      <div class="cover-author">[美] 芭芭拉·明托（Barbara Minto） 著</div>
+      <div class="cover-author">麦肯锡公司40年经典培训教材</div>
+      <div class="cover-press">南海出版公司</div>
+    </section>
+
+    <!-- ============ 中文版序 ============ -->
+    <section id="preface-cn" class="chapter">
+      <div class="section-title lead">
+        <h2>📜 中文版序</h2>
+      </div>
+      <p>"想清楚，说明白，知道说什么、怎么说"，是我们希望达到的境界。当我们与人沟通时，需要想清楚3件事：<strong>谁是我的听众？他们想听什么？他们想怎样听？</strong></p>
+      <p>《金字塔原理》介绍了一种能清晰地展现思路的有效方法。掌握了金字塔原理，就能重点突出，逻辑清晰。不管是在政界、商界、学界，还是在企事业单位，所有高、中、基层职场人士，只要你需要思考和沟通，就会从金字塔原理受益。金字塔结构思考力是领导力的必要素质，本书是训练思考、使表达呈现逻辑性的实用宝典。</p>
+
+      <h3>为什么要学习金字塔原理</h3>
+      <p>我们都希望在思考、沟通交流、管理下属和解决问题时，重点突出，思路清晰，层次分明。我们都希望表达（写作、讲话和培训）时，能说到点子上，正面回答受众（读者、听众和学员）的问题。</p>
+      <p>答案就是——<span class="highlight">使用逻辑清晰的金字塔结构！</span></p>
+
+      <h3>金字塔原理的基本概念</h3>
+      <ul>
+        <li><strong>定义</strong>：金字塔原理是一种重点突出、逻辑清晰、层次分明、简单易懂的思考方式、沟通方式、规范动作。</li>
+        <li><strong>基本结构</strong>：结论先行，以上统下，归类分组，逻辑递进。先重要后次要，先总结后具体，先框架后细节，先结论后原因，先结果后过程，先论点后论据。</li>
+        <li><strong>训练方向</strong>：关注、挖掘受众的意图、需求点、利益点、关注点和兴趣点，想清说什么（内容），怎么说（思路、结构）。</li>
+        <li><strong>沟通效果</strong>：观点鲜明、重点突出、思路清晰、层次分明、简单易懂，让受众有兴趣，能理解，记得住。</li>
+        <li><strong>具体做法</strong>：自上而下表达，自下而上思考，纵向总结概括，横向归类分组，序言讲故事，标题提炼思想精华。</li>
+      </ul>
+
+      <h3>金字塔原理能够帮助你解决哪些问题</h3>
+      <ul>
+        <li><strong>思考</strong>：学会用右脑、左脑全脑思维，提高结构化思维能力，思考全、准、快。</li>
+        <li><strong>书面表达、公文写作</strong>：会挖掘读者的关注点、兴趣点、需求点、利益点；掌握序言的四要素、归类分组的MECE原则，能够重点突出、逻辑清晰、简明扼要。</li>
+        <li><strong>口头表达</strong>：能够使用金字塔的基本原则，回答听众最常有的4类疑问："是什么？为什么？如何做？好不好？"。</li>
+        <li><strong>管理下属</strong>：能够运用金字塔原理，考虑全面、周到、严谨，分配任务、设计流程不重叠无遗漏。</li>
+        <li><strong>培训师开发课程和讲课</strong>：会使用金字塔搭建框架结构、组织素材、重点突出、逻辑清晰、通俗易懂。</li>
+      </ul>
+
+      <div class="concept">
+        <div class="concept-title">📌 适合读者对象</div>
+        <p>所有希望提高思考、讲话、写作、讲课、管理下属及解决问题逻辑性、条理性、效果和效率的人。</p>
+      </div>
+    </section>
+
+    <!-- ============ 前言 ============ -->
+    <section id="preface" class="chapter">
+      <div class="section-title lead">
+        <h2>📜 前言</h2>
+      </div>
+      <p>我曾出版过一套关于"金字塔原理"（The Pyramid Principle）的书，全套共6册，介绍了一种可以解决写作思路不清晰问题的有效方法。我在书中提到，条理清晰的文章一眼就能够看出来，因为这种文章都具有清晰的金字塔结构（pyramidal structure），而条理不清晰的文章则肯定没有金字塔结构。</p>
+      <p>在金字塔结构中，各种思想之间只有非常少的几种逻辑关系（向上、向下或横向联系），这种简单性使我们有可能找到这些逻辑关系的通用规则。一个人要想写出条理清晰的文章，关键是在开始写作前，先将自己的思想组织成金字塔结构，并按照逻辑关系的规则检查和修改。</p>
+      <p>以上观点是我在麦肯锡国际管理咨询公司（McKinsey & Company）的克利夫兰和伦敦分公司工作时总结出来的。1967年还很少有人接受我的理论，但是麦肯锡公司的一些智者却慷慨地指出了我的理论中存在的问题，帮助我改进。现在，金字塔原理已经成为麦肯锡公司的标准，并被麦肯锡看做是其公司理念和规范的重要组成部分。</p>
+
+      <h3>本书的结构</h3>
+      <p>本书分为4个部分：</p>
+      <ul>
+        <li><strong>第1篇 表达的逻辑</strong>：与以前的版本区别不大，介绍了金字塔原理的基本概念，以及如何利用这一原理构建基本的金字塔结构。本篇的内容足以使你理解和应用简单的公文写作技巧。</li>
+        <li><strong>第2篇 思考的逻辑</strong>：介绍了如何深入细致地把握思维的细节，以保证你使用的语句真实、明确地呈现你希望表达的思想。</li>
+        <li><strong>第3篇 解决问题的逻辑</strong>：介绍了如何在解决问题过程的不同阶段，使用多种框架组织分析过程。</li>
+        <li><strong>第4篇 演示的逻辑</strong>：介绍了设计PowerPoint演示幻灯片的技巧。</li>
+      </ul>
+      <p>本书还有3个附录：</p>
+      <ul>
+        <li><strong>附录1</strong>：介绍了分析法和科学法在解决问题过程中的应用和区别；</li>
+        <li><strong>附录2</strong>：介绍了序言中的各种常用模式；</li>
+        <li><strong>附录3</strong>：详细总结概括了本书的要点。</li>
+      </ul>
+
+      <div class="tip">
+        <div class="tip-title">🎯 应用金字塔原理的实际收益</div>
+        <p>实际应用金字塔原理需要相当的毅力。但是，如果你有意地以书中介绍的方法强迫自己"先想后写"，你的写作能力肯定能够得到惊人的改善，使你能够：</p>
+        <ol class="steps">
+          <li>缩短完成最终一稿通常所需的时间；</li>
+          <li>提高文章的条理性；</li>
+          <li>缩短文章的长度。最终的结果是，使你能够在最短的时间内写出简明扼要、思路清晰的文章。</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ 第1篇 ============ -->
+    <div id="part1" class="part-divider">
+      <div class="part-num">PART ONE</div>
+      <h2>第一篇 · 表达的逻辑</h2>
+    </div>
+
+    <p style="text-align:center; color:var(--color-text-light); font-size:15px; margin:20px 0 32px;">我们在工作中遇到的最不爽的事情可能就是写东西，或做长篇演讲。几乎所有人都认为写东西是令人头痛的事。条理清晰的关键，是把你的思想组织成金字塔结构，并自上而下地表达。</p>
+
+    <!-- 第1章 -->
+    <section id="ch1" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第1章</span>
+        <h2>为什么要用金字塔结构</h2>
+      </div>
+
+      <p>如果受众希望通过阅读你的文章、听你的演讲或培训，来了解你对某一问题的观点，那么他将面临一项复杂的任务。因为即使你的文章篇幅很短，比如只有两页纸，文章中也会包括大约100个句子。读者必须阅读、理解每一句话，并且寻找每句话之间的联系，前前后后反复思考。</p>
+
+      <h3>一、人类思维的基本规律</h3>
+      <ul>
+        <li>大脑自动将信息归纳到金字塔结构的各组中，以便于理解和记忆。</li>
+        <li>预先归纳到金字塔结构中的沟通内容，都更容易被人理解和记忆。</li>
+        <li>你应有意地将沟通内容组织成金字塔结构，包括口头表达和书面表达——说话、培训、演讲、报告、述职和写文章、总结、申请、方案、计划等。</li>
+      </ul>
+
+      <h3>二、归类分组，将思想组织成金字塔</h3>
+      <p>人类很早以前就认识到，大脑会自动将发现的所有事物以某种秩序组织起来。基本上，大脑会认为同时发生的任何事物之间都存在某种关联，并且会将这些事物按某种逻辑模式组织起来。古希腊人眺望星空时，看到的是由星星组成的各种图案，而不是散乱的星星。这个例子证明人脑具有对事物进行归类组织的特点。</p>
+      <p>大脑会将其认为具有"共性"的任何事物组织在一起。"共性"指的是具有某种相似的共同点或所处的位置相近。</p>
+
+      <div class="tip">
+        <div class="tip-title">🧠 奇妙的数字"7"</div>
+        <p>大脑的短期记忆无法一次容纳约7个以上的记忆项目。米勒认为，有的人可能一次能记住9个项目，而有的人则只能记住5个。大脑比较容易记住的是3个项目，当然最容易记住的是1个项目。</p>
+        <p>这意味着，当大脑发现需要处理的项目超过4个或5个时，就会开始将其归类到不同的逻辑范畴中，以便于记忆。</p>
+      </div>
+
+      <h3>三、找出逻辑关系，抽象概括</h3>
+      <p>仅以逻辑方法将思想或概念分组是不够的，还必须找出其逻辑关系。分类的作用不只是为了将一组9个概念，分成每组各有4个、3个和2个概念的3组概念——这样合起来还是9个概念。你所要做的是提高一个抽象层次，将大脑需要处理的9个项目变成3个项目。</p>
+
+      <h3>四、自上而下表达，结论先行</h3>
+      <p>理清表达思想的顺序，是写出条理清晰文章的最重要方式，而清晰的顺序，就是先提出总结性思想，再提出被总结的具体思想。<span class="highlight">先总结后具体的表达顺序，你必须牢记。</span></p>
+      <p>由于受众的知识背景和理解力千差万别，他们很难对你所表达的思想组作出与你完全一样的解读。如果你预先告诉读者某一组思想之间的逻辑关系，他们就能很容易地理解你表达的思想。</p>
+
+      <h3>五、自下而上思考，总结概括</h3>
+      <p>你的思维从最底部的层次开始，将句子按照某种逻辑顺序组成段落，然后将段落组成章节，最后将章节组成完整的文章，而代表整篇文章的则是金字塔最顶端的一个思想（中心思想、核心观点）。</p>
+
+      <div class="tip">
+        <div class="tip-title">📐 金字塔中思想相互关联的3种方式</div>
+        <p>金字塔中的思想以3种方式互相关联——向上、向下和横向。位于一组思想的上一个层次的思想是对这一组思想的概括，这一组思想则是对其上一层次思想的解释和支持。</p>
+        <p>文章中的思想必须符合以下规则：</p>
+        <ol>
+          <li><strong>纵向</strong>：文章中任一层次上的思想必须是其下一层次思想的概括。</li>
+          <li><strong>横向</strong>：每组中的思想必须属于同一逻辑范畴。</li>
+          <li><strong>横向</strong>：每组中的思想必须按逻辑顺序组织。</li>
+        </ol>
+      </div>
+
+      <h3>六、组织思想的4种逻辑顺序</h3>
+      <div class="concept">
+        <div class="concept-title">💡 4种逻辑顺序</div>
+        <ul>
+          <li><strong>演绎顺序</strong>：大前提、小前提、结论</li>
+          <li><strong>时间（步骤）顺序</strong>：第一、第二、第三</li>
+          <li><strong>结构（空间）顺序</strong>：波士顿、纽约、华盛顿</li>
+          <li><strong>程度（重要性）顺序</strong>：最重要、次重要，等等</li>
+        </ul>
+      </div>
+
+      <p>因为演绎推理、发现因果关系、化整为零和归纳总结是大脑可进行的仅有的4种分析活动，这4种顺序也是大脑可用于组织思想的仅有的4种顺序。因此，写出条理清晰文章的关键，就是在你开始写作之前，先将你的思想放入金字塔结构中，并根据以上规则进行检验。</p>
+    </section>
+
+    <!-- 第2章 -->
+    <section id="ch2" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第2章</span>
+        <h2>金字塔内部的结构</h2>
+      </div>
+
+      <p>条理清晰的文章所表达的各思想之间都具有明确的逻辑关系，组成总体上的金字塔结构。这样的文章总是自金字塔的顶端开始，自上而下地沿着各个分支将作者的思想一层一层呈现给读者。</p>
+
+      <div class="tip">
+        <div class="tip-title">🏗️ 金字塔中的子结构</div>
+        <p>金字塔中的子结构，能够加快你梳理思想的过程：</p>
+        <ul>
+          <li>主题与子主题之间的<span class="highlight">纵向关系</span></li>
+          <li>各子主题之间的<span class="highlight">横向关系</span></li>
+          <li>序言的<span class="highlight">叙述方式</span></li>
+        </ul>
+      </div>
+
+      <h3>一、纵向关系</h3>
+      <p>一般的文章都是一维的（one-dimensional）：一个句子接着一个句子，在纸面上基本呈现出纵向向下的结构。但是这种文字的纵向延伸却掩盖了一个事实，即思想是位于不同的抽象层次上的。</p>
+      <p>在本书中，我将"思想"定义为"<strong>向受众发出新信息并引发受众疑问的语句</strong>"。人一般不会阅读自己已经了解的内容，因此，也可以说，表达思想的主要目的就是向受众传递新的信息。</p>
+      <p>为了向受众传递新的信息而作的表述，必然会使对方就其逻辑性产生疑问，例如，"为什么会这样"、"怎样才能这样"，或者"为什么你这样说"。作为文章的作者，你必须在该表述的下一个层次上横向地回答读者的疑问。</p>
+      <p>你将不断地按照"引起读者疑问并回答疑问"的方式继续写作，直到你认为读者不会再对你的新表述提出任何疑问为止。至此，作者就可以离开金字塔结构的第一个分支，返回关键句（key line）层次，继续回答由金字塔最顶端方框中思想引发的初始疑问。</p>
+
+      <div class="example">
+        <div class="example-title">📖 经典案例：切斯特顿论"猪应当被当做宠物养"</div>
+        <p>切斯特顿说："有两个原因：首先，猪很漂亮；其次，猪可以培育出很多品种。" 通过纵向的疑问/回答式对话（金字塔结构）展开论述：</p>
+        <ul>
+          <li>为什么说猪很漂亮？→ 猪很肥，且具有典型的英国特征。</li>
+          <li>肥胖有什么漂亮的？→ 肥胖能够使其他人显得苗条，也能够使肥胖者更谦虚。</li>
+          <li>为什么具有英国特征就漂亮？→ 猪与大地互相连接；这种连接说明权力与仁慈并非不能共存。</li>
+        </ul>
+        <p>这种表述之所以清晰，是因为其思想的组织一直紧紧围绕着回答由主题引发的读者的疑问。</p>
+      </div>
+
+      <h3>二、横向关系</h3>
+      <p>当考虑在下一结构层次上如何表述时，必须保证你的表述能回答在其上一个层次上的表述引起的疑问，同时还必须保证表述符合逻辑。也就是说，表述必须具有明确的归纳或演绎关系，但不可同时既具有归纳关系，又具有演绎关系。在组织思想时，<span class="highlight">归纳和演绎是仅有的两种可能的逻辑关系</span>。</p>
+
+      <h4>演绎性思想组合</h4>
+      <p>演绎性思想组合是由几个承前启后的论述组成的：</p>
+      <ul>
+        <li>所有的人都会死。</li>
+        <li>苏格拉底是一个人。</li>
+        <li>因此苏格拉底会死。</li>
+      </ul>
+
+      <h4>归纳性思想组合</h4>
+      <ul>
+        <li>法国坦克已抵达波兰边境。</li>
+        <li>德国坦克已抵达波兰边境。</li>
+        <li>俄国坦克已抵达波兰边境。</li>
+      </ul>
+      <p>为了提高一个抽象层次，你需要识别以上句子的共同点（即：都是针对波兰的战争行为），并得出一个推论："波兰将受到坦克入侵"。</p>
+
+      <h3>三、序言的结构</h3>
+      <p>保证出现相关性的唯一办法，就是使这个句子直接回答你所发现的读者头脑中已存在的某一疑问。</p>
+
+      <div class="concept">
+        <div class="concept-title">🎬 序言的讲故事结构</div>
+        <p>序言的开头应向读者说明"背景"（situation）的时间和地点。在这一背景中应当发生了某件事情，可称为"冲突"（complication），使读者提出（或将使读者提出）你的文章将要"回答"（answer）的"疑问"（question）。</p>
+        <p><strong>故事结构：背景 → 冲突 → 疑问 → 回答</strong></p>
+        <p>这种典型的讲故事式的呈现——背景、冲突、疑问、回答——能够使你确保在引导读者了解你的思维过程之前，你和读者是"站在同一位置上"。</p>
+      </div>
+
+      <h3>四、3种子结构的作用</h3>
+      <p>这3种子结构（即纵向的疑问/回答式对话、横向的演绎或归纳推理、讲故事式的序言）能够帮助：</p>
+      <ul>
+        <li>纵向关系：确定某一层次上的思想组必须表达哪种信息（即：必须回答针对上一层次的思想读者所提出的新疑问）。</li>
+        <li>横向关系：判断你组织在一起的思想是否用符合逻辑的方式表达了信息。</li>
+        <li>了解读者最早提出的疑问：将确保你组织和呈现的思想与读者有关联。</li>
+      </ul>
+    </section>
+
+    <!-- 第3章 -->
+    <section id="ch3" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第3章</span>
+        <h2>如何构建金字塔</h2>
+      </div>
+
+      <p>当你坐下来开始写作时，常会遇到这样的情形：你只是大致知道要写什么，但并不清楚你具体想表达什么，以及如何表达。</p>
+
+      <h3>一、自上而下法</h3>
+      <p>自上而下地构建金字塔结构通常容易一些，因为你开始思考的是你最容易确定的事情，即文章的主题，以及读者对该主题的了解情况。</p>
+
+      <div class="tip">
+        <div class="tip-title">📋 自上而下法构建金字塔的步骤</div>
+        <ol class="steps">
+          <li><strong>提出主题思想</strong>。</li>
+          <li><strong>设想受众的主要疑问</strong>。</li>
+          <li><strong>写序言：背景－冲突－疑问－回答</strong>。</li>
+          <li><strong>与受众进行疑问/回答式对话</strong>。</li>
+          <li><strong>对受众的新疑问，重复进行疑问/回答式对话</strong>。</li>
+        </ol>
+      </div>
+
+      <h3>二、自下而上法</h3>
+      <p>很多时候你会发现你还没想清楚，无法构建金字塔结构的顶部。遇到这些情况时，可向下移动一个层次，从关键句层次上着手。</p>
+
+      <div class="tip">
+        <div class="tip-title">📋 自下而上思考</div>
+        <ol class="steps">
+          <li><strong>列出你想表达的所有思想要点</strong>。</li>
+          <li><strong>找出各要点之间的逻辑关系</strong>。</li>
+          <li><strong>得出结论</strong>。</li>
+        </ol>
+      </div>
+
+      <h3>三、初学者注意事项</h3>
+      <ol class="steps">
+        <li><strong>一定先搭结构，先尝试自上而下法</strong>。不要试图一下子就把整篇文章都写出来。</li>
+        <li><strong>序言先写背景</strong>，将背景作为序言的起点。</li>
+        <li><strong>先多花时间思考序言，不要省略</strong>。先想好序言，避免开始论证时还在想背景或冲突。</li>
+        <li><strong>将历史背景放在序言中</strong>。你不应该在文章的正文部分才告诉读者过去发生的事情。</li>
+        <li><strong>序言仅涉及读者不会对其真实性提出质疑的内容</strong>。</li>
+        <li><strong>在关键句层次上，更宜选择归纳推理法而非演绎论证法</strong>。</li>
+      </ol>
+    </section>
+
+    <!-- 第4章 -->
+    <section id="ch4" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第4章</span>
+        <h2>序言的具体写法</h2>
+      </div>
+
+      <p>文章的序言（前言、引言、导言）概述读者已知的信息，并将这些信息与文章将要回答的疑问建立联系，然后作者就可以将全部精力放在提供回答疑问的答案上。</p>
+
+      <div class="tip">
+        <div class="tip-title">🎬 序言的目的</div>
+        <p>序言的目的是"提示"读者而不是"告诉"读者某些信息。序言中不应含有读者需要证明后才能接受的信息，例如，不应当含有图表。</p>
+        <p>序言必须包含讲故事的3个要素，即"背景"、"冲突"和"答案"。</p>
+        <p>序言的长度取决于读者和主题的需要。</p>
+      </div>
+
+      <h3>一、为什么要用讲故事的形式</h3>
+      <p>你必须想办法使读者轻易地抛开其他思想，专注于文章的内容。为达到这一目的，有一种非常简单的方法，即利用未讲完的故事所产生的悬念效果。</p>
+      <p>每一个好的故事都有开头、中间和结尾，相当于引入某种"背景"、说明发生的"冲突"，并提出解决方案。这里所谓的解决方案，就是你在文章中要表达的主要思想。</p>
+
+      <h3>二、何时引入"背景"</h3>
+      <p>开始引入"背景"时，应先谈与文章主题有关，且读者肯定会同意的内容，应当是读者已经认可或者将会认可的内容。</p>
+      <p>所有引出"背景"的句子都具有一个重要特征，即能够将你"锁定"在特定的时间和空间，从而为讲故事做好准备。</p>
+
+      <h3>三、什么是"冲突"</h3>
+      <p>文章序言中的"冲突"虽然经常指的是某种不利的变化，但并不总是具有"不利的变化"的含义。这里的"冲突"类似于讲故事时推动情节发展的因素，能够促使读者提出"疑问"。</p>
+
+      <div class="concept">
+        <div class="concept-title">❓ 多数文章回答以下4种疑问之一</div>
+        <ol>
+          <li>我们应该做什么？</li>
+          <li>我们是否应该按计划做？</li>
+          <li>我们应该如何做？</li>
+          <li>它发生的原因是什么？</li>
+        </ol>
+      </div>
+
+      <h3>四、为什么要用这种顺序</h3>
+      <p>序言必须采取"背景—冲突—疑问—解决方案"的结构，但是，各部分的顺序可以有所变化，以创造不同的文章风格：</p>
+      <ul>
+        <li><strong>标准式</strong>：背景—冲突—答案</li>
+        <li><strong>开门见山式</strong>：答案—背景—冲突</li>
+        <li><strong>突出忧虑式</strong>：冲突—背景—答案</li>
+        <li><strong>突出信心式</strong>：疑问—背景—冲突—答案</li>
+      </ul>
+
+      <h3>五、什么是"关键句要点"</h3>
+      <p>关键句要点（或称要点、核心观点、一级结论、一级论点、重要结论），不仅要回答由文章主题思想引起的受众的新疑问，还要呈现文章的框架结构。因此，如果文章篇幅较长，就应该列出关键句的要点。</p>
+      <p>列出关键句要点可以让读者在开始阅读的最初30秒内就能了解你的全部思路。由于随后的内容只是解释或支持这些要点，你就非常得体地将读者请到了一个适当的位置上，由读者自行决定是继续读下去，还是就此接受你的结论。</p>
+
+      <div class="notice">
+        <div class="notice-title">⚠️ 序言应当介绍4要素</div>
+        <ol>
+          <li>介绍背景（S，Situation）</li>
+          <li>指出冲突（C，Complication）</li>
+          <li>引发疑问（Q，Question）</li>
+          <li>给出答案（A，Answer）</li>
+        </ol>
+      </div>
+
+      <h3>六、序言的常见模式</h3>
+
+      <h4>1. 发出指示式（针对"我们应该做什么"或"我们应该如何做"等问句）</h4>
+      <p>假设你准备召集销售人员开会：</p>
+      <ul>
+        <li>背景（S）=我们打算做X。</li>
+        <li>冲突（C）=需要你们做Y。</li>
+        <li>疑问（Q）=我们如何做Y？</li>
+      </ul>
+
+      <h4>2. 请求支持式（针对"我们是否应该这样做"等问句）</h4>
+      <p>通常具有以下结构：</p>
+      <ul>
+        <li>背景（S）=我们遇到了一个问题。</li>
+        <li>冲突（C）=我们的解决方案需要＿＿＿美元经费。</li>
+        <li>疑问（Q）=我应该批准吗？</li>
+      </ul>
+      <p>为了使请求经费的申请得到支持，通常有3个（有时有4个）标准的理由：</p>
+      <ol>
+        <li>解决该问题刻不容缓；</li>
+        <li>此方案能够解决该问题（或者是：此方案是多种解决该问题方案中最好的一种）；</li>
+        <li>采用该方案后节约的成本（或其他合理的财务方式）将超过此方案支出的成本；</li>
+        <li>我们还可以得到其他好处。</li>
+      </ol>
+
+      <h4>3. 解释做法式（针对"我们应该如何做"等问句）</h4>
+      <p>解释方法式文章的关键句要点结构是有关"步骤"。根据你告诉读者的是如何做他们以前没有做过的事，还是如何正确地做他们正在做的事，文章序言的结构会略有不同。</p>
+      <p>在你开始写作之前，在纸上列出两个流程进行对比是非常重要的。两个流程之间的差异就能够告诉你文章的关键句要点应该怎么写。</p>
+
+      <h4>4. 比较选择式（针对"我们应该做什么"等问句）</h4>
+      <p>如果你对问题作出了正确的界定，那么就根本没有什么替代方案。你建议的方案要么能够解决该问题，要么不能解决该问题。从这个意义上说，没有什么替代方案。</p>
+
+      <h3>七、咨询类文章的序言</h3>
+
+      <h4>项目建议书</h4>
+      <p>咨询公司的项目建议书通常具有以下方式：</p>
+      <ul>
+        <li>背景（S）=你遇到一个问题。</li>
+        <li>冲突（C）=你已决定请第三方帮助解决此问题。</li>
+        <li>疑问（Q）=你是我们应该聘请来解决该问题的第三方吗？</li>
+      </ul>
+      <p>接下来的关键句结构通常由4部分组成：</p>
+      <ol>
+        <li>我们理解该问题。</li>
+        <li>我们有解决该问题的合理方法。</li>
+        <li>我们在应用此方法上有丰富的经验。</li>
+        <li>我们的项目安排非常合理。</li>
+      </ol>
+
+      <h4>项目进度小结</h4>
+      <p>项目进度小结通常是某顾问在某个项目的每个阶段结束时与客户或自己的上级进行交流的正式文件。除了第一份项目进度小结，其他项目进度小结都具有相同的结构：</p>
+      <ul>
+        <li>背景（S）=我们告诉过你X。</li>
+        <li>冲突（C）=你要求我们调查Y，我们已经完成该调查。</li>
+        <li>疑问（Q）=你们发现了什么？</li>
+      </ul>
+    </section>
+
+    <!-- 第5章 -->
+    <section id="ch5" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第5章</span>
+        <h2>演绎推理与归纳推理</h2>
+      </div>
+
+      <p>条理清晰的文章，必须能够准确、清晰地表现同一主题思想下的思想组之间的逻辑关系。这两种逻辑推理方式是建立思想逻辑关系仅有的两种模式。</p>
+
+      <div class="concept">
+        <div class="concept-title">🔀 演绎与归纳的区别</div>
+        <p><strong>演绎</strong>是一种线性的推理方式，最终是为了得出一个由逻辑词"因此"引出的结论。在金字塔结构中，位于演绎论证过程上一层次的思想是对演绎过程的概括，重点是在演绎推理过程的最后一步。</p>
+        <p><strong>归纳推理</strong>是将一组具有共同点的事实、思想或观点归类分组，并概括其共同性（或论点）。</p>
+        <p>在演绎过程中，每个思想均由前一个思想导出；而在归纳过程中则不存在这种关系。</p>
+      </div>
+
+      <h3>一、演绎推理</h3>
+
+      <h4>演绎推理的步骤</h4>
+      <p>演绎推理过程看做需要完成以下3个步骤：</p>
+      <ol class="steps">
+        <li>阐述世界上已存在的某种情况。</li>
+        <li>阐述世界上同时存在的相关情况。如果第二个表述是针对第一个表述的主语或谓语的，则说明这两个表述相关。</li>
+        <li>说明这两种情况同时存在时隐含的意义。</li>
+      </ol>
+      <p>演绎推理也可以是以下3个步骤：</p>
+      <ol class="steps">
+        <li>出现的问题或存在的现象。</li>
+        <li>产生问题的根源、原因。</li>
+        <li>解决问题的方案。</li>
+      </ol>
+
+      <h4>演绎推理的应用</h4>
+      <p>由于演绎推理非常繁琐，我建议在关键句层次上尽量避免使用演绎法论述，尽量用归纳法取而代之。<span class="highlight">因为归纳法更便于读者阅读和理解。</span></p>
+
+      <div class="tip">
+        <div class="tip-title">💡 演绎推理需要完成3个步骤</div>
+        <ol>
+          <li>阐述世界上已存在的某种情况。</li>
+          <li>阐述世界上同时存在的相关情况。</li>
+          <li>说明这两种情况同时存在时隐含的意义。</li>
+        </ol>
+      </div>
+
+      <h3>二、归纳推理</h3>
+      <p>归纳推理比演绎推理难得多，因为归纳推理更需要创造性的思维。在归纳推理时，大脑首先注意到若干不同的事物（思想、事件、事实）具有共性、共同点，然后将其归类到同一个组中，并说明其共性。</p>
+
+      <h4>归纳推理的步骤</h4>
+      <p>在进行归纳推理时，最重要的是找到一个能够表示该组所有思想的名词。这个词必须是一个单一名词，因为：</p>
+      <ol>
+        <li>所有表示一类事物的词都是名词；</li>
+        <li>该组思想中必定有两个以上（含两个）该类思想。</li>
+      </ol>
+
+      <h3>三、演绎推理与归纳推理的区别</h3>
+      <p>演绎关系的建立，要求推理过程中的第二步对第一步作出评述，并推导出一个结论。归纳关系则基于句子的结构。作者必须发现各个句子主语或谓语之间的相同点，并根据这一相同点得出结论。</p>
+
+      <div class="concept">
+        <div class="concept-title">⚖️ 演绎与归纳的本质区别</div>
+        <p><strong>演绎推理</strong>：第二点是对第一点主语或谓语的论述。</p>
+        <p><strong>归纳推理</strong>：同组中的思想具有类似的主语或谓语。</p>
+      </div>
+
+      <p>还要注意的是：不论你将几个句子组织在一起，是为了进行归纳推理，还是为了进行演绎推理，你的思维都会主动预期某个归纳式结论或演绎式结论的出现。读者在阅读时会将思维"投射"到前方，预测作者的下一个句子。<span class="highlight">如果读者预期的结果与作者实际的表述不同，读者就可能感到困惑、不解、烦躁</span>。因此，你应当在呈现归纳或演绎过程之前，先告诉读者你的主题思想，以使读者能够容易地跟上你的思路。</p>
+    </section>
+
+    <!-- ============ 第2篇 ============ -->
+    <div id="part2" class="part-divider">
+      <div class="part-num">PART TWO</div>
+      <h2>第二篇 · 思考的逻辑</h2>
+    </div>
+
+    <p style="text-align:center; color:var(--color-text-light); font-size:15px; margin:20px 0 32px;">在将金字塔原理具体应用于公文写作时，你只需要稍加练习，就可以简单、轻松、快速地搭建好文章的总体框架结构。本篇介绍了如何深入细致地把握思维的细节，以保证你使用的语句真实、明确地呈现你希望表达的思想。</p>
+
+    <!-- 第6章 -->
+    <section id="ch6" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第6章</span>
+        <h2>应用逻辑顺序</h2>
+      </div>
+
+      <p>金字塔原理的第二条规则规定：所有列入同一组中的思想必须具有某种逻辑顺序。这条规则可以保证你列入同一组中的思想确实属于这一组，还可以防止你遗漏任何相关的思想。</p>
+
+      <h3>一、大脑的归纳分组分析活动</h3>
+      <p>大脑的归纳分组分析活动只有以下3种：</p>
+      <ol>
+        <li><strong>确定前因后果关系</strong>（时间顺序）</li>
+        <li><strong>将整体分割为部分，或将部分组成整体</strong>（结构顺序）</li>
+        <li><strong>将类似事务按重要性归为一组</strong>（程度顺序）</li>
+      </ol>
+      <p>以上3种逻辑顺序既可以单独使用，也可以结合使用，但是每一组思想中都必须至少存在一种逻辑顺序。</p>
+
+      <h3>二、时间顺序</h3>
+      <p>在按照时间顺序组织的思想组中，你要按照采取行动的顺序（第一步、第二步、第三步……）依次表述达到某一结果必须采取的行动。该组中的思想可以是实际的行动步骤或行动性的思想（如：建议、目标等），也可以是大脑中隐含的思维过程得出的结论。</p>
+
+      <h4>根据结果寻找原因</h4>
+      <p>写作时常见的问题之一就是无法区分原因和结果。避免出现因果关系错误的方法是假设自己采取了文中提到的每一项行动，并想象一下采取每项行动之后产生的结果。</p>
+
+      <h4>揭示隐含的逻辑思路</h4>
+      <p>你得出的结论可能是基于某个隐含的逻辑过程，认识到这一点，对明确表达你的真实思想很有帮助。</p>
+
+      <h3>三、结构顺序</h3>
+      <p>结构顺序就是当你使用示意图、地图、图画或照片想象某事务时的顺序。你想象的"某事物"既可以是真实的，也可以是概念性的；既可以是一个物体，也可以是一个过程。但是，这个"某事物"必须被合理地划分入不同的部分（不同的组）。</p>
+
+      <div class="tip">
+        <div class="tip-title">📐 MECE原则：相互独立，完全穷尽</div>
+        <p>在将某个整体（不论是客观存在的还是概念性的整体）划分为不同的部分时，你必须保证划分后的各部分符合以下要求：</p>
+        <ul>
+          <li><strong>各部分之间相互独立</strong>（mutually exclusive），没有重叠，有排他性。</li>
+          <li><strong>所有部分完全穷尽</strong>（collectively exhaustive），没有遗漏。</li>
+        </ul>
+        <p>这两个要求简称为分组的MECE原则。</p>
+      </div>
+
+      <h3>四、程度顺序</h3>
+      <p>程度顺序，也称重要性顺序。是你对一组因为具有某种共同特点而被聚集在一起的事务所采用的顺序，如：3个问题、4个原因、5个因素等。</p>
+
+      <h4>创建适当的分组</h4>
+      <p>在为事物分组时，你可能会说："这家公司存在3个问题。"这时，你的大脑自动将这3个问题与该公司可能存在的其他问题分隔开。为了证明这两个组具有相互排斥性，你必须明确指明每组中的所有问题具有共同特性，然后根据你的知识，确保将所有具有该特性的问题列入该组。</p>
+
+      <h4>识别、调整不适当的分组</h4>
+      <p>找出某假定分组的正确的分组基础，可以帮助你更清晰地表达自己真实的思想。检查逻辑顺序是检查某一分组是否恰当的重要手段。</p>
+    </section>
+
+    <!-- 第7章 -->
+    <section id="ch7" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第7章</span>
+        <h2>概括各组思想</h2>
+      </div>
+
+      <p>位于金字塔结构每一个层次上的思想，都必须是对其下面一个层次思想的提炼、概括。因为，上一个层次的思想实际上都是从下一个层次的思想衍生、提炼、总结出来的。</p>
+
+      <h3>一、避免"缺乏思想"的句子</h3>
+      <p>很多作者只是简单地将一些思想组合在一起，并没有完成思考。我们前面看到，很多人将一些只具有一般性关系，而不具有明确关系的思想罗列在一起，由于这些思想实际上并非真正属于同一组，因而也无法总结概括。</p>
+
+      <div class="example">
+        <div class="example-title">💬 缺乏思想的句子的危害</div>
+        <p><strong>错误的表达</strong>："约翰·韦恩说他是最适合写塞缪尔·约翰逊传记的人，他有3个理由：他们都来自贫困的斯塔福德县；他们都在牛津大学学习过；他们都有类似的文学爱好。"</p>
+        <p><strong>改进后的表达</strong>："约翰·韦恩说他是最适合写塞缪尔·约翰逊传记的人，因为他和约翰逊属于同一类人。"</p>
+        <p>当你听到"他这样做是因为他们属于同一类人"时，你的思维肯定比听到"他这样做是有3个原因"时更有准备，更容易理解随后听到的信息。"有3个原因"这样的话听起来索然无味，实际上也确实没有什么内容。</p>
+      </div>
+
+      <h3>二、思想的表达方式与分组基础</h3>
+      <p>思想的表达方式与其分组基础无关，可以是行动性语句，即告诉读者要做什么事；也可以是描述性语句，即告诉读者关于某些事的情况。</p>
+      <ul>
+        <li><strong>概括行动性思想</strong>（介绍采取的行动、行为、动作、步骤、流程）时，应说明采取行动后取得的结果（效果、达到的目标）。</li>
+        <li><strong>概括描述性思想</strong>（介绍背景、信息）时，应说明这些思想具有的共同点的含义（共同点的意义）。</li>
+      </ul>
+
+      <div class="tip">
+        <div class="tip-title">📋 总结句要说明行动产生的结果/目标</div>
+        <p>商务公文中的很多思想都是行动性语句，即可以用"步骤"、"措施"、"流程"、"建议"、"目标"或"改革"之类的名词表示的语句。</p>
+        <p>在对一系列行动的概括也必定是实施这些行动所产生的结果。任何一组相互独立、完全穷尽的行动性思想，加上其产生的结果，就能够形成一个独特的封闭体系。</p>
+      </div>
+
+      <h3>三、总结句要使用明确的词汇/语句</h3>
+      <p>在判断某组思想是否完全穷尽时，我们必须非常明确地指出期望这组行动能实现的结果或达到的目标，明确到就像手中拿着成品一样。</p>
+
+      <div class="example">
+        <div class="example-title">⚠️ 措辞含糊的典型例子</div>
+        <p><strong>问题表述</strong>："我们必须培养一种全球意识，使每一个人都认识到自己是全世界社会中的一员。"</p>
+        <p><strong>问题分析</strong>：这句话想让我们做什么？我们怎样才能知道自己已经达到了这一目标？你能将一个已经"培养了全球意识"的人，与一个还没有做到这一点的人区分开吗？</p>
+        <p>如果你不能，就说明你根本无法了解作者的实际意图，也无法想出为实现这一目标所必须采取的措施。</p>
+      </div>
+
+      <h3>四、区分行动步骤的层次</h3>
+      <p>多数人在说明一系列行动步骤时，都倾向于使用他们希望读者也使用的顺序，但是这样做会使他们把原因和结果都放在同一个层次上。</p>
+      <p>区分行动、步骤的层次比较容易：如果你希望读者在采取下一项行动之前先采取某一项行动，那么这两项行动就属于同一层次；如果你希望读者采取前一项行动以便产生后一项行动，那么前一项行动就是后一项行动的下一个层次。</p>
+
+      <h3>五、找出各结论之间的共性</h3>
+      <p>将一系列思想归类分组，是因为该组思想具有某种共性。必须做到以下几点：</p>
+      <ol class="steps">
+        <li>找出将这些思想联系在一起的结构上的共性。</li>
+        <li>寻找这些思想间更密切的联系。</li>
+        <li>完成归纳跃进，概括出主题思想。</li>
+      </ol>
+
+      <h4>找出结构上的共性</h4>
+      <p>如果某些思想具有某种共同的特点，这些思想就可以联系在一起。表达思想的语句必定有一个由主语和谓语组成的结构。因此，如果这些语句符合以下要求，就说明这一组思想具有某种共性：</p>
+      <ul>
+        <li>针对同一类主语。</li>
+        <li>针对同一类谓语（动作或对象）。</li>
+        <li>具有同一类隐含的思想。</li>
+      </ul>
+
+      <h4>寻找更密切的关系</h4>
+      <p>如果你在试图表达的思想中找出明确的逻辑关系，那么你必须重新进行思考。找到能够总结其下一个层次思想的概括性思想相对比较容易。但是，有时一些具有共性的句子所隐含的意义却难以被揭示出来。这时，就需要进行所谓的归纳跃进（inductive leap）。</p>
+    </section>
+
+    <!-- ============ 第3篇 ============ -->
+    <div id="part3" class="part-divider">
+      <div class="part-num">PART THREE</div>
+      <h2>第三篇 · 解决问题的逻辑</h2>
+    </div>
+
+    <p style="text-align:center; color:var(--color-text-light); font-size:15px; margin:20px 0 32px;">读者对象是需要写研究报告的人，以及需要分析复杂问题、提出结论以作出决策的人。本篇介绍了如何在解决问题过程的不同阶段，使用多种框架组织分析过程，使你的思路实际上进行了预先组织，从而可以更方便地应用金字塔原理。</p>
+
+    <!-- 第8章 -->
+    <section id="ch8" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第8章</span>
+        <h2>界定问题</h2>
+      </div>
+
+      <p>判断问题是否存在，通常要看经过努力得到的结果（现状），与希望得到的结果（目标）之间是否有差距。由某一特定背景导致的某一特定结果，称为<strong>非期望结果（R1，即现状，Undesired Result）</strong>。</p>
+      <p>"问题"是指你不喜欢某一结果（比如销售额降低），想得到其他结果（比如销售额增长），称为<strong>期望结果（R2，即目标，Desired Result）</strong>。解决方案则是指如何从现状R1到目标R2。</p>
+
+      <h3>一、连续分析（序列分析）</h3>
+      <p>以上界定问题的方法称为连续分析（统计学上称为序列分析），是一种有效地解决问题的技巧，可以帮助你为以下按逻辑顺序排列的问题寻找答案：</p>
+      <ol class="steps">
+        <li>是否有/是否可能有问题（或机会）？</li>
+        <li>问题在哪里？</li>
+        <li>为什么存在（产生问题的根源、原因）？</li>
+        <li>我们能做什么？</li>
+        <li>我们应该做什么？</li>
+      </ol>
+      <p>回答问题1和问题2是为了界定问题，问题3是寻找产生问题的原因，问题4和问题5是寻找解决问题（或抓住机遇）的最佳方案。</p>
+
+      <h3>二、界定问题的框架</h3>
+      <p>问题是指你已有的（现状）与你想要的（目标）之间存在的差距，这种差距不是凭空产生的，而是来自某一背景，并在一系列特定的条件下产生的。</p>
+
+      <div class="tip">
+        <div class="tip-title">🎯 界定问题的框架：4个要素</div>
+        <p>需要确定4个要素后才能界定问题，并由此寻找解决方案：</p>
+        <ul>
+          <li><strong>切入点/序幕</strong>（Starting Point/Opening Scene）：产生问题的具体领域、方面</li>
+          <li><strong>困扰/困惑</strong>（Disturbing Event）：它的发生打乱了该领域的稳定</li>
+          <li><strong>现状 R1</strong>（Undesired Result）：你不喜欢该方面正在产生的结果</li>
+          <li><strong>目标 R2</strong>（Desired Result）：你希望在该方面得到的结果</li>
+        </ul>
+        <p>4个要素一起讲述了问题是如何被展开的戏剧性的故事，你可以把这些要素当做戏剧的术语来理解。</p>
+      </div>
+
+      <h4>切入点/序幕</h4>
+      <p>设想自己静静地坐在一个黑暗的剧场里。大幕拉开，舞台布景描绘的是某一特定时刻的某一特定地点，这就是切入点或序幕。某一事件的发生使剧情得以展开，这就是困扰/困惑。</p>
+
+      <h4>困扰/困惑</h4>
+      <p>某些事件的发生困扰了结构或流程的正常运行。困扰/困惑是指现在发生、即将发生或未来将发生的事件，它对序幕中介绍的相对稳定的背景构成威胁，并因此引发了非期望结果（现状，R1）。</p>
+      <p>困扰/困惑产生的原因有：</p>
+      <ul>
+        <li><strong>外部原因</strong>：结构或流程所在环境以外的地方发生的变化，如出现新的竞争对手、改用新技术、政府或消费政策发生变化等。</li>
+        <li><strong>内部原因</strong>：公司内部的变化，如增加业务流程、安装新的计算机系统、进军新市场、调整产品线等。</li>
+        <li><strong>近期认识到的其他原因</strong>：自己认识到或有证据表明肯定或可能发生变化。</li>
+      </ul>
+
+      <h3>三、发掘读者的疑问</h3>
+      <p>展开问题的基本内容后，下一步就是寻找读者的疑问。根据寻找解决方案的初衷不同，读者通常会希望解决下列7种问题之一：</p>
+
+      <div class="concept">
+        <div class="concept-title">❓ 最常见的问题</div>
+        <ol>
+          <li>不知道如何从R1（现状）到R2（目标）。</li>
+          <li>知道如何从R1到R2，但不敢肯定是否正确。</li>
+          <li>知道从R1到R2的正确方案，但不知道如何实施。</li>
+        </ol>
+        <p><strong>最常见问题的变形：</strong></p>
+        <ol start="4">
+          <li>知道从R1到R2的解决方案，并且已经实施，但由于某种原因行不通。</li>
+          <li>确定了好几个解决方案，但不知道选哪一个。</li>
+        </ol>
+        <p><strong>可能但不常见的情形：</strong></p>
+        <ol start="6">
+          <li>知道R1，但不能具体描述R2，所以无法找到解决方案。</li>
+          <li>知道R2，但不清楚自己是否处在R1（这是典型的标杆比对）。</li>
+        </ol>
+      </div>
+
+      <h3>四、把"界定的问题"写成序言</h3>
+      <p>界定问题框架的最大好处是，如果你准备把解决方案写成文字，可以很容易地把界定的问题转换成序言。只需遵循<span class="highlight">从左到右再往下</span>的原则，把读者最后了解的事实作为序言的冲突部分，并在此基础上提出问题。</p>
+
+      <h3>五、实战案例</h3>
+      <div class="example">
+        <div class="example-title">📦 案例：家庭用品零售商</div>
+        <p>某公司有3个配送中心，分别位于伍斯特、伊凡斯维尔和拉斯韦加斯，另外还从DMSI公司租场地做配送中心。如果供货量年增长率为4%～5%，加上到明年年底前计划开张的198家新店，预计两年后公司的仓储能力将不够用。</p>
+        <p>公司可采取的解决方案：扩建现有仓库、新建一到两个仓库、改进商品处理流程、继续依赖第三方。</p>
+        <p><strong>序言结构</strong>（第5种情形的变型）：</p>
+        <ul>
+          <li>背景（S）=我们存在问题。</li>
+          <li>冲突（C）=我们有不同的解决方案。</li>
+          <li>疑问（Q）=选择哪个方案？</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 第9章 -->
+    <section id="ch9" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第9章</span>
+        <h2>结构化分析问题</h2>
+      </div>
+
+      <h3>一、分析问题的标准流程</h3>
+      <p>分析问题的标准流程是：</p>
+      <div class="flow">收集信息 → 描述发现 → 得出结论 → 提出方案</div>
+      <p>比较好的方法是建立诊断框架和逻辑树指导，来分析和引导思维，不仅能提高解决问题的效率，而且简化了把结果构建成金字塔的工作。</p>
+
+      <h3>二、设计诊断框架</h3>
+      <p>结构化分析的方法只有3种：<span class="highlight">呈现有形结构、寻找因果关系和归类分组</span>。为了找出产生问题的原因，可以用其中的一种或几种方法建立诊断框架。</p>
+
+      <h4>1. 呈现有形的结构</h4>
+      <p>任何一家企业或行业的具体领域都应该有清晰的结构，即包括由不同单位组成的系统，各自完成某项特定的功能。画一幅系统的现况或理想状况的图，帮助你决定是否要回答这些问题，并找到和分析产生问题的原因。</p>
+
+      <h4>2. 寻找因果关系</h4>
+      <p>诊断问题的第二种方法是寻找具有因果关系的要素、行为或任务，得出最终诊断结果。例如：</p>
+      <ul>
+        <li><strong>财务结构</strong>：为了找出投资回报率低的原因，可以画出企业的财务结构示意图。</li>
+        <li><strong>任务结构</strong>：树状示意图是一种更深入、更明确的方法，用来表示企业必须组织实施的重要任务。</li>
+        <li><strong>活动结构</strong>：有时为了产生某种不希望得到的最终结果，可以用树状图寻找必须采取的行动。</li>
+      </ul>
+
+      <h4>3. 将产生问题的可能原因分类</h4>
+      <p>第三种方法是把所有可能的原因按相似性分类，前提是这种预先的分类有助于综合分析各种事实。诀窍在于，在上一层的分支进行"相互独立，完全穷尽"的分类，并按此线索，进一步找出可能的原因。然后，通过回答"是"与"否"，确认或排除其中一些原因。</p>
+
+      <h3>三、建立逻辑树</h3>
+      <p>使用逻辑树可以得出解决问题的各种方案。序列分析法有以下步骤：</p>
+      <ol class="steps">
+        <li>是否有问题？</li>
+        <li>问题在哪里？</li>
+        <li>为什么存在？</li>
+        <li>我们能做什么？</li>
+        <li>我们应该做什么？</li>
+      </ol>
+
+      <h3>四、寻找解决方案</h3>
+      <p>使用逻辑树可以从逻辑上找出解决问题的可能的方案。例如，在任务结构中，其中一项过高的成本是直接人工成本。为了作出客户应如何削减直接人工成本的决策，咨询顾问使用逻辑树，根据"相互独立，完全穷尽"的原则，对各种可能性作一个系统的逻辑的细分。</p>
+
+      <h3>五、寻找各组思想的缺陷</h3>
+      <p>用逻辑树展示各组活动的组与组之间的相互关系的方法，也可以用来对已经写完的文章进行逻辑分析。</p>
+
+      <h3>六、是非问题分析</h3>
+      <p>建立诊断框架的过程有时候被称为"是非问题分析"（issue analysis）。</p>
+      <p>严格地说，"issue"是指措辞上需要用"是"或"否"回答的问题。最早起源于法律名词"at issue"，意思是双方就某一论点进行辩论，其中一方将获胜。因此"我们应该如何改组"不是一个"issue"，因为其中不含任何争辩。而"我们应不应该进行机构改组"是一个"issue"。</p>
+      <p>是非问题对困难的解决至关重要，因为它们能给出直截了当的回答。<span class="highlight">能不能设计出鲜明的是非问题，决定着解决困难的努力能不能取得成效。</span>所以，如果你只是罗列出客户担心的问题，建议使用"concerns"一词，而把"issues"一词留在提出是非问题时使用。</p>
+    </section>
+
+    <!-- ============ 第4篇 ============ -->
+    <div id="part4" class="part-divider">
+      <div class="part-num">PART FOUR</div>
+      <h2>第四篇 · 演示的逻辑</h2>
+    </div>
+
+    <p style="text-align:center; color:var(--color-text-light); font-size:15px; margin:20px 0 32px;">一旦找出了金字塔的逻辑关系，准备与他人交流时，不论你选择用书面的形式，还是用幻灯片在屏幕上演示的形式，你肯定都希望组织好自己的思想，以便受众能一目了然地抓住构成金字塔思想的不同层级。</p>
+
+    <!-- 第10章 -->
+    <section id="ch10" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第10章</span>
+        <h2>在书面上呈现金字塔</h2>
+      </div>
+
+      <p>在实际写作中，文章多以书面的形式呈现给读者。文章无论长短，都应该让读者能从字面上迅速理解和吸收其主要思想。理想的文章，应该让读者在30秒内理解作者的整体思维构架，包括序言、中心思想和关键句要点。</p>
+
+      <h3>一、突出显示文章的框架结构</h3>
+      <p>写作长篇文章时，在页面上呈现金字塔层级的方法很多，最常见的有：</p>
+      <ul>
+        <li><strong>多级标题法</strong></li>
+        <li><strong>下划线法</strong></li>
+        <li><strong>数字编号法</strong></li>
+        <li><strong>行首缩进法</strong></li>
+        <li><strong>项目符号法</strong></li>
+      </ul>
+
+      <h3>二、多级标题法</h3>
+      <p>使用多级标题的基本方法是：不同层次的思想（观点、论点、论据、建议），用不同的标记区分；层次越低的思想离页面的右端越近；同一层次的思想采用同一表现形式。</p>
+
+      <div class="tip">
+        <div class="tip-title">📋 使用标题应注意以下几点</div>
+        <ol>
+          <li><strong>每一层级的标题不可能只有一个</strong>：标题呈现的是金字塔里不同层级的思想，每一层级不可能只有一项内容。</li>
+          <li><strong>相同的思想应使用相同的句型</strong>：每一组中的所有标题应该采用同样的句子顺序，即对仗。</li>
+          <li><strong>标题用词应提炼思想的精髓</strong>：标题的作用是提示，而不是统领下文，因此应该尽量简明扼要。</li>
+          <li><strong>标题与正文应分开考虑</strong>：标题更多的是为眼球而写，而不是为头脑而写。</li>
+          <li><strong>每组标题应提前集中介绍</strong>：这样做是为了说明该组标题将解释或讨论的主要论点。</li>
+          <li><strong>不要滥用标题</strong>：这是所有规则中最重要的一条。</li>
+        </ol>
+      </div>
+
+      <h3>三、下划线法</h3>
+      <p>用下划线标出关键句层次下的所有支持性论点。更低层次的支持性论点也全部用下划线标出，但在字体和行首缩进上有区别。</p>
+
+      <h3>四、数字编号法</h3>
+      <p>许多企业以及大多数政府机构，都喜欢用数字而不喜欢用标题强调文章的细分部分。但是，频繁使用索引编号，容易分散读者对文章整体或整节内容的关注。</p>
+
+      <div class="example">
+        <div class="example-title">🔢 常见的编号体系</div>
+        <p><strong>第一种</strong>：</p>
+        <div class="flow">1. 没有任何其他动物能像狗一样为主人不惜牺牲生命
+1.1 其他动物在危险来临时会跑开
+1.1.1 狗会留下来
+1.1.1.1 即使留下来意味着死亡</div>
+        <p><strong>第二种</strong>（使用更简单）：</p>
+        <div class="flow">I. 没有任何其他动物能像狗一样为主人不惜牺牲生命
+   1. 其他动物在危险来临时会跑开
+      a. 狗会留下来
+         i. 即使留下来意味着死亡</div>
+      </div>
+
+      <h3>五、行首缩进法</h3>
+      <p>有时你的文章很短，不适合用标题或编号呈现思想的层次。然而你仍然要处理不同组别的思想，并希望用某种方式突出这些观点。当采用行首缩进法划分思想时，需要记住一条重要规则：要用相同的句型表达观点。</p>
+
+      <h3>六、项目符号法</h3>
+      <p>项目符号法是行首缩进法的变型。咨询公司常使用这种方法写项目进度小结。层次越低的思想观点离页面的左侧越远。</p>
+
+      <h3>七、上下文之间要有过渡</h3>
+      <p>写完序言后，就进入了文章的正文部分。这时需要写一段简短的文字，介绍每一关键句要点。在一些篇幅较长的文章中，也应该在每一组主要思想观点开始或结束的地方稍作铺垫。</p>
+
+      <h4>讲故事</h4>
+      <p>一种把读者带入关键句要点的好方法是向他讲述背景—冲突—疑问三部曲，自然而然地引出关键句要点作为故事的答案。</p>
+
+      <h4>承上启下</h4>
+      <p>承上启下的方法很简单：从金字塔结构的前一部分中挑选一个词、一句短语或总结其中心思想，把它用在下一部分的起始句中。</p>
+    </section>
+
+    <!-- 第11章 -->
+    <section id="ch11" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第11章</span>
+        <h2>在PPT演示文稿中呈现金字塔</h2>
+      </div>
+
+      <p>如果可以选择，大多数人都愿意通过口头而不是书面表达组成金字塔的思想观点。在他们的想象中，视觉演示只不过是以PPT演示文稿的形式作报告。</p>
+
+      <div class="notice">
+        <div class="notice-title">⚠️ 视觉演示的挑战</div>
+        <p>视觉演示是面向现场观众的。周围环境往往极不舒适。观众的反应不仅不可预测，而且注意力很不集中。因此，你的大部分工作是预测观众可能的反应，时时努力让他们集中注意力，激起他们接受你的信息的热情。</p>
+      </div>
+
+      <h3>一、设计文字PPT幻灯片</h3>
+      <p>制作现场演示用的文字幻灯片时，需要强调的是，只有你，演示者，才是表演的明星。房间里所有听众最感兴趣的不是幻灯片，而是你。幻灯片只不过是视觉上的辅助手段。</p>
+
+      <h4>清楚你要说的内容</h4>
+      <p>好的幻灯片总是尽可能直接简单地传递信息，不把文字（或幻灯片）浪费在那些可以通过口头表达的转折性或介绍性语言上。</p>
+
+      <h4>清楚你要演示的内容</h4>
+      <p>决定一张幻灯片的内容，应牢记以下指导性原则：</p>
+      <ol>
+        <li><strong>每次只演示和说明一个论点</strong>。</li>
+        <li><strong>论点应使用完整的陈述句</strong>，而不是标题性语言。</li>
+        <li><strong>文字应尽量简短</strong>：每张幻灯片最好不要超过6行或约30个单词。</li>
+        <li><strong>使用简单的词汇和数字</strong>。</li>
+        <li><strong>字号应足够大</strong>：用最远一位观众到屏幕的距离（英尺）除以32，得到的就是可以看清楚的最小字号（英寸）。</li>
+        <li><strong>注意幻灯片的趣味性</strong>。</li>
+        <li><strong>用逐级展开呈现</strong>，提高趣味性。</li>
+      </ol>
+
+      <h3>二、设计图表PPT幻灯片</h3>
+      <p>图表幻灯片传递的信息应该尽量简单易懂，因为观众没有机会对它们仔细研究并找出各个部分的含义。图表幻灯片通常用饼图、条形图、柱状图、曲线图或散点图，表示某一结构或流程的组成部分，或形象地显示数据。</p>
+
+      <div class="concept">
+        <div class="concept-title">📊 图表回答的问题一般分为5类</div>
+        <ul>
+          <li>有哪些组成部分？</li>
+          <li>数量如何比较？—与总数比较？—相互之间比较？</li>
+          <li>有何变化/如何变化？—随时间变化？</li>
+          <li>各项如何分布？</li>
+          <li>各项之间的相关性？</li>
+        </ul>
+        <p>图表的标题一定要直接传递信息，要么用一个完整的句子，要么用一个含有动词的短语，才能保证图表给观众的视觉印象和所要传达的信息一致。</p>
+      </div>
+
+      <h3>三、故事梗概</h3>
+      <p>了解文字和图表幻灯片的要求后，就可以开始制作整个演示文稿了。从金字塔结构到演示文稿，我通常采用以下方法：</p>
+      <ol class="steps">
+        <li>序言尽量写得详细，把每个你想说的词汇按照你希望的顺序写下来。</li>
+        <li>用写故事梗概的形式。每张幻灯片写作的顺序，从上往下依次为序言各要素、关键句要点和关键句下一层次的论点。</li>
+        <li>初步决定你准备采用的呈现方法。</li>
+        <li>准备好每张幻灯片的讲稿，确保整个演示像讲故事一样流畅。</li>
+        <li>完成幻灯片的设计和绘图。</li>
+        <li>排练，排练，再排练！</li>
+      </ol>
+
+      <div class="tip">
+        <div class="tip-title">🎯 设计PPT演示文稿应掌握以下基本规则</div>
+        <ul>
+          <li>文字幻灯片只包含最重要的、经过分组和总结的思想，叙述时应简洁。</li>
+          <li>演示文稿应图文并茂，使用各种图、表、示意图。</li>
+          <li>演示文稿应呈现经过深思熟虑的故事梗概和剧本。</li>
+        </ul>
+        <p>理想的比例是<span class="highlight">图表占90%，文字占10%</span>。</p>
+      </div>
+    </section>
+
+    <!-- 第12章 -->
+    <section id="ch12" class="chapter">
+      <div class="section-title">
+        <span class="ch-num">第12章</span>
+        <h2>在字里行间呈现金字塔</h2>
+      </div>
+
+      <p>做到条理清晰需要经过两个步骤：首先决定要说明的思想或要证明的论点，然后用文字表现。</p>
+
+      <h3>一、画脑图（在大脑中画图像）</h3>
+      <p>我们是通过图像而不是文字来进行理性思维的，因为这样效率更高。图像能把大量的事实综合成简单抽象的概念。鉴于一个人不能同时思考7个或8个以上的问题，用这种方法把整个世界浓缩就能带来极大的方便。</p>
+
+      <div class="example">
+        <div class="example-title">📖 梭罗《瓦尔登湖》中的画脑图</div>
+        <p>在理解每个字词的时候，你的头脑中应该逐步描绘出一幅思想图画。当你理解一个又一个的短语和句子时，图画的细节变得更加丰富。你所描绘的图像不是摄影意义上的图像，而是作者所说的"记忆图像"，随着文章的进展而逐渐清晰起来。</p>
+        <p>记忆图像是这一构思活动的结果，是对所提供信息的总结。作为理解过程的一部分，在大脑中画图像，能帮助你记住读过的东西。</p>
+      </div>
+
+      <h3>二、把图像复制成文字</h3>
+      <p>遣词造句要做到条理清晰，必须从"看见"你要说的内容开始。有了图像后，只需简单地把它复制成文字。读者反过来也能从你的文字中重新在大脑中画图像，这样不仅理解了你的思想，而且过程本身也是一种享受。</p>
+
+      <div class="example">
+        <div class="example-title">🔧 改写案例：把图像复制成文字</div>
+        <p><strong>原文</strong>："可能进行改进的一个主要领域，是提高现场销售人员配置（和组织）的成本效益，以便在商店和间接的层次上，反映由交易环境变化导致的重新定义销售任务的需要。"</p>
+        <p><strong>分析</strong>：名词似乎应该是"现场销售人员"、"商店"和"新的交易环境"。</p>
+        <p><strong>改写后</strong>："我们必须重新部署销售人员以适应新的交易环境。"</p>
+        <p>这一方法的诀窍是找出名词以及它们之间的关系，同时把它们看成视觉图像。</p>
+      </div>
+
+      <div class="notice">
+        <div class="notice-title">💎 写好文章的根本原则</div>
+        <p>写作时，你好像一位司令官，指挥着千军万马，排队通过一个每次只能通过一个人的狭隘关口；而你的读者则在另一边迎接，将部队进行重新编队和重新组织。无论主题多么大或多么复杂，你只能以这种方式表达。</p>
+        <p style="text-align:right; font-style:italic; color:var(--color-text-muted);">—— 威廉·明托</p>
+      </div>
+    </section>
+
+    <!-- ============ 附录1 ============ -->
+    <section id="app1" class="chapter">
+      <div class="appendix-title">
+        <span class="ch-num">附录1</span>
+        <h2>在无结构情况下解决问题的方法</h2>
+      </div>
+
+      <p>第8章"界定问题"把解决问题描绘为一个不断进行逻辑分析的过程，目的是发现并展示导致非期望结果的内在结构。我们的结论是，如果问题是我们不喜欢该结构造成的结果，问题的解决方案就在于对该结构进行调整。</p>
+      <p>但是存在另一种情况，问题不是我们不喜欢该结果，而是无法解释它。无法解释的原因有3个：</p>
+      <ul>
+        <li><strong>结构根本不存在</strong>——比如当你想发明一件新东西，如电话或水底隧道时。</li>
+        <li><strong>结构是无形的</strong>——比如存在于大脑或DNA中，你只能分析其结果。</li>
+        <li><strong>结构不能解释结果</strong>——如亚里士多德对力的定义不能解释炮弹的运动轨迹。</li>
+      </ul>
+      <p>在解决问题的时候，你有可能会遇到以上无结构的情况。尽管需要比我们前面讨论的更高层次的视觉思维方法，但是使用的推理过程是很相似的。这种方法只不过是外展推理的一种形式。</p>
+
+      <h3>一、分析性外展推理</h3>
+      <p>皮尔斯认为，在任何推理过程中，都要涉及以下3个实体：</p>
+      <ol>
+        <li><strong>规则</strong>（关于世界组成方式的看法）</li>
+        <li><strong>情况</strong>（世界上存在的已知事实）</li>
+        <li><strong>结果</strong>（如果把规则用于该情况，预期将发生的事情）</li>
+      </ol>
+      <p>分析解决问题的方法包括关注现状（非期望结果），通过了解背景，寻找非期望结果（现状）产生的原因（规则），并检验是否已经找到（情况）。</p>
+
+      <h3>二、科学性外展推理</h3>
+      <p>分析解决问题方法和创造性或科学性解决问题方法的主要区别，是我们知道导致结果的结构而科学家不知道，即我们有了两个基本要素，并能由此推理出第三个要素，而他必须创造第二个要素，才能推理出第三个要素。</p>
+
+      <h4>提出假设</h4>
+      <p>科学的假设不是凭空得来的，而是通过仔细研究产生问题背景的构成要素后直接提出的。贝尔发明电话就是最好的例证。</p>
+      <blockquote>"让我吃惊的是，与操纵它们的细薄耳膜相比，人类的耳骨其实非常粗大。于是产生一种想法，如果这么纤细的耳膜都能振动这么粗大的耳骨，为什么一片更粗更厚的薄膜不能振动一块铁片呢？"</blockquote>
+
+      <h4>设计实验</h4>
+      <p>提出假设后，下一步就是设计肯定或否定假设的实验。设计实验的诀窍在于，通过实验得到的一定是明确的"是"或"不是"的答案。</p>
+
+      <div class="example">
+        <div class="example-title">⚗️ 伽利略与炮弹的经典实验</div>
+        <p>亚里士多德认为力量产生速度。由此可以得出，当力量停止作用于物体时，物体将停止运动。但是大炮发射炮弹时，即使力量已经停止作用，炮弹仍然继续运动。就其与运动的关系而言，亚里士多德关于力量的概念一定是错误的。</p>
+        <p>伽利略可以提出3种不同的假设，并通过斜面实验证明了距离与时间的关系。这一实验推翻了亚里士多德关于力量的错误概念。</p>
+      </div>
+    </section>
+
+    <!-- ============ 附录2 ============ -->
+    <section id="app2" class="chapter">
+      <div class="appendix-title">
+        <span class="ch-num">附录2</span>
+        <h2>序言结构范例</h2>
+      </div>
+
+      <p>序言的写作是最重要的思维过程。一旦熟悉了这一过程，你会发现很多序言都采用同样的形式，通常回答下面前3个问题中的一个，有时也回答第四个问题：</p>
+      <ol>
+        <li>我们应该做什么？</li>
+        <li>我们是否应该按计划做？</li>
+        <li>我们应该如何做？</li>
+        <li>它发生的原因是什么？</li>
+      </ol>
+
+      <h3>一、序言的常见形式</h3>
+
+      <h4>1. 我们应该做什么</h4>
+      <div class="example">
+        <div class="example-title">📋 范例：S&S公司</div>
+        <p><strong>背景（S）</strong>=现在使用A方法销售产品。</p>
+        <p><strong>冲突（C）</strong>=希望更高的增长率，面临其他问题，担心X方法不能继续发挥作用。</p>
+        <p><strong>疑问（Q）</strong>=如何改变？</p>
+        <p>S&S公司目前在与分子生物市场表现出色，但其他市场做得不太好。预计分子生物市场对NC膜的需求将在3年内翻一番。S&S公司担心现有的少量销售人员无法应付薄膜市场的增长。</p>
+        <p>我们认为S&S公司应采取在每个市场建立单独分销渠道的方法。</p>
+      </div>
+
+      <h4>2. 我们是否应该做我们想做的事</h4>
+      <div class="example">
+        <div class="example-title">📋 范例：衍射物理公司</div>
+        <p><strong>背景（S）</strong>=也许存在问题。</p>
+        <p><strong>冲突（C）</strong>=如果存在问题，必须改变。</p>
+        <p><strong>疑问（Q）</strong>=是否必须改变？</p>
+        <p>作为IBM公司EPOS系统的扫描仪供应商，衍射物理公司在欧洲扫描仪市场占据着最大的份额。但是，NCR/ICL公司开始以低得多的价格向市场供应分别定价的扫描仪。如果这种做法成为今后发展的必然趋势，可能导致所有OEM厂商退出市场，以及价格的大幅下降。</p>
+        <p>我们的结论是，衍射物理公司应开始大力推行分别定价，以顺应行业的长期发展趋势。</p>
+      </div>
+
+      <h4>3. 我们应该如何做我们想做的事</h4>
+      <div class="example">
+        <div class="example-title">📋 范例：圣塞巴斯蒂亚诺市</div>
+        <p><strong>背景（S）</strong>=存在问题。</p>
+        <p><strong>冲突（C）</strong>=知道解决方案，但很难实施。</p>
+        <p><strong>疑问（Q）</strong>=如何实施该方案？</p>
+        <p>圣塞巴斯蒂亚诺市的担心是，由于南得克萨斯地区的经济恢复缓慢、国防部削减预算带来的负面影响，以及其他限制就业增加的因素，而无法为日益增加的劳动力创造就业机会。</p>
+        <p>我们认为，市政府应该从改进当地基础设施入手。</p>
+      </div>
+
+      <h4>4. 我们应该选择哪种方案</h4>
+      <div class="example">
+        <div class="example-title">📋 范例：科尔法克斯超市</div>
+        <p><strong>背景（S）</strong>=计划做X。</p>
+        <p><strong>冲突（C）</strong>=有人建议Y可能更好。</p>
+        <p><strong>疑问（Q）</strong>=选哪个？</p>
+        <p>科尔法克斯超市新采用的以销售为基础的补充存货系统（SABRE）最初是按中央控制系统设计的。但是，考虑到所有的数据录入和系统的大部分使用都在分店这一级，就产生了一个问题，如果当初把该系统设计成以分店为基础，系统是否会更实用、更灵活、更具成本效益？</p>
+        <p>我们完成了分析工作，得出的结论是：以分店为基础的系统比中央控制系统能更好地为超市服务。</p>
+      </div>
+
+      <h4>5. 解决方案行不通，我们应该做什么</h4>
+      <div class="example">
+        <div class="example-title">📋 范例：杰克逊食品公司</div>
+        <p><strong>背景（S）</strong>=过去存在问题，实施了解决方案。</p>
+        <p><strong>冲突（C）</strong>=解决方案行不通。</p>
+        <p><strong>疑问（Q）</strong>=我们应该做什么？</p>
+        <p>杰克逊食品公司供应链每年的经营费用是1200万美元，占净销售收入的14%。高于其他竞争对手。不仅如此，整个系统的效率也极低。因此一直处于供不应求的局面，造成不能及时交货和未完成订单，还有大量的退货和借款。</p>
+        <p>杰克逊食品公司已采取措施改变交易条件，但这一行动并没有对供应链的费用或效率带来多大改变。如果公司想现在和将来都保持良好的财务状况，必须把供应链看做竞争优势的来源。</p>
+      </div>
+
+      <h3>二、序言的复杂形式</h3>
+      <h4>提出解决问题的步骤</h4>
+      <p>大多数商务公文是在其讨论的问题已经解决后才动笔的。但有一些文件是事先告诉读者，如何一步一步寻找解决问题方案的。咨询项目建议书和项目计划书就属于这一类。</p>
+
+      <h4>涉及多个可选方案的序言</h4>
+      <p>严格地说一个问题并没有可供选择的解决方案。你所推荐的方案要么能使读者从现状（R1）到目标（R2），要么不能。从这个意义上说，并不存在备选方案。只不过当你不能清楚地描述R2时，你无法判断自己是否已经找到解决方案，所谓的备选方案就是在这种情况下出现的。</p>
+      <p>对应每一个明确描述的R2，都有一个明确的解决方案。这时，如果读者仍然坚持要备选解决方案，可以把它们列在附录部分。</p>
+
+      <h3>三、介绍流程的改进</h3>
+      <p>大多数情况下，在你写一份改变某一流程的项目建议报告时，你的读者对流程和它存在的问题都已经很熟悉。因此，序言部分只需对这些问题作简单的描述，文章可以围绕这些改变进行构思：</p>
+      <ul>
+        <li>背景（S）=现在有X流程。</li>
+        <li>冲突（C）=不起作用。</li>
+        <li>疑问（Q）=如何改进？</li>
+      </ul>
+      <p>写这类序言的诀窍是，想象改变前和改变后流程中的每一个步骤，从而确定这些改变就是你想要的。</p>
+    </section>
+
+    <!-- ============ 附录3 ============ -->
+    <section id="app3" class="chapter">
+      <div class="appendix-title">
+        <span class="ch-num">附录3</span>
+        <h2>本书要点汇总</h2>
+      </div>
+
+      <h3>第1章　为什么要用金字塔结构</h3>
+      <ol>
+        <li>为了交流方便，必须将思想（观点、结论、要点、论点、论据、建议、行动、步骤等）归类分组。</li>
+        <li>将分组后的思想，按照不同层次，进行抽象提炼、总结概括，搭建金字塔。</li>
+        <li>向读者介绍（传递、阐述、论证）思想最有效的途径，是结论先行，自上而下表达。</li>
+        <li>金字塔中的思想，应遵守4个基本原则。</li>
+        <li>条理清晰的关键，是把你的思想组织成金字塔结构，并在写作前用金字塔原理检查。</li>
+      </ol>
+
+      <div class="concept">
+        <div class="concept-title">📐 金字塔原理的4个基本原则</div>
+        <ul>
+          <li><strong>结论先行</strong>：每篇文章只有一个中心思想，并放在文章的最前面。</li>
+          <li><strong>以上统下</strong>：每一层次上的思想必须是对下一层次思想的总结概括。</li>
+          <li><strong>归类分组</strong>：每一组中的思想必须属于同一逻辑范畴。</li>
+          <li><strong>逻辑递进</strong>：每一组中的思想必须按照逻辑顺序排列。</li>
+        </ul>
+      </div>
+
+      <h3>第2章　金字塔内部的结构</h3>
+      <ol>
+        <li>金字塔结构的各个层级上包括各种思想；思想使受众产生疑问。</li>
+        <li>在纵向方向上，各分支、各层级上的思想，与读者进行疑问/回答式对话。</li>
+        <li>在横向方向上，各种思想以演绎推理或归纳推理方式回答读者的疑问，但两种方式不可同时使用。</li>
+        <li>序言的讲故事形式是为了提醒读者，文章将回答的读者最初的疑问。</li>
+        <li>序言包括背景、冲突、读者的疑问和作者的回答。</li>
+        <li>冲突导致读者提出疑问，而文章将回答读者的疑问。</li>
+      </ol>
+
+      <h3>第3章　如何构建金字塔</h3>
+      <h4>1. 自上而下法</h4>
+      <ol>
+        <li>确定作者想论述的主题</li>
+        <li>设想读者的疑问</li>
+        <li>给出答案</li>
+        <li>检查背景和冲突是否引发读者提出疑问</li>
+        <li>证实答案</li>
+        <li>填写关键句要点</li>
+      </ol>
+      <h4>2. 自下而上法</h4>
+      <ol>
+        <li>列出所有作者想表达的要点</li>
+        <li>找出各要点之间的关系</li>
+        <li>得出结论</li>
+        <li>倒推出序言</li>
+      </ol>
+
+      <h3>第4章　序言的具体写法</h3>
+      <ol>
+        <li>序言的目的是提示读者已知的信息，而不是提供新信息。</li>
+        <li>序言通常包括背景、冲突、读者的疑问和作者的答案。</li>
+        <li>序言的长短，取决于读者的需要和主题的要求。</li>
+        <li>为每个关键句要点写一段引言。</li>
+      </ol>
+
+      <h3>第5章　演绎推理与归纳推理</h3>
+      <ol>
+        <li>演绎推理是一种论证，其中第二个论点对第一个论点加以评论，第三个论点说明前两个论点同时存在时的含义。</li>
+        <li>对演绎推理的概括，就是把最后一个论点作为主体，概括整个推理过程。</li>
+        <li>归纳推理是把具有相似性的思想归类分组，根据各要点具有的共同性得出结论。</li>
+        <li>在关键句层次，使用归纳推理比演绎推理更方便读者理解。</li>
+      </ol>
+
+      <h3>第6章　应用逻辑顺序</h3>
+      <p>应用逻辑顺序可以确保你不会：</p>
+      <ul>
+        <li>把新闻条目当做思想列入</li>
+        <li>遗漏某一组中重要的思想</li>
+      </ul>
+
+      <div class="concept">
+        <div class="concept-title">📋 归纳组合逻辑顺序共有3种</div>
+        <ul>
+          <li><strong>时间顺序</strong>：通过设想某一流程得出的思想。</li>
+          <li><strong>结构顺序</strong>：通过评论某一结构得出的思想。</li>
+          <li><strong>程度顺序</strong>：通过按程度或重要性的不同分组，得出的思想。</li>
+        </ul>
+      </div>
+
+      <h4>如果思想属于行动性思想</h4>
+      <ol>
+        <li>明确说明每一行动产生的最终结果（效果、目标）。</li>
+        <li>把能产生同样最终结果的行动归类分组。</li>
+        <li>确定该组思想的分组基础（类别），并依此排序。</li>
+        <li>检查是否遗漏了任何步骤。</li>
+      </ol>
+
+      <h4>如果思想属于描述性思想</h4>
+      <ol>
+        <li>把说明类似事务，或具有共同点的思想归类分组。</li>
+        <li>确定该组思想的分组基础（找出相似之处、共同点）。</li>
+        <li>把所有思想转换成完整的句子，并决定其顺序。</li>
+        <li>检查是否遗漏了任何步骤。</li>
+      </ol>
+
+      <h3>第7章　概括各组思想</h3>
+      <div class="concept">
+        <div class="concept-title">📋 概括各组思想</div>
+        <ul>
+          <li>通过说明行动产生的直接结果，概括行动性思想（概括一组行动）。</li>
+          <li>通过说明各思想具有的共同点、相似性，概括描述性思想（概括一组信息）。</li>
+        </ul>
+      </div>
+      <ol>
+        <li>避免使用"缺乏思想"的句子（比如"存在3个问题……"等）。</li>
+        <li>分组应遵守"相互独立不重叠，完全穷尽无遗漏"（MECE）原则。</li>
+        <li>行动总是按时间顺序进行，通过说明行动产生的直接结果，概括行动性思想。</li>
+        <li>把描述性思想归类分组，是因为该组思想具有共同特性，它们都：针对同一类主语；针对同一类谓语（动作或对象）；包含同一类判断。</li>
+        <li>将行动性思想分组时，要求：发掘每一个行动的本质；区分不同的抽象层次；明确说明行动产生的最终结果；直接由行动概括出结果。</li>
+        <li>将描述性思想分组时，要求：找出句中结构的共同点；确定包括这些思想的最小范畴；说明共同点隐含的意义。</li>
+      </ol>
+
+      <h3>第8章　界定问题</h3>
+      <ol>
+        <li>展开"问题"的各要素
+          <ul style="margin-top:6px;">
+            <li>切入点/序幕（产生问题的具体领域、方面）</li>
+            <li>困扰/困惑（它的发生打乱了该领域的稳定）</li>
+            <li>现状R1（你不喜欢该方面正在产生的结果）</li>
+            <li>目标R2（你希望在该方面得到的结果）</li>
+            <li>答案（到目前为止，针对问题已经采取的措施）</li>
+            <li>疑问（为了解决问题，必须做什么）</li>
+          </ul>
+        </li>
+        <li>把界定的问题转换成序言
+          <ul style="margin-top:6px;">
+            <li>从左往右再往下</li>
+            <li>读者最后知道的事实就是冲突</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h3>第9章　结构化分析问题</h3>
+      <ol>
+        <li>使用诊断框架，呈现存在问题领域的详细结构，展示一个系统内的各个单位是如何相互影响的。
+          <ul style="margin-top:6px;">
+            <li>查找具有因果关系的活动</li>
+            <li>将产生问题的可能原因进行分类</li>
+          </ul>
+        </li>
+        <li>收集资料，以证明或排除结构中导致问题产生的部分</li>
+        <li>使用逻辑树
+          <ul style="margin-top:6px;">
+            <li>产生和检验解决方案</li>
+            <li>揭示思想一览表的内在关系</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h3>第10章　在书面上呈现金字塔</h3>
+      <p>用多级标题、行首缩进、下划线和数字编号的方法，突出显示文章的整体结构：</p>
+      <ol>
+        <li>表现金字塔结构中主要组合之间的过渡</li>
+        <li>表现金字塔结构中主要思想组之间的过渡。</li>
+      </ol>
+
+      <h3>第11章　在PPT演示文稿中呈现金字塔</h3>
+      <ol>
+        <li>制作文字幻灯片，应尽量简明扼要。</li>
+        <li>制作图表幻灯片，使传达的信息更简单易懂；在幻灯片的上部说明要传达的信息。</li>
+        <li>使用故事梗概，简要说明整体结构。</li>
+        <li>排练，排练，再排练！</li>
+      </ol>
+
+      <h3>第12章　在字里行间呈现金字塔</h3>
+      <ol>
+        <li>画脑图（在大脑中画图像，或画思维导图）</li>
+        <li>把图像复制成文字</li>
+      </ol>
+    </section>
+
+    <!-- ============ 参考文献 ============ -->
+    <section id="refs" class="chapter">
+      <div class="appendix-title">
+        <span class="ch-num">参考文献</span>
+        <h2>延伸阅读</h2>
+      </div>
+
+      <ol>
+        <li>Adler, Mortimer J. & Van Doren, Charles. <em>How to Read A Book</em>. New York: Simon and Schuster, 1972.</li>
+        <li>Alexander, Christopher. <em>Notes on the Synthesis of Form</em>. London: Oxford University Press, 1964.</li>
+        <li>Anthony J. (安东尼·杰伊). <em>Effective Presentation: The Communication of Ideas by Words and Visual Aids</em>. Management Publications Ltd, 1970.</li>
+        <li>Aristotle (亚里士多德). <em>Rhetoric</em> (《修辞学》)</li>
+        <li>Darwin, Charles (达尔文). 引用语："所有的观察结果，如果要起作用的话，必须支持或反对某一观点。"</li>
+        <li>Galilei, Galileo (伽利略). 关于力的概念的实验。</li>
+        <li>Miller, George A. "The Magical Number Seven, Plus or Minus Two" (《奇妙的数字7±2》). 短期记忆研究论文。</li>
+        <li>Pearce, Charles Sanders (皮尔斯). 关于"外展推理"（abduction）的理论, 1890.</li>
+        <li>Simon, Herbert (赫伯·西蒙). 关于"通过问题表述使解决方案不言自明"的论述。</li>
+        <li>Thoreau, Henry David (梭罗). <em>Walden</em> (《瓦尔登湖》).</li>
+      </ol>
+
+      <div class="concept" style="margin-top: 24px;">
+        <div class="concept-title">🎓 学习建议</div>
+        <p>《金字塔原理》是一本需要反复研读并付诸实践的经典。芭芭拉·明托的建议是：</p>
+        <blockquote>"如果你有意地以书中介绍的方法强迫自己'先想后写'，你的写作能力肯定能够得到惊人的改善，使你能够：</blockquote>
+        <ol>
+          <li>缩短完成最终一稿通常所需的时间；</li>
+          <li>提高文章的条理性；</li>
+          <li>缩短文章的长度。</li>
+        </ol>
+        <p>最终的结果是，使你能够在最短的时间内写出简明扼要、思路清晰的文章。</p>
+      </div>
+    </section>
+
+    <div class="footnote">
+      <p>📘 本知识脑图基于《金字塔原理》（麦肯锡40年经典培训教材）一书整理，原著：芭芭拉·明托（Barbara Minto）。<br>仅供学习参考使用，请支持正版。</p>
+    </div>
+
+  </main>
+</div>
+
+<button class="back-to-top" id="backToTop" title="返回顶部">↑</button>
+
+<script>
+// ============ 目录导航 ============
+const tocLinks = document.querySelectorAll('.toc-link');
+const sections = document.querySelectorAll('section[id], .part-divider[id]');
+const tocItems = document.querySelectorAll('.toc-item');
+
+// 点击切换展开/折叠
+tocItems.forEach(item => {
+  const toggle = item.querySelector(':scope > .toc-link > .toc-toggle');
+  if (!toggle || toggle.classList.contains('empty')) return;
+  toggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    item.classList.toggle('collapsed');
+    toggle.classList.toggle('expanded');
+  });
+});
+
+// 全部展开/折叠
+const collapseAllBtn = document.getElementById('collapseAll');
+let allExpanded = true;
+collapseAllBtn.addEventListener('click', () => {
+  allExpanded = !allExpanded;
+  tocItems.forEach(item => {
+    const toggle = item.querySelector(':scope > .toc-link > .toc-toggle');
+    if (!toggle || toggle.classList.contains('empty')) return;
+    if (allExpanded) {
+      item.classList.remove('collapsed');
+      toggle.classList.add('expanded');
+    } else {
+      item.classList.add('collapsed');
+      toggle.classList.remove('expanded');
+    }
+  });
+  collapseAllBtn.textContent = allExpanded ? '全部折叠' : '全部展开';
+});
+
+// 链接点击 + 当前激活
+tocLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    // 移动端点击后关闭侧边栏
+    if (window.innerWidth <= 1024) {
+      document.getElementById('sidebar').classList.remove('show');
+    }
+  });
+});
+
+// 滚动监听：高亮当前目录
+const observerOptions = {
+  rootMargin: '-20% 0px -75% 0px',
+  threshold: 0
+};
+
+const activeLinkSet = new Set();
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    const id = entry.target.id;
+    const link = document.querySelector(`.toc-link[href="#${id}"]`);
+    if (!link) return;
+    if (entry.isIntersecting) {
+      // 清除其它 active
+      tocLinks.forEach(l => l.classList.remove('active'));
+      activeLinkSet.clear();
+      link.classList.add('active');
+      // 自动展开父级
+      let parent = link.parentElement;
+      while (parent && parent !== document.getElementById('toc')) {
+        if (parent.classList && parent.classList.contains('toc-item')) {
+          if (parent.classList.contains('collapsed')) {
+            parent.classList.remove('collapsed');
+            const t = parent.querySelector(':scope > .toc-link > .toc-toggle');
+            if (t) t.classList.add('expanded');
+          }
+        }
+        parent = parent.parentElement;
+      }
+    }
+  });
+}, observerOptions);
+
+sections.forEach(sec => {
+  if (sec.id) observer.observe(sec);
+});
+
+// 移动端侧边栏切换
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('show');
+});
+
+// 返回顶部
+const backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 400) {
+    backToTop.classList.add('show');
+  } else {
+    backToTop.classList.remove('show');
+  }
+  // 进度条
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (window.scrollY / total) * 100;
+  document.getElementById('progressBar').style.width = progress + '%';
+});
+
+backToTop.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// 搜索功能
+const searchInput = document.getElementById('searchInput');
+let searchMarkId = 0;
+searchInput.addEventListener('input', (e) => {
+  const q = e.target.value.trim();
+  // 清除之前的高亮
+  document.querySelectorAll('.search-mark').forEach(m => {
+    const parent = m.parentNode;
+    parent.replaceChild(document.createTextNode(m.textContent), m);
+    parent.normalize();
+  });
+  if (!q) return;
+  // 搜索正文
+  const main = document.getElementById('mainContent');
+  const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
+    acceptNode: (node) => {
+      if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      if (node.parentElement.closest('script, style')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const matches = [];
+  let node;
+  while ((node = walker.nextNode())) {
+    const idx = node.nodeValue.indexOf(q);
+    if (idx >= 0) matches.push({ node, idx });
+  }
+  matches.forEach(({ node, idx }) => {
+    const text = node.nodeValue;
+    const before = text.slice(0, idx);
+    const match = text.slice(idx, idx + q.length);
+    const after = text.slice(idx + q.length);
+    const span = document.createElement('span');
+    span.className = 'search-mark';
+    span.textContent = match;
+    const afterNode = document.createTextNode(after);
+    const parent = node.parentNode;
+    parent.insertBefore(document.createTextNode(before), node);
+    parent.insertBefore(span, node);
+    parent.removeChild(node);
+    parent.insertBefore(afterNode, span.nextSibling);
+  });
+  if (matches.length > 0) {
+    const firstMark = document.querySelector('.search-mark');
+    if (firstMark) {
+      firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+});
+
+// 初始：默认展开所有一级目录
+window.addEventListener('load', () => {
+  // 默认折叠第二级
+  document.querySelectorAll('.toc-children').forEach(child => {
+    const parent = child.parentElement;
+    if (parent && parent.classList.contains('toc-item')) {
+      parent.classList.add('collapsed');
+    }
+  });
+  collapseAllBtn.textContent = '全部展开';
+});
+</script>
+
+</body>
+</html>

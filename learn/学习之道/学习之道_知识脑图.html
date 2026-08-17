@@ -1,0 +1,2489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《学习之道》知识脑图 - 芭芭拉·奥克利</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg-primary: #f7f5f0;
+  --bg-card: #ffffff;
+  --bg-sidebar: #1e293b;
+  --bg-sidebar-hover: #334155;
+  --bg-sidebar-active: #3b82f6;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --text-sidebar: #cbd5e1;
+  --text-sidebar-active: #ffffff;
+  --border-color: #e2e8f0;
+  --accent-color: #3b82f6;
+  --accent-soft: #dbeafe;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --radius: 8px;
+  --transition: all 0.2s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  font-size: 15px;
+  min-height: 100vh;
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== 顶部标题栏 ===== */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.topbar .toggle-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: var(--transition);
+}
+
+.topbar .toggle-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.topbar h1 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.topbar .subtitle {
+  margin-left: 12px;
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.topbar .right {
+  margin-left: auto;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+/* ===== 侧边导航 ===== */
+.sidebar {
+  width: 280px;
+  background: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  position: fixed;
+  top: 64px;
+  left: 0;
+  bottom: 0;
+  overflow-y: auto;
+  transition: transform 0.3s ease, width 0.3s ease;
+  z-index: 90;
+  border-right: 1px solid rgba(0,0,0,0.1);
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 3px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar.collapsed {
+  transform: translateX(-280px);
+}
+
+.sidebar .nav-header {
+  padding: 16px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.nav-group {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.nav-group-title {
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e2e8f0;
+  user-select: none;
+  transition: var(--transition);
+}
+
+.nav-group-title:hover {
+  background: var(--bg-sidebar-hover);
+  color: #fff;
+}
+
+.nav-group-title .icon {
+  margin-right: 10px;
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.nav-group-title .arrow {
+  margin-left: auto;
+  font-size: 10px;
+  transition: transform 0.2s;
+  opacity: 0.6;
+}
+
+.nav-group.expanded .nav-group-title .arrow {
+  transform: rotate(90deg);
+}
+
+.nav-group-items {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: rgba(0,0,0,0.15);
+}
+
+.nav-group.expanded .nav-group-items {
+  max-height: 1200px;
+}
+
+.nav-item {
+  padding: 9px 20px 9px 50px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-sidebar);
+  transition: var(--transition);
+  border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+  background: var(--bg-sidebar-hover);
+  color: #fff;
+}
+
+.nav-item.active {
+  background: rgba(59, 130, 246, 0.15);
+  color: #fff;
+  border-left-color: var(--accent-color);
+  font-weight: 500;
+}
+
+/* ===== 主内容区 ===== */
+.main {
+  flex: 1;
+  margin-left: 280px;
+  margin-top: 64px;
+  padding: 32px 48px;
+  transition: margin-left 0.3s ease;
+  min-width: 0;
+}
+
+.sidebar.collapsed ~ .main {
+  margin-left: 0;
+}
+
+/* ===== 章节样式 ===== */
+.section {
+  display: none;
+  max-width: 960px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease;
+}
+
+.section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-header {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.section-header .breadcrumb {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+
+.section-header .breadcrumb span {
+  margin: 0 6px;
+}
+
+.section-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.section-header .subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* ===== 卡片 ===== */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.card h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.card h3::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background: var(--accent-color);
+  margin-right: 10px;
+  border-radius: 2px;
+}
+
+.card h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 16px 0 8px;
+  display: flex;
+  align-items: center;
+}
+
+.card h4::before {
+  content: '▸';
+  color: var(--accent-color);
+  margin-right: 6px;
+  font-size: 12px;
+}
+
+.card p {
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  font-size: 14.5px;
+}
+
+.card p:last-child {
+  margin-bottom: 0;
+}
+
+.card ul, .card ol {
+  margin: 8px 0 8px 20px;
+  color: var(--text-secondary);
+  font-size: 14.5px;
+}
+
+.card li {
+  margin-bottom: 6px;
+}
+
+.card li::marker {
+  color: var(--accent-color);
+}
+
+/* ===== 高亮样式 ===== */
+.highlight {
+  background: linear-gradient(180deg, transparent 60%, #fef3c7 60%);
+  padding: 0 2px;
+  font-weight: 500;
+  color: #92400e;
+}
+
+.highlight-blue {
+  background: linear-gradient(180deg, transparent 60%, #dbeafe 60%);
+  padding: 0 2px;
+  font-weight: 500;
+  color: #1e40af;
+}
+
+.highlight-green {
+  background: linear-gradient(180deg, transparent 60%, #d1fae5 60%);
+  padding: 0 2px;
+  font-weight: 500;
+  color: #065f46;
+}
+
+/* ===== 标签 ===== */
+.tag {
+  display: inline-block;
+  padding: 2px 10px;
+  background: var(--accent-soft);
+  color: var(--accent-color);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 6px;
+  margin-bottom: 4px;
+}
+
+.tag-orange {
+  background: #fed7aa;
+  color: #c2410c;
+}
+
+.tag-green {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.tag-purple {
+  background: #e9d5ff;
+  color: #6b21a8;
+}
+
+.tag-pink {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+/* ===== 引用块 ===== */
+.quote {
+  background: #f8fafc;
+  border-left: 3px solid var(--accent-color);
+  padding: 14px 18px;
+  margin: 14px 0;
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.quote::before {
+  content: '"';
+  font-size: 18px;
+  color: var(--accent-color);
+  margin-right: 4px;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* ===== 对比表格 ===== */
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.compare-item {
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border-top: 3px solid var(--accent-color);
+}
+
+.compare-item.alt {
+  border-top-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.compare-item h5 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.compare-item ul {
+  margin-left: 18px;
+  font-size: 13.5px;
+}
+
+/* ===== 数字步骤 ===== */
+.step {
+  display: flex;
+  margin-bottom: 14px;
+  align-items: flex-start;
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background: var(--accent-color);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  margin-right: 12px;
+  margin-top: 2px;
+}
+
+.step-content {
+  flex: 1;
+  font-size: 14.5px;
+  color: var(--text-secondary);
+}
+
+.step-content strong {
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ===== 返回顶部 ===== */
+.back-top {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  width: 44px;
+  height: 44px;
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition);
+  z-index: 80;
+}
+
+.back-top:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.back-top.show {
+  display: flex;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-280px);
+  }
+  .sidebar.collapsed {
+    transform: translateX(0);
+  }
+  .main {
+    margin-left: 0;
+    padding: 20px;
+  }
+  .topbar h1 {
+    font-size: 16px;
+  }
+  .topbar .subtitle {
+    display: none;
+  }
+}
+
+/* ===== 重点提示框 ===== */
+.tip {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  font-size: 14px;
+  color: #78350f;
+  border-left: 3px solid #f59e0b;
+}
+
+.tip::before {
+  content: '💡 ';
+}
+
+.warning {
+  background: #fee2e2;
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  font-size: 14px;
+  color: #991b1b;
+  border-left: 3px solid #ef4444;
+}
+
+.warning::before {
+  content: '⚠️ ';
+}
+
+.success {
+  background: #d1fae5;
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  font-size: 14px;
+  color: #065f46;
+  border-left: 3px solid #10b981;
+}
+
+.success::before {
+  content: '✅ ';
+}
+
+/* ===== 案例框 ===== */
+.case {
+  background: #fafaf9;
+  border: 1px dashed #d6d3d1;
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin: 14px 0;
+}
+
+.case .case-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #78716c;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.case .case-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.case p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="toggle-btn" onclick="toggleSidebar()" title="折叠/展开导航">☰</button>
+  <h1>《学习之道》知识脑图</h1>
+  <span class="subtitle">A Mind for Numbers · 芭芭拉·奥克利</span>
+  <div class="right">📚 共 18 章 · 9 大主题模块</div>
+</div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="nav-header">主题导航</div>
+
+  <div class="nav-group expanded" data-group="1">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      <span class="icon">🧠</span>
+      <span>一、核心思维模式</span>
+      <span class="arrow">▶</span>
+    </div>
+    <div class="nav-group-items">
+      <div class="nav-item active" data-section="overview" onclick="showSection('overview', this)">全书概览</div>
+      <div class="nav-item" data-section="focused-mode" onclick="showSection('focused-mode', this)">专注模式</div>
+      <div class="nav-item" data-section="diffuse-mode" onclick="showSection('diffuse-mode', this)">发散模式</div>
+      <div class="nav-item" data-section="mode-switch" onclick="showSection('mode-switch', this)">模式切换与创造力</div>
+      <div class="nav-item" data-section="einstellung" onclick="showSection('einstellung', this)">思维定式与困惑</div>
+    </div>
+  </div>
+
+  <div class="nav-group" data-group="2">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      <span class="icon">🧩</span>
+      <span>二、组块构建</span>
+      <span class="arrow">▶</span>
+    </div>
+    <div class="nav-group-items">
+      <div class="nav-item" data-section="chunking-basic" onclick="showSection('chunking-basic', this)">组块基本概念</div>
+      <div class="nav-item" data-section="chunking-steps" onclick="showSection('chunking-steps', this)">组块构建步骤</div>
+      <div class="nav-item" data-section="chunking-advanced" onclick="showSection('chunking-advanced', this)">高级组块技巧</div>
+      <div class="nav-item" data-section="illusions" onclick="showSection('illusions', this)">避免能力错觉</div>
+    </div>
+  </div>
+
+  <div class="nav-group" data-group="3">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      <span class="icon">💾</span>
+      <span>三、记忆系统</span>
+      <span class="arrow">▶</span>
+    </div>
+    <div class="nav-group-items">
+      <div class="nav-item" data-section="memory-system" onclick="showSection('memory-system', this)">工作与长期记忆</div>
+      <div class="nav-item" data-section="memory-techniques" onclick="showSection('memory-techniques', this)">记忆宫殿法</div>
+      <div class="nav-item" data-section="memory-metaphor" onclick="showSection('memory-metaphor', this)">比喻与意群</div>
+      <div class="nav-item" data-section="spaced-repetition" onclick="showSection('spaced-repetition', this)">间隔重复</div>
+    </div>
+  </div>
+
+  <div class="nav-group" data-group="4">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      <span class="icon">⏰</span>
+      <span>四、克服拖延</span>
+      <span class="arrow">▶</span>
+    </div>
+    <div class="nav-group-items">
+      <div class="nav-item" data-section="procrastination" onclick="showSection('procrastination', this)">拖延的本质</div>
+      <div class="nav-item" data-section="habit" onclick="showSection('habit', this)">习惯的四要素</div>
+      <div class="nav-item" data-section="pomodoro" onclick="showSection('pomodoro', this)">番茄工作法</div>
+      <div class="nav-item" data-section="action-log" onclick="showSection('action-log', this)">行动日志</div>
+      <div class="nav-item" data-section="stalling" onclick="showSection('stalling', this)">明智的等待</div>
+    </div>
+  </div>
+
+  <div class="nav-group" data-group="5">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      <span class="icon">📖</span>
+      <span>五、学习方法</span>
+      <span class="arrow">▶</span>
+    </div>
+    <div class="nav-group-items">
+      <div class="nav-item" data-section="deliberate" onclick="showSection('deliberate', this)">刻意练习</div>
+      <div class="nav-item" data-section="interleaving" onclick="showSection('interleaving', this)">穿插学习法</div>
+      <div class="nav-item" data-section="metaphor" onclick="showSection('metaphor', this)">比喻、类比与拟人</div>
+      <div class="nav-item" data-section="sleep" onclick="showSection('sleep', this)">睡眠与学习</div>
+    </div>
+  </div>
+
+  <div class="nav-group" data-group="6">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      <span class="icon">🧠</span>
+      <span>六、大脑可塑性</span>
+      <span class="arrow">▶</span>
+    </div>
+    <div class="nav-group-items">
+      <div class="nav-item" data-section="plasticity" onclick="showSection('plasticity', this)">塑造你的大脑</div>
+      <div class="nav-item" data-section="causal" onclick="showSection('causal', this)">卡哈尔的启示</div>
+    </div>
+  </div>
+
+  <div class="nav-group" data-group="7">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      <span class="icon">🤝</span>
+      <span>七、团队与自学</span>
+      <span class="arrow">▶</span>
+    </div>
+    <div class="nav-group-items">
+      <div class="nav-item" data-section="team" onclick="showSection('team', this)">团队合作的力量</div>
+      <div class="nav-item" data-section="self-learning" onclick="showSection('self-learning', this)">自学的价值</div>
+      <div class="nav-item" data-section="mentor" onclick="showSection('mentor', this)">好老师与导师</div>
+    </div>
+  </div>
+
+  <div class="nav-group" data-group="8">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      <span class="icon">📝</span>
+      <span>八、考试策略</span>
+      <span class="arrow">▶</span>
+    </div>
+    <div class="nav-group-items">
+      <div class="nav-item" data-section="exam-mindset" onclick="showSection('exam-mindset', this)">考试即学习</div>
+      <div class="nav-item" data-section="hard-to-easy" onclick="showSection('hard-to-easy', this)">由难入简法</div>
+      <div class="nav-item" data-section="exam-anxiety" onclick="showSection('exam-anxiety', this)">克服考试焦虑</div>
+      <div class="nav-item" data-section="checklist" onclick="showSection('checklist', this)">备考检查清单</div>
+    </div>
+  </div>
+
+  <div class="nav-group" data-group="9">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      <span class="icon">⭐</span>
+      <span>九、十大法则总结</span>
+      <span class="arrow">▶</span>
+    </div>
+    <div class="nav-group-items">
+      <div class="nav-item" data-section="ten-good" onclick="showSection('ten-good', this)">10个好的学习法则</div>
+      <div class="nav-item" data-section="ten-bad" onclick="showSection('ten-bad', this)">10个坏的学习法则</div>
+      <div class="nav-item" data-section="case-stories" onclick="showSection('case-stories', this)">实战人物案例</div>
+    </div>
+  </div>
+</aside>
+
+<main class="main" id="main">
+
+<!-- 全书概览 -->
+<section class="section active" id="overview">
+  <div class="section-header">
+    <div class="breadcrumb">首页 <span>›</span> 全书概览</div>
+    <h2>📚 《学习之道》全书概览</h2>
+    <div class="subtitle">芭芭拉·奥克利：从数学恐惧者到工程学教授的蜕变之旅</div>
+  </div>
+
+  <div class="card">
+    <h3>关于本书</h3>
+    <p>本书是芭芭拉·奥克利（Barbara Oakley）所著，原名 <em>A Mind for Numbers: How to Excel at Math and Science (Even If You Flunked Algebra)</em>。作者原本对数学和科学深恶痛绝，高中数理科一直不及格，却通过自学蜕变为美国奥克兰大学工程学教授，并开设了 Coursera 上最受欢迎的课程之一 <em>Learning How to Learn</em>。</p>
+    <p>本书基于认知心理学与神经科学最新研究，揭示高效学习的核心原理，是一本面向大众、科学可信的学习方法手册。</p>
+    <div class="tip">本书不只适用于数学和科学，对语言、音乐、创意写作等任何领域都同样奏效——只要涉及学习，它就是一份通用指南。</div>
+  </div>
+
+  <div class="card">
+    <h3>全书知识图谱</h3>
+    <p>本书围绕学习的两大核心模式展开：</p>
+    <div class="compare">
+      <div class="compare-item">
+        <h5>📌 上层：思维模式与原理</h5>
+        <ul>
+          <li>专注模式 & 发散模式</li>
+          <li>组块构建机制</li>
+          <li>工作记忆与长期记忆</li>
+          <li>大脑可塑性</li>
+        </ul>
+      </div>
+      <div class="compare-item alt">
+        <h5>🛠️ 下层：实操方法与工具</h5>
+        <ul>
+          <li>组块构建步骤</li>
+          <li>记忆宫殿法</li>
+          <li>番茄工作法 & 行动日志</li>
+          <li>由难入简考试法</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>核心观点</h3>
+    <div class="quote">学习的过程有时是自相矛盾的：正是我们要学的东西，让我们难以发挥学习能力；我们需要全神贯注才能解决问题，可专注也会阻碍我们找到所需的新方法；成功很重要，但辩证来看，失败也同样重要。</div>
+    <ul>
+      <li><span class="highlight">专注与发散必须切换</span> —— 缺一不可</li>
+      <li><span class="highlight">组块是知识的基本单位</span> —— 熟练的本质</li>
+      <li><span class="highlight">记忆宫殿 + 间隔重复</span> —— 长期记忆的关键</li>
+      <li><span class="highlight">习惯的四个部分</span> —— 改变拖延的入口</li>
+      <li><span class="highlight">以学生为中心</span> —— 团队合作 + 自主学习</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>适用读者</h3>
+    <div>
+      <span class="tag">🧑‍🎓 高中生</span>
+      <span class="tag">👨‍🎓 大学生</span>
+      <span class="tag">📚 自学者</span>
+      <span class="tag">💼 职场进阶者</span>
+      <span class="tag">🎯 考证考博者</span>
+      <span class="tag">🎨 终身学习者</span>
+    </div>
+    <p style="margin-top: 12px;">简而言之：<strong>每一个对未知充满渴望的人</strong>，都能从本书中获益。</p>
+  </div>
+</section>
+
+<!-- 专注模式 -->
+<section class="section" id="focused-mode">
+  <div class="section-header">
+    <div class="breadcrumb">一、核心思维模式 <span>›</span> 专注模式</div>
+    <h2>🎯 专注模式 (Focused Mode)</h2>
+    <div class="subtitle">理性、连贯、分解的思维模式</div>
+  </div>
+
+  <div class="card">
+    <h3>什么是专注模式？</h3>
+    <p>专注模式是<span class="highlight">利用理性、连贯、分解的途径直接解决问题</span>的一种模式。它与大脑前额叶皮层（位于额头正后方）集中注意力的能力相关。当我们把注意力集中到某样东西上，"砰"的一声，专注模式就开启了——像手电筒发出的光，穿透力强，径直打在关注的目标上。</p>
+  </div>
+
+  <div class="card">
+    <h3>弹球机比喻</h3>
+    <p>把大脑想象成一台弹球机：</p>
+    <ul>
+      <li>橡胶弹柱排布<span class="highlight-blue">紧密</span>，想法在熟悉路径上高效传递</li>
+      <li>思维小球沿着<span class="highlight">已练习或经历过的老路子</span>运行</li>
+      <li>你正在处理的"思维小球"在熟悉的神经模式中穿梭</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>专注模式擅长的场景</h3>
+    <ul>
+      <li>已掌握基础概念后的深入运算（如学会乘法后做计算）</li>
+      <li>复习上周学过的语言变位、动作细节</li>
+      <li>把分散的练习转化为流畅的专业技能</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <strong>注意：专注模式的局限</strong><br>
+    专注模式对数学和科学问题常常<strong>比对语言、人际交往更费劲</strong>，因为数学和科学概念更抽象、更隐晦。数学的抽象性和隐晦性会让"橡胶弹柱变得软绵绵"，需要额外练习才能增加硬度。
+  </div>
+
+  <div class="card">
+    <h3>常见错误：思维定式 (Einstellung)</h3>
+    <p>思维定式（Einstellung）指脑海中已有的、最初的想法会<span class="highlight">阻碍你产生更好的想法或答案</span>。在专注模式中，思维小球最初的走向是图的上半部分，但解决办法可能就在下半部分——拥挤的弹柱阻碍了你的思维飞跃。</p>
+    <div class="quote">还没学会走就开始跑——这是学数学和科学的学生常犯的显著错误：没读教材、没上课、没看在线课程就开始盲目做作业。</div>
+  </div>
+
+  <div class="tip">
+    <strong>实用技巧：宏观浏览</strong> —— 阅读章节前先快速浏览表、公式、图片、小节标题、总结、章末问题。看似反直觉，但能为思维提供动力，创造神经挂钩，使把握概念更轻松。
+  </div>
+</section>
+
+<!-- 发散模式 -->
+<section class="section" id="diffuse-mode">
+  <div class="section-header">
+    <div class="breadcrumb">一、核心思维模式 <span>›</span> 发散模式</div>
+    <h2>🌐 发散模式 (Diffuse Mode)</h2>
+    <div class="subtitle">开阔、宏观、创造性的思维模式</div>
+  </div>
+
+  <div class="card">
+    <h3>什么是发散模式？</h3>
+    <p>发散模式与<span class="highlight">宏观视角相关联</span>。当你放松注意力，任由思维漫步时，发散模式思维就出现了。松弛状态让大脑的不同区域得到相互联络的机会，反馈给我们宝贵的灵感。</p>
+    <p>与专注模式不同，发散模式"弥散"于整个大脑之中，不依赖于任何特定脑区。</p>
+  </div>
+
+  <div class="card">
+    <h3>发散模式的特点</h3>
+    <div class="compare">
+      <div class="compare-item">
+        <h5>弹柱分布</h5>
+        <ul>
+          <li>弹柱彼此遥遥相望</li>
+          <li>想法在两柱之间旅程更远</li>
+          <li>能将相距甚远的节点连接</li>
+        </ul>
+      </div>
+      <div class="compare-item alt">
+        <h5>手电筒光</h5>
+        <ul>
+          <li>光柱分散开</li>
+          <li>照亮范围更广</li>
+          <li>但各处光强都降低</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>发散模式的作用</h3>
+    <ul>
+      <li>纠缠于全新概念或陌生问题时提供<span class="highlight">新视角</span></li>
+      <li>对困难问题冷不防地提供一个"新点悟"</li>
+      <li>让大脑不同区域"相互聊天"，拼凑出答案</li>
+      <li>通常在专注模式生成初步思路<span class="highlight">之后</span>涌现</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>激活发散模式的方法</h3>
+    <h4>🛁 强效激活（推荐）</h4>
+    <ul>
+      <li>去健身房 / 踢足球 / 打篮球</li>
+      <li>慢跑、散步或游泳</li>
+      <li>跳舞、开车兜风</li>
+      <li>绘画或涂鸦</li>
+      <li>淋浴、泡澡</li>
+      <li>听纯音乐</li>
+      <li>用乐器演奏熟悉的歌曲</li>
+      <li>冥想或祷告</li>
+      <li><span class="highlight">睡眠</span> —— 召唤发散模式的终极法宝</li>
+    </ul>
+    <h4>🎮 小奖励方式（适度）</h4>
+    <ul>
+      <li>打电子游戏、上网、看电视</li>
+      <li>和朋友聊天、阅读休闲读物</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>睡眠：发散模式的"大本营"</h3>
+    <div class="quote">睡眠就像是让前额叶皮层那个清醒的"你"彻底关机，因此大脑其他区域之间更容易互相聊天，并得以拼凑出问题的答案。</div>
+    <ul>
+      <li>脑细胞收缩，脑脊液流过并<span class="highlight">冲洗掉毒素</span></li>
+      <li>大脑回顾需要掌握的知识难点，加深神经模型</li>
+      <li>充足睡眠能<span class="highlight">显著提升</span>解决难题、理解知识的能力</li>
+    </ul>
+    <div class="warning">极度缺觉时残留毒素就是"脑袋不灵光"的元凶。长期缺乏睡眠与阿尔茨海默症、抑郁症相关，是致命的。</div>
+  </div>
+</section>
+
+<!-- 模式切换与创造力 -->
+<section class="section" id="mode-switch">
+  <div class="section-header">
+    <div class="breadcrumb">一、核心思维模式 <span>›</span> 模式切换与创造力</div>
+    <h2>🔄 模式切换与创造力</h2>
+    <div class="subtitle">两种思维模式相互切换，才能学好数理</div>
+  </div>
+
+  <div class="card">
+    <h3>爱迪生的秘密</h3>
+    <p>传奇发明家托马斯·爱迪生遇到棘手难题时，会先坐在躺椅上<span class="highlight">打盹</span>，手中拿着球，地上放盘子。一旦睡着，球落盘响将他唤醒，在这一瞬间抓住发散思维留下的碎片。</p>
+    <p>超现实主义画家达利也用同样的"似睡非睡"方法挖掘发散创造力。</p>
+  </div>
+
+  <div class="card">
+    <h3>3B 方法</h3>
+    <p>创造力研究专家霍华德·格鲁伯提出的方法：</p>
+    <div>
+      <span class="tag tag-orange">Bed 睡觉</span>
+      <span class="tag tag-green">Bath 洗澡</span>
+      <span class="tag tag-purple">Bus 坐公交</span>
+    </div>
+    <p>三者任一即可触发发散模式。许多著名作家（简·奥斯汀、狄更斯、桑德堡）都在散步中遇见缪斯女神。</p>
+  </div>
+
+  <div class="card">
+    <h3>为什么需要切换？</h3>
+    <div class="quote">越是苦思冥想，得出的想法就越是味同嚼蜡——努力工作时的放松也是一个重要环节，更是令工作卓有成效的关键。</div>
+    <ul>
+      <li><span class="highlight">专注模式</span>：像搬砖块，为砌墙提供材料</li>
+      <li><span class="highlight">发散模式</span>：像水泥，把砖块逐渐结合</li>
+      <li>两者必须<span class="highlight">交替进行</span>，给泥浆留出干燥时间</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <strong>警惕：可别指望只靠发散模式</strong><br>
+    短暂休息不是终点。在专注与发散之间来回切换的分段练习才是登顶之路。朝来暮去，不知不觉间你已经登上了山顶。
+  </div>
+
+  <div class="card">
+    <h3>自制力强的人更需主动切换</h3>
+    <p>自制力很强的人反而会更难关闭专注模式，以让发散模式进入工作状态——他们的成功之道就是在别人都放弃的情况下仍坚持不懈。如果你就是这种人，请<span class="highlight">重视倾听</span>，把同伴、朋友或亲人的意见放在心上，他们会在你沮丧到临界值时有所察觉。</p>
+  </div>
+
+  <div class="card">
+    <h3>卡尔森的"小走神"</h3>
+    <p>在2004年雷克雅未克快棋赛上，13岁的卡尔森离开棋盘去一边晃悠，看似无关紧要，<span class="highlight">实则是让发散模式暂时脱离专注</span>。与此同时，发散模式下的直觉仍在为比赛暗度陈仓。这种能力依赖于专业知识和实践而来的直觉技巧。</p>
+  </div>
+</section>
+
+<!-- 思维定式与困惑 -->
+<section class="section" id="einstellung">
+  <div class="section-header">
+    <div class="breadcrumb">一、核心思维模式 <span>›</span> 思维定式与困惑</div>
+    <h2>🚧 思维定式与困惑</h2>
+    <div class="subtitle">一叶障目：先入为主是学习路上最大的路障</div>
+  </div>
+
+  <div class="card">
+    <h3>什么是思维定式 (Einstellung)？</h3>
+    <p>定式（Einstellung）一词原为德语，意思是<span class="highlight">"装置"</span>，基本上可以理解为先入为主的概念，它会变成未来思维旅途上"装置"好的路障。</p>
+    <p>在思维定式的影响下，<span class="highlight">国际象棋选手坚信他们扫视棋盘是在寻找不同的棋路</span>，然而对棋手眼球移动轨迹的研究显示，他们其实一直执着于最初的走法。</p>
+  </div>
+
+  <div class="card">
+    <h3>眨眼的力量</h3>
+    <p>近期研究显示，<span class="highlight">眨眼是打破僵局、帮你跳出重新评估现状</span>的关键行为。闭眼可以在一瞬间放松紧绷的注意力，提供片刻休息，让意识和想法刷新页面。</p>
+  </div>
+
+  <div class="card">
+    <h3>拥抱困惑</h3>
+    <div class="quote">困惑是学习过程中的有益部分。当学生在一个问题上百思不得其解时，就会觉得这不是他们擅长的学科，那些聪明的学生尤甚。他们在高中的学习顺风顺水，这让他们完全没法想象困惑是正常和必需的。</div>
+    <ul>
+      <li>学习本来就<span class="highlight">从困惑中摸索</span>问题答案的过程</li>
+      <li>能够描述出来问题就已经成功了一半</li>
+      <li>只要发现困扰你的东西是什么，就离解答出来不远了</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>学习中的五大悖论</h3>
+    <ol>
+      <li>要学的东西让我们难以发挥学习能力</li>
+      <li>需要全神贯注才能解决问题，但专注也阻碍找到新方法</li>
+      <li>成功很重要，但失败也同样重要</li>
+      <li>持之以恒是关键，但南辕北辙只会带来不必要的挫折</li>
+      <li>获取专业知识需要记忆，但记忆也会让我们只见树木不见森林</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 组块基本概念 -->
+<section class="section" id="chunking-basic">
+  <div class="section-header">
+    <div class="breadcrumb">二、组块构建 <span>›</span> 组块基本概念</div>
+    <h2>🧩 组块 (Chunk) 是什么？</h2>
+    <div class="subtitle">"口默念而心得解"的秘诀</div>
+  </div>
+
+  <div class="card">
+    <h3>组块的定义</h3>
+    <p>组块（chunks）是<span class="highlight">根据意义将信息碎片组成的集合</span>。你可以把字母 p, o, p 连在一起组成"pop"。这就像把电脑中繁杂的文件放在一起，保存成 .zip 格式的压缩包。</p>
+    <p>不管是名词缩写、想法，还是概念，都依赖于复杂的神经活动，将简化而抽象的思维组块捆绑在了一起。<span class="highlight">思维组块是绝大多数科学、文学和艺术知识的构成基础。</span></p>
+  </div>
+
+  <div class="card">
+    <h3>所罗门的反例：记忆超群但缺乏组块</h3>
+    <p>记者所罗门·舍雷舍夫斯基拥有<span class="highlight">过耳不忘</span>的超凡记忆力，但每条记忆痕迹都包含鲜艳色彩和丰富情感——极其丰富的连接妨碍了他对记忆痕迹进行整合，<span class="highlight">只见树木不见森林</span>。</p>
+    <p>他无法把记忆痕迹连接在一起创造概念组块，因此<span class="highlight">无法理解</span>大陆漂移学说——尽管能复述故事中的每个字。</p>
+  </div>
+
+  <div class="quote">要熟练地掌握数学和科学知识，就要创造一些概念组块——这是通过意义将分散的信息碎片组合起来的过程。</div>
+
+  <div class="card">
+    <h3>组块的威力</h3>
+    <ul>
+      <li>把要处理的信息构成组块，可以使大脑<span class="highlight">更高效地运转</span></li>
+      <li>组块在工作记忆中所占据的空间<span class="highlight">变小</span></li>
+      <li>释放出的大脑空间让你更轻松处理其他想法</li>
+      <li>比如早晨穿衣，你只是想着"我得穿上衣服"——这是一个组块替代了所有复杂的基础活动</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>大陆漂移的例子</h3>
+    <p>阿尔弗雷德·瓦格纳归纳出大陆漂移学说：边分析地图，边思考收集到的信息，突然意识到<span class="highlight">不同大陆块可以像拼图一样拼合</span>。不同大陆块之间岩石和化石存在的相似性增加了说服力。一旦瓦格纳将线索拼凑起来，沧海桑田的完整故事就跃然眼前。</p>
+  </div>
+</section>
+
+<!-- 组块构建步骤 -->
+<section class="section" id="chunking-steps">
+  <div class="section-header">
+    <div class="breadcrumb">二、组块构建 <span>›</span> 组块构建步骤</div>
+    <h2>🛠️ 组块构建的五步骤</h2>
+    <div class="subtitle">把基本概念打包成组块的核心方法</div>
+  </div>
+
+  <div class="card">
+    <h3>第一步：把注意力集中到需要组块的信息上</h3>
+    <p>开着电视当背景音，或是几分钟就查查手机，<span class="highlight">你就别想构建组块了</span>。着手开始学习新东西，既要创造新的神经模型，也要把新模型和遍布大脑各处的既有模型联结在一起。要是你走神，章鱼触手可就抓不紧了。</p>
+  </div>
+
+  <div class="card">
+    <h3>第二步：理解基本概念</h3>
+    <p>把基本概念打包成组块，首先要理解这个基本概念。不管是大陆漂移、力与质量的比例关系，或是经济学的供求原则。</p>
+    <div class="quote">理解力就像强力胶，能把基础的记忆痕迹黏合在一起。它铺展出各种各样的痕迹路径，将记忆痕迹联结起来。</div>
+    <div class="warning">没有理解在先，勉强创造的组块，与其他学习材料不匹配，又有什么用呢？</div>
+    <div class="tip">课堂上老师一讲你就掌握了概念，但课后如果不赶快复习，等到考前才复习，概念似乎又变得难以理解了。<span class="highlight">合上书本后再找些问题来测验一下新学到的解题方法</span>，会提高本阶段的学习效率。</div>
+  </div>
+
+  <div class="card">
+    <h3>第三步：获取背景信息</h3>
+    <p>你所看到的将不仅是如何进行组块，还有<span class="highlight">何时何地使用它们</span>。</p>
+    <ul>
+      <li>在相关或不相关的问题上反复推敲、练习</li>
+      <li>使你不仅能了解组块的用武之地，也能清楚它<span class="highlight">何时派不上用场</span></li>
+      <li>练习可以增加神经元网络的带宽</li>
+      <li>"条条大路通组块"，成为多条痕迹路径上的一站</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>第四步：自上而下与自下而上</h3>
+    <div class="compare">
+      <div class="compare-item">
+        <h5>从下至上的过程</h5>
+        <ul>
+          <li>练习与重复帮助建立和加固每个组块</li>
+          <li>从记忆中轻松获取信息</li>
+        </ul>
+      </div>
+      <div class="compare-item alt">
+        <h5>从上至下的过程</h5>
+        <ul>
+          <li>让你看到知识在宏观图景中的位置</li>
+          <li>指引你看到构建的组块在哪里</li>
+        </ul>
+      </div>
+    </div>
+    <p>两个过程对熟练掌握学习材料都<span class="highlight">缺一不可</span>。</p>
+  </div>
+
+  <div class="card">
+    <h3>第五步：主动重复（提取练习）</h3>
+    <p>尝试<span class="highlight">回想学习材料，即提取练习（retrieval practice）</span>，效果比单纯阅读材料好得多。利用重读间隔中进行的回想，训练你的大脑。</p>
+    <ul>
+      <li>要争取独立解决家庭作业中的数学和科学难题</li>
+      <li>别扔太久之后才去练习回想——最好是<span class="highlight">24小时内</span>就和它们亲近一下</li>
+      <li>逐渐延长时间间隔：几天后 → 几周后 → 几个月后</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 高级组块技巧 -->
+<section class="section" id="chunking-advanced">
+  <div class="section-header">
+    <div class="breadcrumb">二、组块构建 <span>›</span> 高级组块技巧</div>
+    <h2>🚀 搭建强大组块的步骤</h2>
+    <div class="subtitle">第7章：搭建组块对抗发懵</div>
+  </div>
+
+  <div class="card">
+    <h3>搭建组块的七步循环</h3>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>全程在纸上解决一个重难点题目</strong>
+        保证有现成答案，不到万不得已千万不要看答案。在下手解题之前，不能偷看答案、不能跳过任何步骤。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>重做一次，要格外注意关键步骤</strong>
+        你不可能只弹一遍吉他就学会一首歌，也不可能只举一次哑铃就算完成了锻炼。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>休息一下</strong>
+        去研究下这门学科的其他内容，之后就去干点别的——给发散模式留出足够的时间，让它去消化这个问题。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>睡眠</strong>
+        在你睡觉前，把这个问题再过一遍。如果卡住了，就反过来去聆听问题的声音——你的潜意识会告诉你接下来该怎么做。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <strong>再来一次</strong>
+        第二天尽快地把这个问题再做一遍。你会发现，自己能做到更迅速地解题——多关注问题中<span class="highlight">最困扰你的那个部分</span>。这种持续关注难点的做法叫作"刻意练习"。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <strong>给自己添新题</strong>
+        再挑一道重难点题目，用之前做第一道题的相同方法来解这道题。本题答案会变成你组块资料库中的第二个组块。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <strong>"主动"重复</strong>
+        走去图书馆的路上，或是锻炼的时候，可以在头脑中回想解决某个题目的关键步骤。等公交、坐车时都可以。这种主动排演能提高你回想关键概念的能力。
+      </div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>机遇的法则</strong> —— 幸运女神只眷顾努力的人。不要一看到新科目的全部知识就感到惊慌失措——先专注于攻克一些关键概念。
+  </div>
+
+  <div class="card">
+    <h3>遭遇瓶颈：知识结构突然崩塌</h3>
+    <p>学习进展的过程并不合乎逻辑，<span class="highlight">有时候在构建理解的过程中你会遭遇瓶颈</span>。之前合情合理的事物突然变得扑朔迷离，这叫"知识坍塌"。</p>
+    <ul>
+      <li>看似像理解力在发生倒退——这很自然</li>
+      <li>说明你的大脑正在推敲这些材料</li>
+      <li>摆脱暂时的困扰期后，你会发现自己的知识基础往前迈了一大步</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>建立思维方案库</h3>
+    <p>培养灵活专业的思维，关键在于构建属于你的思维方案库——一个你能快速读取的数据库，在紧要关头总能派上用场。</p>
+    <div class="success">这个做法不仅适用于解决数学和科学问题，也适用于生活的许多方面。这就是为什么要去观察紧急出口相对飞机座椅或宾馆房间的位置。</div>
+  </div>
+</section>
+
+<!-- 避免能力错觉 -->
+<section class="section" id="illusions">
+  <div class="section-header">
+    <div class="breadcrumb">二、组块构建 <span>›</span> 避免能力错觉</div>
+    <h2>🎭 避免能力错觉</h2>
+    <div class="subtitle">只有用对了学习策略，求知心才不会落个竹篮打水一场空</div>
+  </div>
+
+  <div class="card">
+    <h3>能力错觉 (Illusions of Competence)</h3>
+    <p>心理学家杰弗里·卡皮克发现：<span class="highlight">许多学生在学习中体验过能力错觉</span>。卡皮克指出："大多数学生不断重复阅读笔记或课本，却很少有人在学习时进行自我测验或做提取练习。"</p>
+  </div>
+
+  <div class="card">
+    <h3>小和尚念经现象</h3>
+    <div class="quote">当书本（或谷歌）摆在眼前时，大脑会产生错觉，以为学习材料也同样存入了大脑，可这只是小和尚念经。看书毕竟比回想简单多了，学生因此执迷于自己的错觉——坚持低效率的学习方式。</div>
+  </div>
+
+  <div class="warning">
+    <strong>划重点的陷阱</strong><br>
+    划重点和标下画线一定要谨慎，否则你不仅会效率低下，而且会被误导。画线的动作会让你欺骗自己大脑在工作，<span class="highlight">其实只是手在动而已</span>。做标记前，要先训练自己找到主要观点，并把所做标记数量降到最少——一句话就行了，最多不要超过一个自然段。
+  </div>
+
+  <div class="card">
+    <h3>如何避免能力错觉？</h3>
+    <ul>
+      <li>合上书本，再找些问题来<span class="highlight">测验</span>新学到的解题方法</li>
+      <li>别扔太久之后才去练习回想——最佳时机是 24小时内</li>
+      <li>只看书却不回想，就无法判断自己是否真正掌握</li>
+      <li>把"防忘"复习逐渐拖久：几天后 → 几周后 → 几个月后</li>
+    </ul>
+  </div>
+
+  <div class="quote">只有用对了学习策略，求知心才不会落个竹篮打水一场空。——艾伦·巴德利</div>
+</section>
+
+<!-- 工作与长期记忆 -->
+<section class="section" id="memory-system">
+  <div class="section-header">
+    <div class="breadcrumb">三、记忆系统 <span>›</span> 工作与长期记忆</div>
+    <h2>💾 两种记忆系统</h2>
+    <div class="subtitle">工作记忆与长期记忆：大脑的"黑板"与"仓库"</div>
+  </div>
+
+  <div class="card">
+    <h3>工作记忆 (Working Memory)</h3>
+    <p>在大脑中对正在处理的信息进行瞬时以及有意识加工的这部分记忆，叫作工作记忆。</p>
+    <ul>
+      <li>容量：<span class="highlight">约 4 个组块</span>（过去以为约 7 个）</li>
+      <li>像大脑中的<span class="highlight">一块黑板</span>，你在上面可以写写画画</li>
+      <li>能量必不可少，否则身体的自然消耗过程会吞噬掉这些记忆</li>
+      <li>你需要让这些记忆保持活跃，否则就会忘记</li>
+    </ul>
+    <div class="tip">如果你掌握了一门数学或科学的技术或概念，它在工作记忆中所占据的空间就会变小。释放出的大脑空间则可以让你更轻松地处理其他想法。</div>
+  </div>
+
+  <div class="card">
+    <h3>长期记忆 (Long-term Memory)</h3>
+    <p>长期记忆可以看作<span class="highlight">仓库</span>。东西一旦存进去，它们通常就一直待在那儿了。</p>
+    <ul>
+      <li>这间仓库<span class="highlight">幽深广阔</span>，可以容纳数十亿件物品</li>
+      <li>包裹很容易因为埋得太深，而难寻踪迹</li>
+      <li>解题时需要的基本概念和技巧都存储在那里</li>
+      <li>把信息从工作记忆转存到长期记忆需要花点时间</li>
+    </ul>
+  </div>
+
+  <div class="compare">
+    <div class="compare-item">
+      <h5>🖥️ 工作记忆 ≈ 内存 (RAM)</h5>
+      <p>容量小、速度快、断电即清空、随用随取</p>
+    </div>
+    <div class="compare-item alt">
+      <h5>💾 长期记忆 ≈ 硬盘</h5>
+      <p>容量大、速度稍慢、永久存储、按需读取</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>代谢吸血鬼</h3>
+    <p>你醒着的时候大脑会产生有毒物质，而在睡眠中脑细胞会收缩，<span class="highlight">细胞间隙变大，脑脊液从中流过并冲洗掉毒素</span>。睡眠是保持脑健康的重要环节。</p>
+    <p>这些专门清扫暗淡模型的小吸血鬼其实不坏——因为我们身边大多事情都无关紧要，如果全记在脑子里，你就会像个守财奴，让自己深陷在回忆的垃圾山中。</p>
+  </div>
+</section>
+
+<!-- 记忆宫殿法 -->
+<section class="section" id="memory-techniques">
+  <div class="section-header">
+    <div class="breadcrumb">三、记忆系统 <span>›</span> 记忆宫殿法</div>
+    <h2>🏛️ 记忆宫殿法 (Memory Palace)</h2>
+    <div class="subtitle">用你的视觉空间记忆系统记忆海量信息</div>
+  </div>
+
+  <div class="card">
+    <h3>天生的视觉空间记忆</h3>
+    <p>我们都有出色的视觉和空间记忆系统！</p>
+    <ul>
+      <li>如果让你观察一所从未参观过的房子，你会很快对家具摆放、房间布局、配色方案有一个印象</li>
+      <li>短短几分钟，大脑就会获取并保留<span class="highlight">上千条新信息</span></li>
+      <li>几个星期后，脑海中留存量仍比盯一面白墙多</li>
+      <li>我们祖先不需要记忆大量人名或数字，但确实得记住怎么在猎鹿3天后找到回家的路</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>记忆宫殿法步骤</h3>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content"><strong>选一个你熟悉的空间</strong> —— 自己家的布局、去学校的路、最爱的餐馆</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content"><strong>把它作为视觉形象的记事本</strong> —— 用来存储你想要记住的概念形象</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content"><strong>把要记的东西放进空间</strong> —— 在脑中"走过"这个空间，每个地方放一个待记物品的图像</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content"><strong>在心中"走"一两遍</strong> —— 据调查，记忆宫殿法可记住 50 件物品清单上 95% 以上的内容</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-title">案例：矿物硬度 1-10</div>
+    <div class="case-name">把矿物放到家里</div>
+    <p>Terrible Giants Can Find Alligators Or Quaint Trolls Conveniently Digestible</p>
+    <p>你家前门有个可怕（Talc滑石）的巨人（Giant石膏），手里拿着一个罐头（Can方解石）。一走进去，你发现（Find萤石）一条短吻鳄……</p>
+  </div>
+
+  <div class="card">
+    <h3>约书亚·福尔的故事</h3>
+    <p>记者约书亚·福尔曾经是<span class="highlight">连车钥匙都会忘</span>的人。但他发现所有记忆高手都坚称，在未经训练前，自己的记忆力水平相当一般。</p>
+    <p>在这样的激励下，福尔竟作为顶级决赛选手出现在美国冠军记忆联赛上。</p>
+  </div>
+
+  <div class="tip">
+    <strong>多感官记忆</strong> —— 除了看到这头骡子之外，你还可以闻到它，感受到它飞翔中受到的风力。画面越<span class="highlight">滑稽越容易唤起记忆</span>，效果就越好。
+  </div>
+</section>
+
+<!-- 比喻与意群 -->
+<section class="section" id="memory-metaphor">
+  <div class="section-header">
+    <div class="breadcrumb">三、记忆系统 <span>›</span> 比喻与意群</div>
+    <h2>🎨 比喻、类比与意群</h2>
+    <div class="subtitle">打造生动形象的比喻或类比</div>
+  </div>
+
+  <div class="card">
+    <h3>比喻的威力</h3>
+    <div class="quote">在数学和科学的学习中，如果你除了想记住概念，还想理解概念，一个上策就是为它量身打造一个比喻或类比，而且通常这个类比越形象，效果越好。</div>
+    <ul>
+      <li><strong>电流 ≈ 水流</strong>：电压像压力，把电流推向目的地</li>
+      <li><strong>微积分极限</strong>：运动员朝着终点线奔去，离终点越近跑得越慢，慢镜头下永远无法撞线</li>
+      <li><strong>电子</strong>：像暖呵呵毛茸茸的拖鞋，带着你从铜板的一面钻到另一面</li>
+      <li><strong>阳离子</strong>：伸爪子的猫，"pawsitive"（发"positive"的音）</li>
+      <li><strong>阴离子</strong>：洋葱，会让你哭，所以是 negative</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <strong>没有完美比喻</strong><br>
+    从来没有能面面俱到的比喻，但所有的科学模型也只不过是一种类比，这就意味着它们在某种特定意义下也不成立。比喻（和模型）之所以重要，是因为对数学和科学概念或过程背后的核心观点，它能让你获得直观形象的理解。
+  </div>
+
+  <div class="card">
+    <h3>意群 (Mnemonic Grouping)</h3>
+    <p>记忆的另外一个关键就是<span class="highlight">创造意群</span>，它能简化学习内容。比如记忆四种驱赶吸血鬼的植物：</p>
+    <p><strong>大蒜、玫瑰、山楂、芥末</strong> → 首字母 <strong>GRHM</strong> → 想象 GRAHAM 牌全麦饼干</p>
+    <p>每次回想时，只要在记忆宫殿的厨房餐桌上找到全麦饼干，再扔掉元音字母就搞定了。</p>
+  </div>
+
+  <div class="card">
+    <h3>助记口诀 (背诵口诀)</h3>
+    <p>许多学科有帮学生记住概念的背诵口诀：</p>
+    <ul>
+      <li><strong>Old People from Texas Eat Spiders</strong> —— 颅骨骨头的首字母 (O, P, F, T, E, S)</li>
+      <li><strong>King Henry died while drinking chocolate milk</strong> —— 十进制前缀 (k, h, da, one, d, c, m)</li>
+      <li><strong>Skit Ti Vicer Man Feconi Kuzin</strong> —— 过渡金属第一排</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <strong>别把记忆窍门与真正的知识混为一谈</strong><br>
+    警惕分清楚什么是事实，而什么只是帮助记忆的比喻或类比。比如学生认为"银、金、铜都能铸币所以同处一族"——实际是因为它们的化学性质和原子价相似。
+  </div>
+</section>
+
+<!-- 间隔重复 -->
+<section class="section" id="spaced-repetition">
+  <div class="section-header">
+    <div class="breadcrumb">三、记忆系统 <span>›</span> 间隔重复</div>
+    <h2>🔁 间隔重复 (Spaced Repetition)</h2>
+    <div class="subtitle">让记忆从工作记忆转入长期记忆</div>
+  </div>
+
+  <div class="card">
+    <h3>为什么需要间隔重复？</h3>
+    <p>集中注意力能把东西送入临时性的工作记忆，但想让它从工作记忆转移到长期记忆：</p>
+    <ul>
+      <li>它应当是<span class="highlight">便于记忆的</span>（如沙发上的飞天大驴嚷嚷 F=ma）</li>
+      <li>还要得到<span class="highlight">多次重复</span>，否则自然生理代谢过程会把新记忆一扫而光</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>间隔重复的实践方法</h3>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content"><strong>制作索引卡</strong> —— 一面写问题，另一面写答案</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content"><strong>看问题面尝试回忆</strong> —— 想不起来时翻面提示自己</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content"><strong>每天早上或晚上几分钟</strong> —— 偶尔改变卡片顺序</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content"><strong>随着记忆逐渐深刻，延长重复间隔</strong> —— 几天 → 几周 → 几个月</div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content"><strong>睡前再拿出来看一遍</strong> —— 大脑在睡眠中会不断重复神经模式</div>
+    </div>
+  </div>
+
+  <div class="quote">要是一晚上重复 20 次倒不如每天重复几次，多坚持几天甚至是几周效果来得更好——和砌墙的例子是同样的道理，如果不给泥浆留出干燥的时间（让连接部分成型加固），怎么可能形成良好的结构呢？</div>
+
+  <div class="tip">
+    <strong>推荐工具</strong>：Anki 翻卡系统——内置了从几天到几个月不等的随机重复算法，可进行最优化间隔重复。
+  </div>
+</section>
+
+<!-- 拖延的本质 -->
+<section class="section" id="procrastination">
+  <div class="section-header">
+    <div class="breadcrumb">四、克服拖延 <span>›</span> 拖延的本质</div>
+    <h2>⏰ 拖延的本质</h2>
+    <div class="subtitle">化"坏"习惯为好帮手</div>
+  </div>
+
+  <div class="card">
+    <h3>砒霜的类比</h3>
+    <p>1875年德国文理协会会议上，两个人服用了<span class="highlight">两倍于致命剂量的砒霜</span>却安然无恙——因为事先服用过极少量产生了免疫力。</p>
+    <p>这与拖延症惊人相似：</p>
+    <ul>
+      <li>拖延症患者起初也只是拖延了一点点</li>
+      <li>微量的拖延对人的危害并不大</li>
+      <li>可一次又一次的拖延最终让他们泥足深陷</li>
+      <li>水滴石穿，一时看不出影响，但日积月累，危害极大</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>拖延与不安</h3>
+    <p>我们拖延的，<span class="highlight">往往是让我们感到不安的事情</span>。医学成像研究显示，恐惧数学的人会回避数学——仅是想到数学就让他们畏缩了。当他们冥思苦想地对付数学时，大脑中的<span class="highlight">痛觉中心就会被激活</span>。</p>
+    <div class="quote">对一项任务的恐惧会比这项任务本身消耗更多的时间和能量。——丽塔·埃</div>
+  </div>
+
+  <div class="card">
+    <h3>回避的恶性循环</h3>
+    <p>现在拖着不去学数学，结果后来连想起它都觉得痛苦；一直拖着不做 SAT 或 ACT 的练习题，到了考试那天就紧张得快要窒息。</p>
+    <ul>
+      <li>回避痛苦看似合理，但<span class="highlight">习惯性的回避带来糟糕的长期影响</span></li>
+      <li>拖延是个极具影响力的"关键"恶习——它会影响你人生的诸多方面</li>
+      <li>拖延症可作为技不如人的借口，甚至成为虚荣心的温床</li>
+      <li>积习难改，人们容易深深陷入拖延的陷阱</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>不要靠意志力抵抗拖延</h3>
+    <div class="warning">
+      <strong>不要用意志力抵抗拖延！</strong> 用意志力来对抗拖延，就像在空中喷洒廉价劣质的空气清新剂一样完全徒劳无功。除非万不得已，否则不要把意志力浪费在抵抗拖延上。
+    </div>
+    <p>好消息是：<span class="highlight">你根本就不需要"万不得已"</span>。</p>
+  </div>
+</section>
+
+<!-- 习惯的四要素 -->
+<section class="section" id="habit">
+  <div class="section-header">
+    <div class="breadcrumb">四、克服拖延 <span>›</span> 习惯的四要素</div>
+    <h2>🧿 习惯的四个部分</h2>
+    <div class="subtitle">深入理解拖延的习惯</div>
+  </div>
+
+  <div class="card">
+    <h3>习惯是什么？</h3>
+    <p>习惯有好有坏。说到底，<span class="highlight">习惯就是大脑进入了预设好的"小恶魔"状态（即出窍状态）</span>。神经模型从频繁的练习中产生，它们自动联结形成组块，而组块和习惯有着密切的联系。</p>
+    <p>习惯可以帮我们节省力气，它能为大脑腾出空间进行别的活动。习惯的关键在于：<span class="highlight">在你执行习惯性动作的时候，不用集中注意力思考</span>。</p>
+  </div>
+
+  <div class="card">
+    <h3>习惯的四个部分</h3>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>信号 (Cue)</strong> —— 使你进入"出窍状态"的触发点。比如看到计划清单、收到短信。信号本身没有好坏之分。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>反应程序 (Routine)</strong> —— 你的出窍状态——大脑接到信号暗示时做出的常规性、习惯性反应。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>奖励机制 (Reward)</strong> —— 习惯得以发展和继续的原因。拖延之所以容易养成，因为它<span class="highlight">会如此迅速地奖励你</span>。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>信念 (Belief)</strong> —— 习惯的强大效果来自你对它的信念。想要改变习惯，需要改变内心深处的信念。
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>改变习惯的诀窍</h3>
+    <div class="quote">改变你对信号的反应，是唯一需要动用意志力的环节。</div>
+    <p>诀窍是：<span class="highlight">不要彻头彻尾地改变旧习惯</span>，而是改变一部分旧习惯，并养成一些新习惯。改变旧习惯的窍门是寻找压力点——你对信号的反应。</p>
+  </div>
+
+  <div class="card">
+    <h3>心理对照法 (Mental Contrasting)</h3>
+    <p>将你现在的状态和你期望达到的状态做对比。</p>
+    <p>比如：想考医学院 → 想象自己是一个医生 → 拿这激动人心的景象与现在的生活做对比（年久失修的小破车、奶酪通心粉、堆积如山的助学贷款）。</p>
+    <div class="success">在工作和生活空间中摆放一些能让你联想到理想未来的图片——它可以为你的发散模式增加动力。</div>
+  </div>
+</section>
+
+<!-- 番茄工作法 -->
+<section class="section" id="pomodoro">
+  <div class="section-header">
+    <div class="breadcrumb">四、克服拖延 <span>›</span> 番茄工作法</div>
+    <h2>🍅 番茄工作法 (Pomodoro)</h2>
+    <div class="subtitle">专注而简短地工作</div>
+  </div>
+
+  <div class="card">
+    <h3>什么是番茄工作法？</h3>
+    <p>"Pomodoro"是意大利语中的"番茄"——因为这个时间管理系统的创始人弗朗西斯科·齐里洛在20世纪80年代<span class="highlight">发明了一个番茄形状的计时器</span>。</p>
+  </div>
+
+  <div class="card">
+    <h3>具体做法</h3>
+    <ul>
+      <li>关掉手机或任何会发出提示音、闪烁的干扰源</li>
+      <li>用计时器设定 <span class="highlight">25 分钟</span></li>
+      <li>在这 25 分钟里，全神贯注于一项任务</li>
+      <li>不许偷偷上网，不许手机聊天，不许给朋友回信息</li>
+      <li>25 分钟一到，就停下来<span class="highlight">奖励自己</span></li>
+    </ul>
+    <div class="tip">你可以在番茄时间开始前告诉家人和朋友——如果他们中途打扰，就友善地提醒他们，你正在"番茄时间"或"倒计时"中。</div>
+  </div>
+
+  <div class="card">
+    <h3>为什么有效？</h3>
+    <div class="quote">研究者发现了一些引人着迷而又反直觉的现象——如果你能在轻微压力下学习，你将能更轻松地应对更大的压力。</div>
+    <ul>
+      <li>平时在他人面前练球的高尔夫球手，日后参加观众众多的赛事就不会乱了阵脚</li>
+      <li>如果你习惯在轻微时间压力下解决问题，到了考试的高压情境中就没那么容易"发懵"了</li>
+      <li>顶尖高手每次都会<span class="highlight">有意寻找一些会给他们施压的教练</span></li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <strong>关注过程，而非结果</strong><br>
+    关注"番茄时间"，即 25 分钟的工作时段，<span class="highlight">不要专注于完成任务</span>。这样可以避免把注意力放在已解决的作业题（引发痛苦感），而是放在 25 分钟的过程上。
+  </div>
+</section>
+
+<!-- 行动日志 -->
+<section class="section" id="action-log">
+  <div class="section-header">
+    <div class="breadcrumb">四、克服拖延 <span>›</span> 行动日志</div>
+    <h2>📋 行动日志 (Action Journal)</h2>
+    <div class="subtitle">你的个人实验记录册：终极小恶魔联盟</div>
+  </div>
+
+  <div class="card">
+    <h3>建立行动日志的方法</h3>
+    <ol>
+      <li>简要写出下一个星期要做的关键任务清单，<span class="highlight">一周写一次</span></li>
+      <li>每天列一个清单，写出可执行可完成的合理任务量</li>
+      <li>在前一天晚上写出第二天的日行计划清单</li>
+      <li>日待办事项保持为 <span class="highlight">5~10 个</span> 即可</li>
+      <li>计划一旦写好，尽量不要再往日待办清单中增加事项</li>
+    </ol>
+  </div>
+
+  <div class="tip">
+    <strong>为什么提前一天写？</strong> 研究显示，写计划能让你的潜意识处理清单任务，从而让你得到解决对策。所以，在睡前写下清单，是在<span class="highlight">召集小恶魔帮你完成第二天的任务</span>。
+  </div>
+
+  <div class="card">
+    <h3>设定完成时间</h3>
+    <p>计划什么时候<span class="highlight">放下手中的活</span>，和计划什么时间工作一样重要。比如作者把目标完成时间定在<span class="highlight">下午 5 点</span>——这看起来不太对劲，但能享受与家人一起的时光、晚上花时间阅读。</p>
+    <div class="quote">完成了每日代办清单上的任务，就可以收工了。如果发现自己总是超出计划的停工时间，通过行动日志你会捕捉到这些现象，并可以在工作策略上做出微小改进。</div>
+  </div>
+
+  <div class="case">
+    <div class="case-title">示例：11月30号的行动日志</div>
+    <div class="case-name">芭芭拉教授的清单</div>
+    <p>• PNAS论文（一个小时）<br>• 出去散步<br>• 看书（一个部分）<br>• ISE 150：准备样本<br>• EGR 260：为期末考试准备一道题<br>• 给临近的谈话下定论<br>• 专注，找乐子！<br>目标完成时间：下午 5 点</p>
+  </div>
+
+  <div class="card">
+    <h3>没有列清单的小恶魔</h3>
+    <p>如果没在清单里写下待办任务，它们就会<span class="highlight">潜藏在你工作记忆的四个入口</span>，占据宝贵的思维空间。任务清单一旦写下，工作记忆就获得了解放，现在你终于有空闲去解决问题了。</p>
+    <p>但要记着，<span class="highlight">你得相信自己一定会去查看行动日志</span>，如果你的潜意识都觉得自己做不到，任务又会蜿蜒盘踞回大脑。</p>
+  </div>
+</section>
+
+<!-- 明智的等待 -->
+<section class="section" id="stalling">
+  <div class="section-header">
+    <div class="breadcrumb">四、克服拖延 <span>›</span> 明智的等待</div>
+    <h2>🧘 明智的等待与驻足</h2>
+    <div class="subtitle">拖延有益的一面：在急于完成某事之前学会"驻足与反馈"</div>
+  </div>
+
+  <div class="card">
+    <h3>拖延的双面性</h3>
+    <p>看起来好的品质也可能会带来坏的后果——"思维定式"就是个好例子。<span class="highlight">集中的注意力一般是良性的，但也会让你不自主地陷入思维定式</span>。</p>
+    <p>就像集中注意力并不总是好的，<span class="highlight">拖延这样看起来不好的习惯也并非总是坏的</span>。拖延有益的一面就是让你在急于完成某事之前学会"驻足与反馈"。</p>
+  </div>
+
+  <div class="card">
+    <h3>驻足与回顾</h3>
+    <p>不仅在克服拖延方面是关键，在解决数学和科学的问题时也是。</p>
+    <div class="quote">数学专家（教授和研究生）与数学新手（本科生）在解决物理问题时是不一样的，专家会更慢一些开始做问题——他们平均会先用 45 秒来分析如何根据问题背后的基本物理原理对这个问题进行归类。而本科生会很着急，他们只用 30 秒就决定了要如何解决这道题目。</div>
+    <p>不出意外，本科生得出的结果常常是错的——他们仅凭问题浅薄的表象去做选择，而不是问题所依据的基本原理。</p>
+  </div>
+
+  <div class="card">
+    <h3>高压区工作的利弊</h3>
+    <p>突击完成工作的人通常比合理安排时间、定时定量完成工作的人<span class="highlight">效率低很多</span>。突击完成工作的时间如果太长会让你精疲力竭。</p>
+    <p>迫在眉睫的截止日期会不断增加压力程度，<span class="highlight">把你逼迫到一个区域中，其中应激激素会参加进来帮助你思考</span>，但是依赖肾上腺素是很危险的——只要压力太大，你的思考能力很明显就会消失。</p>
+  </div>
+
+  <div class="case">
+    <div class="case-title">重要启示</div>
+    <div class="case-name">培养数学和科学相关的架构会很慢</div>
+    <p>因为在吸收这些学科的知识的时候，大脑会在专注模式与发散模式的思考中相互交替。尤其在谈到学习数学与科学时，老生常谈的借口"我在面临截止日期时做得最好"明显是<span class="highlight">大错特错</span>。</p>
+  </div>
+</section>
+
+<!-- 刻意练习 -->
+<section class="section" id="deliberate">
+  <div class="section-header">
+    <div class="breadcrumb">五、学习方法 <span>›</span> 刻意练习</div>
+    <h2>🎯 刻意练习 (Deliberate Practice)</h2>
+    <div class="subtitle">高效学习的最重要方面之一</div>
+  </div>
+
+  <div class="card">
+    <h3>什么是刻意练习？</h3>
+    <p>持续关注<span class="highlight">难点的做法</span>，叫作"刻意练习"。它要求你专注于学习解题步骤中最难的部分，并提高对这部分的解题速度。</p>
+    <div class="quote">音乐家提高演奏技巧的方法，也可以用到数学学习上——一位小提琴演奏大师，不会把一个曲子从头到尾练上无数遍。相反，她会集中攻克最难的乐段，比如那些让人指法笨拙、脑中浑然无序的部分。</div>
+  </div>
+
+  <div class="card">
+    <h3>刻意练习的威力</h3>
+    <ul>
+      <li>已有研究表明，<span class="highlight">你越努力回想学习材料，它在记忆中植入得就越深</span></li>
+      <li>相比纯粹的重复阅读，回想才是学习过程中最好的刻意练习方式</li>
+      <li>提取练习是最强效的学习方式之一——效果远超过简单地重读材料</li>
+      <li>大师级玩家会花更多的时间来找出自身弱点并克服不足</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>大师与新手的区别</h3>
+    <div class="compare">
+      <div class="compare-item">
+        <h5>低段数玩家</h5>
+        <p>下象棋纯粹为了好玩，最后的结果往往不如预期</p>
+      </div>
+      <div class="compare-item alt">
+        <h5>大师级玩家</h5>
+        <p>坐在那儿下象棋并非纯粹为了好玩——他们<span class="highlight">找出自身弱点并克服不足</span>，结果是喜人得出乎预期</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>建立思维方案库</strong> —— 培养灵活专业的思维，关键在于构建属于你的思维方案库。这是一个你能快速读取的数据库，在紧要关头总能派上用场。
+  </div>
+</section>
+
+<!-- 穿插学习法 -->
+<section class="section" id="interleaving">
+  <div class="section-header">
+    <div class="breadcrumb">五、学习方法 <span>›</span> 穿插学习法</div>
+    <h2>🔀 穿插学习法 (Interleaving)</h2>
+    <div class="subtitle">在练习中交替使用不同解题技巧</div>
+  </div>
+
+  <div class="card">
+    <h3>为什么需要穿插？</h3>
+    <p>做任何练习的期间<span class="highlight">不要只用一种解题技巧</span>，否则一段时间过后，你只是在模仿自己之前解题的老路子。解题方法要混合使用在不同的题型上。</p>
+    <p>这么做会让你同时知道<span class="highlight">如何以及何时</span>用一个解题方法。</p>
+    <div class="quote">书本一般都不会以这样的方式编写，所以你需要靠自己去这么做。</div>
+  </div>
+
+  <div class="card">
+    <h3>穿插学习的实操方法</h3>
+    <ul>
+      <li>每一门作业和考试之后，<span class="highlight">回顾错题</span>，确保理解自己的犯错原因，之后重新解答一遍</li>
+      <li>在抽认卡片的一面用手写（别用键盘打字）下问题，再在另一面写下答案</li>
+      <li>用手书写比起打字时构建的神经结构<span class="highlight">更坚实</span></li>
+      <li>用不同的题型<span class="highlight">随机测试自己</span></li>
+      <li>随机翻开书本挑一个问题，看看能不能在很久没碰这道题之后还能给出解答</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>间隔分布练习</h3>
+    <p>无论学哪门课，<span class="highlight">不要安排得太集中</span>，要像运动员一样每天安排些练习量。你的大脑就像一块肌肉，它一次只能处理某学科上一定的练习量。</p>
+    <p>一天学一点，比集中在一天学会好很多。当你对一道数学或科学上的难题灰心丧气时，<span class="highlight">可以休息一下</span>，这样你大脑的另一部分就能在后台接着工作。</p>
+  </div>
+</section>
+
+<!-- 比喻、类比与拟人 -->
+<section class="section" id="metaphor">
+  <div class="section-header">
+    <div class="breadcrumb">五、学习方法 <span>›</span> 比喻、类比与拟人</div>
+    <h2>🎭 给抽象概念赋予生命</h2>
+    <div class="subtitle">借方程的诗歌打开心灵之眼</div>
+  </div>
+
+  <div class="card">
+    <h3>方程即诗歌</h3>
+    <div class="quote">数学家要有些诗人气质，才算得上名副其实。——卡尔·魏尔斯特拉斯</div>
+    <p>当你看到 F=ma 的时候：</p>
+    <ul>
+      <li>把字母 a 看作加速度——也许有在车里踩油门的感觉，<span class="highlight">轰的一声！</span>你感受到了加速的推背感</li>
+      <li>把 m 看作质量——感受到一块 50 磅巨石慵懒的惯性</li>
+      <li>把 F 看作力——感受到力背后的秘密，把它作用在巨石慵懒的质量上</li>
+    </ul>
+    <p>一旦你看到方程中遍布 a 的身影，那种推背感应盘旋在你的大脑后台，就像一个<span class="highlight">时刻准备溜进工作记忆的组块</span>。</p>
+  </div>
+
+  <div class="card">
+    <h3>简化：费曼学习法</h3>
+    <p>理查德·费曼要求科学家和数学家<span class="highlight">简单阐释他们的概念</span>，这是出了名的。出人意料的是，无论概念多么复杂，几乎任何一个概念都可以得到简单解释。</p>
+    <p>学习专家斯科特·杨发展了这个理念，称之为<span class="highlight">费曼法</span>——这个方法要求人们找到简单的比喻或类比来帮助他们理解概念要旨。</p>
+  </div>
+
+  <div class="card">
+    <h3>拟人化：诺奖得主的秘技</h3>
+    <div class="case">
+      <div class="case-title">案例 1：芭芭拉·麦克林托克</div>
+      <div class="case-name">"跳跃基因"发现者，1983年诺贝尔生理学或医学奖</div>
+      <p>她写过自己如何对其研究的玉米植株进行想象：<span class="highlight">"我甚至能看到染色体的内部成分——实际上一切就在那里。因为我几乎感觉自己就像置身其中，而染色体是我的朋友，这感觉让我惊奇。"</span></p>
+    </div>
+    <div class="case">
+      <div class="case-title">案例 2：爱因斯坦</div>
+      <div class="case-name">把自己想象为一个光子</div>
+      <p>爱因斯坦的相对论并非源自他的数学才能，而是源自他"假装"的能力。<span class="highlight">他想象自己是一个以光速移动的光子，然后想象第二个光子会怎样看他</span>——第二个光子会看到并感受到什么呢？</p>
+    </div>
+    <div class="case">
+      <div class="case-title">案例 3：圣地亚哥·拉蒙-卡哈尔</div>
+      <div class="case-name">"现代神经学之父"，1906年诺贝尔生理学或医学奖</div>
+      <p>卡哈尔对待眼前微观场景，就像在看待<span class="highlight">一群居住在其中的小生命，它们有希望和梦想，就像人类自己</span>。谢林顿猜想这也许是促使卡哈尔达到成功高度的一个关键因素。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 睡眠与学习 -->
+<section class="section" id="sleep">
+  <div class="section-header">
+    <div class="breadcrumb">五、学习方法 <span>›</span> 睡眠与学习</div>
+    <h2>😴 睡眠：发散模式的终极法宝</h2>
+    <div class="subtitle">睡眠对学习的重要性</div>
+  </div>
+
+  <div class="card">
+    <h3>睡眠的三大作用</h3>
+    <ul>
+      <li><span class="highlight">清理毒素</span>：脑细胞收缩，脑脊液冲洗掉白天积累的有毒物质</li>
+      <li><span class="highlight">巩固记忆</span>：睡眠中大脑会回顾需要掌握的知识难点，加深神经模型</li>
+      <li><span class="highlight">解决问题</span>：沉睡让前额叶皮层那个清醒的"你"彻底关机，大脑其他区域之间更容易互相聊天</li>
+    </ul>
+  </div>
+
+  <div class="quote">你可能会觉得这个说法耸人听闻，但人醒着的时候大脑确实会产生有毒物质。而在睡眠中，脑细胞会收缩，于是细胞间隙会变大，这就像是打开了水龙头——脑脊液从中流过并且冲洗掉毒素。</div>
+
+  <div class="warning">
+    <strong>睡眠不足的代价</strong><br>
+    长期缺乏睡眠是致命的。无论是阿尔茨海默症还是抑郁症，都与缺乏睡眠有关。考前没睡好，就算之前做过怎样的努力也无济于事。
+  </div>
+
+  <div class="card">
+    <h3>睡眠建议</h3>
+    <p>许多人会说进入小睡状态很难——试试这个方法：</p>
+    <ol>
+      <li>减缓呼吸——别去想一定得睡着，只是缓慢地呼气吸气</li>
+      <li>可以想想"我就要睡着啦"，同时把注意力集中在呼吸上</li>
+      <li>保证房间光线暗下来，或者戴个飞机专用睡眠眼罩</li>
+      <li>用手机设定一个 <span class="highlight">21 分钟</span> 的闹铃</li>
+      <li>小睡时间太长会让人头昏脑涨</li>
+    </ol>
+  </div>
+
+  <div class="tip">
+    <strong>考前复习的黄金时段</strong> —— 入睡前这段时间看上去常常是<span class="highlight">加深记忆最有效的时段</span>。
+  </div>
+</section>
+
+<!-- 塑造你的大脑 -->
+<section class="section" id="plasticity">
+  <div class="section-header">
+    <div class="breadcrumb">六、大脑可塑性 <span>›</span> 塑造你的大脑</div>
+    <h2>🧠 大脑可塑性</h2>
+    <div class="subtitle">改变思维，改变人生</div>
+  </div>
+
+  <div class="card">
+    <h3>大脑可以被塑造</h3>
+    <p>我们对神经发育的理解尚未成熟，但是有件事却变得越来越明显——<span class="highlight">通过改变自身的思考方式，我们也能让大脑内部发生显著变化</span>。</p>
+    <div class="quote">当你运用神经回路时，会促进回路表面髓鞘的形成——更不用说促成其他许多微观的变化了。</div>
+  </div>
+
+  <div class="card">
+    <h3>大脑发育的时间</h3>
+    <ul>
+      <li>髓鞘是一种脂质"绝缘组织"，它能让信号在神经元内快速传送</li>
+      <li>有证据表明，<span class="highlight">它们通常到人二十几岁时才停止生长</span></li>
+      <li>这就解释了为什么青少年常常难以克制冲动——因为意图区与控制区之间的纽带并未完全形成</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>搭建深层组块</h3>
+    <p>合成内容（synthesis）是一种神经模型，它可以是抽象化内容、组块或主旨概念。</p>
+    <ul>
+      <li>高质量组块构成的神经模型，不仅能与我们钻研的学科产生共鸣，<span class="highlight">也能在其他学科或生活领域产生反响</span></li>
+      <li>抽象化能让概念从一个领域转到另一个领域</li>
+      <li>一旦掌握的组块在你脑海中获得新生，你就能形成一些能增强并启迪已有神经模型的想法</li>
+    </ul>
+  </div>
+
+  <div class="tip">
+    <strong>跨学科的力量</strong> —— 物理或工程专业学生，会比读英语或历史专业的学生更容易考取工商管理硕士学位——因为组块可以迁移。这就是为什么热爱数学、科学、技术的人常意外地发现他们会受益于运动、音乐、语言、艺术或文学等方面的活动或知识。
+  </div>
+
+  <div class="card">
+    <h3>伯纳德·威廉斯的建议</h3>
+    <p>无论你当前或今后有怎样的职业道路，要有开放心态，<span class="highlight">保证自己的学习宝库中常备数学和科学知识</span>。你能因此储存更多的组块，从而更精明地应对生活、工作中的各种困难和挑战。</p>
+  </div>
+</section>
+
+<!-- 卡哈尔的启示 -->
+<section class="section" id="causal">
+  <div class="section-header">
+    <div class="breadcrumb">六、大脑可塑性 <span>›</span> 卡哈尔的启示</div>
+    <h2>🏆 圣地亚哥·拉蒙-卡哈尔</h2>
+    <div class="subtitle">从问题少年到诺贝尔奖得主：现代神经学之父的启示</div>
+  </div>
+
+  <div class="case">
+    <div class="case-title">案例：叛逆少年 → 诺贝尔奖</div>
+    <div class="case-name">Santiago Ramóny Cajal (1852-1934)</div>
+    <p>11岁的卡哈尔把邻居崭新的大木门炸开了花，被锁进满是跳蚤的牢房。父亲唐·胡斯托让他拜理发师学艺，老师揍过他、饿过他都没用——他只对艺术情有独钟，对数学和科学更是不闻不问。</p>
+    <p>然而 20 出头时，卡哈尔"脑袋厌倦了轻率和另类的举止"，转而投入医学研究。卡哈尔一生曾和许多杰出的科学家相识共事，这些科学家远比他聪明多了。然而他成功的关键在于<span class="highlight">毅力（"资质平平之辈的优秀品质"）、灵活的应变能力以及谦虚认错的态度</span>。</p>
+  </div>
+
+  <div class="card">
+    <h3>卡哈尔的核心品质</h3>
+    <ul>
+      <li><strong>毅力</strong>：被自己视为"资质平平之辈的优秀品质"</li>
+      <li><strong>灵活的应变能力</strong></li>
+      <li><strong>谦虚认错的态度</strong></li>
+      <li><strong>任何人都能塑造自己的大脑</strong>：即使是最没天赋的人也会有丰厚的收获</li>
+    </ul>
+  </div>
+
+  <div class="quote">先天的不足，能靠后天的勤勉和专注弥补。可以说，努力可以弥补欠缺的天赋，甚至创造天才。——圣地亚哥·拉蒙-卡哈尔</div>
+
+  <div class="card">
+    <h3>卡哈尔的组块构建方法</h3>
+    <p>卡哈尔在研究脑细胞及神经系统的工作中：</p>
+    <ol>
+      <li>每日清晨，小心翼翼地准备显微镜载玻片</li>
+      <li>接下来几个小时，在上过色的细胞中观察表现突出的细胞</li>
+      <li>下午，<span class="highlight">回想心中的抽象画</span>，看看自己对早上的观察内容还能记得多少</li>
+      <li>开始画细胞——画完与显微镜下观察到的进行比较</li>
+      <li>接着回去画，再观察，再回去画——周而复始</li>
+      <li>只有他的画真正捕捉到了经过合成的精髓，卡哈尔才收手</li>
+    </ol>
+    <p>卡哈尔从不认为照片能够捕捉到他眼中的精彩。能做到的只有他的艺术手段——<span class="highlight">他从思维里抽象出现实，即组块过程</span>，这是帮人们看见组块精髓的最佳办法。</p>
+  </div>
+</section>
+
+<!-- 团队合作 -->
+<section class="section" id="team">
+  <div class="section-header">
+    <div class="breadcrumb">七、团队与自学 <span>›</span> 团队合作的力量</div>
+    <h2>🤝 团队合作的力量</h2>
+    <div class="subtitle">避免自负：1+1 > 2 的学习效果</div>
+  </div>
+
+  <div class="card">
+    <h3>为什么需要团队？</h3>
+    <p>有时即使有十足的把握，你的专注模式还是会让你不经意地犯下致命的错误。<span class="highlight">右脑的任务就是扮演魔鬼代言人的角色，不停地质疑现状寻找矛盾；而左脑则坚持事物原本的样子。</span></p>
+    <p>波尔清楚，<span class="highlight">只要对方有所见解，与人合作、集思广益都会有所帮助</span>。凭借个人的努力分析工作，无论是两种模式还是左右脑，都难免会有不足。</p>
+  </div>
+
+  <div class="card">
+    <h3>费曼的勇气</h3>
+    <div class="case">
+      <div class="case-title">案例：玻尔与费曼</div>
+      <div class="case-name">曼哈顿计划中的合作</div>
+      <p>波尔凭直觉提出的量子理论被认为无懈可击，这意味着无人能和他进行对等讨论。其他参与原子弹研发的物理学家都会用"啊""天呐"的方式附和他。</p>
+      <p>玻尔找到了费曼——<span class="highlight">只有费曼没有被波尔的权威吓倒，他还会指出波尔的一些愚蠢想法</span>。在和其他物理学家会面之前，波尔总要先单独和费曼讨论一番。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>团队合作的四大价值</h3>
+    <ol>
+      <li><span class="highlight">找出你想法中的错误</span>：朋友成为"有问必答的大容量发散模式"</li>
+      <li><span class="highlight">更容易学会随机应变</span>：和观众一起排演节目——当众表演让你更容易应对有压力的处境</li>
+      <li><span class="highlight">确保你真正理解了</span>：向朋友解释也有助于你建立起自己的理解</li>
+      <li><span class="highlight">建立重要的职业关系</span>：马克·格兰诺维特的"弱连接理论"指出熟人比好友更重要</li>
+    </ol>
+  </div>
+
+  <div class="warning">
+    <strong>建设性的批评</strong><br>
+    和你一起学习的同学应当具有积极的批判性。<span class="highlight">那些气氛和缓不做批判的互动讨论，不如允许甚至渴求批评的讨论有效</span>。不要过多担心批评而塑造出"安全环境"——这实际上会抹杀建设性和创造力。
+  </div>
+
+  <div class="tip">
+    <strong>内向者也能团队合作</strong> —— 即使你不喜欢小组合作，仍然有其他只需要极少互动的合作方式，比如通过便条交换答案或思路。
+  </div>
+</section>
+
+<!-- 自学的价值 -->
+<section class="section" id="self-learning">
+  <div class="section-header">
+    <div class="breadcrumb">七、团队与自学 <span>›</span> 自学的价值</div>
+    <h2>🌟 自学的价值</h2>
+    <div class="subtitle">学习的复兴：比智力更重要的往往是毅力</div>
+  </div>
+
+  <div class="card">
+    <h3>自学的力量</h3>
+    <p>研究显示，只有<span class="highlight">学生自己主动参与课题，而非仅听他人言传</span>，才能取得最好的学习效果。一个学生要能靠自己剖析学习材料，且偶尔从同学那得到反馈，才是关键。</p>
+    <div class="quote">比智力更重要的往往是毅力。——Geoff Colvin</div>
+  </div>
+
+  <div class="case">
+    <div class="case-title">案例：威廉·坎宽巴</div>
+    <div class="case-name">15岁自学建造风车的非洲少年</div>
+    <p>威廉·坎宽巴 1987 年生于非洲，早年上不起学，只能去村里的图书馆自学。在那里他偶然发现了一本叫作《能源利用》的书。坎宽巴不是仅仅读一读了事——<span class="highlight">才 15 岁的他就利用这本书来引导自己去主动学习：他建造了属于自己的风车</span>。他的创造力帮助村庄发电、使用自来水，并激发了非洲乡村技术创新。</p>
+  </div>
+
+  <div class="case">
+    <div class="case-title">案例：神经外科医生本·卡尔森</div>
+    <div class="case-name">从挂科、被劝退到总统自由勋章</div>
+    <p>卡尔森知道，自己看书时学习效果最好，而不是在课堂上。<span class="highlight">于是他反其道而行，不再听课，好让自己有更多的时间专心学习书本知识</span>。从此他的成绩突飞猛进，往事皆为浮云。</p>
+    <p>注意：这一学习技巧并不适于所有人——如果用这个故事作为逃课的借口，那是自找麻烦！</p>
+  </div>
+
+  <div class="card">
+    <h3>自学成才的传奇名单</h3>
+    <p>大学不是学习的唯一途径。很多颇具影响力的名人都从大学辍学了：</p>
+    <ul>
+      <li>比尔·盖茨（Microsoft）</li>
+      <li>拉里·艾利森（Oracle）</li>
+      <li>迈克尔·戴尔（Dell）</li>
+      <li>马克·扎克伯格（Facebook）</li>
+      <li>詹姆斯·卡梅隆（导演）</li>
+      <li>史蒂夫·乔布斯（Apple）</li>
+      <li>史蒂夫·沃兹尼亚克（Apple）</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 好老师与导师 -->
+<section class="section" id="mentor">
+  <div class="section-header">
+    <div class="breadcrumb">七、团队与自学 <span>›</span> 好老师与导师</div>
+    <h2>👨‍🏫 好老师与导师</h2>
+    <div class="subtitle">把握向优秀导师请教的机会</div>
+  </div>
+
+  <div class="card">
+    <h3>好老师的价值</h3>
+    <p>偶尔当你有机会向名副其实的优秀导师或老师讨教，是很幸运的，这机会一出现，就要把握住。</p>
+    <ul>
+      <li>要训练自己克服<span class="highlight">"囫囵吞枣"</span>的学习阶段</li>
+      <li>迫使自己<span class="highlight">直击问题真正要害</span>，而不是借机会向老师炫耀自己学过什么</li>
+      <li>老师从广博经验中提炼出的一句简单的话，甚至会从此改变你未来的人生轨迹</li>
+      <li>一定要对指导你的人心怀感恩，让他们知道，他们的帮助是有意义的</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <strong>小心"黏人的学生"</strong><br>
+    尤其是和善的老师会特别吸引一些学生，而这类学生真正渴求的是导师对他们膨胀自我的关注。再好的老师也没有办法满足那些"永远无法满足"的需求。
+  </div>
+
+  <div class="card">
+    <h3>好老师的秘密</h3>
+    <p>真才实学的优秀教师会让学习材料看起来<span class="highlight">简单而有深度</span>，他们既能设立让学生互相学习的机制，又会去鼓舞学生自主学习。</p>
+    <p>很多优秀老师年轻的时候非常害羞，不敢在观众面前讲话，甚至认为自己智商不够，根本不敢想象自己有一天会成为老师。<span class="highlight">但他们最终吃惊地发现，那些曾被他们认为是缺点的特质，最终推动他们成了体贴周到、富有创造力的导师或教授。</span></p>
+  </div>
+
+  <div class="case">
+    <div class="case-title">案例：塞尔索·巴塔利亚</div>
+    <div class="case-name">埃佛格林谷学院著名物理教授</div>
+    <p>他为他的学生建立了一个非常受欢迎的<span class="highlight">阅读小组</span>，让学生去了解学习的方法。很多教授在课堂中运用"主动式教学"和"合作式教学"的技巧，让学生能主动参与教学内容并相互学习。</p>
+  </div>
+</section>
+
+<!-- 考试即学习 -->
+<section class="section" id="exam-mindset">
+  <div class="section-header">
+    <div class="breadcrumb">八、考试策略 <span>›</span> 考试即学习</div>
+    <h2>📝 考试本身就是学习</h2>
+    <div class="subtitle">考试本身就是效果非凡的学习经历</div>
+  </div>
+
+  <div class="card">
+    <h3>为什么考试是最好的学习？</h3>
+    <div class="quote">在投入考试的一切努力有着举足轻重的意义。在学习内容相同的前提下，如果比较同样一个小时的学习或考试，你会发现用这一个小时来考试能学得更多，记得更牢。似乎考试有让人精神集中的美妙效果。</div>
+    <ul>
+      <li>测试本身就是一种强效的学习经历</li>
+      <li>它可以改造你已有的知识体系或是为其添砖加瓦</li>
+      <li>可以显著地提高你记住学习材料的能力</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>测试效应 (Testing Effect)</h3>
+    <p>通过测试而发生的知识构成上的改善，被称为"测试效应"。</p>
+    <ul>
+      <li>它的发生多是因为测试进一步强化并稳固了大脑中的相关神经模型</li>
+      <li>就算测试结果不理想或是没得到任何反馈，基于测试效应产生的改进<span class="highlight">依然会发生</span></li>
+      <li>在学习期间做自我测试时，你还是想要尽可能地去获得反馈</li>
+    </ul>
+  </div>
+
+  <div class="tip">
+    <strong>提取练习 vs 被动阅读</strong> —— 学生甚至包括教育者都没察觉到，通过提取练习活动（即回想）这样的小测验，会带来许多益处。学生认为在回想中进行的自我小测验只不过是检查一下自己的学习质量，但这种主动的回想测试，是<span class="highlight">最好的学习方法之一</span>，比坐在那儿被动地重读材料要好得多。
+  </div>
+</section>
+
+<!-- 由难入简法 -->
+<section class="section" id="hard-to-easy">
+  <div class="section-header">
+    <div class="breadcrumb">八、考试策略 <span>›</span> 由难入简法</div>
+    <h2>🎯 由难入简法</h2>
+    <div class="subtitle">应对数学和科学考试的高效策略</div>
+  </div>
+
+  <div class="card">
+    <h3>传统策略的弊端</h3>
+    <p>应对数学和科学考试，学生常被传授的经典策略是<span class="highlight">从最简单的题目入手</span>。然而对于大多数人来说，这个策略带来的是反作用：</p>
+    <ul>
+      <li>难题通常更耗时，这意味着你更应该先做这些难题</li>
+      <li>难题迫切需要发散模式来发挥创造力</li>
+      <li>但想要进入发散模式，你就别紧盯着那些最想去解决的难题！</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>由难入简法</h3>
+    <ol>
+      <li>试卷一发下来，<span class="highlight">先快速浏览</span>一遍，对试卷内容有个大致印象</li>
+      <li>放眼去找看起来<span class="highlight">最难的题目</span></li>
+      <li>开始做题时，就先做看起来最难的那道</li>
+      <li>一旦发现自己已经<span class="highlight">一两分钟没有进展</span>，就要立刻抽身出来</li>
+      <li>跳到下一道简单的题目，把它做出来</li>
+      <li>接着做另一道看起来很难的题目，并努力取得一点点进展</li>
+      <li>一旦感到陷入了困境或停滞不前，就再换一道简单些的题目去做</li>
+    </ol>
+  </div>
+
+  <div class="quote">"由难入简"法会把首个最难题目装进你的大脑，然后转移注意力。靠这两步就能让发散模式开始运转了。当你回头去看那些较难的题目，你往往会开心地发现，下一步解法或是一些解题步骤变得更加明晰了。</div>
+
+  <div class="card">
+    <h3>为什么这个方法有效？</h3>
+    <ul>
+      <li>这种考试策略会让你像一位<span class="highlight">高效的厨师</span>——等着牛排煎熟的同时，你可以快速切好番茄做配菜</li>
+      <li>保证你<span class="highlight">每道题都做上一点</span></li>
+      <li>有效防止你陷入思维定式，让你有机会多次多角度审视问题</li>
+      <li>如果老师根据步骤给分，这个方法就更有用了</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <strong>注意适用情况</strong><br>
+    如果老师给难题设置的分值很低，你最好还是把主要精力放在其他题目上。有一些上机资格考试是不让回头检查的——深吸一两口气，然后尽力而为。
+  </div>
+</section>
+
+<!-- 克服考试焦虑 -->
+<section class="section" id="exam-anxiety">
+  <div class="section-header">
+    <div class="breadcrumb">八、考试策略 <span>›</span> 克服考试焦虑</div>
+    <h2>🧘 克服考试焦虑</h2>
+    <div class="subtitle">把压力转化为动力</div>
+  </div>
+
+  <div class="card">
+    <h3>焦虑的根源</h3>
+    <p>在压力下人的身体会释放出一些化学物质，比如<span class="highlight">皮质醇</span>，它会导致你掌心出汗、心跳加速、胃里就像打结一般。不过有意思的是，研究发现，一切的关键在于你如何解读这些症状。</p>
+  </div>
+
+  <div class="card">
+    <h3>应对焦虑的方法</h3>
+    <ol>
+      <li><strong>改变想法</strong>：不去想"我好怕这次考试啊"，而是想"这次考试让我很兴奋，我要做到最好"</li>
+      <li><strong>深呼吸</strong>：放松腹部，把手放在上面，慢慢深吸一口气</li>
+      <li><strong>提前练习</strong>：不要到考试那天才开始——提前几周开始练习，每天一两分钟就足够</li>
+      <li><strong>正念冥想</strong>：区分自然产生的想法和随之而来的情感投射</li>
+    </ol>
+  </div>
+
+  <div class="tip">
+    <strong>深呼吸的具体方法</strong><br>
+    放松腹部，把手放在上面，慢慢深吸一口气。你应感到手在向外移动，甚至同时感到整个胸腔如一个膨胀的桶在向外扩张。通过这样的深呼吸，可以把氧气输送到大脑的关键区域，它示意着"一切正常"并帮你冷静下来。
+  </div>
+
+  <div class="card">
+    <h3>制订计划 B</h3>
+    <div class="quote">我一直跟我的学生说要敢于直面恐惧。通常来说，你最大的恐惧就是怕自己的分数达不到要求，从而影响自己选择的职业道路。如何克服这种恐惧？很简单——制订一个计划 B，作为备选职业。一旦为最坏的意外都备好了对策，你会惊讶地发现恐惧感开始消退了。</div>
+    <p>对自己说：<span class="highlight">"嗯，让我看看自己能答对多少道。再不济我也还有别的职业选择呢。"</span>这样做有助于释放压力，能让你发挥得更好。</p>
+  </div>
+
+  <div class="warning">
+    <strong>分析导致瘫痪</strong><br>
+    当压力剧增，你会努力聚精会注，想着集中注意力就能够解决问题了，<span class="highlight">然而你的专注反而会让发散模式无法开始工作</span>。"由难入简"法有助于避免这种情况的发生。
+  </div>
+</section>
+
+<!-- 备考检查清单 -->
+<section class="section" id="checklist">
+  <div class="section-header">
+    <div class="breadcrumb">八、考试策略 <span>›</span> 备考检查清单</div>
+    <h2>✅ 备考检查清单</h2>
+    <div class="subtitle">理查德·菲尔德教授：考试成绩不好不奇怪</div>
+  </div>
+
+  <div class="card">
+    <h3>家庭作业</h3>
+    <ol>
+      <li>你有没有尽力去理解课本内容？（带着目的去找相关例题不算在内。）</li>
+      <li>你是否有跟同学一同解决作业问题，或者至少跟他们核对过答案？</li>
+      <li>你在跟同学合作之前，有没有先试着自己大致写出每道题的解法？</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>备考过程</h3>
+    <ol start="4">
+      <li>你是否积极地参与了家庭作业的小组讨论（贡献点子，提出问题）？</li>
+      <li>当你遇到困难的时候，有没有请教老师或助教？</li>
+      <li>你交作业的时候，是否完全理解了所有问题的答案？</li>
+      <li>当不明白家庭作业的题目解法时，你有没有在课上提问寻求解释？</li>
+      <li>如果你有学习指导手册，你有在考试前仔细通读过一遍吗？确定手册上的所有题目都会做了吗？</li>
+      <li>你有没有试过快速列出解题纲要，而不在基础计算上花时间？</li>
+      <li>你是否有和同学一起复习过学习指导手册和问题，并互相提问？</li>
+      <li>如果考前有复习课，你是否参加过，并在课上提出任何你不太确定的问题？</li>
+      <li>你在考前有没有保证合理的睡眠？<span class="highlight">（如果这个问题的答案是"否"的话，那前面 1-11 的答案可能都不重要了。）</span></li>
+    </ol>
+  </div>
+
+  <div class="tip">
+    <strong>使用建议</strong> —— 如果你对大部分问题的回答都是"否"，那么你的考试成绩不理想也不奇怪。如果大部分的答案都是"是"，而考试分数却很低，那肯定有别的原因。跟自己的导师或咨询顾问见个面，或许是个好主意。
+  </div>
+</section>
+
+<!-- 10个好的学习法则 -->
+<section class="section" id="ten-good">
+  <div class="section-header">
+    <div class="breadcrumb">九、十大法则总结 <span>›</span> 10个好的学习法则</div>
+    <h2>⭐ 10个好的学习法则</h2>
+    <div class="subtitle">幸运女神只眷顾努力的人</div>
+  </div>
+
+  <div class="card">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>运用回想</strong>
+        读完一页书，看向别处并回想主要观点。少做标记，<span class="highlight">没记住之前不要画重点</span>，要先回忆。在去教室的路上或不同于先前学习空间的室内，试着回忆要点。回忆的能力，即能够得到自己心中的想法，是学好知识的关键标志之一。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>自我测试</strong>
+        任何内容皆可测试。无论何时皆可测试。抽认卡片是你的良师益友。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>对问题进行组块</strong>
+        搭建组块的过程就是理解问题、练习解题方法的过程，有了组块才能在脑中瞬间闪现答案。解决一个问题之后，要将其重新排演一遍。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>间隔开重复动作</strong>
+        <span class="highlight">无论学哪门课，不要安排得太集中</span>，要像运动员一样每天安排些练习量。你的大脑就像一块肌肉，它一次只能处理某学科上一定的练习量。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <strong>在练习中交替使用不同解题技巧</strong>
+        做任何练习的期间不要只用一种解题技巧。解题方法要混合使用在不同的题型上。每一门作业和考试之后，要回顾错题，确保理解自己的犯错原因。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <strong>注意休息</strong>
+        学数学或科学时，你会难以解答或理解一些初次遇到的问题或概念。这就是为什么<span class="highlight">每天学一点，比集中在一天学会好很多</span>。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <strong>使用解释性的提问和简单类比</strong>
+        无论何时遇到难懂概念的困扰，都要自己想一想，怎样解释才能让 10 岁小孩都明白这个概念？使用类比真的有用，比如电流就像水流。<span class="highlight">不要只想解释，要大声说出来或者写下来</span>。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">8</div>
+      <div class="step-content">
+        <strong>专注</strong>
+        关掉手机和电脑上所有会干扰你的提示音和闹铃，并在计时器上设定 25 分钟。<span class="highlight">一天中安排几个这样的工作期间，能实实在在地推进你的学习进度</span>。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">9</div>
+      <div class="step-content">
+        <strong>困难的事情最先做</strong>
+        最清醒的时候，要去做一天中最困难的事情。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">10</div>
+      <div class="step-content">
+        <strong>心理对照</strong>
+        想象过去的你，对比通过学习能够成就的那个自己。在你的工作区域贴一张图或几句话来提醒自己的梦想。<span class="highlight">如果觉得自己缺乏动力了，就看看它们</span>。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10个坏的学习法则 -->
+<section class="section" id="ten-bad">
+  <div class="section-header">
+    <div class="breadcrumb">九、十大法则总结 <span>›</span> 10个坏的学习法则</div>
+    <h2>🚫 10个坏的学习法则</h2>
+    <div class="subtitle">这些方法会浪费你的时间，甚至让你以为自己真的在学习</div>
+  </div>
+
+  <div class="card">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>被动重复阅读</strong>
+        很被动地坐着看书，目光再次扫过书页上看过的内容。除非你能闭卷回忆要点，证明读过的材料进入了你的大脑，否则重复阅读就是浪费时间。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>满眼尽是重点标记</strong>
+        在文中标记重点，会让大脑以为自己已经记住了学习内容，但实际上你只是手上动动。<span class="highlight">在书上各处适当标记是不为过的，但如果把它当成辅助记忆的工具，就要确保自己标记下的内容也记在脑子里了</span>。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>瞟一眼解题方法，就觉得胸有成竹</strong>
+        这是学生学习时所犯的<span class="highlight">最糟糕的一个错误</span>。你要做到的，是不看答案也能一步步解决问题。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>等到火烧眉毛才开始学习</strong>
+        你会在田径运动会开始前的最后一刻才开始猛练一番吗？你的大脑如同一块肌肉，它每次在一个科目上能够应付的练习量是有限的。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <strong>已经清楚解法，但仍反复解答同一题型</strong>
+        如果练习中你只是坐在那解决相似的问题，你实际并没有在备考。这就像一场盛大的篮球赛来临之际，你却只做控球这一种练习。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <strong>与朋友一起把学习变成了闲聊</strong>
+        和朋友核对解题方法是有益的——但<span class="highlight">如果任务还没完成，共同学习却成了闲谈打趣，你可就在浪费时间了，这时就该换个学习小组了</span>。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <strong>做题前忽视读课本</strong>
+        还不会游泳的时候你会轻易跳进泳池吗？教科书就是你的游泳教练，它会指引你通向答案。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">8</div>
+      <div class="step-content">
+        <strong>有疑问点，却不找导师或同学核对并解决</strong>
+        教授会习惯性地为那些充满困惑的学生指点迷津——这是我们教师的职责。<span class="highlight">让我们担心的是不来提问的学生</span>。希望你别成为其中之一。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">9</div>
+      <div class="step-content">
+        <strong>时常分心，却还以为自己能学得足够深入</strong>
+        每次受到即时短信或谈话的影响，你能在学习上投入的脑力都会变得更少。每一次被打断注意力，小小的神经都会被再次连根拔起，无法在脑中扎根生长。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">10</div>
+      <div class="step-content">
+        <strong>睡眠不足</strong>
+        睡眠中，你的大脑会将解题技巧拼凑在一起，同时它也会对你睡前习得的任何内容进行反复练习。<span class="highlight">长时间的疲劳会让毒素在脑中堆积，毒素会破坏神经连接</span>，让你无法用它们快速有效地思考。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 实战人物案例 -->
+<section class="section" id="case-stories">
+  <div class="section-header">
+    <div class="breadcrumb">九、十大法则总结 <span>›</span> 实战人物案例</div>
+    <h2>🏆 实战人物案例</h2>
+    <div class="subtitle">真实人物如何从"学渣"到"人生赢家"</div>
+  </div>
+
+  <div class="card">
+    <h3>案例 1：芭芭拉·奥克利（作者本人）</h3>
+    <p>从高中数理科一直挂科、语言学专业出身、26 岁才补起三角学，到成为工程学教授、电气工程学士、电子与计算机工程硕士、系统工程博士。</p>
+    <div class="quote">我开始掌握一些小技巧，它们不仅让我学会如何学习，也让我懂得适可而止。我认识到，如果能把某些概念和技巧转化为自己的一部分，它们就会成为我的强大武器。</div>
+  </div>
+
+  <div class="card">
+    <h3>案例 2：圣地亚哥·拉蒙-卡哈尔</h3>
+    <p>11岁炸邻居大门、被锁进满是跳蚤的牢房、老师眼中的"问题儿童"、艺术爱好者——最终获得 1906 年诺贝尔生理学或医学奖，成为现代神经学之父。</p>
+    <div class="quote">先天的不足，能靠后天的勤勉和专注弥补。可以说，努力可以弥补欠缺的天赋，甚至创造天才。</div>
+  </div>
+
+  <div class="card">
+    <h3>案例 3：尼克·阿普尔亚德</h3>
+    <p>小时候被贴上"脑子迟钝、问题儿童"的标签。父母（他父亲是大型实习医院的高级内科医师）对他不抱任何成功的希望。</p>
+    <p>有一天父亲带了一台电脑回家——他想成为能编出电脑游戏的小孩。读书、练习、编更难的程序，最终他的编程作品被英国计算机杂志接受并发表。</p>
+    <p>现在他每天都会看到数学在得到怎样的应用——应用于下一代汽车的设计、将火箭送入太空、分析人类的身体如何运转。</p>
+  </div>
+
+  <div class="card">
+    <h3>案例 4：理查德·费曼</h3>
+    <p>诺贝尔物理学奖得主，曼哈顿计划成员，喜欢打邦哥鼓——但也经历过生命中最坏的几年：爱妻艾琳因肺结核生命垂危，身处与世隔绝的洛斯·阿拉莫斯。</p>
+    <p>费曼通过研究如何打开保险箱来防止出现焦虑和无聊——最终偶然发现"锁匠的秘密"：<span class="highlight">唯有他知道锁具制造商的默认设置</span>。</p>
+    <div class="tip">和费曼一样，你会有醍醐灌顶的领悟——如何让理解变得更简单、更轻松，并让自己少些沮丧。通过了解大脑的默认设置，即自然的学习和思考方式，再利用好这个优势，你也一样能成为专家。</div>
+  </div>
+
+  <div class="card">
+    <h3>案例 5：查尔斯·达尔文</h3>
+    <p>也曾是个糟糕的学生，从医学院退学，转而以博物学家的身份踏上环球航行之路。<span class="highlight">只身在外，依靠自己，却有了从全新视角看待他所收集数据的机会</span>——进化论由此诞生。</p>
+  </div>
+
+  <div class="card">
+    <h3>案例 6：约书亚·福尔</h3>
+    <p>曾是连车钥匙都会忘、its 写成 it's 的普通记者。通过掌握记忆宫殿法，最终出现在美国冠军记忆联赛上。</p>
+    <p>秘诀：所有记忆高手都坚称，在未经训练前，自己的记忆力水平相当一般——<span class="highlight">形象记忆法能让他们记得更快更轻松</span>。</p>
+  </div>
+
+  <div class="card">
+    <h3>案例 7：戴维·丹尼尔教授</h3>
+    <p>詹姆斯·麦迪逊大学心理学系教授，他的女儿写数学作业就像上刑——读完《学习之道》后第一句话是："要是我在学校的时候有这么一本书就好了！"</p>
+  </div>
+</section>
+
+</main>
+
+<button class="back-top" id="backTop" onclick="scrollToTop()">↑</button>
+
+<script>
+// 侧边栏切换
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.toggle('collapsed');
+}
+
+// 主题组折叠展开
+function toggleGroup(el) {
+  const group = el.parentElement;
+  group.classList.toggle('expanded');
+}
+
+// 切换内容区
+function showSection(id, navItem) {
+  // 隐藏所有 section
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  // 显示目标 section
+  const target = document.getElementById(id);
+  if (target) {
+    target.classList.add('active');
+  }
+  // 更新导航高亮
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (navItem) {
+    navItem.classList.add('active');
+  }
+  // 滚动到顶部
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 监听滚动显示返回顶部
+window.addEventListener('scroll', function() {
+  const btn = document.getElementById('backTop');
+  if (window.scrollY > 400) {
+    btn.classList.add('show');
+  } else {
+    btn.classList.remove('show');
+  }
+});
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 键盘快捷键
+document.addEventListener('keydown', function(e) {
+  // Ctrl/Cmd + B 切换侧边栏
+  if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+    e.preventDefault();
+    toggleSidebar();
+  }
+});
+</script>
+
+</body>
+</html>

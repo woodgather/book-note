@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《系统之美》知识脑图</title>
+<style>
+:root {
+  --bg: #fafafa;
+  --panel-bg: #ffffff;
+  --primary: #2c3e50;
+  --accent: #3498db;
+  --text: #2c3e50;
+  --text-light: #7f8c8d;
+  --border: #e1e4e8;
+  --hover: #f6f8fa;
+  --code-bg: #f1f3f5;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --radius: 6px;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* 左侧导航 */
+.sidebar {
+  width: 320px;
+  min-width: 320px;
+  background: var(--panel-bg);
+  border-right: 1px solid var(--border);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  padding: 20px 0;
+  box-shadow: var(--shadow);
+}
+
+.sidebar-header {
+  padding: 0 20px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.sidebar-header h1 {
+  font-size: 17px;
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.sidebar-header p {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.toc {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-item {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.toc-toggle {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--primary);
+  transition: background 0.15s;
+}
+
+.toc-toggle:hover { background: var(--hover); }
+
+.toc-toggle::before {
+  content: "▶";
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 10px;
+  color: var(--accent);
+  transition: transform 0.2s;
+  transform: rotate(0deg);
+}
+
+.toc-item.open > .toc-toggle::before {
+  transform: rotate(90deg);
+}
+
+.toc-children {
+  list-style: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: #fcfcfc;
+}
+
+.toc-item.open > .toc-children {
+  max-height: 5000px;
+}
+
+.toc-children li a {
+  display: block;
+  padding: 7px 20px 7px 40px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 13px;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.toc-children li a:hover {
+  background: var(--hover);
+  border-left-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 主内容 */
+.main {
+  flex: 1;
+  padding: 40px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.book-intro {
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  color: white;
+  padding: 32px;
+  border-radius: var(--radius);
+  margin-bottom: 32px;
+  box-shadow: var(--shadow);
+}
+
+.book-intro h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.book-intro .subtitle {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 16px;
+}
+
+.book-intro p {
+  font-size: 14px;
+  opacity: 0.95;
+}
+
+.chapter {
+  background: var(--panel-bg);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--accent);
+  scroll-margin-top: 20px;
+}
+
+.chapter-2 { border-left-color: #e74c3c; }
+.chapter-3 { border-left-color: #f39c12; }
+.chapter-4 { border-left-color: #27ae60; }
+.chapter-5 { border-left-color: #9b59b6; }
+.chapter-6 { border-left-color: #16a085; }
+.chapter-7 { border-left-color: #d35400; }
+.chapter-8 { border-left-color: #34495e; }
+
+.chapter h2 {
+  color: var(--primary);
+  font-size: 22px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.chapter h2 .ch-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  margin-right: 12px;
+  font-weight: 700;
+}
+
+.chapter-2 h2 .ch-num { background: #e74c3c; }
+.chapter-3 h2 .ch-num { background: #f39c12; }
+.chapter-4 h2 .ch-num { background: #27ae60; }
+.chapter-5 h2 .ch-num { background: #9b59b6; }
+.chapter-6 h2 .ch-num { background: #16a085; }
+.chapter-7 h2 .ch-num { background: #d35400; }
+.chapter-8 h2 .ch-num { background: #34495e; }
+
+.chapter-summary {
+  color: var(--text-light);
+  font-style: italic;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: var(--hover);
+  border-radius: 4px;
+  border-left: 3px solid var(--accent);
+  font-size: 14px;
+}
+
+.section {
+  margin: 20px 0;
+}
+
+.section h3 {
+  color: var(--primary);
+  font-size: 17px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.section h4 {
+  color: var(--accent);
+  font-size: 15px;
+  margin: 12px 0 8px;
+}
+
+.section p, .section li {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.section ul, .section ol {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+.highlight-box {
+  background: linear-gradient(to right, #e3f2fd 0%, #f3e5f5 100%);
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  border-left: 3px solid var(--accent);
+  font-size: 14px;
+}
+
+.concept-card {
+  background: #fafbfc;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px 16px;
+  margin: 10px 0;
+  transition: all 0.2s;
+}
+
+.concept-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+}
+
+.concept-card .concept-title {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.concept-card .concept-title::before {
+  content: "◆";
+  color: var(--accent);
+  margin-right: 6px;
+  font-size: 10px;
+}
+
+.concept-card .concept-desc {
+  color: #555;
+  font-size: 13.5px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--accent);
+  color: white;
+  border-radius: 10px;
+  font-size: 11px;
+  margin-right: 6px;
+  font-weight: 500;
+}
+
+.tag-red { background: #e74c3c; }
+.tag-orange { background: #f39c12; }
+.tag-green { background: #27ae60; }
+.tag-purple { background: #9b59b6; }
+.tag-teal { background: #16a085; }
+.tag-dark { background: #34495e; }
+
+blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 8px 16px;
+  margin: 12px 0;
+  background: #f8f9fa;
+  color: #555;
+  font-style: italic;
+  font-size: 14px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13.5px;
+}
+
+th, td {
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background: var(--hover);
+  font-weight: 600;
+  color: var(--primary);
+}
+
+tbody tr:hover { background: var(--hover); }
+
+.search-box {
+  margin: 0 20px 16px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  width: calc(100% - 40px);
+  font-size: 13px;
+  outline: none;
+}
+
+.search-box:focus {
+  border-color: var(--accent);
+}
+
+.expand-all {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-left: 8px;
+}
+
+.expand-all:hover { text-decoration: underline; }
+
+.sidebar-actions {
+  padding: 0 20px 12px;
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  body { flex-direction: column; }
+  .sidebar { width: 100%; min-width: 100%; height: auto; position: relative; }
+  .main { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h1>📘 系统之美</h1>
+    <p>决策者的系统思考 · 知识脑图</p>
+  </div>
+  <div class="sidebar-actions">
+    <button class="expand-all" onclick="expandAll()">全部展开</button>
+    <button class="expand-all" onclick="collapseAll()">全部折叠</button>
+  </div>
+  <input type="text" class="search-box" placeholder="🔍 搜索章节..." oninput="filterToc(this.value)">
+  <ul class="toc" id="toc">
+    <li class="toc-item">
+      <div class="toc-toggle" onclick="toggleItem(this)">前言与导论</div>
+      <ul class="toc-children">
+        <li><a href="#preface">序言</a></li>
+        <li><a href="#intro">引言：系统之美</a></li>
+      </ul>
+    </li>
+    <li class="toc-item">
+      <div class="toc-toggle" onclick="toggleItem(this)">第1章 · 系统之基础</div>
+      <ul class="toc-children">
+        <li><a href="#ch1-system">什么是系统</a></li>
+        <li><a href="#ch1-lens">系统之眼</a></li>
+        <li><a href="#ch1-components">系统三要素：要素、连接、功能</a></li>
+        <li><a href="#ch1-stock-flow">存量与流量</a></li>
+        <li><a href="#ch1-feedback">反馈回路</a></li>
+        <li><a href="#ch1-delay">延迟</a></li>
+      </ul>
+    </li>
+    <li class="toc-item">
+      <div class="toc-toggle" onclick="toggleItem(this)">第2章 · 系统的三大特征</div>
+      <ul class="toc-children">
+        <li><a href="#ch2-adaptive">适应力</a></li>
+        <li><a href="#ch2-selforg">自组织</a></li>
+        <li><a href="#ch2-hierarchy">层次性</a></li>
+      </ul>
+    </li>
+    <li class="toc-item">
+      <div class="toc-toggle" onclick="toggleItem(this)">第3章 · 系统的4种基本反馈回路</div>
+      <ul class="toc-children">
+        <li><a href="#ch3-reinforcing">增强回路</a></li>
+        <li><a href="#ch3-balancing">调节回路</a></li>
+        <li><a href="#ch3-shares">分享型回路</a></li>
+        <li><a href="#ch3-misperception">误感知反馈回路</a></li>
+      </ul>
+    </li>
+    <li class="toc-item">
+      <div class="toc-toggle" onclick="toggleItem(this)">第4章 · 系统的5大障碍</div>
+      <ul class="toc-children">
+        <li><a href="#ch4-policy">别被表象迷惑</a></li>
+        <li><a href="#ch4-leverage">找准杠杆点</a></li>
+        <li><a href="#ch4-goal">打破思维定式</a></li>
+        <li><a href="#ch4-bias">看清各种限制因素</a></li>
+        <li><a href="#ch4-delay">谨防延迟反应</a></li>
+      </ul>
+    </li>
+    <li class="toc-item">
+      <div class="toc-toggle" onclick="toggleItem(this)">第5章 · 系统的6大杠杆点</div>
+      <ul class="toc-children">
+        <li><a href="#ch5-leverage-12">12大杠杆点（从低到高）</a></li>
+        <li><a href="#ch5-traps">8大系统陷阱</a></li>
+        <li><a href="#ch5-myths">3大成长悖论</a></li>
+      </ul>
+    </li>
+    <li class="toc-item">
+      <div class="toc-toggle" onclick="toggleItem(this)">第6章 · 系统的15大生存法则</div>
+      <ul class="toc-children">
+        <li><a href="#ch6-rules">15条法则详解</a></li>
+      </ul>
+    </li>
+    <li class="toc-item">
+      <div class="toc-toggle" onclick="toggleItem(this)">第7章 · 与系统共舞</div>
+      <ul class="toc-children">
+        <li><a href="#ch7-mindset">系统思维者的思维方式</a></li>
+        <li><a href="#ch7-method">系统思维的工作流程</a></li>
+        <li><a href="#ch7-toolbox">系统工具箱</a></li>
+      </ul>
+    </li>
+    <li class="toc-item">
+      <div class="toc-toggle" onclick="toggleItem(this)">附录</div>
+      <ul class="toc-children">
+        <li><a href="#appendix">系统与金融泡沫</a></li>
+      </ul>
+    </li>
+  </ul>
+</aside>
+
+<main class="main">
+
+<!-- 书籍简介 -->
+<section class="book-intro" id="intro">
+  <h1>《系统之美：决策者的系统思考》</h1>
+  <div class="subtitle">Thinking in Systems: A Primer · 唐内拉·梅多斯 (Donella H. Meadows)</div>
+  <p>本书是一本系统思考领域的入门经典，揭示了系统运作的底层规律，教你识别、理解并优雅地应对复杂系统，从而做出更睿智的决策。</p>
+</section>
+
+<!-- 序言 -->
+<section class="chapter chapter-2" id="preface">
+  <h2><span class="ch-num">序</span>序言：系统的智慧</h2>
+  <div class="chapter-summary">世界是一个由各种系统交织而成的复杂网络，理解系统才能理解世界。</div>
+  <div class="section">
+    <h3>核心观点</h3>
+    <ul>
+      <li><strong>系统无处不在</strong>：从人体到经济，从生态到组织，一切皆为系统。</li>
+      <li><strong>看清全局比埋头苦干更重要</strong>：系统思维让我们从"看事件"上升到"看结构"。</li>
+      <li><strong>干预而非对抗</strong>：聪明的做法是与系统共舞，而不是硬碰硬。</li>
+      <li><strong>本书目标</strong>：用简单的语言和工具，帮你建立系统思考的思维方式。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 第1章 -->
+<section class="chapter" id="ch1-system">
+  <h2><span class="ch-num">1</span>第1章 · 系统之基础</h2>
+  <div class="chapter-summary">系统是由一组相互连接的要素构成、能够随时间运作的整体，具备要素、连接、功能三个核心组成部分。</div>
+
+  <div class="section" id="ch1-lens">
+    <h3>1.1 什么是系统？</h3>
+    <p><span class="tag">定义</span> 一个系统（System）由一组相互连接的要素组成，能够随时间运作，实现某种功能或目的。</p>
+    <div class="highlight-box">
+      <strong>系统的本质：</strong>不是要素本身，而是要素之间的<strong>相互关系</strong>和<strong>功能</strong>。
+    </div>
+    <ul>
+      <li>系统可以是一个细胞、一棵树、一家公司、一个城市、一个国家。</li>
+      <li>系统可以是物理的、生物的、社会的、抽象的。</li>
+      <li>每个系统都存在于更大的系统之中（嵌套性）。</li>
+    </ul>
+  </div>
+
+  <div class="section" id="ch1-components">
+    <h3>1.2 系统的三要素</h3>
+    <table>
+      <tr>
+        <th>要素</th>
+        <th>含义</th>
+        <th>举例</th>
+      </tr>
+      <tr>
+        <td><strong>要素（Elements）</strong></td>
+        <td>系统中可见的组成部分</td>
+        <td>学生、老师、教室</td>
+      </tr>
+      <tr>
+        <td><strong>连接（Interconnections）</strong></td>
+        <td>要素之间的相互关系与作用</td>
+        <td>教学流程、信息反馈、资金流动</td>
+      </tr>
+      <tr>
+        <td><strong>功能（Function）</strong></td>
+        <td>系统所要达成的目的</td>
+        <td>培养人才、传递知识</td>
+      </tr>
+    </table>
+    <blockquote>系统行为由其结构和功能决定，而非由要素单独决定。换掉所有要素，系统可以保持不变；改变连接和功能，系统则完全改变。</blockquote>
+  </div>
+
+  <div class="section" id="ch1-stock-flow">
+    <h3>1.3 存量与流量</h3>
+    <h4>存量（Stock）</h4>
+    <p>系统在某一时点上的累积量。存量是<strong>状态变量</strong>，体现系统的"家底"。</p>
+    <ul>
+      <li>水库中的水、人口数量、银行存款、库存商品。</li>
+    </ul>
+    <h4>流量（Flow）</h4>
+    <p>一段时间内改变存量的速率。流量是<strong>变化率</strong>。</p>
+    <ul>
+      <li>进水/出水、出生/死亡、收入/支出、生产/销售。</li>
+    </ul>
+    <div class="highlight-box">
+      <strong>关键洞见：</strong>政策杠杆通常作用在流量上，但最终目标是改变存量。要想改变存量，必须改变流入和流出。
+    </div>
+  </div>
+
+  <div class="section" id="ch1-feedback">
+    <h3>1.4 反馈回路</h3>
+    <p>当系统中的一个存量发生变化时，会通过决策规则影响相关的流量，进而影响其他存量。这种因果循环就是<strong>反馈回路</strong>。</p>
+    <h4>两种基本类型</h4>
+    <ul>
+      <li><span class="tag-green">增强回路（正反馈）</span>：放大变化，驱动指数增长或崩溃。</li>
+      <li><span class="tag-red">调节回路（负反馈）</span>：抑制变化，使系统趋向目标或平衡。</li>
+    </ul>
+  </div>
+
+  <div class="section" id="ch1-delay">
+    <h3>1.5 延迟（Delay）</h3>
+    <p>系统中某个原因与结果之间的<strong>时间滞后</strong>。</p>
+    <ul>
+      <li>从政策实施到生效：政策延迟。</li>
+      <li>从投资到产出：建设周期。</li>
+      <li>从出生到成年：人口延迟。</li>
+    </ul>
+    <div class="highlight-box">
+      <strong>延迟是系统之敌：</strong>它导致振荡、过度调整、决策失误。
+    </div>
+  </div>
+</section>
+
+<!-- 第2章 -->
+<section class="chapter chapter-2" id="ch2-adaptive">
+  <h2><span class="ch-num">2</span>第2章 · 系统的三大特征</h2>
+  <div class="chapter-summary">所有复杂系统都具备三种基本特征：适应力、自组织、层次性。这些特征让系统能够应对变化、自我重组并形成有序结构。</div>
+
+  <div class="section" id="ch2-adaptive">
+    <h3>2.1 适应力（Resilience）</h3>
+    <p>系统在面对外部冲击和变化时，<strong>维持自身功能</strong>的能力。</p>
+    <ul>
+      <li>生态系统：物种多样性使生态更稳定。</li>
+      <li>人体：免疫系统抵御病毒入侵。</li>
+      <li>企业：冗余设计、备份方案提升韧性。</li>
+    </ul>
+    <div class="concept-card">
+      <div class="concept-title">适应力的来源</div>
+      <div class="concept-desc">多样性、冗余、模块化、缓冲能力、自我修复机制。</div>
+    </div>
+    <blockquote>优化（追求最高效率）常常以牺牲适应力为代价。过度的"瘦身"会让系统脆弱。</blockquote>
+  </div>
+
+  <div class="section" id="ch2-selforg">
+    <h3>2.2 自组织（Self-Organization）</h3>
+    <p>系统在没有任何外部指令的情况下，<strong>自发形成有序结构</strong>的能力。</p>
+    <ul>
+      <li>蚁群、鱼群、鸟群的群体智能。</li>
+      <li>人类大脑神经网络的形成。</li>
+      <li>市场经济的自发秩序。</li>
+      <li>互联网的开放生态。</li>
+    </ul>
+    <div class="concept-card">
+      <div class="concept-title">自组织的条件</div>
+      <div class="concept-desc">信息流通、多样性、非线性交互、适当的边界与规则、足够的能量与资源。</div>
+    </div>
+  </div>
+
+  <div class="section" id="ch2-hierarchy">
+    <h3>2.3 层次性（Hierarchy）</h3>
+    <p>系统往往由<strong>子系统</strong>构成，而它本身又是更大系统的子系统。这种嵌套的层次结构是复杂系统的普遍特征。</p>
+    <ul>
+      <li>细胞 → 组织 → 器官 → 个体 → 群体 → 生态。</li>
+      <li>个人 → 团队 → 部门 → 公司 → 行业 → 经济。</li>
+    </ul>
+    <div class="highlight-box">
+      <strong>层次涌现：</strong>高层次具备低层次所没有的<em>涌现属性</em>（Emergent Properties）。例如，单个神经元没有意识，但大脑整体有。
+    </div>
+  </div>
+</section>
+
+<!-- 第3章 -->
+<section class="chapter chapter-3" id="ch3-reinforcing">
+  <h2><span class="ch-num">3</span>第3章 · 系统的4种基本反馈回路</h2>
+  <div class="chapter-summary">所有复杂系统都是由四种基本反馈回路的不同组合构成的：增强回路、调节回路，加上分享型与误感知回路，理解它们是看懂系统行为的关键。</div>
+
+  <div class="section" id="ch3-reinforcing">
+    <h3>3.1 增强回路（Reinforcing Loop）</h3>
+    <p>又称"<strong>良性循环</strong>"或"<strong>恶性循环</strong>"，系统中某部分的变化会引发一系列相互强化的效应，导致指数级增长或崩溃。</p>
+    <div class="concept-card">
+      <div class="concept-title">增长型增强回路（良性循环）</div>
+      <div class="concept-desc">银行储蓄 → 利息收入 → 更多储蓄 → 更多利息……</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-title">衰退型增强回路（恶性循环）</div>
+      <div class="concept-desc">贫困 → 教育缺失 → 收入低 → 更贫困……</div>
+    </div>
+    <div class="highlight-box">
+      <strong>特点：</strong>非线性（指数）、自我强化、脆弱性高、终将遇到限制因素。
+    </div>
+  </div>
+
+  <div class="section" id="ch3-balancing">
+    <h3>3.2 调节回路（Balancing Loop）</h3>
+    <p>系统试图将某个存量维持在<strong>目标值</strong>附近。系统中到处都是调节回路——它们是稳定和平衡的来源。</p>
+    <ul>
+      <li>恒温器调节室温</li>
+      <li>市场供需调节价格</li>
+      <li>身体调节血糖浓度</li>
+    </ul>
+    <div class="concept-card">
+      <div class="concept-title">调节回路的三要素</div>
+      <div class="concept-desc">目标、状态检测、纠正动作。任何一环失灵都会让系统失效。</div>
+    </div>
+  </div>
+
+  <div class="section" id="ch3-shares">
+    <h3>3.3 分享型反馈回路</h3>
+    <p>当一个增强回路的"成果"被多个竞争者分享时，<strong>收益递减</strong>，增强效应被抑制。</p>
+    <ul>
+      <li>市场份额：竞争对手越多，个体增长越慢。</li>
+      <li>人才争夺：优秀企业越多，单独企业招到顶尖人才越难。</li>
+      <li>自然资源的有限性：种群增长会因资源稀缺而自我抑制。</li>
+    </ul>
+  </div>
+
+  <div class="section" id="ch3-misperception">
+    <h3>3.4 误感知反馈回路（Misperception Feedback）</h3>
+    <p>系统根据它<strong>感知到的</strong>信息（而非真实情况）做出反应。当感知与现实出现偏差时，系统会朝着错误方向调整。</p>
+    <ul>
+      <li>滞后的统计数据导致政策失误。</li>
+      <li>社交媒体的"信息茧房"放大偏差感知。</li>
+      <li>个人的"自我应验预言"。</li>
+    </ul>
+    <div class="highlight-box">
+      <strong>启示：</strong>决策要基于现实，而非基于我们对现实的解读。
+    </div>
+  </div>
+</section>
+
+<!-- 第4章 -->
+<section class="chapter chapter-4" id="ch4-policy">
+  <h2><span class="ch-num">4</span>第4章 · 系统的5大障碍</h2>
+  <div class="chapter-summary">系统之所以常常出乎我们的意料、令我们挫败，是因为我们被表象迷惑，找不准杠杆点，被思维定式束缚，看不到限制因素，又因延迟而反应过度。</div>
+
+  <div class="section" id="ch4-policy">
+    <h3>4.1 别被表象迷惑</h3>
+    <p>我们倾向于关注<strong>事件层面</strong>的归因，而忽略<strong>结构性</strong>原因。</p>
+    <blockquote>每一次危机都有人要找"罪魁祸首"，但系统行为很少由单一原因造成。</blockquote>
+    <h4>三层面思维升级</h4>
+    <ul>
+      <li><strong>事件层</strong>：发生了什么？（反应式）</li>
+      <li><strong>模式/趋势层</strong>：过去一段时间发生了什么？（回应式）</li>
+      <li><strong>结构层</strong>：是什么造成了这种模式？（主动式）</li>
+    </ul>
+  </div>
+
+  <div class="section" id="ch4-leverage">
+    <h3>4.2 找准杠杆点</h3>
+    <p>系统中存在一些<strong>关键点</strong>，在这些点上施加微小力量，可以产生显著而持久的影响。但很多干预都是在低杠杆点上做无用功。</p>
+    <div class="highlight-box">
+      <strong>常见误区：</strong>在症状层面干预，而非根本原因层面干预。
+    </div>
+  </div>
+
+  <div class="section" id="ch4-goal">
+    <h3>4.3 打破思维定式</h3>
+    <p>系统的<strong>目标</strong>（目标函数）决定了它的行为。许多看似荒谬的系统行为，其实正是因为"目标错了"或"没人设定明确目标"。</p>
+    <ul>
+      <li>企业：考核什么，就得到什么。</li>
+      <li>教育：升学率导向 vs 全面发展。</li>
+      <li>政府：GDP导向 vs 民生导向。</li>
+    </ul>
+  </div>
+
+  <div class="section" id="ch4-bias">
+    <h3>4.4 看清各种限制因素</h3>
+    <p>任何增长都会遇到<strong>限制因素</strong>（Limiting Factor）。系统中最稀缺、最薄弱的一环，决定了整体的表现。</p>
+    <ul>
+      <li>木桶效应：最短的木板决定容量。</li>
+      <li>利伯曼原理：识别约束条件，把资源集中在最薄弱的环节。</li>
+    </ul>
+  </div>
+
+  <div class="section" id="ch4-delay">
+    <h3>4.5 谨防延迟反应</h3>
+    <p>系统中<strong>延迟</strong>的存在，常常导致过度反应和振荡。系统会"先反应过头，再反应不足，再反应过头……"出现波动。</p>
+    <ul>
+      <li>洗澡时调节水温：容易烫到或冷到。</li>
+      <li>经济政策：刺激过度导致通胀，紧缩过度导致衰退。</li>
+      <li>库存管理：补货延迟导致缺货或积压。</li>
+    </ul>
+    <blockquote>面对延迟，要么保持耐心，要么降低系统对延迟的敏感度，要么从根本上重新设计系统以减少延迟。</blockquote>
+  </div>
+</section>
+
+<!-- 第5章 -->
+<section class="chapter chapter-5" id="ch5-leverage-12">
+  <h2><span class="ch-num">5</span>第5章 · 系统的6大杠杆点</h2>
+  <div class="chapter-summary">梅多斯提出了从低到高12个杠杆点位置，本节整理了最具代表性的6大杠杆点，以及系统常见的8大陷阱和3大成长悖论。</div>
+
+  <div class="section" id="ch5-leverage-12">
+    <h3>5.1 12大杠杆点（从低到高）</h3>
+    <table>
+      <tr>
+        <th>编号</th>
+        <th>杠杆点</th>
+        <th>影响力</th>
+      </tr>
+      <tr><td>12</td><td>常数、参数、数字</td><td>最低</td></tr>
+      <tr><td>11</td><td>缓冲区（相对于流量的大小）</td><td>低</td></tr>
+      <tr><td>10</td><td>存量-流量结构</td><td>较低</td></tr>
+      <tr><td>9</td><td>延迟</td><td>中等</td></tr>
+      <tr><td>8</td><td>调节回路（负反馈）</td><td>中等</td></tr>
+      <tr><td>7</td><td>增强回路（驱动增长的飞轮）</td><td>较高</td></tr>
+      <tr><td>6</td><td>信息流结构</td><td>高</td></tr>
+      <tr><td>5</td><td>系统规则（激励、惩罚、约束）</td><td>高</td></tr>
+      <tr><td>4</td><td>自组织能力</td><td>很高</td></tr>
+      <tr><td>3</td><td>目标（系统的功能或目的）</td><td>很高</td></tr>
+      <tr><td>2</td><td>范式（思维方式、世界观）</td><td>极高</td></tr>
+      <tr><td>1</td><td>超越范式（摆脱任何既定框架）</td><td>最高</td></tr>
+    </table>
+    <div class="highlight-box">
+      <strong>洞见：</strong>数字、参数最容易改，但效果最弱；范式最难改，但效果最深远。聪明的干预者专注于高层次杠杆点。
+    </div>
+  </div>
+
+  <div class="section" id="ch5-traps">
+    <h3>5.2 8大系统陷阱</h3>
+    <div class="concept-card">
+      <div class="concept-title">① 政策阻力：治标不治本</div>
+      <div class="concept-desc">多个参与者各自推行解决方案，结果相互抵消，浪费资源。例：药物与疾病相互升级。</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-title">② 公地悲剧</div>
+      <div class="concept-desc">多个体共享有限资源，每个人都因私利而过度使用，最终资源枯竭。例：过度捕捞、过度放牧。</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-title">③ 目标侵蚀（漂移的目标）</div>
+      <div class="concept-desc">系统目标在长期中逐渐下滑，与现状保持距离不变，导致系统绩效缓慢恶化。</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-title">④ 竞争升级</div>
+      <div class="concept-desc">两方相互追赶，越来越极端。例：军备竞赛、价格战、争吵升级。</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-title">⑤ 富者愈富（竞争排斥）</div>
+      <div class="concept-desc">胜者通吃，赢家获得更多资源，输家失去更多资源，差距越拉越大。</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-title">⑥ 规避 regulation（上瘾）</div>
+      <div class="concept-desc">系统参与者适应调节回路的约束，使调节失效。例：害虫对农药的抗药性。</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-title">⑦ 转嫁负担（上瘾）</div>
+      <div class="concept-desc">面对症状时使用短期解决方案，使根本问题的解决能力被削弱。例：依赖止痛药。</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-title">⑧ 增长极限与过度调整</div>
+      <div class="concept-desc">增强回路推动指数增长，直到限制因素起作用，调节回路过激反应，导致剧烈波动。</div>
+    </div>
+  </div>
+
+  <div class="section" id="ch5-myths">
+    <h3>5.3 3大成长悖论</h3>
+    <div class="concept-card">
+      <div class="concept-title">① 增长受限于限制因素</div>
+      <div class="concept-desc">增强回路注定会触顶。无限增长是数学幻想，不是物理现实。</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-title">② 增长是系统的选择，不是必然</div>
+      <div class="concept-desc">系统可以保持稳定、衰退或自我更新。"不增长"是合法的目标。</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-title">③ 创新能创造新空间，但有边界</div>
+      <div class="concept-desc">技术进步可以暂时突破限制，但也会带来新的限制。持续创新 ≠ 无限增长。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 第6章 -->
+<section class="chapter chapter-6" id="ch6-rules">
+  <h2><span class="ch-num">6</span>第6章 · 系统的15大生存法则</h2>
+  <div class="chapter-summary">梅多斯总结了15条系统生存法则，从认识系统、识别陷阱到设计系统、变革管理，是系统思考者的行动指南。</div>
+
+  <div class="section">
+    <h3>认识你的系统</h3>
+    <ol>
+      <li><strong>今日的问题来自昨日的解决方案。</strong></li>
+      <li><strong>今日的行为将决定明日的困境。</strong></li>
+      <li><strong>情况变糟之前会先变好。</strong>（延迟使问题先加剧再缓和）</li>
+      <li><strong>显而易见的解决方案往往无效。</strong>（症状解 vs 根本解）</li>
+      <li><strong>对症下药可能让系统产生抗药性。</strong></li>
+      <li><strong>快即是慢。</strong>（短期加速会引发长期减速）</li>
+      <li><strong>欲速则不达。</strong></li>
+      <li><strong>治疗可能比疾病本身更糟糕。</strong></li>
+      <li><strong>大处着眼，小处着手。</strong></li>
+      <li><strong>鱼和熊掌可以兼得——但通常不是马上。</strong></li>
+    </ol>
+
+    <h3>系统设计原则</h3>
+    <ol start="11">
+      <li><strong>一个糟糕的系统永远会打败一个优秀的人。</strong></li>
+      <li><strong>没有什么是完美的。</strong>系统优化的本质是权衡取舍。</li>
+    </ol>
+
+    <h3>变革的艺术</h3>
+    <ol start="13">
+      <li><strong>找到高杠杆点。</strong>改变结构，而非参数。</li>
+      <li><strong>不要和系统作对。</strong>顺应系统的内在规律。</li>
+      <li><strong>拥抱多样性。</strong>它是适应力的来源。</li>
+    </ol>
+
+    <div class="highlight-box">
+      <strong>核心智慧：</strong>系统生存的关键不是"控制"，而是"理解"和"与系统共舞"。
+    </div>
+  </div>
+</section>
+
+<!-- 第7章 -->
+<section class="chapter chapter-7" id="ch7-mindset">
+  <h2><span class="ch-num">7</span>第7章 · 与系统共舞</h2>
+  <div class="chapter-summary">系统思维不仅是一种分析方法，更是一种生活方式。它要求我们改变视角、改变语言、改变干预方式。</div>
+
+  <div class="section" id="ch7-mindset">
+    <h3>7.1 系统思维者的思维方式</h3>
+    <ul>
+      <li><strong>看整体</strong>：不只见树木，更要见森林。</li>
+      <li><strong>看结构</strong>：不只问"谁"，更问"为什么"。</li>
+      <li><strong>看长期</strong>：不被短期反馈所迷惑。</li>
+      <li><strong>看关系</strong>：要素之间的关系比要素本身更重要。</li>
+      <li><strong>看变化</strong>：动态而非静态地看世界。</li>
+    </ul>
+  </div>
+
+  <div class="section" id="ch7-method">
+    <h3>7.2 系统思维的工作流程</h3>
+    <ol>
+      <li><strong>明确问题</strong>：识别真正的核心问题，避免症状陷阱。</li>
+      <li><strong>画出系统图</strong>：用因果回路图、存量流量图描绘结构。</li>
+      <li><strong>识别关键变量</strong>：哪些存量最重要？</li>
+      <li><strong>识别反馈回路</strong>：增强还是调节？</li>
+      <li><strong>识别延迟</strong>：哪些地方存在时间滞后？</li>
+      <li><strong>识别杠杆点</strong>：在哪里干预最有效？</li>
+      <li><strong>设计干预方案</strong>：用规则、目标和信息流去改变系统。</li>
+      <li><strong>观察与调整</strong>：系统的反应常常出人意料，需要不断学习。</li>
+    </ol>
+  </div>
+
+  <div class="section" id="ch7-toolbox">
+    <h3>7.3 系统工具箱</h3>
+    <h4>分析工具</h4>
+    <ul>
+      <li><strong>因果回路图（CLD）</strong>：表达因果关系与反馈结构。</li>
+      <li><strong>存量流量图（SFD）</strong>：描绘系统动力学结构。</li>
+      <li><strong>系统行为图</strong>：随时间变化的趋势图。</li>
+      <li><strong>主导地位分析</strong>：识别在不同时间起主导作用的回路。</li>
+    </ul>
+    <h4>思维工具</h4>
+    <ul>
+      <li><strong>冰山模型</strong>：从事件到结构到心智模式。</li>
+      <li><strong>5个为什么</strong>：层层追问直到根本原因。</li>
+      <li><strong>系统词典</strong>：用系统术语重新描述问题。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 附录 -->
+<section class="chapter chapter-8" id="appendix">
+  <h2><span class="ch-num">附</span>附录：系统与金融泡沫</h2>
+  <div class="chapter-summary">以金融泡沫为案例，复盘系统思维在真实世界中的应用，揭示政策、行为、反馈与延迟如何共同推动泡沫的形成与破灭。</div>
+  <div class="section">
+    <h3>泡沫的8大反馈结构</h3>
+    <ol>
+      <li><strong>价格 → 预期</strong>：价格上涨强化看涨预期。</li>
+      <li><strong>预期 → 需求</strong>：看涨预期驱动更多人买入。</li>
+      <li><strong>需求 → 价格</strong>：买入推高价格。</li>
+      <li><strong>价格 → 抵押品价值</strong>：上涨资产提高借贷能力。</li>
+      <li><strong>抵押品价值 → 借款</strong>：借更多钱再投资。</li>
+      <li><strong>借款 → 需求</strong>：更多资金买入。</li>
+      <li><strong>价格 → 供给</strong>：吸引更多生产者和投机者。</li>
+      <li><strong>供给 → 价格</strong>：当供给最终超过需求，价格反转。</li>
+    </ol>
+    <div class="highlight-box">
+      <strong>教训：</strong>泡沫不是个人疯狂，而是系统自我强化的产物。监管应着眼于改变系统结构，而非指责"非理性"。
+    </div>
+  </div>
+</section>
+
+<footer style="text-align:center;color:#999;padding:30px 0;font-size:12px;">
+  《系统之美：决策者的系统思考》| 唐内拉·梅多斯 (Donella H. Meadows) | 知识脑图
+</footer>
+
+</main>
+
+<script>
+function toggleItem(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+function expandAll() {
+  document.querySelectorAll('.toc-item').forEach(i => i.classList.add('open'));
+}
+
+function collapseAll() {
+  document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('open'));
+}
+
+function filterToc(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('.toc-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    if (q === '' || text.includes(q)) {
+      item.style.display = '';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+// 平滑滚动
+document.querySelectorAll('.toc-children a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>
