@@ -1,0 +1,2519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《思考，快与慢》知识脑图 | Thinking, Fast and Slow</title>
+<style>
+:root {
+  --color-bg: #fafaf7;
+  --color-surface: #ffffff;
+  --color-surface-2: #f4f3ee;
+  --color-ink: #1a1a1a;
+  --color-ink-2: #4a4a4a;
+  --color-ink-3: #7a7a7a;
+  --color-border: #e6e3da;
+  --color-accent: #2c5f7c;
+  --color-accent-2: #d97706;
+  --color-p1: #2c5f7c;
+  --color-p2: #7a4a8a;
+  --color-p3: #b85c38;
+  --color-p4: #3a7a4a;
+  --color-p5: #8a6d3b;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.08);
+  --radius: 8px;
+  --radius-lg: 14px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "STSong", serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  line-height: 1.7;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============== 顶部 Hero ============== */
+.hero {
+  background: linear-gradient(135deg, #1a3a4a 0%, #2c5f7c 50%, #3a7a8c 100%);
+  color: #fff;
+  padding: 60px 40px 50px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 0%, transparent 40%),
+                    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.06) 0%, transparent 40%);
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;
+}
+.hero h1 {
+  font-family: var(--font-serif);
+  font-size: 38px; font-weight: 700; line-height: 1.3;
+  letter-spacing: 0.5px; margin-bottom: 12px;
+}
+.hero .subtitle {
+  font-size: 16px; opacity: 0.85; font-weight: 300;
+  letter-spacing: 1px; margin-bottom: 30px;
+}
+.hero-meta {
+  display: flex; flex-wrap: wrap; gap: 20px;
+  font-size: 13px; opacity: 0.9;
+}
+.hero-meta span {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+/* ============== 主布局 ============== */
+.layout {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 240px);
+}
+
+/* ============== 侧边栏导航 ============== */
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: 24px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-header {
+  padding: 0 20px 16px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sidebar-header h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.toggle-all {
+  background: none; border: 1px solid var(--color-border);
+  color: var(--color-ink-2); font-size: 12px;
+  padding: 4px 10px; border-radius: 12px; cursor: pointer;
+  transition: all 0.2s;
+}
+.toggle-all:hover { background: var(--color-surface-2); color: var(--color-accent); }
+
+.nav-list { list-style: none; }
+
+.nav-item > .nav-row {
+  display: flex; align-items: center;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--color-ink-2);
+  transition: all 0.15s;
+  user-select: none;
+  border-left: 3px solid transparent;
+}
+.nav-item > .nav-row:hover {
+  background: var(--color-surface-2);
+  color: var(--color-accent);
+}
+.nav-item.active > .nav-row {
+  background: var(--color-surface-2);
+  color: var(--color-accent);
+  border-left-color: var(--color-accent);
+  font-weight: 600;
+}
+
+.nav-item.part > .nav-row {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-ink);
+  text-transform: none;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+.nav-item.part[data-part="1"] > .nav-row { color: var(--color-p1); }
+.nav-item.part[data-part="2"] > .nav-row { color: var(--color-p2); }
+.nav-item.part[data-part="3"] > .nav-row { color: var(--color-p3); }
+.nav-item.part[data-part="4"] > .nav-row { color: var(--color-p4); }
+.nav-item.part[data-part="5"] > .nav-row { color: var(--color-p5); }
+
+.nav-arrow {
+  display: inline-block;
+  width: 16px; height: 16px;
+  margin-right: 6px;
+  transition: transform 0.2s;
+  font-size: 10px;
+  color: var(--color-ink-3);
+}
+.nav-item.collapsed > .nav-row .nav-arrow { transform: rotate(-90deg); }
+.nav-item.no-children .nav-arrow { visibility: hidden; }
+
+.nav-children {
+  list-style: none;
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.nav-item.collapsed > .nav-children { max-height: 0; }
+
+.nav-children .nav-row {
+  padding-left: 44px !important;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* ============== 主内容区 ============== */
+.content {
+  flex: 1;
+  padding: 40px 50px 80px;
+  min-width: 0;
+}
+
+/* 总览图 */
+.overview {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow-sm);
+}
+.overview h2 {
+  font-size: 22px;
+  color: var(--color-ink);
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.overview .lead {
+  color: var(--color-ink-2);
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+
+.mindmap {
+  width: 100%;
+  height: 560px;
+  background: linear-gradient(135deg, #fbfbf8 0%, #f5f3ec 100%);
+  border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ============== 章节卡片 ============== */
+.section {
+  margin-bottom: 56px;
+  scroll-margin-top: 20px;
+}
+.section-header {
+  display: flex; align-items: center; gap: 16px;
+  padding-bottom: 16px; margin-bottom: 24px;
+  border-bottom: 2px solid var(--color-border);
+}
+.section-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+.section[data-part="1"] .section-badge { background: var(--color-p1); }
+.section[data-part="2"] .section-badge { background: var(--color-p2); }
+.section[data-part="3"] .section-badge { background: var(--color-p3); }
+.section[data-part="4"] .section-badge { background: var(--color-p4); }
+.section[data-part="5"] .section-badge { background: var(--color-p5); }
+.section[data-part="0"] .section-badge { background: #555; }
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.chapter {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+  scroll-margin-top: 20px;
+}
+.chapter:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.chapter-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 10px;
+}
+.chapter-num {
+  display: inline-block;
+  width: 30px; height: 30px;
+  line-height: 30px;
+  text-align: center;
+  background: var(--color-surface-2);
+  color: var(--color-ink-2);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.section[data-part="1"] .chapter-num { background: #e6f0f5; color: var(--color-p1); }
+.section[data-part="2"] .chapter-num { background: #f0e8f3; color: var(--color-p2); }
+.section[data-part="3"] .chapter-num { background: #fbeee5; color: var(--color-p3); }
+.section[data-part="4"] .chapter-num { background: #e8f3ec; color: var(--color-p4); }
+.section[data-part="5"] .chapter-num { background: #f3edde; color: var(--color-p5); }
+
+.chapter-subtitle {
+  font-size: 13px;
+  color: var(--color-ink-3);
+  margin-bottom: 18px;
+  font-style: italic;
+}
+
+.chapter-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+.card {
+  background: var(--color-surface-2);
+  border-left: 3px solid var(--color-border);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px;
+}
+.card-icon {
+  display: inline-block;
+  width: 22px; height: 22px;
+  line-height: 22px;
+  text-align: center;
+  background: #fff;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-right: 8px;
+  font-weight: 700;
+}
+.card-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-ink-2);
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  display: flex; align-items: center;
+}
+.card-list { list-style: none; padding: 0; }
+.card-list li {
+  position: relative;
+  padding-left: 14px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: var(--color-ink-2);
+  line-height: 1.65;
+}
+.card-list li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--color-ink-3);
+  font-size: 11px;
+  top: 2px;
+}
+.card-list li strong { color: var(--color-ink); font-weight: 600; }
+
+.card.full { grid-column: 1 / -1; }
+.card.highlight {
+  background: linear-gradient(135deg, #fff8e8 0%, #fdf3d8 100%);
+  border-left-color: var(--color-accent-2);
+}
+
+.section[data-part="1"] .card.concept { border-left-color: var(--color-p1); }
+.section[data-part="2"] .card.concept { border-left-color: var(--color-p2); }
+.section[data-part="3"] .card.concept { border-left-color: var(--color-p3); }
+.section[data-part="4"] .card.concept { border-left-color: var(--color-p4); }
+.section[data-part="5"] .card.concept { border-left-color: var(--color-p5); }
+
+/* 引言样式 */
+.quote {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  color: var(--color-ink-2);
+  background: linear-gradient(to right, #f4f3ee 0%, transparent 100%);
+  border-left: 3px solid var(--color-accent);
+  padding: 12px 18px;
+  margin: 14px 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-style: italic;
+  line-height: 1.8;
+}
+
+/* 标签 */
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.tag {
+  font-size: 11px;
+  padding: 2px 10px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-ink-2);
+  font-weight: 500;
+}
+
+/* 移动端 */
+@media (max-width: 1024px) {
+  .layout { flex-direction: column; }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    max-height: 50vh;
+  }
+  .content { padding: 30px 24px 60px; }
+  .chapter-content { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 28px; }
+  .mindmap { height: 400px; }
+}
+
+/* 返回顶部 */
+.back-top {
+  position: fixed; bottom: 30px; right: 30px;
+  width: 44px; height: 44px;
+  background: var(--color-accent);
+  color: #fff; border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: none;
+  align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.2s;
+  z-index: 100;
+}
+.back-top:hover { background: #1a3a4a; transform: translateY(-2px); }
+.back-top.visible { display: flex; }
+
+/* 脚注 */
+.footer {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--color-ink-3);
+  font-size: 12px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--color-surface-2); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-ink-3); }
+</style>
+</head>
+<body>
+
+<!-- ============== Hero ============== -->
+<header class="hero">
+  <div class="hero-inner">
+    <h1>《思考，快与慢》</h1>
+    <div class="subtitle">Thinking, Fast and Slow — Daniel Kahneman</div>
+    <div class="hero-meta">
+      <span>📘 诺贝尔经济学奖得主 卡尼曼 经典之作</span>
+      <span>🧠 行为经济学与心理学的奠基巨著</span>
+      <span>📑 5大部 · 38章 · 2附录</span>
+      <span>🌐 系统1与系统2 的双系统理论</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============== 主体 ============== -->
+<div class="layout">
+
+  <!-- 左侧导航 -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>章节目录</h2>
+      <button class="toggle-all" onclick="toggleAll()">全部展开</button>
+    </div>
+    <ul class="nav-list" id="navList">
+      <li class="nav-item" data-target="preface">
+        <div class="nav-row" onclick="scrollToSection('preface')">
+          <span class="nav-arrow">▼</span> 序言
+        </div>
+      </li>
+
+      <li class="nav-item part collapsed" data-part="1">
+        <div class="nav-row" onclick="toggleNav(this)">
+          <span class="nav-arrow">▼</span> 第一部分 · 两个系统
+        </div>
+        <ul class="nav-children">
+          <li class="nav-item" data-target="ch1"><div class="nav-row" onclick="scrollToSection('ch1')"><span class="nav-arrow">▼</span>第1章 一张愤怒的脸和一道乘法题</div></li>
+          <li class="nav-item" data-target="ch2"><div class="nav-row" onclick="scrollToSection('ch2')"><span class="nav-arrow">▼</span>第2章 电影的主角与配角</div></li>
+          <li class="nav-item" data-target="ch3"><div class="nav-row" onclick="scrollToSection('ch3')"><span class="nav-arrow">▼</span>第3章 惰性思维与延迟满足的矛盾</div></li>
+          <li class="nav-item" data-target="ch4"><div class="nav-row" onclick="scrollToSection('ch4')"><span class="nav-arrow">▼</span>第4章 联想的神奇力量</div></li>
+          <li class="nav-item" data-target="ch5"><div class="nav-row" onclick="scrollToSection('ch5')"><span class="nav-arrow">▼</span>第5章 你的直觉有可能只是错觉</div></li>
+          <li class="nav-item" data-target="ch6"><div class="nav-row" onclick="scrollToSection('ch6')"><span class="nav-arrow">▼</span>第6章 意料之外与情理之中</div></li>
+          <li class="nav-item" data-target="ch7"><div class="nav-row" onclick="scrollToSection('ch7')"><span class="nav-arrow">▼</span>第7章 字母B与数字13</div></li>
+          <li class="nav-item" data-target="ch8"><div class="nav-row" onclick="scrollToSection('ch8')"><span class="nav-arrow">▼</span>第8章 我们究竟是如何作出判断的？</div></li>
+          <li class="nav-item" data-target="ch9"><div class="nav-row" onclick="scrollToSection('ch9')"><span class="nav-arrow">▼</span>第9章 目标问题与启发性问题形影不离</div></li>
+        </ul>
+      </li>
+
+      <li class="nav-item part collapsed" data-part="2">
+        <div class="nav-row" onclick="toggleNav(this)">
+          <span class="nav-arrow">▼</span> 第二部分 · 启发法与偏见
+        </div>
+        <ul class="nav-children">
+          <li class="nav-item" data-target="ch10"><div class="nav-row" onclick="scrollToSection('ch10')"><span class="nav-arrow">▼</span>第10章 大数法则与小数定律</div></li>
+          <li class="nav-item" data-target="ch11"><div class="nav-row" onclick="scrollToSection('ch11')"><span class="nav-arrow">▼</span>第11章 锚定效应在生活中随处可见</div></li>
+          <li class="nav-item" data-target="ch12"><div class="nav-row" onclick="scrollToSection('ch12')"><span class="nav-arrow">▼</span>第12章 科学地利用可得性启发法</div></li>
+          <li class="nav-item" data-target="ch13"><div class="nav-row" onclick="scrollToSection('ch13')"><span class="nav-arrow">▼</span>第13章 焦虑情绪与风险政策的设计</div></li>
+          <li class="nav-item" data-target="ch14"><div class="nav-row" onclick="scrollToSection('ch14')"><span class="nav-arrow">▼</span>第14章 猜一下，汤姆的专业是什么？</div></li>
+          <li class="nav-item" data-target="ch15"><div class="nav-row" onclick="scrollToSection('ch15')"><span class="nav-arrow">▼</span>第15章 琳达问题的社会效应</div></li>
+          <li class="nav-item" data-target="ch16"><div class="nav-row" onclick="scrollToSection('ch16')"><span class="nav-arrow">▼</span>第16章 因果关系比统计学信息更具说服力</div></li>
+          <li class="nav-item" data-target="ch17"><div class="nav-row" onclick="scrollToSection('ch17')"><span class="nav-arrow">▼</span>第17章 所有表现都会回归平均值</div></li>
+          <li class="nav-item" data-target="ch18"><div class="nav-row" onclick="scrollToSection('ch18')"><span class="nav-arrow">▼</span>第18章 如何让直觉性预测更恰当有效？</div></li>
+        </ul>
+      </li>
+
+      <li class="nav-item part collapsed" data-part="3">
+        <div class="nav-row" onclick="toggleNav(this)">
+          <span class="nav-arrow">▼</span> 第三部分 · 过度自信与决策失误
+        </div>
+        <ul class="nav-children">
+          <li class="nav-item" data-target="ch19"><div class="nav-row" onclick="scrollToSection('ch19')"><span class="nav-arrow">▼</span>第19章 "知道"的错觉</div></li>
+          <li class="nav-item" data-target="ch20"><div class="nav-row" onclick="scrollToSection('ch20')"><span class="nav-arrow">▼</span>第20章 未来是不可预测的</div></li>
+          <li class="nav-item" data-target="ch21"><div class="nav-row" onclick="scrollToSection('ch21')"><span class="nav-arrow">▼</span>第21章 直觉判断与公式运算，孰优孰劣？</div></li>
+          <li class="nav-item" data-target="ch22"><div class="nav-row" onclick="scrollToSection('ch22')"><span class="nav-arrow">▼</span>第22章 什么时候可以相信专家的直觉？</div></li>
+          <li class="nav-item" data-target="ch23"><div class="nav-row" onclick="scrollToSection('ch23')"><span class="nav-arrow">▼</span>第23章 努力养成采纳外部意见的决策习惯</div></li>
+          <li class="nav-item" data-target="ch24"><div class="nav-row" onclick="scrollToSection('ch24')"><span class="nav-arrow">▼</span>第24章 乐观主义是一柄双刃剑</div></li>
+        </ul>
+      </li>
+
+      <li class="nav-item part collapsed" data-part="4">
+        <div class="nav-row" onclick="toggleNav(this)">
+          <span class="nav-arrow">▼</span> 第四部分 · 选择与风险
+        </div>
+        <ul class="nav-children">
+          <li class="nav-item" data-target="ch25"><div class="nav-row" onclick="scrollToSection('ch25')"><span class="nav-arrow">▼</span>第25章 事关风险与财富的抉择</div></li>
+          <li class="nav-item" data-target="ch26"><div class="nav-row" onclick="scrollToSection('ch26')"><span class="nav-arrow">▼</span>第26章 更人性化的前景理论</div></li>
+          <li class="nav-item" data-target="ch27"><div class="nav-row" onclick="scrollToSection('ch27')"><span class="nav-arrow">▼</span>第27章 禀赋效应与市场交易</div></li>
+          <li class="nav-item" data-target="ch28"><div class="nav-row" onclick="scrollToSection('ch28')"><span class="nav-arrow">▼</span>第28章 公平性—经济交易的参照点</div></li>
+          <li class="nav-item" data-target="ch29"><div class="nav-row" onclick="scrollToSection('ch29')"><span class="nav-arrow">▼</span>第29章 对结果可能性的权衡</div></li>
+          <li class="nav-item" data-target="ch30"><div class="nav-row" onclick="scrollToSection('ch30')"><span class="nav-arrow">▼</span>第30章 被过分关注的罕见事件</div></li>
+          <li class="nav-item" data-target="ch31"><div class="nav-row" onclick="scrollToSection('ch31')"><span class="nav-arrow">▼</span>第31章 能带来长远收益的风险政策</div></li>
+          <li class="nav-item" data-target="ch32"><div class="nav-row" onclick="scrollToSection('ch32')"><span class="nav-arrow">▼</span>第32章 心理账户是如何影响我们的选择的？</div></li>
+          <li class="nav-item" data-target="ch33"><div class="nav-row" onclick="scrollToSection('ch33')"><span class="nav-arrow">▼</span>第33章 评估结果的逆转</div></li>
+          <li class="nav-item" data-target="ch34"><div class="nav-row" onclick="scrollToSection('ch34')"><span class="nav-arrow">▼</span>第34章 善用框架效应，让生活更美好</div></li>
+        </ul>
+      </li>
+
+      <li class="nav-item part collapsed" data-part="5">
+        <div class="nav-row" onclick="toggleNav(this)">
+          <span class="nav-arrow">▼</span> 第五部分 · 两个自我
+        </div>
+        <ul class="nav-children">
+          <li class="nav-item" data-target="ch35"><div class="nav-row" onclick="scrollToSection('ch35')"><span class="nav-arrow">▼</span>第35章 体验效用与决策效用的不一致</div></li>
+          <li class="nav-item" data-target="ch36"><div class="nav-row" onclick="scrollToSection('ch36')"><span class="nav-arrow">▼</span>第36章 人生如戏</div></li>
+          <li class="nav-item" data-target="ch37"><div class="nav-row" onclick="scrollToSection('ch37')"><span class="nav-arrow">▼</span>第37章 你有多幸福？</div></li>
+          <li class="nav-item" data-target="ch38"><div class="nav-row" onclick="scrollToSection('ch38')"><span class="nav-arrow">▼</span>第38章 思考生活</div></li>
+        </ul>
+      </li>
+
+      <li class="nav-item" data-target="conclusion">
+        <div class="nav-row" onclick="scrollToSection('conclusion')">
+          <span class="nav-arrow">▼</span> 结语
+        </div>
+      </li>
+      <li class="nav-item" data-target="appA">
+        <div class="nav-row" onclick="scrollToSection('appA')">
+          <span class="nav-arrow">▼</span> 附录A · 启发法和偏见
+        </div>
+      </li>
+      <li class="nav-item" data-target="appB">
+        <div class="nav-row" onclick="scrollToSection('appB')">
+          <span class="nav-arrow">▼</span> 附录B · 选择、价值以及框架
+        </div>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- 主体内容 -->
+  <main class="content">
+
+    <!-- 总览 -->
+    <section class="overview" id="overview">
+      <h2>📖 全书知识总览</h2>
+      <p class="lead">
+        《思考，快与慢》是诺贝尔经济学奖得主丹尼尔·卡尼曼的代表作。书中提出人类大脑有两种思维模式：
+        <strong>系统1（快思考）</strong>——快速、凭直觉、自动化运行；<strong>系统2（慢思考）</strong>——缓慢、需努力、刻意运作。
+        通过"启发法与偏见"、"过度自信"、"前景理论"、"两个自我"四大主题，深刻揭示了人类决策与判断的非理性机制。
+      </p>
+      <div class="mindmap">
+        <svg viewBox="0 0 1200 560" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+          <defs>
+            <linearGradient id="centerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1a3a4a"/>
+              <stop offset="100%" stop-color="#2c5f7c"/>
+            </linearGradient>
+            <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- 连接线 (中心到各部分) -->
+          <g stroke="#d6d2c4" stroke-width="2" fill="none" opacity="0.7">
+            <path d="M 600 280 Q 450 180 200 100"/>
+            <path d="M 600 280 Q 450 220 180 230"/>
+            <path d="M 600 280 Q 500 350 280 400"/>
+            <path d="M 600 280 Q 750 350 1000 400"/>
+            <path d="M 600 280 Q 800 220 1020 230"/>
+          </g>
+
+          <!-- 中心节点 -->
+          <g transform="translate(600 280)">
+            <circle r="78" fill="url(#centerGrad)" filter="url(#soft)"/>
+            <circle r="78" fill="none" stroke="#fff" stroke-width="2" opacity="0.4"/>
+            <text y="-10" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">思考</text>
+            <text y="14" text-anchor="middle" fill="#fff" font-size="14" font-weight="400" opacity="0.9">快与慢</text>
+            <text y="36" text-anchor="middle" fill="#fff" font-size="10" opacity="0.7">SYSTEM 1 &amp; 2</text>
+          </g>
+
+          <!-- 5个分支 -->
+          <g font-family="-apple-system, sans-serif" font-weight="600">
+            <!-- P1 两个系统 -->
+            <g transform="translate(200 100)">
+              <rect x="-90" y="-30" width="180" height="60" rx="8" fill="#2c5f7c" filter="url(#soft)"/>
+              <text y="-6" text-anchor="middle" fill="#fff" font-size="13">第一部分</text>
+              <text y="14" text-anchor="middle" fill="#fff" font-size="12" opacity="0.9">两个系统</text>
+            </g>
+            <!-- P2 启发法 -->
+            <g transform="translate(180 230)">
+              <rect x="-90" y="-30" width="180" height="60" rx="8" fill="#7a4a8a" filter="url(#soft)"/>
+              <text y="-6" text-anchor="middle" fill="#fff" font-size="13">第二部分</text>
+              <text y="14" text-anchor="middle" fill="#fff" font-size="12" opacity="0.9">启发法与偏见</text>
+            </g>
+            <!-- P3 过度自信 -->
+            <g transform="translate(280 400)">
+              <rect x="-90" y="-30" width="180" height="60" rx="8" fill="#b85c38" filter="url(#soft)"/>
+              <text y="-6" text-anchor="middle" fill="#fff" font-size="13">第三部分</text>
+              <text y="14" text-anchor="middle" fill="#fff" font-size="12" opacity="0.9">过度自信与决策失误</text>
+            </g>
+            <!-- P4 选择与风险 -->
+            <g transform="translate(1000 400)">
+              <rect x="-90" y="-30" width="180" height="60" rx="8" fill="#3a7a4a" filter="url(#soft)"/>
+              <text y="-6" text-anchor="middle" fill="#fff" font-size="13">第四部分</text>
+              <text y="14" text-anchor="middle" fill="#fff" font-size="12" opacity="0.9">选择与风险</text>
+            </g>
+            <!-- P5 两个自我 -->
+            <g transform="translate(1020 230)">
+              <rect x="-90" y="-30" width="180" height="60" rx="8" fill="#8a6d3b" filter="url(#soft)"/>
+              <text y="-6" text-anchor="middle" fill="#fff" font-size="13">第五部分</text>
+              <text y="14" text-anchor="middle" fill="#fff" font-size="12" opacity="0.9">两个自我</text>
+            </g>
+          </g>
+
+          <!-- 装饰小点 -->
+          <g fill="#d6d2c4" opacity="0.5">
+            <circle cx="100" cy="50" r="3"/><circle cx="60" cy="180" r="2"/>
+            <circle cx="1140" cy="60" r="3"/><circle cx="1100" cy="500" r="2"/>
+            <circle cx="50" cy="500" r="2"/><circle cx="1150" cy="180" r="2"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ============== 序言 ============== -->
+    <section class="section" id="preface" data-part="0">
+      <div class="section-header">
+        <span class="section-badge">序言</span>
+        <h2 class="section-title">饮水机旁的闲谈</h2>
+      </div>
+      <div class="chapter">
+        <div class="chapter-title"><span class="chapter-num">序</span>序言：为什么是"闲谈"？</div>
+        <div class="chapter-subtitle">卡尼曼告诉你，这本书能丰富你的词汇</div>
+        <div class="quote">"这本书就像是办公室饮水机旁的闲谈一样……我希望这本书能丰富人们的词汇，这样大家在谈论别人的判断与决策、公司的新政策或是同事的投资时，这些新词汇就能派上用场了。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">📌</span>核心目的</div>
+            <ul class="card-list">
+              <li><strong>词汇扩展</strong>：提供更丰富精确的语言来描述判断与决策的失误</li>
+              <li><strong>自我觉察</strong>：通过分析他人的错误，更容易发现自己类似的问题</li>
+              <li><strong>干预错误</strong>：正确的判断能有效干预错误，降低损失</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💡</span>核心洞见</div>
+            <ul class="card-list">
+              <li>大多数印象和想法都来自无意识过程，<strong>你无从知晓自己是怎样知道的</strong></li>
+              <li>对过失的关注并不诋毁人类智慧，正如关注疾病并不否定健康</li>
+              <li>对别人别有见地的闲谈有所期待，是进行严厉自我批评的强大动力</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🎯</span>本书承诺</div>
+            <ul class="card-list">
+              <li>将心理学研究的深刻见解，转化为日常决策的实用工具</li>
+              <li>帮助读者识别、判断和纠正自己与他人在判断和决策中常犯的错误</li>
+              <li>建立一种<strong>对直觉保持警惕</strong>的思维习惯</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第一部分 ============== -->
+    <section class="section" id="part1" data-part="1">
+      <div class="section-header">
+        <span class="section-badge">第一部分</span>
+        <h2 class="section-title">两个系统</h2>
+      </div>
+
+      <!-- 第1章 -->
+      <div class="chapter" id="ch1">
+        <div class="chapter-title"><span class="chapter-num">1</span>一张愤怒的脸和一道乘法题</div>
+        <div class="chapter-subtitle">自动模式的大脑活动 · 双系统理论的开端</div>
+        <div class="quote">"审视一张愤怒女性的脸时，你正在很自然地将观察和直觉思考结合在一起……这种活动是无意识的，而且毫不费力。这就是快思考的一个例子。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🧠</span>核心概念</div>
+            <ul class="card-list">
+              <li><strong>快思考（系统1）</strong>：无意识、快速、不怎么费脑力的自主运行</li>
+              <li><strong>慢思考（系统2）</strong>：刻意、需要努力、与主观体验相关</li>
+              <li>两个系统并非字面意义上的人，而是<strong>心理学上的概念</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔬</span>经典实验</div>
+            <ul class="card-list">
+              <li>愤怒女性的脸 → 系统1瞬间自动判断情绪</li>
+              <li>17×24=? → 系统1无法回答，系统2被激活</li>
+              <li>球衣颜色判断实验 → 揭示双系统的<strong>冲突与监控</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚡</span>关键启示</div>
+            <ul class="card-list">
+              <li>系统1和系统2在我们醒着时<strong>都处于活跃状态</strong></li>
+              <li>系统1不断为系统2提供印象、直觉、意向和感觉</li>
+              <li>系统2会持续<strong>监督自身行为</strong>——保持礼节与警惕</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">📚</span>核心结论</div>
+            <ul class="card-list">
+              <li><strong>缪勒-莱耶错觉</strong>：即使知道两条线等长，眼中所见仍是一条长一条短——系统1的自主反应无法被系统2压制</li>
+              <li>对错觉的<strong>唯一矫正方法</strong>是学会识别模式并产生怀疑</li>
+              <li>"心理剧"比喻：两个系统是<strong>大脑内部的两个小人</strong>，各有特征与局限</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第2章 -->
+      <div class="chapter" id="ch2">
+        <div class="chapter-title"><span class="chapter-num">2</span>电影的主角与配角</div>
+        <div class="chapter-subtitle">注意力的稀缺与资源分配</div>
+        <div class="quote">"系统2的著名特性是它很懒，它不愿付出努力，除非不得不这么做。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🎬</span>核心概念</div>
+            <ul class="card-list">
+              <li><strong>瞳孔反应</strong>：瞳孔放大是衡量努力程度的敏感指标</li>
+              <li><strong>认知忙碌</strong>：高负荷推理使瞳孔显著放大</li>
+              <li><strong>自我控制</strong>：需要意志力的活动同样消耗系统2资源</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🎯</span>注意力机制</div>
+            <ul class="card-list">
+              <li><strong>聚焦视野</strong>：注意力像聚光灯，只能照亮一个区域</li>
+              <li><strong>变化盲视</strong>：当注意力转移时，视野中巨大变化也可能被忽略</li>
+              <li><strong>非注意盲视</strong>：未注意到的物体即使明显存在也看不见</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚠️</span>关键启示</div>
+            <ul class="card-list">
+              <li>系统2的<strong>资源有限</strong>，日常决策时我们往往节约使用</li>
+              <li>同时执行多项任务时，系统2会在任务间<strong>切换资源</strong>，影响表现</li>
+              <li>当系统2资源耗尽时，自我控制能力会<strong>显著下降</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💼</span>实践应用</div>
+            <ul class="card-list">
+              <li>复杂决策应避免<strong>认知疲劳时段</strong></li>
+              <li>重要的财务或人生决定，<strong>不宜在分心状态下</strong>做出</li>
+              <li>理解"认知吝啬鬼"——大脑是<strong>节能高手</strong>，时刻寻求认知节省</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第3章 -->
+      <div class="chapter" id="ch3">
+        <div class="chapter-title"><span class="chapter-num">3</span>惰性思维与延迟满足的矛盾</div>
+        <div class="chapter-subtitle">系统2的"懒"与延迟满足的能力</div>
+        <div class="quote">"如果系统1发现了异常，懒惰的系统2就会被激活。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">💤</span>惰性思维</div>
+            <ul class="card-list">
+              <li>系统2天然<strong>倾向于节能</strong>，能不思考就不思考</li>
+              <li>系统1完成大部分判断，系统2只是<strong>被动监督</strong></li>
+              <li>只有<strong>遭遇困难</strong>，系统2才会被激活</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🍬</span>延迟满足</div>
+            <ul class="card-list">
+              <li>棉花糖实验：自控力强的儿童未来<strong>表现更好</strong></li>
+              <li>系统2能<strong>压制</strong>系统1的即时冲动</li>
+              <li>但抑制冲动会<strong>消耗心理能量</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚖️</span>矛盾与平衡</div>
+            <ul class="card-list">
+              <li>自控力是<strong>有限资源</strong>，会随使用而消耗</li>
+              <li>连续自我控制后，<strong>意志力下降</strong>，易出现"失控"行为</li>
+              <li>血糖水平与自控表现相关（虽然存在争议）</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>人类思维本质上<strong>是懒惰的</strong>，这是进化形成的节能策略</li>
+              <li>系统1 / 系统2的<strong>分工合作</strong>，既保证效率又留出纠错空间</li>
+              <li>理解"懒"是合理设计，可以更宽容地看待<strong>自己的判断失误</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第4章 -->
+      <div class="chapter" id="ch4">
+        <div class="chapter-title"><span class="chapter-num">4</span>联想的神奇力量</div>
+        <div class="chapter-subtitle">联想机制 · 启动效应 · 认知的连贯性</div>
+        <div class="quote">"想法不但可以是连贯的，还会引发其他想法……这一过程就是联想。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🔗</span>联想机制</div>
+            <ul class="card-list">
+              <li>想法之间存在<strong>连贯性</strong>，会引发其他想法</li>
+              <li>系统1<strong>不断构建</strong>对所发生事件的意义解释</li>
+              <li>即使事件复杂且无关联，大脑也会<strong>强行整合</strong>出故事</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🎯</span>启动效应</div>
+            <ul class="card-list">
+              <li>看到"面包"联想到"黄油"，是<strong>启动效应</strong>的典型表现</li>
+              <li>外部刺激会<strong>激活</strong>相关的思维与行为倾向</li>
+              <li><strong>无意识启动</strong>甚至能影响真实行为的强度</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🌊</span>认知的连贯性</div>
+            <ul class="card-list">
+              <li>系统1倾向于<strong>简化复杂信息</strong>，构造连贯的故事</li>
+              <li>即使信息<strong>明显矛盾</strong>，系统1也会选择性忽略</li>
+              <li>这种连贯性偏好导致<strong>确认偏误</strong>等系统性问题</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🧪</span>经典实验</div>
+            <ul class="card-list">
+              <li>老人图片启动实验：被试走得更慢，但<strong>未察觉</strong>影响</li>
+              <li>脏话启动实验：增加冰水耐受时间，<strong>无意识</strong>起作用</li>
+              <li>"如果你手里拿着锤子，看什么都像钉子"——启动效应的<strong>迁移</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第5章 -->
+      <div class="chapter" id="ch5">
+        <div class="chapter-title"><span class="chapter-num">5</span>你的直觉有可能只是错觉</div>
+        <div class="chapter-subtitle">认知放松 · 警惕错觉的能力</div>
+        <div class="quote">"好判断来自于经验，而经验往往来自于坏判断。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">💡</span>认知放松</div>
+            <ul class="card-list">
+              <li>熟悉的<strong>真理感</strong>是认知放松的标志</li>
+              <li>重复曝光效应：<strong>重复出现</strong>的事物更易被接受</li>
+              <li>清晰的字体、生动的图像都会<strong>提高认知放松度</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🎭</span>警惕错觉</div>
+            <ul class="card-list">
+              <li>缪勒-莱耶错觉说明<strong>眼见不一定为实</strong></li>
+              <li>系统1的<strong>第一印象</strong>常常是错觉而非真相</li>
+              <li>识别错觉需要<strong>系统2的刻意努力</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔬</span>科学可错性</div>
+            <ul class="card-list">
+              <li>科学事实<strong>并非永恒</strong>——任何结论都可能被未来推翻</li>
+              <li>科学追求的不是"绝对正确"，而是<strong>不断纠错</strong></li>
+              <li>心理学家对"启发式"的定义与物理学家不同，<strong>启发式≈偏见</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🎯</span>核心结论</div>
+            <ul class="card-list">
+              <li>人类认知的<strong>基本原则</strong>：<strong>所见即所得</strong>——大脑按感知构建世界</li>
+              <li>错觉是<strong>不可避免</strong>的副产品，但通过训练可以识别</li>
+              <li>无论对自己的直觉多么自信，<strong>都要保持怀疑精神</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第6章 -->
+      <div class="chapter" id="ch6">
+        <div class="chapter-title"><span class="chapter-num">6</span>意料之外与情理之中</div>
+        <div class="chapter-subtitle">惊讶的机制 · 规范理论与因果关系</div>
+        <div class="quote">"惊讶是对意料之外的事件的回应，意料之外又是对正常事件进行回应的结果。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">⚡</span>惊讶机制</div>
+            <ul class="card-list">
+              <li><strong>预期之外</strong>的刺激会激活系统2的注意力</li>
+              <li>惊讶的程度取决于<strong>事件违反常规</strong>的程度</li>
+              <li>惊讶后大脑会<strong>立即寻找原因</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📏</span>规范理论</div>
+            <ul class="card-list">
+              <li>"意料之外"需要"意料之中"作为<strong>参照标准</strong></li>
+              <li>对正常事件的认知基于<strong>记忆中的典型</strong>和<strong>世界的因果模式</strong></li>
+              <li>惊讶让我们<strong>更新对世界的认识</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔗</span>因果与意图</div>
+            <ul class="card-list">
+              <li>人类思维是<strong>因果关系机器</strong>，处处寻找原因</li>
+              <li>亲社会行为（团结、合作）需要<strong>对意图</strong>的判断</li>
+              <li>意图推断是我们<strong>道德判断</strong>的基础</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💼</span>实践启示</div>
+            <ul class="card-list">
+              <li>判断一个人的<strong>意图</strong>，比判断其行为本身更复杂</li>
+              <li>亲密关系中，<strong>意图推断</strong>占据大部分注意力</li>
+              <li>许多误会源于<strong>对意图的错误解读</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第7章 -->
+      <div class="chapter" id="ch7">
+        <div class="chapter-title"><span class="chapter-num">7</span>字母"B"与数字"13"</div>
+        <div class="chapter-subtitle">曝光效应 · 虚假的相关性</div>
+        <div class="quote">"重复曝光会让人产生熟悉感，进而产生<strong>喜欢的感觉</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🔁</span>曝光效应</div>
+            <ul class="card-list">
+              <li>反复出现的刺激会<strong>增加好感</strong></li>
+              <li>消费者偏好常常由<strong>重复广告</strong>所塑造</li>
+              <li>难以察觉的刺激也能<strong>产生偏好</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📊</span>虚假相关性</div>
+            <ul class="card-list">
+              <li>人们对<strong>小样本</strong>的统计直觉往往错误</li>
+              <li>在某医院出生的男婴比女婴多时，会<strong>怀疑该医院</strong></li>
+              <li>实际上，<strong>样本虽小</strong>，但仍服从大数定律</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🎭</span>启发法的双面性</div>
+            <ul class="card-list">
+              <li>启发法是<strong>有用的简略</strong>，通常有效</li>
+              <li>但也会导致<strong>严重偏差</strong>（如对稀有事件过度反应）</li>
+              <li>其<strong>不可预测</strong>的失效使其更加危险</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>认知放松会产生<strong>真实的好感</strong>——熟悉的事物让人愉悦</li>
+              <li>这种<strong>不假思索</strong>的反应是直觉的根源</li>
+              <li>理解曝光效应能帮助我们<strong>识破广告的心理学把戏</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第8章 -->
+      <div class="chapter" id="ch8">
+        <div class="chapter-title"><span class="chapter-num">8</span>我们究竟是如何作出判断的？</div>
+        <div class="chapter-subtitle">判断的双过程 · 启发式与替换</div>
+        <div class="quote">"判断是<strong>系统1</strong>的产物，而<strong>系统2</strong>的工作则是在判断的基础上做出选择。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🧠</span>判断的双过程</div>
+            <ul class="card-list">
+              <li>系统1产生<strong>基本的判断印象</strong></li>
+              <li>系统2负责<strong>明确表达</strong>判断或做出选择</li>
+              <li>两者的<strong>分工合作</strong>是判断的常态</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔄</span>替换机制</div>
+            <ul class="card-list">
+              <li>面对复杂问题时，系统1会用<strong>更简单的相关问题</strong>来回答</li>
+              <li>原始问题 = <strong>目标问题</strong>；被替换的简单问题 = <strong>启发式问题</strong></li>
+              <li>替换<strong>不一定有效</strong>，但能<strong>节省认知资源</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💡</span>判断的视角</div>
+            <ul class="card-list">
+              <li>对<strong>核心特征</strong>的直接判断是<strong>系统1</strong>的工作</li>
+              <li>对<strong>综合特征</strong>的判断需要<strong>系统2</strong>的整合</li>
+              <li>系统1的<strong>连贯性偏好</strong>使综合判断偏向一致</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🎯</span>核心启示</div>
+            <ul class="card-list">
+              <li>理解<strong>替换机制</strong>，能识别许多判断失误的根源</li>
+              <li>对目标问题与启发式问题的<strong>区分</strong>，是规避偏差的关键</li>
+              <li>许多<strong>直觉性的判断</strong>，其实是对无关问题的回答</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第9章 -->
+      <div class="chapter" id="ch9">
+        <div class="chapter-title"><span class="chapter-num">9</span>目标问题与启发性问题形影不离</div>
+        <div class="chapter-subtitle">目标问题 vs 启发式问题 · 启发法的失效</div>
+        <div class="quote">"我们总是很难快速找到令人满意的答案，此时系统1就会找到一个相关问题来回答。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🎯</span>目标问题与启发式</div>
+            <ul class="card-list">
+              <li><strong>目标问题</strong>：你想作出的评估（难以直接回答）</li>
+              <li><strong>启发式问题</strong>：与目标问题相关的、<strong>更易回答</strong>的替代问题</li>
+              <li>系统1常常<strong>不自知地</strong>用启发式问题替代目标问题</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚡</span>替换的类型</div>
+            <ul class="card-list">
+              <li><strong>情感启发式</strong>：用情绪反应代替理性分析</li>
+              <li><strong>可得性启发式</strong>：用回忆的难易代替概率</li>
+              <li><strong>代表性启发式</strong>：用相似度代替基础概率</li>
+              <li><strong>锚定效应</strong>：用初始值影响后续判断</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚠️</span>替换的风险</div>
+            <ul class="card-list">
+              <li>替换常常<strong>掩盖了真正的目标</strong></li>
+              <li>许多"答案"其实<strong>未触及原问题</strong></li>
+              <li>系统2如果<strong>不警觉</strong>，也会接受这些错误答案</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>几乎所有<strong>重大判断错误</strong>都可以追溯到替换</li>
+              <li>对启发式问题的<strong>警觉</strong>是减少偏差的第一步</li>
+              <li>提问"我究竟<strong>真正在问什么</strong>"是规避偏差的有效方法</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第二部分 ============== -->
+    <section class="section" id="part2" data-part="2">
+      <div class="section-header">
+        <span class="section-badge">第二部分</span>
+        <h2 class="section-title">启发法与偏见</h2>
+      </div>
+
+      <!-- 第10章 -->
+      <div class="chapter" id="ch10">
+        <div class="chapter-title"><span class="chapter-num">10</span>大数法则与小数定律</div>
+        <div class="chapter-subtitle">对随机性的误解 · 样本大小的重要性</div>
+        <div class="quote">"短期的奇怪现象不代表长期趋势。我们对<strong>小样本</strong>的判断往往缺乏统计学基础。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">📊</span>大数法则</div>
+            <ul class="card-list">
+              <li>大样本能<strong>更好地</strong>代表总体</li>
+              <li>样本量越大，平均值越接近<strong>真实值</strong></li>
+              <li>但<strong>变异</strong>在小样本中仍不可避免</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🎯</span>小数定律</div>
+            <ul class="card-list">
+              <li>人们<strong>错误地</strong>将大数法则应用于小样本</li>
+              <li>肾癌发病率研究：发病率最低的县都<strong>集中在乡村</strong>，但这正是小样本的<strong>自然波动</strong></li>
+              <li>对<strong>小样本的过度解释</strong>导致系统性的判断偏差</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🏥</span>对系统1的影响</div>
+            <ul class="card-list">
+              <li>系统1<strong>不擅长</strong>理解大数法则</li>
+              <li>它倾向于<strong>为每件事</strong>寻找因果解释</li>
+              <li>在<strong>小数据</strong>中看到的模式可能是<strong>噪声</strong>而非信号</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>判断时<strong>务必考虑样本大小</strong></li>
+              <li>小数据中的<strong>模式常常是随机的</strong>，不应过度解读</li>
+              <li>医学、商业、教育等领域的<strong>小样本结论</strong>，应保持怀疑</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第11章 -->
+      <div class="chapter" id="ch11">
+        <div class="chapter-title"><span class="chapter-num">11</span>锚定效应在生活中随处可见</div>
+        <div class="chapter-subtitle">锚定效应 · 数字对判断的支配</div>
+        <div class="quote">"当人们对某个事件<strong>毫无头绪</strong>时，便会把<strong>最初的数字</strong>作为锚点，由此进行上下调整。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">⚓</span>锚定效应</div>
+            <ul class="card-list">
+              <li>任何<strong>初始数字</strong>（锚）都会影响后续判断</li>
+              <li>即使锚是<strong>完全随机</strong>的（如轮盘数字），仍有显著影响</li>
+              <li>调整往往<strong>不充分</strong>——最终的判断仍<strong>偏向锚</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔬</span>经典实验</div>
+            <ul class="card-list">
+              <li><strong>幸运轮盘实验</strong>：转盘停在10或65，学生估计的非洲国家数量<strong>显著不同</strong></li>
+              <li>法庭判决研究：先提及<strong>较高赔偿数字</strong>的陪审团给出更高裁决</li>
+              <li>购物中的"原价"和"折扣"——<strong>锚定价格</strong>主导感知价值</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💼</span>应用场景</div>
+            <ul class="card-list">
+              <li><strong>谈判</strong>：先出价方往往能获得更有利的结果</li>
+              <li><strong>定价</strong>：商家设置"建议零售价"作为锚</li>
+              <li><strong>薪酬</strong>：最初工资水平影响长期收入</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>锚定效应是<strong>最稳健</strong>的认知偏差之一</li>
+              <li>在<strong>无意识层面</strong>运作，难以通过意志力克服</li>
+              <li>理解锚定效应，有助于<strong>在谈判和决策</strong>中主动出击</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第12章 -->
+      <div class="chapter" id="ch12">
+        <div class="chapter-title"><span class="chapter-num">12</span>科学地利用可得性启发法</div>
+        <div class="chapter-subtitle">可得性 · 实例vs频率</div>
+        <div class="quote">"在<strong>风险评估</strong>中，大脑根据<strong>回忆的难易程度</strong>来判断事件的可能性。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">💭</span>可得性启发式</div>
+            <ul class="card-list">
+              <li>大脑根据<strong>回忆的难易</strong>判断事件概率</li>
+              <li>生动的、近期的事件<strong>更容易回忆</strong>，显得更可能</li>
+              <li>实际概率常常<strong>与感知概率</strong>不一致</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📰</span>媒体的影响</div>
+            <ul class="card-list">
+              <li><strong>媒体覆盖度</strong>扭曲公众对风险事件的认知</li>
+              <li>飞机失事被广泛报道，导致<strong>对飞行的过度恐惧</strong>（实际更安全）</li>
+              <li>人们<strong>高估</strong>媒体关注的事件概率，<strong>低估</strong>沉默的事件</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💼</span>对商业的启示</div>
+            <ul class="card-list">
+              <li>品牌<strong>熟悉度</strong>影响产品评估和购买决策</li>
+              <li>销售活动中，<strong>生动展示</strong>比数据更有效</li>
+              <li>广告的<strong>重复曝光</strong>能显著提高可得性</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>可得性是<strong>有用的直觉</strong>，但<strong>容易出错</strong></li>
+              <li>重大决策前应<strong>查阅统计数据</strong>，避免被可得性误导</li>
+              <li>理解可得性，有助于<strong>理性地评估真实风险</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第13章 -->
+      <div class="chapter" id="ch13">
+        <div class="chapter-title"><span class="chapter-num">13</span>焦虑情绪与风险政策的设计</div>
+        <div class="chapter-subtitle">风险感知 · 恐慌的机制</div>
+        <div class="quote">"对<strong>不可控</strong>、<strong>不确定</strong>、<strong>可怕</strong>的风险，公众会显著高估其严重性。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">😰</span>风险感知</div>
+            <ul class="card-list">
+              <li>风险评估<strong>不是理性计算</strong>，而是<strong>情绪反应</strong></li>
+              <li>恐惧、恐慌会<strong>放大</strong>对风险的感知</li>
+              <li>熟悉的事物被认为<strong>风险更低</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📋</span>风险政策</div>
+            <ul class="card-list">
+              <li>好的风险政策应<strong>区别对待</strong>不同类型的风险</li>
+              <li>对<strong>常见、低概率</strong>事件的恐惧值得理解</li>
+              <li><strong>透明的沟通</strong>能降低不必要的恐慌</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔬</span>研究结论</div>
+            <ul class="card-list">
+              <li>对<strong>核电</strong>等有争议技术的恐惧远超实际风险</li>
+              <li>公众<strong>低估</strong>熟悉技术的风险（如驾驶）</li>
+              <li>风险沟通应<strong>关注情绪</strong>，而非仅提供数据</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>风险感知是<strong>系统1</strong>主导的快速判断</li>
+              <li>情绪在风险评估中扮演<strong>关键角色</strong></li>
+              <li><strong>理性的政策设计</strong>必须考虑人性的非理性</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第14章 -->
+      <div class="chapter" id="ch14">
+        <div class="chapter-title"><span class="chapter-num">14</span>猜一下，汤姆的专业是什么？</div>
+        <div class="chapter-subtitle">代表性启发式 · 基础比率忽视</div>
+        <div class="quote">"人们根据<strong>相似性</strong>判断概率，<strong>严重忽视</strong>基础比率。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🎭</span>代表性启发式</div>
+            <ul class="card-list">
+              <li>根据事物与原型的<strong>相似度</strong>判断概率</li>
+              <li>忽略<strong>基础比率</strong>（base rate）信息</li>
+              <li>导致<strong>严重</strong>的概率判断错误</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">👨</span>汤姆问题</div>
+            <ul class="card-list">
+              <li>描述汤姆"性格内向、整洁有序"，多数人判断他是<strong>图书管理员</strong>而非<strong>农民</strong></li>
+              <li>但<strong>农民的数量</strong>远多于图书管理员，基础概率更重要</li>
+              <li>系统1完全<strong>忽视</strong>了基础比率</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚠️</span>失误模式</div>
+            <ul class="card-list">
+              <li><strong>对样本大小不敏感</strong>：忽视样本规模</li>
+              <li><strong>对预测的误解</strong>：忽视回归现象</li>
+              <li><strong>忽视机会的作用</strong>：凡事寻找因果</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>代表性启发式是<strong>系统1的招牌</strong>，也是偏见的主要来源</li>
+              <li>在<strong>概率判断</strong>中，基础比率是关键依据</li>
+              <li>克服代表性偏误需要<strong>系统2</strong>的刻意努力</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第15章 -->
+      <div class="chapter" id="ch15">
+        <div class="chapter-title"><span class="chapter-num">15</span>琳达问题的社会效应</div>
+        <div class="chapter-subtitle">合取谬误 · 描述对判断的影响</div>
+        <div class="quote">"对一个<strong>生动、具体</strong>的描述判断概率时，人们会<strong>违反逻辑</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">👩</span>琳达问题</div>
+            <ul class="card-list">
+              <li>琳达是<strong>女权主义银行职员</strong>的概率，大于她是<strong>银行职员</strong>的概率？</li>
+              <li>逻辑上这是<strong>不可能</strong>的，但85%的受试者犯了错</li>
+              <li>生动的描述<strong>误导</strong>了概率判断</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🧩</span>合取谬误</div>
+            <ul class="card-list">
+              <li>两个事件的<strong>合取概率</strong>总是不大于任一单独事件的概率</li>
+              <li>生动的描述<strong>增加</strong>了细节组合的<strong>代表性</strong>，导致判断错误</li>
+              <li>即使是<strong>统计学家</strong>也常犯此类错误</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🎬</span>生动的描述</div>
+            <ul class="card-list">
+              <li>描述的<strong>细节</strong>会增加<strong>情感共鸣</strong>和<strong>代表性</strong></li>
+              <li>故事比统计数据<strong>更有说服力</strong></li>
+              <li>这导致<strong>投资、医疗保险</strong>等领域的判断偏差</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>生动的描述<strong>扭曲</strong>了概率判断</li>
+              <li>理解<strong>合取规则</strong>有助于识破误导</li>
+              <li>统计思维与<strong>系统1的直觉</strong>经常冲突</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第16章 -->
+      <div class="chapter" id="ch16">
+        <div class="chapter-title"><span class="chapter-num">16</span>因果关系比统计学信息更具说服力</div>
+        <div class="chapter-subtitle">因果思维 · 统计信息的局限</div>
+        <div class="quote">"我们天生就是<strong>因果关系动物</strong>，对因果故事的偏好根深蒂固。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🔗</span>因果思维</div>
+            <ul class="card-list">
+              <li>人类思维<strong>自动</strong>在事件间建立因果联系</li>
+              <li>无论数据是否支持因果，因果故事<strong>更易理解</strong></li>
+              <li>统计学信息常常<strong>不如因果故事</strong>有说服力</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📊</span>统计vs因果</div>
+            <ul class="card-list">
+              <li>"某药物<strong>导致</strong>反应"比"反应率为3%"更令人信服</li>
+              <li>统计学需要<strong>特殊训练</strong>才能理解</li>
+              <li>因果故事<strong>自动激活</strong>系统1的反应</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🎯</span>实践影响</div>
+            <ul class="card-list">
+              <li>广告常用<strong>因果叙事</strong>（如"含此成分使头发更亮泽"）</li>
+              <li>新闻报道偏好<strong>人物故事</strong>，而非数据</li>
+              <li>政策辩论中，<strong>个案</strong>常压倒统计数据</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>理解<strong>相关≠因果</strong>是科学思维的基础</li>
+              <li>重大决策应<strong>以数据为基础</strong>，避免被故事误导</li>
+              <li>但故事和因果<strong>也有价值</strong>，关键在于平衡</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第17章 -->
+      <div class="chapter" id="ch17">
+        <div class="chapter-title"><span class="chapter-num">17</span>所有表现都会回归平均值</div>
+        <div class="chapter-subtitle">均值回归 · 因果谬误</div>
+        <div class="quote">"极端表现后会跟随<strong>较温和</strong>的表现——这并非因果，而是<strong>统计规律</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">📈</span>均值回归</div>
+            <ul class="card-list">
+              <li>极端表现后，往往出现<strong>更接近平均</strong>的后续表现</li>
+              <li>这是<strong>统计学规律</strong>，不是因果关系</li>
+              <li>飞行员表现<strong>极佳</strong>后一次表现平平，并非"退步"</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚠️</span>常见误读</div>
+            <ul class="card-list">
+              <li>对<strong>极端行为</strong>的奖励或惩罚后，表现回归平均</li>
+              <li>被错误归因于<strong>奖励或惩罚的效果</strong></li>
+              <li>实际是<strong>自然波动</strong>，与干预无关</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📚</span>教育领域实例</div>
+            <ul class="card-list">
+              <li><strong>飞行员的训练</strong>中表现不佳的被批评后通常会进步</li>
+              <li>批评被错误地认为是<strong>进步的原因</strong></li>
+              <li>实际上，<strong>回归平均</strong>是更合理的解释</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>理解<strong>均值回归</strong>避免许多虚假的因果归因</li>
+              <li>评估<strong>干预效果</strong>时，必须考虑自然波动</li>
+              <li><strong>奖励与惩罚</strong>的常见误读都源于忽视回归</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第18章 -->
+      <div class="chapter" id="ch18">
+        <div class="chapter-title"><span class="chapter-num">18</span>如何让直觉性预测更恰当有效？</div>
+        <div class="chapter-subtitle">直觉预测 · 校正方法</div>
+        <div class="quote">"直觉预测可以通过<strong>统计学校正</strong>得到显著改善。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🎯</span>直觉预测</div>
+            <ul class="card-list">
+              <li>专家的<strong>直觉预测</strong>常常过度自信</li>
+              <li>预测时倾向于<strong>满足故事的连贯性</strong></li>
+              <li>忽视<strong>回归</strong>等统计规律</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔧</span>校正方法</div>
+            <ul class="card-list">
+              <li><strong>远离均值</strong>的预测应<strong>向均值方向校正</strong></li>
+              <li>考虑<strong>基础比率</strong>，不要被个案故事左右</li>
+              <li>保持<strong>长期校准</strong>记录，反馈预测准确性</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🎓</span>专家的优势</div>
+            <ul class="card-list">
+              <li>真正<strong>具备环境规律性</strong>的领域，专家直觉更可靠</li>
+              <li>需要<strong>长期训练</strong>和<strong>即时反馈</strong></li>
+              <li>预测任务应<strong>明确</strong>且<strong>可重复</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>预测应<strong>利用直觉</strong>但<strong>通过统计校正</strong></li>
+              <li>反馈和<strong>持续校准</strong>是提升预测能力的关键</li>
+              <li>对<strong>不规律环境</strong>的预测要保持谦逊</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第三部分 ============== -->
+    <section class="section" id="part3" data-part="3">
+      <div class="section-header">
+        <span class="section-badge">第三部分</span>
+        <h2 class="section-title">过度自信与决策失误</h2>
+      </div>
+
+      <!-- 第19章 -->
+      <div class="chapter" id="ch19">
+        <div class="chapter-title"><span class="chapter-num">19</span>"知道"的错觉</div>
+        <div class="chapter-subtitle">后见之明 · 叙事谬误</div>
+        <div class="quote">"我们<strong>事后</strong>看到的过去，比<strong>事前</strong>看到的更<strong>可预测、更不模糊</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🔮</span>后见之明</div>
+            <ul class="card-list">
+              <li>事后人们会<strong>高估</strong>自己"早就知道"的判断</li>
+              <li>这种<strong>"我早就说过"</strong>的错觉普遍存在</li>
+              <li>对学习<strong>产生负面</strong>影响——似乎错误不可挽回</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📖</span>叙事谬误</div>
+            <ul class="card-list">
+              <li>人类思维<strong>强迫</strong>将事件整合为<strong>连贯的故事</strong></li>
+              <li>故事<strong>简化</strong>了复杂的因果链</li>
+              <li>导致对<strong>历史必然性</strong>的错误认知</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚠️</span>对决策的影响</div>
+            <ul class="card-list">
+              <li>后见之明<strong>扭曲</strong>对决策质量的评估</li>
+              <li>使<strong>经验教训</strong>变得模糊</li>
+              <li>导致<strong>过度自信</strong>——"我当时就知道"</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>理解<strong>后见之明</strong>，保持对<strong>事前判断</strong>的记录</li>
+              <li>记录<strong>当时的预测</strong>和<strong>理由</strong>，事后对比</li>
+              <li>避免被<strong>事后聪明</strong>的错觉所误导</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第20章 -->
+      <div class="chapter" id="ch20">
+        <div class="chapter-title"><span class="chapter-num">20</span>未来是不可预测的</div>
+        <div class="chapter-subtitle">预测的局限 · 因果地图的失灵</div>
+        <div class="quote">"长期预测的<strong>唯一价值</strong>在于提醒我们未来<strong>远比我们想象</strong>的更不可预测。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🌐</span>预测的难题</div>
+            <ul class="card-list">
+              <li>世界是<strong>极端复杂</strong>的，蝴蝶效应普遍存在</li>
+              <li><strong>专家预测</strong>的准确性远不如基础模型</li>
+              <li>长期预测常常<strong>惨不忍睹</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🗺️</span>因果地图</div>
+            <ul class="card-list">
+              <li>专家持有<strong>对世界的因果地图</strong></li>
+              <li>但在<strong>低有效性环境</strong>中，地图常常失灵</li>
+              <li>专家<strong>过度自信</strong>源于对自身地图的依赖</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📊</span>实证研究</div>
+            <ul class="card-list">
+              <li>对<strong>政治、经济</strong>的长期预测几乎都不准确</li>
+              <li>专家在<strong>非常狭窄</strong>的领域内可能略胜一筹</li>
+              <li>总体上，<strong>模型优于专家</strong>，尤其是长期预测</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>承认<strong>未来的不可预测性</strong>，是理性决策的起点</li>
+              <li>避免<strong>过度自信</strong>的预测，<strong>保留对意外</strong>的应对空间</li>
+              <li>采用<strong>基准预测</strong>和<strong>情景规划</strong>，应对不确定性</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第21章 -->
+      <div class="chapter" id="ch21">
+        <div class="chapter-title"><span class="chapter-num">21</span>直觉判断与公式运算，孰优孰劣？</div>
+        <div class="chapter-subtitle">算法 vs 专家 · 简单公式的胜利</div>
+        <div class="quote">"在<strong>众多领域</strong>中，<strong>简单公式</strong>比人类专家的<strong>直觉判断</strong>更准确。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">📐</span>算法vs专家</div>
+            <ul class="card-list">
+              <li>在许多领域，<strong>简单算法</strong>胜过专家判断</li>
+              <li>算法<strong>没有</strong>人类判断的<strong>偏差</strong></li>
+              <li>专家的<strong>不一致性</strong>是核心问题</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🏥</span>应用领域</div>
+            <ul class="card-list">
+              <li><strong>医学诊断</strong>：基于关键指标的公式比医生判断更准</li>
+              <li><strong>商业决策</strong>：信用评分公式胜过信贷员</li>
+              <li><strong>员工选拔</strong>：结构化评估优于面试</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚠️</span>专家的抵抗</div>
+            <ul class="card-list">
+              <li>专家<strong>抵触</strong>被公式取代</li>
+              <li>但<strong>客观表现</strong>常常支持算法</li>
+              <li>人类对<strong>机器判断</strong>有天然的抵触</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li><strong>简单公式</strong>在许多场合是更好的选择</li>
+              <li>算法应被视为<strong>专家的助手</strong>，而非完全替代</li>
+              <li>克服<strong>对公式的抵触</strong>，是改善决策的重要一步</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第22章 -->
+      <div class="chapter" id="ch22">
+        <div class="chapter-title"><span class="chapter-num">22</span>什么时候可以相信专家的直觉？</div>
+        <div class="chapter-subtitle">有效环境 · 专家直觉的条件</div>
+        <div class="quote">"专家的直觉只有在<strong>高度规律的环境</strong>中才可能<strong>接近可靠</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🎯</span>有效环境</div>
+            <ul class="card-list">
+              <li>专家直觉需要<strong>稳定的环境规律</strong></li>
+              <li>需要<strong>长期实践</strong>和<strong>即时反馈</strong></li>
+              <li>领域必须<strong>相对狭窄</strong>且<strong>可重复</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">✅</span>可靠的领域</div>
+            <ul class="card-list">
+              <li><strong>国际象棋</strong>大师的着法直觉</li>
+              <li>经验丰富的<strong>急诊医生</strong>的快速判断</li>
+              <li><strong>专业品酒师</strong>的味觉判断</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">❌</span>不可靠的领域</div>
+            <ul class="card-list">
+              <li><strong>金融投资</strong>：环境变化大，反馈滞后</li>
+              <li><strong>政治预测</strong>：受偶然事件影响大</li>
+              <li><strong>长期商业</strong>规划：因果链过长</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>不要<strong>轻易相信</strong>专家的<strong>"直觉"</strong></li>
+              <li>评估<strong>环境有效性</strong>是判断专家可信度的关键</li>
+              <li>在<strong>低规律性</strong>的领域，谦逊是最好的策略</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第23章 -->
+      <div class="chapter" id="ch23">
+        <div class="chapter-title"><span class="chapter-num">23</span>努力养成采纳外部意见的决策习惯</div>
+        <div class="chapter-subtitle">外部意见 · 决策卫生</div>
+        <div class="quote">"正确的决策需要<strong>外部视角</strong>，但人天生<strong>抗拒</strong>这种视角。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">👁️</span>外部视角</div>
+            <ul class="card-list">
+              <li>外部视角能<strong>纠正</strong>内部判断的偏差</li>
+              <li>需要<strong>刻意训练</strong>才能接受</li>
+              <li>对<strong>自我决策</strong>的批评最难</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🧼</span>决策卫生</div>
+            <ul class="card-list">
+              <li>如同<strong>个人卫生</strong>，需要养成<strong>决策卫生</strong>习惯</li>
+              <li>包括：<strong>事前记录预测</strong>、<strong>外部反馈</strong>、<strong>避免自我辩护</strong></li>
+              <li>这些习惯<strong>不需要太多</strong>，但需要<strong>持续</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💼</span>组织决策</div>
+            <ul class="card-list">
+              <li>组织应<strong>鼓励</strong>反对意见的提出</li>
+              <li>设计<strong>魔鬼代言人</strong>角色，挑战主流观点</li>
+              <li>建立<strong>事前预测</strong>和<strong>事后检验</strong>机制</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>培养<strong>接受外部意见</strong>的能力，是<strong>决策素养</strong>的核心</li>
+              <li>建立<strong>决策日志</strong>，记录<strong>预测、理由、结果</strong></li>
+              <li>经常<strong>反思</strong>："我可能错在哪里？"</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第24章 -->
+      <div class="chapter" id="ch24">
+        <div class="chapter-title"><span class="chapter-num">24</span>乐观主义是一柄双刃剑</div>
+        <div class="chapter-subtitle">乐观偏见 · 计划谬误</div>
+        <div class="quote">"乐观是<strong>生存的礼物</strong>，但也是<strong>企业、婚姻和银行账户</strong>的毒药。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🌞</span>乐观偏见</div>
+            <ul class="card-list">
+              <li>大多数人<strong>高估</strong>自己成功的可能性</li>
+              <li>低估<strong>负面事件</strong>的发生概率</li>
+              <li>企业家的<strong>过度乐观</strong>是常见现象</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📅</span>计划谬误</div>
+            <ul class="card-list">
+              <li>完成时间常常被<strong>严重低估</strong></li>
+              <li>项目成本常常<strong>超预算</strong></li>
+              <li>即使<strong>吸取教训</strong>也难以避免</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚖️</span>双刃剑</div>
+            <ul class="card-list">
+              <li><strong>积极面</strong>：乐观推动<strong>创业、创新、坚持</strong></li>
+              <li><strong>消极面</strong>：导致<strong>错误决策</strong>、<strong>财务损失</strong></li>
+              <li>关键在于<strong>适度</strong>的乐观</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>做计划时<strong>主动引入悲观视角</strong></li>
+              <li>用<strong>外部参考</strong>校准<strong>过度乐观</strong></li>
+              <li>理解乐观<strong>既推动进步</strong>，也<strong>导致错误</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第四部分 ============== -->
+    <section class="section" id="part4" data-part="4">
+      <div class="section-header">
+        <span class="section-badge">第四部分</span>
+        <h2 class="section-title">选择与风险 · 前景理论</h2>
+      </div>
+
+      <!-- 第25章 -->
+      <div class="chapter" id="ch25">
+        <div class="chapter-title"><span class="chapter-num">25</span>事关风险与财富的抉择</div>
+        <div class="chapter-subtitle">伯努利谬误 · 期望效用理论</div>
+        <div class="quote">"伯努利的<strong>期望效用理论</strong>假设人们<strong>理性地</strong>评估风险，但现实<strong>并非如此</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">📐</span>期望效用理论</div>
+            <ul class="card-list">
+              <li>传统理论假设人们<strong>理性</strong>地计算<strong>期望值</strong></li>
+              <li>用<strong>最终财富</strong>评估风险决策</li>
+              <li><strong>伯努利</strong>提出"边际效用递减"</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚠️</span>伯努利的盲点</div>
+            <ul class="card-list">
+              <li>圣彼得堡悖论揭示了<strong>期望效用</strong>的局限</li>
+              <li>人们并非按<strong>期望效用</strong>行事</li>
+              <li>需要<strong>新的理论</strong>解释实际行为</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💡</span>风险态度</div>
+            <ul class="card-list">
+              <li>人们对<strong>收益</strong>风险厌恶</li>
+              <li>对<strong>损失</strong>却风险偏好（反射效应）</li>
+              <li>这与<strong>期望效用理论</strong>预测相矛盾</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>传统理论<strong>不完整</strong>，需要<strong>前景理论</strong>修正</li>
+              <li>人们对<strong>损失</strong>的反应远比<strong>理论预测</strong>更强烈</li>
+              <li>理解<strong>风险态度</strong>的不对称性是关键</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第26章 -->
+      <div class="chapter" id="ch26">
+        <div class="chapter-title"><span class="chapter-num">26</span>更人性化的前景理论</div>
+        <div class="chapter-subtitle">前景理论 · 卡尼曼与特沃斯基</div>
+        <div class="quote">"前景理论比<strong>期望效用理论</strong>更<strong>人性化</strong>，能解释<strong>更广泛</strong>的决策行为。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">📊</span>前景理论核心</div>
+            <ul class="card-list">
+              <li>人们对<strong>得失</strong>的反应不对称</li>
+              <li>评估基于<strong>参照点</strong>，而非最终财富</li>
+              <li><strong>损失厌恶</strong>是核心原则</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📈</span>价值函数</div>
+            <ul class="card-list">
+              <li>呈<strong>S形</strong>，收益侧凹（风险厌恶）</li>
+              <li>损失侧凸（风险偏好）</li>
+              <li>损失侧的<strong>斜率更陡</strong>（损失厌恶）</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚖️</span>四大原理</div>
+            <ul class="card-list">
+              <li><strong>参照依赖</strong>：评估基于参照点</li>
+              <li><strong>损失厌恶</strong>：损失比等量收益<strong>更强烈</strong></li>
+              <li><strong>反射效应</strong>：损失时倾向<strong>冒险</strong></li>
+              <li><strong>敏感性递减</strong>：大数额下反应<strong>减弱</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>前景理论<strong>革命性</strong>地改变了<strong>经济学</strong>对<strong>风险决策</strong>的理解</li>
+              <li><strong>特沃斯基</strong>与卡尼曼的合作是<strong>行为经济学</strong>的里程碑</li>
+              <li>该理论<strong>实证支持</strong>广泛，适用于<strong>多领域</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第27章 -->
+      <div class="chapter" id="ch27">
+        <div class="chapter-title"><span class="chapter-num">27</span>禀赋效应与市场交易</div>
+        <div class="chapter-subtitle">禀赋效应 · 交易偏差</div>
+        <div class="quote">"一旦拥有了某物，对其价值的<strong>评估就会提升</strong>——这并不理性。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🤝</span>禀赋效应</div>
+            <ul class="card-list">
+              <li><strong>拥有</strong>某物后，对其价值的评估<strong>显著上升</strong></li>
+              <li>出售价<strong>远高于</strong>愿意支付的购买价</li>
+              <li>这是<strong>损失厌恶</strong>的表现形式</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🍵</span>经典实验</div>
+            <ul class="card-list">
+              <li>咖啡杯实验：拥有者<strong>平均要价</strong>$5.79，<strong>愿付价</strong>$2.21</li>
+              <li>这一<strong>2-3倍</strong>的差异<strong>与货币价值</strong>无关</li>
+              <li>广泛存在于<strong>各类物品</strong>中</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🏠</span>现实表现</div>
+            <ul class="card-list">
+              <li>房产<strong>业主</strong>对自家房估价<strong>高于市场</strong></li>
+              <li>不愿意<strong>出售</strong>已有的福利或权利</li>
+              <li>削弱<strong>市场流动性</strong>，影响资源配置</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>禀赋效应是<strong>普遍存在</strong>的<strong>非理性偏差</strong></li>
+              <li>商业决策中应<strong>考虑</strong>这一效应</li>
+              <li>理解它有助于<strong>改善</strong>谈判和交易</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第28章 -->
+      <div class="chapter" id="ch28">
+        <div class="chapter-title"><span class="chapter-num">28</span>公平性—经济交易的参照点</div>
+        <div class="chapter-subtitle">公平偏好 · 社会规范</div>
+        <div class="quote">"经济交易中，<strong>公平感</strong>是关键的<strong>非货币</strong>因素。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">⚖️</span>公平偏好</div>
+            <ul class="card-list">
+              <li>人们对<strong>公平</strong>有强烈偏好，愿意<strong>牺牲</strong>利益惩罚<strong>不公</strong></li>
+              <li>公司<strong>涨价</strong>时考虑<strong>公平</strong>会避免<strong>顾客流失</strong></li>
+              <li><strong>互惠</strong>是人类经济行为的核心原则</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🏢</span>企业的约束</div>
+            <ul class="card-list">
+              <li>企业不能<strong>无限制</strong>地提高价格</li>
+              <li><strong>公平定价</strong>是企业长期的<strong>生存策略</strong></li>
+              <li>消费者对<strong>不公平涨价</strong>的报复十分强烈</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🧠</span>双重参照点</div>
+            <ul class="card-list">
+              <li><strong>经济参照点</strong>：<strong>机会成本</strong>（其他选择的价值）</li>
+              <li><strong>社会参照点</strong>：<strong>公平标准</strong>（应得的价值）</li>
+              <li>两者共同影响<strong>经济行为</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>经济人假设<strong>忽略了</strong>公平感的关键作用</li>
+              <li>商业实践必须<strong>考虑</strong>公平规范的<strong>约束</strong></li>
+              <li>理解双重参照点有助于<strong>更准确</strong>地预测<strong>市场行为</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第29章 -->
+      <div class="chapter" id="ch29">
+        <div class="chapter-title"><span class="chapter-num">29</span>对结果可能性的权衡</div>
+        <div class="chapter-subtitle">决策权重 · 概率扭曲</div>
+        <div class="quote">"人们对<strong>概率</strong>的反应不是<strong>线性的</strong>，而是<strong>被扭曲</strong>的。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🎲</span>决策权重</div>
+            <ul class="card-list">
+              <li>前景理论引入<strong>决策权重函数</strong></li>
+              <li><strong>小概率</strong>被<strong>过度重视</strong></li>
+              <li><strong>大概率</strong>被<strong>低估</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📉</span>权重函数</div>
+            <ul class="card-list">
+              <li><strong>0%</strong>与<strong>100%</strong>附近跳跃<strong>突然</strong></li>
+              <li>中间区域权重<strong>接近</strong>实际概率</li>
+              <li><strong>次确定性事件</strong>权重<strong>显著高于</strong>其概率</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🎫</span>四重模式</div>
+            <ul class="card-list">
+              <li>小概率高回报<strong>购买</strong>保险的<strong>决策</strong></li>
+              <li>小概率<strong>大损失</strong>会<strong>显著</strong>影响<strong>选择</strong></li>
+              <li>对<strong>极小概率</strong>的反应呈现<strong>非线性</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>决策权重<strong>扭曲</strong>了<strong>概率</strong>，导致<strong>非理性</strong>选择</li>
+              <li>理解<strong>小概率</strong>事件的影响<strong>至关重要</strong></li>
+              <li>保险、彩票等<strong>行为</strong>都可以从<strong>权重函数</strong>理解</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第30章 -->
+      <div class="chapter" id="ch30">
+        <div class="chapter-title"><span class="chapter-num">30</span>被过分关注的罕见事件</div>
+        <div class="chapter-subtitle">罕见事件 · 媒体放大</div>
+        <div class="quote">"<strong>罕见</strong>事件容易被<strong>过度关注</strong>，因为它们<strong>生动</strong>、<strong>难忘</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">📰</span>媒体的放大</div>
+            <ul class="card-list">
+              <li>罕见事件<strong>被广泛报道</strong>，显得<strong>更常见</strong></li>
+              <li><strong>飞机失事</strong>、<strong>恐怖袭击</strong>的<strong>恐惧</strong>被放大</li>
+              <li>实际上<strong>日常风险</strong>远高于罕见事件</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🎯</span>可得性效应</div>
+            <ul class="card-list">
+              <li>生动的罕见事件<strong>容易回忆</strong>，<strong>权重</strong>被高估</li>
+              <li>常见但<strong>不戏剧化</strong>的风险被<strong>低估</strong></li>
+              <li>造成<strong>风险感知</strong>的<strong>系统性偏差</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💼</span>商业含义</div>
+            <ul class="card-list">
+              <li>风险管理应<strong>基于数据</strong>，而非<strong>新闻</strong></li>
+              <li>投资应<strong>避免</strong>对<strong>罕见事件</strong>过度反应</li>
+              <li><strong>长期视角</strong>是抵御<strong>可得性偏差</strong>的关键</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>罕见事件的<strong>过度关注</strong>是<strong>系统1的本能反应</strong></li>
+              <li>重大决策应<strong>查阅统计数据</strong></li>
+              <li>理解<strong>可得性偏差</strong>能<strong>显著改善</strong>风险判断</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第31章 -->
+      <div class="chapter" id="ch31">
+        <div class="chapter-title"><span class="chapter-num">31</span>能带来长远收益的风险政策</div>
+        <div class="chapter-subtitle">风险政策 · 宽框架</div>
+        <div class="quote">"好的风险政策应<strong>从长远</strong>考虑，<strong>整合</strong>多个<strong>小风险</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🏛️</span>风险政策</div>
+            <ul class="card-list">
+              <li>个人应<strong>将多个风险</strong>视为<strong>整体</strong>，而非孤立事件</li>
+              <li>避免<strong>心理账户</strong>导致的<strong>风险分散失败</strong></li>
+              <li>采用<strong>宽框架</strong>评估风险与回报</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📋</span>具体建议</div>
+            <ul class="card-list">
+              <li>将<strong>资产配置</strong>分散到<strong>低相关性</strong>的领域</li>
+              <li>对<strong>长期投资</strong>持有<strong>风险资产</strong>更有利</li>
+              <li>避免<strong>短期波动</strong>引发的<strong>过度反应</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔄</span>宽框架的优势</div>
+            <ul class="card-list">
+              <li>避免<strong>窄框架</strong>导致的<strong>过度风险厌恶</strong></li>
+              <li>将<strong>心理账户</strong>合并，<strong>降低</strong>对<strong>波动</strong>的敏感</li>
+              <li>有助于<strong>长期财富增长</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>宽框架<strong>显著</strong>改善<strong>长期投资</strong>回报</li>
+              <li>避免<strong>过度关注短期损失</strong>是核心原则</li>
+              <li>组织应<strong>设计</strong>支持<strong>宽框架</strong>的<strong>决策流程</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第32章 -->
+      <div class="chapter" id="ch32">
+        <div class="chapter-title"><span class="chapter-num">32</span>心理账户是如何影响我们的选择的？</div>
+        <div class="chapter-subtitle">心理账户 · 钱不等值</div>
+        <div class="quote">"<strong>心理账户</strong>使人们对<strong>同样的钱</strong>有<strong>不同的态度</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🧾</span>心理账户</div>
+            <ul class="card-list">
+              <li>人们<strong>心理上</strong>将<strong>资金分类</strong>管理</li>
+              <li>不同账户的钱有<strong>不同的"价值感"</strong></li>
+              <li>对各账户的<strong>风险态度</strong>也不同</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💰</span>具体表现</div>
+            <ul class="card-list">
+              <li><strong>意外之财</strong>（如奖金）<strong>更易挥霍</strong></li>
+              <li><strong>血汗钱</strong>（如工资）<strong>更谨慎</strong></li>
+              <li><strong>沉没成本</strong>的<strong>过度影响</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🏠</span>生活实例</div>
+            <ul class="card-list">
+              <li>信用卡支付的<strong>"无感"</strong>消费</li>
+              <li>对<strong>赌博所得</strong>的<strong>冒险</strong>倾向</li>
+              <li><strong>沉没成本</strong>导致<strong>无法止损</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>心理账户是<strong>非理性</strong>的<strong>系统1</strong>产物</li>
+              <li>理性理财应<strong>打破</strong>心理账户的<strong>隔离</strong></li>
+              <li>理解这一概念<strong>有助于</strong>改善<strong>个人理财</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第33章 -->
+      <div class="chapter" id="ch33">
+        <div class="chapter-title"><span class="chapter-num">33</span>评估结果的逆转</div>
+        <div class="chapter-subtitle">过程效用 · 评估的多维</div>
+        <div class="quote">"人们对<strong>结果</strong>和<strong>过程</strong>的评价常常<strong>不一致</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🔄</span>评估逆转</div>
+            <ul class="card-list">
+              <li>同一<strong>结果</strong>通过<strong>不同过程</strong>获得，<strong>评价不同</strong></li>
+              <li>主动选择<strong>胜于</strong>被动接受</li>
+              <li>过程本身<strong>影响</strong>结果的价值</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🧠</span>过程效用</div>
+            <ul class="card-list">
+              <li>过程<strong>也是</strong>评价的<strong>重要维度</strong></li>
+              <li>努力、<strong>坚持</strong>的<strong>过程</strong>增加<strong>成就感</strong></li>
+              <li>结果<strong>不一定</strong>决定<strong>整体满意度</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💼</span>工作与生活</div>
+            <ul class="card-list">
+              <li>工作中<strong>参与感</strong>比<strong>结果</strong>更<strong>影响满意度</strong></li>
+              <li>消费时<strong>挑选</strong>的<strong>过程</strong>有<strong>自身价值</strong></li>
+              <li>不能<strong>只关注</strong>结果，<strong>忽视过程</strong>意义</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li><strong>过程效用</strong>丰富了<strong>福利的维度</strong></li>
+              <li>设计选择时<strong>不能</strong>只<strong>考虑结果</strong></li>
+              <li>理解评估<strong>的复杂</strong>有助于<strong>改善</strong>工作与生活</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第34章 -->
+      <div class="chapter" id="ch34">
+        <div class="chapter-title"><span class="chapter-num">34</span>善用框架效应，让生活更美好</div>
+        <div class="chapter-subtitle">框架效应 · 亚洲疾病问题</div>
+        <div class="quote">"等价的问题，<strong>不同的表述</strong>导致<strong>截然不同</strong>的选择。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🖼️</span>框架效应</div>
+            <ul class="card-list">
+              <li>同一<strong>实质问题</strong>的<strong>不同表述</strong>导致<strong>不同选择</strong></li>
+              <li>"拯救200人"与"400人将死亡"的<strong>框架</strong>效果<strong>相反</strong></li>
+              <li>系统1容易受<strong>框架</strong>影响</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🏥</span>亚洲疾病实验</div>
+            <ul class="card-list">
+              <li>"<strong>拯救</strong>200人"框架下，多数人选<strong>确定方案</strong></li>
+              <li>"<strong>400人将死亡</strong>"框架下，多数人选<strong>冒险方案</strong></li>
+              <li>但<strong>实质选项</strong>完全相同</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💡</span>正面应用</div>
+            <ul class="card-list">
+              <li>用<strong>正面框架</strong>提升<strong>说服力</strong></li>
+              <li>强调<strong>收益</strong>而非<strong>损失</strong></li>
+              <li>在<strong>生活决策</strong>中善用<strong>框架的力量</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>框架效应<strong>广泛存在</strong>，<strong>影响重大</strong>决策</li>
+              <li>理解<strong>框架机制</strong>有助于<strong>识破操纵</strong></li>
+              <li>善用框架<strong>能改善</strong>沟通、<strong>谈判和生活</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 第五部分 ============== -->
+    <section class="section" id="part5" data-part="5">
+      <div class="section-header">
+        <span class="section-badge">第五部分</span>
+        <h2 class="section-title">两个自我</h2>
+      </div>
+
+      <!-- 第35章 -->
+      <div class="chapter" id="ch35">
+        <div class="chapter-title"><span class="chapter-num">35</span>体验效用与决策效用的不一致</div>
+        <div class="chapter-subtitle">两种效用 · 体验自我vs记忆自我</div>
+        <div class="quote">"体验自我与<strong>记忆自我</strong>对<strong>同一事件</strong>的评价<strong>可能截然不同</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🧠</span>两种自我</div>
+            <ul class="card-list">
+              <li><strong>体验自我</strong>：活在<strong>当下</strong>，感受每时每刻</li>
+              <li><strong>记忆自我</strong>：回顾<strong>过去</strong>，整合<strong>故事</strong></li>
+              <li>两者<strong>诉求</strong>可能<strong>相互矛盾</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📊</span>两种效用</div>
+            <ul class="card-list">
+              <li><strong>体验效用</strong>：每时每刻的<strong>主观幸福感</strong></li>
+              <li><strong>决策效用</strong>：对<strong>整体选择</strong>的评价</li>
+              <li>选择时<strong>应优先</strong>考虑哪个？</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔬</span>经典实验</div>
+            <ul class="card-list">
+              <li>冰冷水实验：延长<strong>痛苦</strong>却<strong>改善</strong>整体评价</li>
+              <li>记忆自我<strong>被峰终定律</strong>支配</li>
+              <li>体验自我<strong>记录</strong>整个过程的<strong>总和</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li><strong>两种效用</strong>的<strong>不一致</strong>是<strong>深层次的人类困境</strong></li>
+              <li>理解这一区别<strong>有助于</strong>更<strong>明智的决策</strong></li>
+              <li>追求<strong>幸福</strong>需要<strong>协调</strong>两种自我</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第36章 -->
+      <div class="chapter" id="ch36">
+        <div class="chapter-title"><span class="chapter-num">36</span>人生如戏</div>
+        <div class="chapter-subtitle">峰终定律 · 过程忽视</div>
+        <div class="quote">"我们对<strong>一段经历</strong>的评价主要取决于<strong>最高峰</strong>和<strong>结尾</strong>，而不是<strong>持续时间</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🎭</span>峰终定律</div>
+            <ul class="card-list">
+              <li><strong>峰终定律</strong>（Peak-End Rule）：对<strong>体验</strong>的记忆<strong>主要</strong>由<strong>最强烈</strong>的瞬间和<strong>结尾</strong>决定</li>
+              <li>经历的<strong>持续时间</strong>对<strong>评价</strong>影响<strong>较小</strong></li>
+              <li>这是<strong>记忆自我</strong>的<strong>关键特征</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⏱️</span>过程忽视</div>
+            <ul class="card-list">
+              <li>对<strong>持续时间</strong>的<strong>忽视</strong>是<strong>普遍现象</strong></li>
+              <li>短暂<strong>强烈痛苦</strong>比<strong>长期温和痛苦</strong>的<strong>记忆更差</strong></li>
+              <li>但<strong>实际痛苦</strong>总和可能<strong>更小</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💡</span>实际应用</div>
+            <ul class="card-list">
+              <li><strong>医疗程序</strong>应<strong>优化峰值与结尾</strong>体验</li>
+              <li><strong>客户服务</strong>应<strong>重视关键时刻</strong></li>
+              <li><strong>演讲</strong>的<strong>开场与结尾</strong>比<strong>中间</strong>更重要</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>峰终定律<strong>深刻影响</strong>人们对<strong>生活体验</strong>的评价</li>
+              <li>理解它<strong>有助于</strong>设计<strong>更好的体验</strong></li>
+              <li>关注<strong>关键时刻</strong>比<strong>持续时间</strong>更重要</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第37章 -->
+      <div class="chapter" id="ch37">
+        <div class="chapter-title"><span class="chapter-num">37</span>你有多幸福？</div>
+        <div class="chapter-subtitle">幸福测量 · 影响因素</div>
+        <div class="quote">"幸福<strong>既</strong>取决于<strong>生活条件</strong>，<strong>也</strong>取决于<strong>生活满意度</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">😊</span>幸福的维度</div>
+            <ul class="card-list">
+              <li><strong>情绪幸福</strong>：日常的<strong>快乐/痛苦</strong>体验</li>
+              <li><strong>评价幸福</strong>：对<strong>生活整体</strong>的<strong>满意度</strong></li>
+              <li>两者<strong>相关但</strong>并不<strong>完全一致</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">📈</span>影响因素</div>
+            <ul class="card-list">
+              <li><strong>收入</strong>：达到<strong>一定水平</strong>后影响<strong>递减</strong></li>
+              <li><strong>健康</strong>：<strong>长期</strong>疾病<strong>显著</strong>降低幸福</li>
+              <li><strong>社会关系</strong>：<strong>高质量关系</strong>是核心</li>
+              <li><strong>性格特质</strong>：<strong>乐观者</strong>更易感到<strong>幸福</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔬</span>研究启示</div>
+            <ul class="card-list">
+              <li>幸福的<strong>基线水平</strong>由<strong>基因和性格</strong>决定</li>
+              <li>重大事件对<strong>幸福感的影响</strong><strong>短暂</strong></li>
+              <li>适应能力<strong>使人</strong>回归<strong>幸福基线</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">💡</span>核心结论</div>
+            <ul class="card-list">
+              <li>追求<strong>外部成就</strong>带来的<strong>幸福有限</strong></li>
+              <li><strong>内在</strong>的<strong>心理健康</strong>和<strong>关系</strong>更关键</li>
+              <li>理解<strong>幸福机制</strong>有助于<strong>明智</strong>地<strong>分配精力</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第38章 -->
+      <div class="chapter" id="ch38">
+        <div class="chapter-title"><span class="chapter-num">38</span>思考生活</div>
+        <div class="chapter-subtitle">生活聚焦 · 关注vs福祉</div>
+        <div class="quote">"人生的<strong>真正意义</strong>，在于<strong>如何度过</strong>那些<strong>平凡的日子</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🧘</span>生活聚焦</div>
+            <ul class="card-list">
+              <li>对<strong>当前体验</strong>的<strong>关注</strong>影响<strong>幸福感</strong></li>
+              <li><strong>心流体验</strong>来自<strong>专注</strong>而非<strong>分心</strong></li>
+              <li><strong>正念</strong>是<strong>对当下</strong>的<strong>有意识关注</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💭</span>关注的悖论</div>
+            <ul class="card-list">
+              <li><strong>关注</strong>的<strong>对象</strong>是<strong>真实的</strong></li>
+              <li>无法<strong>关注</strong>的<strong>对象</strong>仿佛<strong>不存在</strong></li>
+              <li>这种<strong>聚焦效应</strong>是<strong>主观幸福</strong>的关键</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🌟</span>实际应用</div>
+            <ul class="card-list">
+              <li>工作中<strong>减少</strong>分心，<strong>增加专注</strong></li>
+              <li>关系中<strong>真正在场</strong>，<strong>而非</strong>身体在场</li>
+              <li><strong>避免</strong>对<strong>未来</strong>的<strong>过度担忧</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🔑</span>核心结论</div>
+            <ul class="card-list">
+              <li>关注<strong>当下</strong>是<strong>提升生活</strong>的<strong>直接路径</strong></li>
+              <li>减少<strong>分心</strong>，<strong>专注</strong>于<strong>真正重要</strong>的事</li>
+              <li>理解<strong>聚焦效应</strong>，<strong>主动选择</strong>关注对象</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 结语 ============== -->
+    <section class="section" id="conclusion" data-part="0">
+      <div class="section-header">
+        <span class="section-badge">结语</span>
+        <h2 class="section-title">结语</h2>
+      </div>
+      <div class="chapter">
+        <div class="chapter-title"><span class="chapter-num">末</span>结语：让生活更美好</div>
+        <div class="chapter-subtitle">本书的总结 · 实际生活的应用</div>
+        <div class="quote">"本书的目的是<strong>丰富</strong>读者关于<strong>判断和决策</strong>的<strong>词汇</strong>，提升发现和理解<strong>判断失误</strong>的能力。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">🎯</span>全书要义</div>
+            <ul class="card-list">
+              <li><strong>系统1</strong>快速但<strong>易错</strong>；<strong>系统2</strong>缓慢但<strong>更可靠</strong></li>
+              <li>人类判断<strong>深受</strong>各种<strong>启发式偏见</strong>影响</li>
+              <li>理解<strong>两个自我</strong>的<strong>区别</strong>是关键</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💡</span>核心建议</div>
+            <ul class="card-list">
+              <li>在<strong>重要决策</strong>中<strong>寻求外部意见</strong></li>
+              <li>理解<strong>统计思维</strong>对<strong>决策</strong>的价值</li>
+              <li>避免<strong>过度自信</strong>，<strong>保持</strong>谨慎</li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🌟</span>最终启示</div>
+            <ul class="card-list">
+              <li>接受<strong>人类理性的有限性</strong>，是<strong>智慧的开端</strong></li>
+              <li>理解<strong>认知的局限</strong>，<strong>更宽容</strong>地对待<strong>他人和自我</strong></li>
+              <li>在<strong>生活</strong>中<strong>应用这些洞见</strong>，<strong>活得更明智</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 附录A ============== -->
+    <section class="section" id="appA" data-part="0">
+      <div class="section-header">
+        <span class="section-badge">附录A</span>
+        <h2 class="section-title">不确定性下的判断：启发法和偏见</h2>
+      </div>
+      <div class="chapter">
+        <div class="chapter-title"><span class="chapter-num">A</span>经典论文 · Tversky & Kahneman 1974</div>
+        <div class="chapter-subtitle">本学科的奠基之作 · 行为经济学的源头</div>
+        <div class="quote">"人在不确定情境下的判断，依赖于有限的启发式，而不是复杂的概率运算。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">📚</span>代表性启发式</div>
+            <ul class="card-list">
+              <li>人们根据<strong>相似性</strong>判断概率，<strong>忽视</strong>基础比率</li>
+              <li>对<strong>样本大小</strong>不敏感</li>
+              <li>对<strong>偶然性</strong>的误解</li>
+              <li>对<strong>可预测性</strong>的过度自信</li>
+              <li><strong>错觉相关</strong></li>
+              <li><strong>合取谬误</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔢</span>可得性启发式</div>
+            <ul class="card-list">
+              <li>根据<strong>回忆难易</strong>评估频率</li>
+              <li><strong>可提取性</strong>的影响</li>
+              <li>通过<strong>搜索集合</strong>评估频率</li>
+              <li>对<strong>偏见</strong>的<strong>感知难易</strong></li>
+              <li>虚构的<strong>生动性</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">⚓</span>锚定与调整</div>
+            <ul class="card-list">
+              <li>初始<strong>锚</strong>影响后续判断</li>
+              <li><strong>不充分调整</strong></li>
+              <li><strong>主观概率分布</strong>的<strong>评估</strong></li>
+              <li><strong>锚定在连续事件</strong>上</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== 附录B ============== -->
+    <section class="section" id="appB" data-part="0">
+      <div class="section-header">
+        <span class="section-badge">附录B</span>
+        <h2 class="section-title">选择、价值以及框架</h2>
+      </div>
+      <div class="chapter">
+        <div class="chapter-title"><span class="chapter-num">B</span>前景理论原文 · Kahneman & Tversky 1979/2000</div>
+        <div class="chapter-subtitle">前景理论的完整阐述 · 行为经济学的核心</div>
+        <div class="quote">"前景理论描述了<strong>不确定性下</strong>的<strong>实际选择</strong>，挑战了<strong>期望效用理论</strong>。"</div>
+        <div class="chapter-content">
+          <div class="card concept">
+            <div class="card-label"><span class="card-icon">📊</span>前景理论核心</div>
+            <ul class="card-list">
+              <li><strong>参照依赖</strong>：评估基于参照点</li>
+              <li><strong>损失厌恶</strong>：损失比收益影响更大</li>
+              <li><strong>敏感性递减</strong>：远离参照点时反应减弱</li>
+              <li><strong>反射效应</strong>：损失区与收益区风险偏好相反</li>
+              <li><strong>概率权重</strong>：非线性转换</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">🔬</span>应用领域</div>
+            <ul class="card-list">
+              <li><strong>保险</strong>决策：愿意支付<strong>高于期望损失</strong>的保费</li>
+              <li><strong>资产</strong>选择：参考点决定<strong>风险态度</strong></li>
+              <li><strong>博弈</strong>行为：非理性<strong>风险偏好的解释</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="card-icon">💡</span>框架效应</div>
+            <ul class="card-list">
+              <li><strong>正面框架</strong>导致<strong>风险厌恶</strong></li>
+              <li><strong>负面框架</strong>导致<strong>风险寻求</strong></li>
+              <li><strong>框架</strong>对选择<strong>的实质性影响</strong></li>
+            </ul>
+          </div>
+          <div class="card highlight full">
+            <div class="card-label"><span class="card-icon">🌟</span>理论意义</div>
+            <ul class="card-list">
+              <li>前景理论<strong>实证支持</strong>广泛，<strong>适用</strong>于<strong>众多领域</strong></li>
+              <li>对<strong>经济学、金融学</strong>产生<strong>深远影响</strong></li>
+              <li>成为<strong>行为经济学</strong>的<strong>核心理论支柱</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<footer class="footer">
+  <div>《思考，快与慢》知识脑图 · 系统化整理</div>
+  <div style="margin-top:6px;">作者：Daniel Kahneman · 译者：李爱民、何梦莹 等</div>
+  <div style="margin-top:6px;">本脑图仅供学习参考 · 版权归原作者所有</div>
+</footer>
+
+<script>
+// 导航切换
+function toggleNav(row) {
+  const item = row.parentElement;
+  item.classList.toggle('collapsed');
+  updateToggleAllLabel();
+}
+
+// 全部展开/折叠
+function toggleAll() {
+  const items = document.querySelectorAll('.nav-item');
+  const anyExpanded = Array.from(items).some(i => !i.classList.contains('collapsed'));
+  items.forEach(i => {
+    if (anyExpanded) {
+      i.classList.add('collapsed');
+    } else {
+      i.classList.remove('collapsed');
+    }
+  });
+  updateToggleAllLabel();
+}
+
+function updateToggleAllLabel() {
+  const items = document.querySelectorAll('.nav-item');
+  const anyExpanded = Array.from(items).some(i => !i.classList.contains('collapsed'));
+  document.querySelector('.toggle-all').textContent = anyExpanded ? '全部折叠' : '全部展开';
+}
+
+// 滚动到指定位置
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    // 自动展开父级菜单
+    let parent = el.closest('.part');
+    if (parent) {
+      parent.classList.remove('collapsed');
+    }
+    // 滚动
+    const offset = 20;
+    const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
+    // 标记活动项
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    const navItem = document.querySelector(`.nav-item[data-target="${id}"]`);
+    if (navItem) navItem.classList.add('active');
+    updateToggleAllLabel();
+  }
+}
+
+// 点击nav-row时也支持子项的scroll
+document.querySelectorAll('.nav-item[data-target] > .nav-row').forEach(row => {
+  row.addEventListener('click', function(e) {
+    const id = this.parentElement.getAttribute('data-target');
+    if (id) {
+      scrollToSection(id);
+    }
+  });
+});
+
+// 返回顶部
+const backTop = document.getElementById('backTop');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 600) backTop.classList.add('visible');
+  else backTop.classList.remove('visible');
+});
+
+// 默认折叠所有部分（除了序言和结语）
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.nav-item.part').forEach(p => p.classList.add('collapsed'));
+  updateToggleAllLabel();
+});
+</script>
+
+</body>
+</html>

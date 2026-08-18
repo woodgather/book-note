@@ -1,0 +1,2300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《学会提问》知识脑图 · 原书第11版</title>
+<style>
+:root {
+  --primary: #2c5f8d;
+  --primary-light: #4a87b8;
+  --primary-dark: #1e4060;
+  --accent: #e67e22;
+  --accent-light: #f39c12;
+  --success: #27ae60;
+  --danger: #c0392b;
+  --warning: #f39c12;
+  --info: #3498db;
+  --bg: #f5f7fa;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --text: #2c3e50;
+  --text-light: #7f8c8d;
+  --text-muted: #95a5a6;
+  --border: #e1e8ed;
+  --border-light: #ecf0f1;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --radius: 8px;
+  --radius-sm: 4px;
+  --transition: all 0.2s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--border-light); }
+::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* ===== 主体布局：左右两块完全独立 ===== */
+.layout {
+  display: flex;
+  min-height: 100vh;
+  align-items: stretch;
+  background: var(--bg);
+  gap: 0;
+}
+
+/* ===== 左侧目录导航面板 ===== */
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar-header {
+  padding: 20px 22px 16px;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: white;
+  flex-shrink: 0;
+}
+
+.sidebar-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-header .sub {
+  font-size: 12px;
+  opacity: 0.85;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.sidebar-header .actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.sidebar-header .btn-mini {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.sidebar-header .btn-mini:hover {
+  background: rgba(255,255,255,0.28);
+  border-color: rgba(255,255,255,0.5);
+}
+
+.sidebar-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 0 20px;
+}
+
+.sidebar-divider {
+  padding: 12px 22px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-top: 1px solid var(--border-light);
+  margin-top: 6px;
+}
+
+.sidebar-divider:first-child {
+  border-top: none;
+  margin-top: 0;
+}
+
+/* ===== 主布局 ===== */
+.layout {
+  display: flex;
+  min-height: calc(100vh - 80px);
+}
+
+/* ===== 左侧目录导航（竖向） ===== */
+.toc {
+  list-style: none;
+  padding: 0;
+}
+
+.toc-item {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.toc-chapter {
+  display: flex;
+  align-items: center;
+  padding: 10px 22px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+  color: var(--primary-dark);
+  transition: var(--transition);
+  font-size: 14px;
+}
+
+.toc-chapter:hover {
+  background: var(--bg);
+  color: var(--primary);
+}
+
+.toc-chapter.active {
+  background: rgba(44, 95, 141, 0.08);
+  color: var(--primary);
+  border-left: 3px solid var(--primary);
+  padding-left: 17px;
+}
+
+.toc-toggle {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  text-align: center;
+  line-height: 14px;
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.toc-chapter.expanded .toc-toggle {
+  transform: rotate(90deg);
+}
+
+.toc-chapter .num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--primary);
+  color: white;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.toc-chapter[data-level="preface"] .num {
+  background: var(--accent);
+}
+
+.toc-sub {
+  list-style: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: #fafbfc;
+}
+
+.toc-sub.expanded {
+  max-height: 2000px;
+}
+
+.toc-sub-item {
+  padding: 7px 20px 7px 50px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-light);
+  transition: var(--transition);
+  border-left: 2px solid transparent;
+  position: relative;
+}
+
+.toc-sub-item::before {
+  content: "·";
+  position: absolute;
+  left: 36px;
+  color: var(--text-muted);
+}
+
+.toc-sub-item:hover {
+  background: var(--bg);
+  color: var(--primary);
+  border-left-color: var(--primary-light);
+}
+
+.toc-sub-item.active {
+  background: rgba(44, 95, 141, 0.06);
+  color: var(--primary);
+  border-left-color: var(--primary);
+  font-weight: 500;
+}
+
+/* ===== 主内容区 ===== */
+.main {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.main-header {
+  padding: 24px 40px 20px;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: white;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.main-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.main-header .sub {
+  font-size: 13px;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+.main-body {
+  padding: 24px 40px 40px;
+  flex: 1;
+}
+
+.location-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.location-bar .icon { color: var(--accent); font-size: 14px; }
+.location-bar .current { color: var(--primary); font-weight: 500; }
+.location-bar .sep { color: var(--text-muted); }
+
+/* ===== 章节卡片 ===== */
+.chapter {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  scroll-margin-top: 100px;
+}
+
+.chapter-header {
+  border-bottom: 2px solid var(--border-light);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.chapter-num {
+  display: inline-block;
+  background: var(--primary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.chapter[data-type="preface"] .chapter-num {
+  background: var(--accent);
+}
+
+.chapter-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  line-height: 1.4;
+}
+
+.chapter-desc {
+  margin-top: 12px;
+  color: var(--text-light);
+  font-size: 14px;
+  line-height: 1.7;
+  padding: 12px 16px;
+  background: linear-gradient(90deg, rgba(44, 95, 141, 0.05) 0%, transparent 100%);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.section {
+  margin: 24px 0;
+  padding: 20px 24px;
+  background: #fafbfc;
+  border-radius: var(--radius);
+  border-left: 4px solid var(--primary-light);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.section-title::before {
+  content: "▎";
+  color: var(--primary);
+  margin-right: 6px;
+  font-size: 16px;
+}
+
+.section-subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 18px 0 10px;
+  padding-left: 8px;
+  border-left: 3px solid var(--accent);
+}
+
+p {
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+ul, ol {
+  margin: 10px 0 14px 20px;
+}
+
+li {
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+li strong {
+  color: var(--primary-dark);
+}
+
+/* ===== 引用块 ===== */
+.quote {
+  background: linear-gradient(135deg, #fff8e7 0%, #fffbf0 100%);
+  border-left: 4px solid var(--accent);
+  padding: 14px 18px;
+  margin: 16px 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: #6b4400;
+  font-style: italic;
+  position: relative;
+}
+
+.quote::before {
+  content: """;
+  position: absolute;
+  top: -6px;
+  left: 8px;
+  font-size: 36px;
+  color: var(--accent);
+  opacity: 0.3;
+  font-family: Georgia, serif;
+}
+
+/* ===== 关键问题/重点提示框 ===== */
+.key-question {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f0f7fc 100%);
+  border: 1px solid #90caf9;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 16px 0;
+  position: relative;
+}
+
+.key-question::before {
+  content: "❓";
+  position: absolute;
+  top: -10px;
+  left: 14px;
+  background: var(--bg-card);
+  padding: 0 6px;
+  font-size: 16px;
+}
+
+.key-question .label {
+  display: inline-block;
+  background: var(--info);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+
+.key-question .content {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1565c0;
+}
+
+/* ===== 提示框 ===== */
+.tip {
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f2 100%);
+  border-left: 4px solid var(--success);
+  padding: 12px 18px;
+  margin: 14px 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 14px;
+}
+
+.tip::before {
+  content: "💡 ";
+  margin-right: 4px;
+}
+
+.tip.warning {
+  background: linear-gradient(135deg, #fff3e0 0%, #fff8ed 100%);
+  border-left-color: var(--warning);
+}
+
+.tip.danger {
+  background: linear-gradient(135deg, #ffebee 0%, #fff5f6 100%);
+  border-left-color: var(--danger);
+}
+
+/* ===== 对比表格 ===== */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  font-size: 14px;
+}
+
+.compare-table thead {
+  background: var(--primary);
+  color: white;
+}
+
+.compare-table th, .compare-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.compare-table th {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.compare-table tbody tr:hover {
+  background: var(--bg);
+}
+
+.compare-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===== 概念卡片 ===== */
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.concept-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  transition: var(--transition);
+}
+
+.concept-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.concept-card.green { border-top-color: var(--success); }
+.concept-card.orange { border-top-color: var(--accent); }
+.concept-card.red { border-top-color: var(--danger); }
+.concept-card.purple { border-top-color: #9b59b6; }
+
+.concept-card h4 {
+  font-size: 15px;
+  color: var(--primary-dark);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.concept-card p {
+  font-size: 13px;
+  color: var(--text-light);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ===== 谬误列表 ===== */
+.fallacy-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin: 10px 0;
+}
+
+.fallacy-item .name {
+  font-weight: 600;
+  color: var(--danger);
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.fallacy-item .desc {
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+/* ===== 流程步骤 ===== */
+.steps {
+  counter-reset: step;
+  margin: 16px 0;
+}
+
+.step {
+  position: relative;
+  padding: 12px 14px 12px 50px;
+  margin-bottom: 10px;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--primary-light);
+  counter-increment: step;
+}
+
+.step::before {
+  content: counter(step);
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  width: 26px;
+  height: 26px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ===== 回到顶部 ===== */
+.back-top {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 99;
+}
+
+.back-top.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.back-top:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+/* ===== 底部信息 ===== */
+.footer {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 13px;
+  border-top: 1px solid var(--border-light);
+  margin-top: 40px;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 900px) {
+  .layout { flex-direction: column; }
+  .sidebar {
+    width: 100%;
+    position: relative;
+    top: 0;
+    height: auto;
+    max-height: 400px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .main-body { padding: 20px; }
+  .main-header { padding: 18px 20px; }
+  .main-header h1 { font-size: 20px; }
+  .chapter { padding: 20px; }
+  .chapter-title { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- 左侧目录导航（独立面板） -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>📑 章节目录</h2>
+      <div class="sub">《学会提问》知识脑图</div>
+      <div class="actions">
+        <button class="btn-mini" onclick="expandAll()">全部展开</button>
+        <button class="btn-mini" onclick="collapseAll()">全部折叠</button>
+      </div>
+    </div>
+    <div class="sidebar-body">
+    <ul class="toc" id="toc">
+      <li class="toc-item">
+        <div class="toc-chapter" data-level="preface" data-target="preface" onclick="scrollToSection('preface')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">序</span>
+          <span>前言</span>
+        </div>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch1" onclick="toggleChapter(this, 'sub-ch1')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">01</span>
+          <span>正确提问的好处和方法</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch1">
+          <li class="toc-sub-item" onclick="scrollToSection('ch1-1')">我们生活的这个世界是嘈杂、混乱的</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch1-2')">专家说得再动听，也无法替我们救急</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch1-3')">我们有必要依靠自己的大脑</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch1-4')">激发你的批判性思维</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch1-5')">两种思维方式：海绵式与淘金式</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch1-6')">弱势批判性思维和强势批判性思维</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch1-7')">价值观决定人与人之间的互动</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch1-8')">让对话进行下去</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch2" onclick="toggleChapter(this, 'sub-ch2')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">02</span>
+          <span>干扰批判性思维的障碍</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch2">
+          <li class="toc-sub-item" onclick="scrollToSection('ch2-1')">正确提问带给人的不快</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch2-2')">思考过快</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch2-3')">刻板印象</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch2-4')">这些思维习惯会背叛我们</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch2-5')">自我中心</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch2-6')">一厢情愿——批判性思维最大障碍</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch3" onclick="toggleChapter(this, 'sub-ch3')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">03</span>
+          <span>论题和结论是什么</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch3">
+          <li class="toc-sub-item" onclick="scrollToSection('ch3-1')">论题的种类</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch3-2')">寻找论题</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch3-3')">寻找作者或演说者的结论</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch3-4')">发现之旅的几点线索</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch3-5')">批判性思维与表达能力</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch4" onclick="toggleChapter(this, 'sub-ch4')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">04</span>
+          <span>理由是什么</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch4">
+          <li class="toc-sub-item" onclick="scrollToSection('ch4-1')">开始质疑的过程</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch4-2')">找到理由有提示词来帮忙</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch4-3')">理由的类型</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch4-4')">让理由和结论一目了然</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch4-5')">使用这个关键问题</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch4-6')">批判性思维与表达能力</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch5" onclick="toggleChapter(this, 'sub-ch5')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">05</span>
+          <span>哪些词语意思不明确</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch5">
+          <li class="toc-sub-item" onclick="scrollToSection('ch5-1')">词语的多义性和易混淆性</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch5-2')">找准关键词和短语</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch5-3')">检查有没有歧义</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch5-4')">判定歧义</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch5-5')">语境与歧义</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch5-6')">歧义、定义和字典</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch5-7')">歧义与附加感情色彩的语言</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch5-8')">谁想说服你谁就要负责</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch5-9')">歧义与表达能力</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch6" onclick="toggleChapter(this, 'sub-ch6')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">06</span>
+          <span>价值观假设与描述性假设</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch6">
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-1')">到哪儿去找假设</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-2')">价值观冲突和价值观假设</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-3')">从价值观到价值观假设</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-4')">典型的价值观冲突</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-5')">立论者背景与价值观假设</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-6')">后果作为价值观假设的线索</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-7')">其他提示</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-8')">价值观与相对性</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-9')">找出并评价描述性假设</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-10')">描述性假设举例说明</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-11')">常见的描述性假设</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-12')">定位描述性假设的线索</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-13')">避免分析无意义的假设</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch6-14')">假设与表达能力</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch7" onclick="toggleChapter(this, 'sub-ch7')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">07</span>
+          <span>论证中有没有谬误</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch7">
+          <li class="toc-sub-item" onclick="scrollToSection('ch7-1')">用质疑的方法找出谬误</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch7-2')">从评价各种假设出发</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch7-3')">发现其他常见的论证谬误</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch7-4')">找出分散注意力的干扰项</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch7-5')">愚弄人的循环论证</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch7-6')">利用关键问题</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch7-7')">推理错误小结</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch7-8')">扩展关于谬误的知识</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch7-9')">谬误与表达能力</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch8" onclick="toggleChapter(this, 'sub-ch8')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">08</span>
+          <span>证据的效力（1）</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch8">
+          <li class="toc-sub-item" onclick="scrollToSection('ch8-1')">我们需要证据</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch8-2')">找出事实断言</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch8-3')">证据的来源</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch8-4')">将直觉作为证据</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch8-5')">个人经历作为证据</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch8-6')">将典型案例作为证据</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch8-7')">将当事人证言作为证据</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch8-8')">将专家意见作为证据</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch8-9')">使用这个关键问题</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch8-10')">学术写作与证据</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch9" onclick="toggleChapter(this, 'sub-ch9')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">09</span>
+          <span>证据的效力（2）</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch9">
+          <li class="toc-sub-item" onclick="scrollToSection('ch9-1')">个人观察作为证据</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch9-2')">研究报告作为证据</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch9-3')">从研究的样本来概括</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch9-4')">从研究的测量方法来概括</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch9-5')">片面的调查和问卷</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch9-6')">将类比作为证据</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch9-7')">专家观点什么时候最可信</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch10" onclick="toggleChapter(this, 'sub-ch10')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">10</span>
+          <span>有没有替代原因</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch10">
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-1')">什么时候应该去寻找替代原因</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-2')">替代原因的说服力</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-3')">找到替代原因</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-4')">唯一的原因，还是原因之一</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-5')">多种视角作为寻找替代原因的指导</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-6')">组间差异的替代原因</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-7')">相关性不能证明因果关系</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-8')">混淆"在这之后"与"因为这个"</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-9')">很多事件并非只有一种解释</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-10')">评价替代原因</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-11')">替代原因与表达能力</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch10-12')">发掘潜在的原因</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch11" onclick="toggleChapter(this, 'sub-ch11')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">11</span>
+          <span>数据有没有欺骗性</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch11">
+          <li class="toc-sub-item" onclick="scrollToSection('ch11-1')">不知来历和带有偏见的数据</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch11-2')">令人困惑的平均值</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch11-3')">把一件事的结论用来证明另一件事</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch11-4')">通过省略信息欺骗</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch11-5')">在自己的写作中使用统计数字</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch12" onclick="toggleChapter(this, 'sub-ch12')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">12</span>
+          <span>有什么重要信息被省略了</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch12">
+          <li class="toc-sub-item" onclick="scrollToSection('ch12-1')">找到省略掉的信息有好处</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch12-2')">不完整的论证在所难免</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch12-3')">识别省略信息的问题</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch12-4')">需要知道确切的数字</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch12-5')">考虑是否有负面效果</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch12-6')">省略的信息还是找不到</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-target="ch13" onclick="toggleChapter(this, 'sub-ch13')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">13</span>
+          <span>能得出什么合理的结论</span>
+        </div>
+        <ul class="toc-sub" id="sub-ch13">
+          <li class="toc-sub-item" onclick="scrollToSection('ch13-1')">二分式思维方法</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch13-2')">两面还是多面</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch13-3')">寻找多个结论</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch13-4')">条件句的衍生能力</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch13-5')">备选的解决方法作为结论</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch13-6')">让思维更灵活</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch13-7')">小结</li>
+          <li class="toc-sub-item" onclick="scrollToSection('ch13-8')">最后的话</li>
+        </ul>
+      </li>
+
+      <li class="toc-item">
+        <div class="toc-chapter" data-level="preface" data-target="epilogue" onclick="scrollToSection('epilogue')">
+          <span class="toc-toggle">▶</span>
+          <span class="num">末</span>
+          <span>译后记 · 总结</span>
+        </div>
+      </li>
+    </ul>
+    </div>
+  </aside>
+
+  <!-- 右侧主内容（独立面板） -->
+  <main class="main" id="main-content">
+    <div class="main-header">
+      <h1>📘 《学会提问》知识脑图</h1>
+      <div class="sub">原书第11版 · [美]尼尔·布朗 &amp; [英]斯图尔特·霍尔 · 批判性思维领域的经典指南</div>
+    </div>
+    <div class="main-body">
+    <div class="location-bar">
+      <span class="icon">📍</span>
+      <span>《学会提问》知识脑图</span>
+      <span class="sep">›</span>
+      <span class="current" id="breadcrumb-current">全书概览</span>
+    </div>
+
+    <!-- 序言 -->
+    <section class="chapter" id="preface" data-type="preface">
+      <div class="chapter-header">
+        <span class="chapter-num">序 · PREFACE</span>
+        <h2 class="chapter-title">前言：批判性思维——每个人都需要掌握的技能</h2>
+      </div>
+      <p>本书旨在鼓励你学习一项技能——<strong>批判性思维</strong>（critical thinking）。它不是别的，正是那种"提出恰当的问题"的能力，让我们活得更精彩。</p>
+
+      <div class="section">
+        <h3 class="section-title">为什么要写这本书？</h3>
+        <p>"我知道做个慎思明辨的人挺好的，会问很多恰到好处的问题也挺不错，可我就是不知道该问哪些问题，不知道怎么个问法。"很多人不知道怎样切实有效地提出一些批判性问题。</p>
+        <div class="quote">只有公众都能独立思考和判断，民主制度实行起来才会最有成效；也只有经过批判性问题的层层考验后形成的决定和信念，才让我们觉得更加理直气壮。</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">本书的特色</h3>
+        <ul>
+          <li><strong>简明扼要、清楚易懂、篇幅短小</strong>——40多年向学生传授批判性思维技能的经验让我们确信，只要用简单易懂的方法传授，学生就能掌握。</li>
+          <li><strong>适用范围广</strong>——延伸到形形色色的生活实践：消费、医疗、法律及一般伦理和个人抉择。</li>
+          <li><strong>技能可迁移</strong>——掌握一整套提问的技能，可广泛应用于各个领域。</li>
+          <li><strong>讨论式训练</strong>——在轻松、自然的讨论中展开训练。</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">本书能带给你什么？</h3>
+        <p>本书将带你掌握<strong>一系列关键问题</strong>（critical questions），用这些关键问题来一一检视各种各样的论证。这些问题像一张检查清单，帮助你做出更加理性的判断与决策。</p>
+        <div class="tip">坚持用这些批判性思维提问可以巩固我们不断增长的知识，帮助我们更快地发现世界运行的真相。</div>
+      </div>
+    </section>
+
+    <!-- 第1章 -->
+    <section class="chapter" id="ch1">
+      <div class="chapter-header">
+        <span class="chapter-num">第 1 章</span>
+        <h2 class="chapter-title">正确提问的好处和方法</h2>
+      </div>
+      <p class="chapter-desc">本章将带你认识到这个世界的真实面貌，了解为什么批判性思维是每个人都应该掌握的核心能力，并介绍两种重要的思维方式。</p>
+
+      <div class="section" id="ch1-1">
+        <h3 class="section-title">我们生活的这个世界是嘈杂、混乱的</h3>
+        <p>很多人生活在一个想象的世界里，在那里批判性思维根本没有存在的必要。这个想象的世界通常盛行以下这些情况：</p>
+        <ul>
+          <li>我们每个人在面对宗教和政治问题时都能自主判断。</li>
+          <li>想要说服我们相信某件事的人，常常会向我们解释这件事的种种不利之处。</li>
+          <li>我们对人生重大问题产生困惑时，总能很快找到可靠的专家、权威或大师。</li>
+          <li>我们在面临重要抉择的时候，总是能平心静气、心无旁骛、举一反三。</li>
+        </ul>
+        <p>遗憾的是，<strong>真实世界远不是这样运作的</strong>。各种信息鱼龙混杂，专家意见彼此矛盾，每个人都在试图说服你接受他们的观点。</p>
+      </div>
+
+      <div class="section" id="ch1-2">
+        <h3 class="section-title">专家说得再动听，也无法替我们救急</h3>
+        <p>专家的观点常常相互矛盾。每个专家都言之凿凿，但他们的结论却常常针锋相对。如果不自己动脑思考，把决策权完全交给某个"权威"，就可能陷入被动。</p>
+        <div class="tip warning">当外科医生说需要动手术时，"为本书所倡导的关键问题寻找答案"就有可能变成生死攸关的事情。</div>
+      </div>
+
+      <div class="section" id="ch1-3">
+        <h3 class="section-title">我们有必要依靠自己的大脑</h3>
+        <p>只有当你<strong>独立思考</strong>，并掌握可靠的判断工具时，你才能在纷繁复杂的信息洪流中保持清醒。本书就是为这个目的而写的——它教你<strong>一组关键问题</strong>，让你能独立地评估任何论证。</p>
+        <div class="key-question">
+          <span class="label">关键问题清单</span>
+          <div class="content">通过问一系列结构化的问题，我们可以系统地评估一个论证的质量——这就是批判性思维的本质。</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch1-4">
+        <h3 class="section-title">激发你的批判性思维</h3>
+        <p>要激发批判性思维，需要从以下几个方面着手：</p>
+        <div class="steps">
+          <div class="step">意识到这个世界的复杂性，建立<strong>主动质疑</strong>的思维习惯。</div>
+          <div class="step">掌握<strong>一套系统化的问题</strong>，而不是凭感觉判断。</div>
+          <div class="step">在<strong>反复练习</strong>中把这些技能内化为本能。</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch1-5">
+        <h3 class="section-title">两种思维方式：海绵式思维和淘金式思维</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>海绵式思维</th>
+              <th>淘金式思维</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>比喻</strong></td>
+              <td>像海绵吸水一样吸收信息</td>
+              <td>像淘金者筛沙拣金</td>
+            </tr>
+            <tr>
+              <td><strong>核心特点</strong></td>
+              <td>被动接收，尽可能多地吸收</td>
+              <td>主动思考，与作者互动</td>
+            </tr>
+            <tr>
+              <td><strong>对作者态度</strong></td>
+              <td>全盘接受</td>
+              <td>与作者展开对话、质询</td>
+            </tr>
+            <tr>
+              <td><strong>优点</strong></td>
+              <td>能快速获取大量信息</td>
+              <td>能形成独立判断</td>
+            </tr>
+            <tr>
+              <td><strong>风险</strong></td>
+              <td>可能不加批判地接受错误观点</td>
+              <td>需要投入更多精力</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="tip">本书倡导的是<strong>淘金式思维</strong>——既要吸收知识，又要主动评估和判断。</div>
+      </div>
+
+      <div class="section" id="ch1-6">
+        <h3 class="section-title">弱势批判性思维和强势批判性思维</h3>
+        <div class="concept-grid">
+          <div class="concept-card orange">
+            <h4>弱势批判性思维</h4>
+            <p>利用批判性思维来<strong>捍卫自己现有的观点</strong>，排斥不同意见。目的是击败对手。</p>
+          </div>
+          <div class="concept-card green">
+            <h4>强势批判性思维</h4>
+            <p>对<strong>所有观点</strong>都一视同仁地加以审视，包括自己原有的观点。只要论证有力就接受。目的是接近真理。</p>
+          </div>
+        </div>
+        <div class="tip">本书倡导的是<strong>强势批判性思维</strong>，要求我们保持开放、谦逊和理性。</div>
+      </div>
+
+      <div class="section" id="ch1-7">
+        <h3 class="section-title">价值观决定人与人之间的互动</h3>
+        <p>价值观是人们对什么重要、什么有意义的根本看法。<strong>不同的人有不同的价值观</strong>，这恰恰是人与人之间观点分歧的根源之一。</p>
+        <p>批判性思维要求我们：</p>
+        <ul>
+          <li>识别出自己和他人的价值观</li>
+          <li>理解价值观如何影响论证</li>
+          <li>在价值观冲突面前保持理性</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch1-8">
+        <h3 class="section-title">让对话进行下去</h3>
+        <p>批判性思维不是用来"吵架"的，而是用来<strong>推进对话</strong>的。即使面对分歧，我们也要保持好奇心和善意，把对话当成共同探索真理的过程。</p>
+        <div class="quote">好奇心是批判性思维最重要的驱动力之一。当你对别人的论点充满好奇时，你就已经踏上了理性思考之路。</div>
+      </div>
+    </section>
+
+    <!-- 第2章 -->
+    <section class="chapter" id="ch2">
+      <div class="chapter-header">
+        <span class="chapter-num">第 2 章</span>
+        <h2 class="chapter-title">干扰批判性思维的障碍</h2>
+      </div>
+      <p class="chapter-desc">如果你掌握了批判性思维，但在使用的过程中却遭遇了困难，那很可能是这些思维障碍在作怪。本章帮助你识别它们。</p>
+
+      <div class="section" id="ch2-1">
+        <h3 class="section-title">正确提问带给人的不快</h3>
+        <p>提出批判性问题常常会让人感到不快——对方会觉得你在"挑刺"，甚至怀疑你的善意。</p>
+        <div class="tip warning">误区：以为"友善"就意味着"不质疑"。其实，<strong>真正的友善是真诚</strong>，而真诚就包含对真相的追求。</div>
+      </div>
+
+      <div class="section" id="ch2-2">
+        <h3 class="section-title">思考过快</h3>
+        <p>人类大脑天然倾向于走<strong>思维捷径</strong>，因为这样可以节省能量。但这些捷径往往导致判断错误。我们必须刻意放慢思考速度，审慎评估。</p>
+      </div>
+
+      <div class="section" id="ch2-3">
+        <h3 class="section-title">刻板印象</h3>
+        <p>刻板印象是一种<strong>过度简化</strong>的思维模式——把复杂多样的群体简化为几个特征。它不仅误导我们的判断，还可能造成歧视和伤害。</p>
+        <div class="tip danger">警惕"凡是……都……"这种全称判断背后的刻板印象。</div>
+      </div>
+
+      <div class="section" id="ch2-4">
+        <h3 class="section-title">这些思维习惯会背叛我们</h3>
+        <p>许多根深蒂固的思维习惯会在不知不觉中背叛我们：</p>
+        <ul>
+          <li><strong>晕轮效应</strong>：因为某人的某个优点就全面肯定他。</li>
+          <li><strong>确认偏误</strong>：只关注支持自己观点的信息。</li>
+          <li><strong>可得性启发</strong>：只根据脑海中容易浮现的例子做判断。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch2-5">
+        <h3 class="section-title">自我中心</h3>
+        <p>我们天然倾向于<strong>以自我为中心</strong>思考问题——把自己的利益、视角、感受看得更重要。批判性思维要求我们走出自我的局限，尝试理解他人的立场。</p>
+      </div>
+
+      <div class="section" id="ch2-6">
+        <h3 class="section-title">一厢情愿——批判性思维最大的障碍</h3>
+        <p><strong>一厢情愿思维</strong>是批判性思维最大的障碍：人们只接受自己想听的、只相信自己想信的，<strong>自动屏蔽</strong>那些让自己不舒服的事实。</p>
+        <div class="key-question">
+          <span class="label">警示</span>
+          <div class="content">"我希望这是真的" ≠ "这是真的"。强烈的情感会让我们对证据视而不见。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第3章 -->
+    <section class="chapter" id="ch3">
+      <div class="chapter-header">
+        <span class="chapter-num">第 3 章</span>
+        <h2 class="chapter-title">论题和结论是什么</h2>
+      </div>
+      <p class="chapter-desc">评价一个人的论证之前，我们先得找到他的论证。批判性思维的第一步：找准论题和结论。</p>
+
+      <div class="key-question">
+        <span class="label">本章关键问题</span>
+        <div class="content">论题和结论是什么？</div>
+      </div>
+
+      <div class="section" id="ch3-1">
+        <h3 class="section-title">论题的种类</h3>
+        <ul>
+          <li><strong>描述性论题</strong>：有关世界是什么样、曾经是什么样、将来会是什么样的论题（关于事实）。</li>
+          <li><strong>规定性论题</strong>：有关世界应该是什么样的论题（关于价值、行动、政策）。</li>
+        </ul>
+        <div class="tip">描述性论题问的是"是什么"，规定性论题问的是"应该是什么"。</div>
+      </div>
+
+      <div class="section" id="ch3-2">
+        <h3 class="section-title">寻找论题</h3>
+        <p>论题是<strong>对话或文章的主题</strong>，即作者想要讨论的核心问题。识别论题的线索：</p>
+        <div class="steps">
+          <div class="step">看标题——很多文章/演讲的标题就揭示了论题。</div>
+          <div class="step">看开篇——很多作者会在开头直接点出论题。</div>
+          <div class="step">问"在这个问题上，作者想让我相信什么？"</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch3-3">
+        <h3 class="section-title">寻找作者或演说者的结论</h3>
+        <p><strong>结论</strong>（conclusion）是作者希望你接受的信息——即作者的论点、主张或观点。别人的结论就是他试图传递给你的信息，目的就在于塑造你的信念或行为。</p>
+        <div class="tip">如果找不准作者的结论，那你就会曲解别人的意图。</div>
+      </div>
+
+      <div class="section" id="ch3-4">
+        <h3 class="section-title">发现之旅的几点线索：怎样才能找到结论</h3>
+        <p>寻找结论的<strong>提示词</strong>：</p>
+        <ul>
+          <li>因此、所以、由此可知</li>
+          <li>表明、显示、证明</li>
+          <li>我得出结论、我的结论是</li>
+          <li>由此可以推断、这说明</li>
+        </ul>
+        <p>寻找结论的<strong>位置线索</strong>：</p>
+        <ul>
+          <li>文章的开头或结尾（最常见）</li>
+          <li>标题或副标题中</li>
+          <li>反复强调的关键词</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch3-5">
+        <h3 class="section-title">批判性思维与你的书面和口头表达能力</h3>
+        <p>找准论题和结论的能力，也能反过来提升你自己的表达。当你清晰地知道想表达什么结论，并用合适的论题来组织内容时，你的文章和演讲也会更有说服力。</p>
+        <div class="quote">清晰的思维带来清晰的表达。</div>
+      </div>
+    </section>
+
+    <!-- 第4章 -->
+    <section class="chapter" id="ch4">
+      <div class="chapter-header">
+        <span class="chapter-num">第 4 章</span>
+        <h2 class="chapter-title">理由是什么</h2>
+      </div>
+      <p class="chapter-desc">仅有结论而无论证过程，那是"独断"。找到结论之后，下一步就是找出支持它的理由。</p>
+
+      <div class="key-question">
+        <span class="label">本章关键问题</span>
+        <div class="content">理由是什么？</div>
+      </div>
+
+      <div class="section" id="ch4-1">
+        <h3 class="section-title">开始质疑的过程</h3>
+        <p>当你听到任何一个结论时，第一反应应该是问：<strong>"为什么？"</strong>——为什么我要相信这个结论？作者提供了什么理由来支持它？</p>
+      </div>
+
+      <div class="section" id="ch4-2">
+        <h3 class="section-title">找到理由有提示词来帮忙</h3>
+        <p>寻找理由的<strong>提示词</strong>：</p>
+        <ul>
+          <li>因为、由于、原因是</li>
+          <li>第一、第二、首先、其次</li>
+          <li>证据显示、研究表明</li>
+          <li>举个例子来说、事实上</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch4-3">
+        <h3 class="section-title">理由的类型</h3>
+        <ul>
+          <li><strong>理由</strong>（reason）：直接用来支持结论的陈述。</li>
+          <li><strong>证据</strong>（evidence）：事实、数据、观察、案例等具体材料。</li>
+          <li><strong>例子</strong>：用具体事例来说明抽象观点。</li>
+          <li><strong>类比</strong>：用类似事物来帮助理解。</li>
+          <li><strong>权威意见</strong>：引用专家或机构的观点。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch4-4">
+        <h3 class="section-title">让理由和结论一目了然</h3>
+        <p>把一个论证写下来，建议采用<strong>"因为...所以..."</strong>的格式：</p>
+        <div class="quote">因为 [理由1]、[理由2]、[理由3]，所以 [结论]。</div>
+        <div class="tip">清晰的论证结构，能让作者自查也能让读者一目了然。</div>
+      </div>
+
+      <div class="section" id="ch4-5">
+        <h3 class="section-title">使用这个关键问题</h3>
+        <p>每次遇到一个论证时，请自觉地问自己：<strong>"理由是什么？"</strong>。这是一个简单的习惯，但能让你避开绝大多数"独断型"误导。</p>
+      </div>
+
+      <div class="section" id="ch4-6">
+        <h3 class="section-title">批判性思维与你的书面和口头表达能力</h3>
+        <p>懂得"理由"的结构，同样能让你自己的表达更有力：先抛出结论，然后用清晰、有逻辑的理由来支撑它。这正是<strong>说服性写作</strong>的核心方法。</p>
+      </div>
+    </section>
+
+    <!-- 第5章 -->
+    <section class="chapter" id="ch5">
+      <div class="chapter-header">
+        <span class="chapter-num">第 5 章</span>
+        <h2 class="chapter-title">哪些词语意思不明确</h2>
+      </div>
+      <p class="chapter-desc">找到结论和理由为你提供了基本清晰的论证结构，但你还需要进一步检查这些部分的确切含义。</p>
+
+      <div class="key-question">
+        <span class="label">本章关键问题</span>
+        <div class="content">哪些词语意思不明确？</div>
+      </div>
+
+      <div class="section" id="ch5-1">
+        <h3 class="section-title">词语的多义性和易混淆性</h3>
+        <p>很多词语<strong>不止一个含义</strong>。如果不问清楚，你可能会回应了一个完全不同的观点。</p>
+        <div class="quote">"我们不应该禁止那些'邪恶'的书。"——这里的"邪恶"是什么意思？谁定义的？</div>
+      </div>
+
+      <div class="section" id="ch5-2">
+        <h3 class="section-title">找准关键词和短语</h3>
+        <p>关键词是<strong>含义模糊、容易引起分歧</strong>的词。识别关键词的方法：</p>
+        <ul>
+          <li>在论证中<strong>反复出现</strong>的词</li>
+          <li>不同人可能<strong>理解不同</strong>的词</li>
+          <li><strong>抽象</strong>的、带有感情色彩的词</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch5-3">
+        <h3 class="section-title">检查有没有歧义</h3>
+        <p>歧义是指一个词语或短语<strong>有多种合理的解释</strong>。歧义是论证的常见陷阱——作者可能故意使用歧义词，让结论看起来更普适。</p>
+      </div>
+
+      <div class="section" id="ch5-4">
+        <h3 class="section-title">判定歧义</h3>
+        <p>判定一个词是否有歧义，看它是否能用不同的方式合理解释。如果可以，那这个词就是有歧义的。</p>
+        <div class="tip">判定歧义后，下一步是问：<strong>在当前语境下，作者用的是哪个意思？</strong></div>
+      </div>
+
+      <div class="section" id="ch5-5">
+        <h3 class="section-title">语境与歧义</h3>
+        <p>同一个词在不同语境下含义不同。<strong>语境是消除歧义的关键</strong>——但你必须主动去询问和确认。</p>
+      </div>
+
+      <div class="section" id="ch5-6">
+        <h3 class="section-title">歧义、定义和字典</h3>
+        <p>字典可以帮你查一个词的常见含义，但：</p>
+        <ul>
+          <li>字典提供的是<strong>通用</strong>含义，作者可能用的是特殊含义。</li>
+          <li>字典是<strong>滞后</strong>的，新词或专门术语可能查不到。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch5-7">
+        <h3 class="section-title">歧义与附加感情色彩的语言</h3>
+        <p>很多词语带有<strong>感情色彩</strong>——褒义、贬义、中性。带有感情色彩的词可能影响我们对论证的判断。</p>
+        <div class="tip warning">警惕那些用感情色彩强烈的词包装的论证，它们往往在掩盖事实。</div>
+      </div>
+
+      <div class="section" id="ch5-8">
+        <h3 class="section-title">谁想说服你，谁就要负责解释清楚</h3>
+        <p><strong>举证责任</strong>在试图说服你的人身上。如果有人主张了一个含糊的术语，他就有义务把它解释清楚。</p>
+        <div class="key-question">
+          <span class="label">关键问题</span>
+          <div class="content">当他使用"自由""正义""安全"等词时，他具体是什么意思？</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch5-9">
+        <h3 class="section-title">歧义与你的书面和口头表达能力</h3>
+        <p>在你自己表达时，要尽量<strong>使用准确、具体的词</strong>，避免歧义。这是对读者的负责，也是批判性思维者的基本素养。</p>
+      </div>
+    </section>
+
+    <!-- 第6章 -->
+    <section class="chapter" id="ch6">
+      <div class="chapter-header">
+        <span class="chapter-num">第 6 章</span>
+        <h2 class="chapter-title">价值观假设与描述性假设</h2>
+      </div>
+      <p class="chapter-desc">任何论证背后都有未明说的假设——这些假设常常决定了论证能否成立。识别假设是批判性思维的核心技能。</p>
+
+      <div class="key-question">
+        <span class="label">本章关键问题</span>
+        <div class="content">什么是价值观假设？什么是描述性假设？</div>
+      </div>
+
+      <div class="section" id="ch6-1">
+        <h3 class="section-title">到哪儿去找假设</h3>
+        <p>每本书、每场讨论、每篇文章里都有无数的假设，但你应该关心的只有很小一部分。<strong>只在你已经学会寻找的论证结构中去寻找</strong>这些假设。</p>
+        <p>具体说来，有两个地方可以用来寻找假设：</p>
+        <ul>
+          <li>寻找理由<strong>需要它们</strong>才能证明结论的假设（连接假设）。</li>
+          <li>寻找理由<strong>需要它们</strong>才能成立的假设。</li>
+        </ul>
+        <div class="tip">所谓假设，就是一个信念，通常没有明说出来，而作者认为是理所当然，并用来证明外在的论证。</div>
+      </div>
+
+      <div class="section" id="ch6-2">
+        <h3 class="section-title">价值观冲突和价值观假设</h3>
+        <p><strong>价值观假设</strong>（value assumption）是一种<strong>特定的背景信念</strong>，是人们认为理所当然的、影响论证结构的关键判断。它通常是关于<strong>什么更重要</strong>的判断。</p>
+        <div class="quote">"我们不应该把钱花在太空探索上，因为我们地球上还有这么多穷人。"——这个论证的价值观假设是：<strong>我们应该优先帮助地球上的穷人</strong>。</div>
+      </div>
+
+      <div class="section" id="ch6-3">
+        <h3 class="section-title">从价值观到价值观假设</h3>
+        <p>价值观是<strong>一般的、长期</strong>的偏好；价值观假设是<strong>具体的、当前</strong>的偏好。论证者会把特定的价值观假设伪装成普遍真理。</p>
+      </div>
+
+      <div class="section" id="ch6-4">
+        <h3 class="section-title">典型的价值观冲突</h3>
+        <p>常见的价值观冲突包括：</p>
+        <ul>
+          <li><strong>个人自由 vs 集体利益</strong></li>
+          <li><strong>效率 vs 公平</strong></li>
+          <li><strong>短期利益 vs 长期利益</strong></li>
+          <li><strong>安全 vs 自由</strong></li>
+          <li><strong>经济发展 vs 环境保护</strong></li>
+          <li><strong>个人责任 vs 社会责任</strong></li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch6-5">
+        <h3 class="section-title">将立论者的背景作为寻找价值观假设的一个线索</h3>
+        <p>立论者的<strong>成长背景、职业、利益相关方</strong>等，常常能透露其潜在的价值观假设。了解一个人，往往能预判他的立场。</p>
+      </div>
+
+      <div class="section" id="ch6-6">
+        <h3 class="section-title">将可能发生的后果作为寻找价值观假设的重要线索</h3>
+        <p>立论者如果强调某项行动带来某类后果，往往暗示他认为<strong>那种后果是更重要的</strong>。通过观察作者强调哪些后果，你可以反推出他的价值观假设。</p>
+      </div>
+
+      <div class="section" id="ch6-7">
+        <h3 class="section-title">找到价值观假设的其他提示</h3>
+        <ul>
+          <li>寻找作者没有明说的<strong>反向论证</strong>。</li>
+          <li>尝试用作者的逻辑去支持<strong>相反的结论</strong>，看看哪里走不通。</li>
+          <li>关注作者的<strong>用词</strong>，特别是带有感情色彩的词。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch6-8">
+        <h3 class="section-title">价值观与相对性</h3>
+        <p>认识到价值观的多样性，<strong>不等于</strong>认为所有价值观都同样合理。我们要：</p>
+        <ul>
+          <li>承认不同人有不同价值观</li>
+          <li>但仍能<strong>通过理性讨论</strong>来比较各种价值观</li>
+          <li>警惕"<strong>相对主义</strong>"陷阱（认为没有客观标准）</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch6-9">
+        <h3 class="section-title">找出并评价描述性假设</h3>
+        <p><strong>描述性假设</strong>（descriptive assumption）是指<strong>关于世界是什么样</strong>的没有明说的信念。它通常是论证中"理由"成立的前提。</p>
+        <div class="quote">"这部手机销量下降了，所以该公司经营不善。"——描述性假设是：<strong>手机销量是衡量公司经营状况的良好指标</strong>。</div>
+      </div>
+
+      <div class="section" id="ch6-10">
+        <h3 class="section-title">描述性假设举例说明</h3>
+        <p>例如："这个公司最近提拔了一批年轻人，所以它正在变好。"<br>其中的描述性假设：</p>
+        <ul>
+          <li>"提拔年轻人"是公司变好的<strong>充分指标</strong></li>
+          <li>这些年轻人<strong>有能力</strong>胜任更高的职位</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch6-11">
+        <h3 class="section-title">常见的描述性假设</h3>
+        <ul>
+          <li>"大多数人都这么想" → 假设<strong>流行的就是正确的</strong></li>
+          <li>"过去是这样，所以将来也是这样" → 假设<strong>趋势会持续</strong></li>
+          <li>"这个人有钱，所以他的观点值得听" → 假设<strong>财富与智慧相关</strong></li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch6-12">
+        <h3 class="section-title">定位描述性假设的一些线索</h3>
+        <ul>
+          <li>把理由当作<strong>结论</strong>来问自己：让这个理由成立还需要什么？</li>
+          <li>寻找作者<strong>没有研究</strong>的变量。</li>
+          <li>关注那些<strong>作者当作事实</strong>，但其实未经证实的前提。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch6-13">
+        <h3 class="section-title">避免分析无意义的假设</h3>
+        <p>不是所有的假设都值得分析。<strong>只关注那些真正影响论证质量的关键假设</strong>，否则会陷入琐碎的细节，迷失方向。</p>
+        <div class="tip">关键假设是指：如果它是错的，整个论证就会崩塌的那种假设。</div>
+      </div>
+
+      <div class="section" id="ch6-14">
+        <h3 class="section-title">假设与你的书面和口头表达能力</h3>
+        <p>清楚地<strong>亮出自己的假设</strong>，能让你表达更诚实、更有力。当你能清晰说明自己的推理依据时，你的论证会更有说服力。</p>
+      </div>
+    </section>
+
+    <!-- 第7章 -->
+    <section class="chapter" id="ch7">
+      <div class="chapter-header">
+        <span class="chapter-num">第 7 章</span>
+        <h2 class="chapter-title">论证中有没有谬误</h2>
+      </div>
+      <p class="chapter-desc">谬误是论证中常见的思维错误。本章教你识别论证中的逻辑陷阱。</p>
+
+      <div class="key-question">
+        <span class="label">本章关键问题</span>
+        <div class="content">论证中有没有谬误？</div>
+      </div>
+
+      <div class="section" id="ch7-1">
+        <h3 class="section-title">用质疑的方法找出论证中的谬误</h3>
+        <p>你并不需要记住所有谬误及其名称才能辨别它们。<strong>只要你问对了问题，就能找到论证谬误</strong>，即使你叫不出它们的名字，也无所谓。</p>
+      </div>
+
+      <div class="section" id="ch7-2">
+        <h3 class="section-title">让我们从评价各种假设出发</h3>
+        <p>很多常见的谬误，其实就是<strong>在论证中混入了错误的假设</strong>。当你发现论证中有一个明显错误的假设时，往往就是一个谬误。</p>
+      </div>
+
+      <div class="section" id="ch7-3">
+        <h3 class="section-title">发现其他常见的论证谬误</h3>
+        <div class="concept-grid">
+          <div class="concept-card red">
+            <h4>人身攻击型谬误</h4>
+            <p>攻击提出论证的人，而不是回应论证本身。例如：<em>"他那么年轻，他的建议不可信。"</em></p>
+          </div>
+          <div class="concept-card red">
+            <h4>滑坡谬误</h4>
+            <p>声称某行为将引发一连串极端后果。例如：<em>"如果我们允许这个，那么一切都会失控。"</em></p>
+          </div>
+          <div class="concept-card red">
+            <h4>稻草人谬误</h4>
+            <p>歪曲对方观点，然后攻击这个被歪曲的版本。</p>
+          </div>
+          <div class="concept-card red">
+            <h4>诉诸公众</h4>
+            <p>认为大多数人相信的就是对的。<em>"大家都这么说，肯定有道理。"</em></p>
+          </div>
+          <div class="concept-card red">
+            <h4>诉诸权威</h4>
+            <p>仅凭权威身份就认为其结论正确，不考虑论证本身。</p>
+          </div>
+          <div class="concept-card red">
+            <h4>诉诸情感</h4>
+            <p>用情感来代替论证。例如：<em>"你要是真爱孩子，就该给他们买这个。"</em></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="ch7-4">
+        <h3 class="section-title">找出分散注意力的干扰项</h3>
+        <p>有些论证看似严密，但其实在<strong>分散你的注意力</strong>，让你不去关注真正的问题。识别这些"红鲱鱼"（red herring）：</p>
+        <ul>
+          <li>论证突然转向一个不相干的话题</li>
+          <li>用"幽默"或"故事"来替代实质论证</li>
+          <li>把焦点放在容易反驳的小点上</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch7-5">
+        <h3 class="section-title">愚弄人的循环论证</h3>
+        <p><strong>循环论证</strong>是用结论来证明结论，实质上什么也没证明。</p>
+        <div class="quote">"这本书是好的，因为它是经典；它是经典，因为它好。"</div>
+        <div class="tip danger">循环论证是最隐蔽的谬误之一，要特别警惕。</div>
+      </div>
+
+      <div class="section" id="ch7-6">
+        <h3 class="section-title">利用以下这个关键问题</h3>
+        <p>每次遇到一个论证时，问自己：<strong>"这里有没有什么谬误？"</strong>。这是一个简单的步骤，但能让你避开绝大多数的逻辑陷阱。</p>
+      </div>
+
+      <div class="section" id="ch7-7">
+        <h3 class="section-title">推理错误小结</h3>
+        <p>最常见的推理错误分类：</p>
+        <ul>
+          <li><strong>相关谬误</strong>：论据与结论之间没有真实联系（如人身攻击、稻草人）。</li>
+          <li><strong>归纳谬误</strong>：从个别样本做出过度概括。</li>
+          <li><strong>演绎谬误</strong>：前提与结论之间的逻辑关系错误。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch7-8">
+        <h3 class="section-title">扩展关于谬误的知识</h3>
+        <p>熟悉一些<strong>常见谬误的名称</strong>，可以让你在与他人交流时更高效，也让你在阅读时更容易识别陷阱。</p>
+        <div class="tip">推荐了解：双关、假两难、合成谬误、分解谬误、仓促概括等。</div>
+      </div>
+
+      <div class="section" id="ch7-9">
+        <h3 class="section-title">谬误与你的书面和口头交流能力</h3>
+        <p>了解谬误，<strong>既能避免自己犯</strong>，也能在别人使用时一眼识破。这会让你在讨论中保持理性优势。</p>
+      </div>
+    </section>
+
+    <!-- 第8章 -->
+    <section class="chapter" id="ch8">
+      <div class="chapter-header">
+        <span class="chapter-num">第 8 章</span>
+        <h2 class="chapter-title">证据的效力如何（1）：直觉、个人经历、典型案例、当事人证言和专家意见</h2>
+      </div>
+      <p class="chapter-desc">几乎所有论证都包含"事实断言"——关于世界是什么样子的判断。本章教你如何评估这些断言背后的证据。</p>
+
+      <div class="key-question">
+        <span class="label">本章关键问题</span>
+        <div class="content">证据的效力如何：直觉、个人经历、典型案例、当事人证言和专家意见</div>
+      </div>
+
+      <div class="section" id="ch8-1">
+        <h3 class="section-title">我们需要证据</h3>
+        <p>对于<strong>事实断言</strong>（factual claims），你要问的第一个问题就是：<strong>"我为什么要相信它？"</strong></p>
+        <p>如果没有证据支撑，那就是<strong>孤立断言</strong>（mere assertion），意指一个没有用任何方式支持的断言。你应该严肃地质疑孤立断言的可靠性！</p>
+      </div>
+
+      <div class="section" id="ch8-2">
+        <h3 class="section-title">找出事实断言</h3>
+        <p>事实断言是关于"过去是什么样、现在是什么样、将来会是什么样"的判断。识别事实断言后，就要追问：<strong>支持它的证据在哪里？</strong></p>
+      </div>
+
+      <div class="section" id="ch8-3">
+        <h3 class="section-title">证据的来源</h3>
+        <p>不同来源的证据，效力差别很大。常见证据来源包括：</p>
+        <ul>
+          <li>直觉</li>
+          <li>个人经历</li>
+          <li>典型案例</li>
+          <li>当事人证言</li>
+          <li>专家意见</li>
+          <li>个人观察</li>
+          <li>研究报告</li>
+          <li>类比</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch8-4">
+        <h3 class="section-title">将直觉作为证据</h3>
+        <p>直觉是一种"<strong>个人感觉</strong>"，并不是可靠的证据。直觉受到个人经历、当时情绪、文化背景等的影响。<strong>不能把直觉当作事实。</strong></p>
+        <div class="tip warning">警惕"我感觉是这样，所以就是这样"这种思维。</div>
+      </div>
+
+      <div class="section" id="ch8-5">
+        <h3 class="section-title">个人经历作为证据</h3>
+        <p>个人经历也常常被作为证据，但它存在<strong>样本量太小</strong>、<strong>可能存在选择性记忆</strong>等局限。</p>
+        <div class="quote">"我的爷爷每天抽一包烟，活到了90岁。"——这并不能证明吸烟无害。</div>
+      </div>
+
+      <div class="section" id="ch8-6">
+        <h3 class="section-title">将典型案例作为证据</h3>
+        <p>典型案例（vivid case）是<strong>生动的、有戏剧性</strong>的个案。它们的<strong>说服力很强</strong>，但常常<strong>以偏概全</strong>。</p>
+        <div class="tip">一个戏剧性的例子不等于普遍情况。要追问：还有没有其他相反的例子？</div>
+      </div>
+
+      <div class="section" id="ch8-7">
+        <h3 class="section-title">将当事人证言作为证据</h3>
+        <p>当事人证言是<strong>亲历者的陈述</strong>。它有亲历的优势，但也受限于：</p>
+        <ul>
+          <li><strong>记忆失真</strong>——人会不自觉地修改记忆</li>
+          <li><strong>利益相关</strong>——亲历者可能有自己的立场</li>
+          <li><strong>观察局限</strong>——人无法看到事件的全貌</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch8-8">
+        <h3 class="section-title">将专家意见作为证据</h3>
+        <p>专家意见是<strong>有专业背景的人</strong>给出的判断。专家意见的可靠性取决于：</p>
+        <ul>
+          <li>专家在该领域的<strong>专业程度</strong></li>
+          <li>专家的<strong>声誉</strong>和过往判断的准确性</li>
+          <li>专家是否<strong>有利益相关</strong></li>
+        </ul>
+        <div class="tip">专家也可能犯错。永远要保持独立判断。</div>
+      </div>
+
+      <div class="section" id="ch8-9">
+        <h3 class="section-title">使用这个关键问题</h3>
+        <p>每次面对一个事实断言时，问自己：<strong>"这是什么类型的证据？它的效力如何？"</strong></p>
+      </div>
+
+      <div class="section" id="ch8-10">
+        <h3 class="section-title">你的学术写作与证据</h3>
+        <p>学术写作要求<strong>严谨的证据</strong>。在写论文时：</p>
+        <ul>
+          <li>尽量使用<strong>经过同行评审的研究</strong></li>
+          <li>区分<strong>主观感受</strong>和<strong>客观证据</strong></li>
+          <li>说明证据的<strong>来源和局限</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 第9章 -->
+    <section class="chapter" id="ch9">
+      <div class="chapter-header">
+        <span class="chapter-num">第 9 章</span>
+        <h2 class="chapter-title">证据的效力如何（2）：个人观察、研究报告和类比</h2>
+      </div>
+      <p class="chapter-desc">本章继续探讨证据问题，重点关注观察、研究和类比这三种更"硬核"的证据形式。</p>
+
+      <div class="section" id="ch9-1">
+        <h3 class="section-title">个人观察作为证据</h3>
+        <p>个人观察是很多日常论证和科学研究的基础。我们对亲眼所见的事情会感觉信心十足。但是，因为很多原因，<strong>个人观察常常被证明是不可信赖的证据</strong>。</p>
+        <p>不像特定的镜子，观察者并不能给我们提供"纯粹"的观察。我们所"见"所说的都是经过一系列<strong>价值观、偏见、态度和期待</strong>过滤后剩下的东西。</p>
+        <div class="tip">最可信的观察往往是：最近得来的观察、处于最佳环境、多人同时观察、对事件没有强烈期待的人。</div>
+      </div>
+
+      <div class="section" id="ch9-2">
+        <h3 class="section-title">研究报告作为证据</h3>
+        <p>研究报告是<strong>学术性证据</strong>，通常比直觉、个人经历等更可靠。但也要注意：</p>
+        <ul>
+          <li>研究的<strong>质量</strong>参差不齐</li>
+          <li>研究结果可能<strong>被夸大</strong>或误读</li>
+          <li>单一研究<strong>不能下定论</strong>，需要看整个研究领域</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch9-3">
+        <h3 class="section-title">从研究的样本来概括</h3>
+        <p>从研究样本得出普遍结论时，要问：</p>
+        <ul>
+          <li>样本<strong>多大</strong>？</li>
+          <li>样本<strong>如何选取</strong>？是否有偏？</li>
+          <li>样本<strong>代表什么总体</strong>？</li>
+        </ul>
+        <div class="tip warning">样本偏差是研究中最常见的问题之一。永远要检查样本。</div>
+      </div>
+
+      <div class="section" id="ch9-4">
+        <h3 class="section-title">从研究的测量方法来概括</h3>
+        <p>研究的<strong>测量方法</strong>也会影响结论：</p>
+        <ul>
+          <li>测量工具是否<strong>有效</strong>？</li>
+          <li>测量工具是否<strong>可靠</strong>？</li>
+          <li>测量的<strong>是什么</strong>，是不是作者声称的那个东西？</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch9-5">
+        <h3 class="section-title">片面的调查和问卷</h3>
+        <p>调查和问卷的结果常被引用，但要注意：</p>
+        <ul>
+          <li>调查的<strong>问题设计</strong>是否有引导性？</li>
+          <li>调查的<strong>样本</strong>是什么？是否覆盖了所有群体？</li>
+          <li>调查的<strong>回答率</strong>有多高？低回答率可能意味着偏差。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch9-6">
+        <h3 class="section-title">将类比作为证据</h3>
+        <p>类比是用<strong>类似事物</strong>来帮助理解或论证。但类比有两个事物之间<strong>相似性</strong>和<strong>差异性</strong>都要考虑。</p>
+        <div class="quote">"人体就像一台机器，需要定期维护。"——这个类比有启发性，但人体和机器有本质的不同。</div>
+        <div class="tip">好的类比能帮助理解，但<strong>不能用类比代替严谨论证</strong>。</div>
+      </div>
+
+      <div class="section" id="ch9-7">
+        <h3 class="section-title">专家观点什么时候最可信</h3>
+        <p>专家观点在以下情况下最可信：</p>
+        <ul>
+          <li>专家在该领域<strong>有公认的专业地位</strong></li>
+          <li>有<strong>多个独立</strong>的专家得出<strong>相似结论</strong></li>
+          <li>专家<strong>没有明显的利益相关</strong></li>
+          <li>专家的结论得到<strong>公开、可验证</strong>的证据支持</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 第10章 -->
+    <section class="chapter" id="ch10">
+      <div class="chapter-header">
+        <span class="chapter-num">第 10 章</span>
+        <h2 class="chapter-title">有没有替代原因</h2>
+      </div>
+      <p class="chapter-desc">当你相信作者对某件事的因果断言时，要警惕：可能还有其他原因能解释同一现象。</p>
+
+      <div class="key-question">
+        <span class="label">本章关键问题</span>
+        <div class="content">有没有替代原因？</div>
+      </div>
+
+      <div class="section" id="ch10-1">
+        <h3 class="section-title">什么时候应该去寻找替代原因</h3>
+        <p>当你有足够的理由相信作者或演说者在使用证据支持他对某件事<strong>起因</strong>的一个断言时，你就需要去寻找一些<strong>替代原因</strong>。</p>
+        <p>常见<strong>因果关系</strong>的指示词：</p>
+        <ul>
+          <li>导致、引起、使得</li>
+          <li>因为、由于、原因是</li>
+          <li>产生了、带来了、引发了</li>
+          <li>结果是、因此、所以</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch10-2">
+        <h3 class="section-title">替代原因的说服力</h3>
+        <p>替代原因可能比原解释更有说服力。当你发现一个替代原因时，要评估：</p>
+        <ul>
+          <li>这个替代原因的<strong>证据</strong>有多强？</li>
+          <li>它能<strong>解释更多</strong>的现象吗？</li>
+          <li>它是否与原解释<strong>矛盾</strong>？</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch10-3">
+        <h3 class="section-title">找到替代原因</h3>
+        <p>寻找替代原因的方法：</p>
+        <div class="steps">
+          <div class="step">问："除了作者说的原因，还有什么<strong>其他原因</strong>可能导致这个结果？"</div>
+          <div class="step">思考一下<strong>反面证据</strong>——在什么情况下原解释会失效？</div>
+          <div class="step">从<strong>多种视角</strong>看问题——不同立场的人可能会给出不同原因。</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch10-4">
+        <h3 class="section-title">唯一的原因，还是原因之一</h3>
+        <p>大多数现象都有<strong>多个原因</strong>。作者往往只强调其中一个原因，而忽略其他。要警惕：</p>
+        <div class="tip warning">"<strong>唯一原因</strong>"的论断往往过度简化。"原因之一"的判断通常更可靠。</div>
+      </div>
+
+      <div class="section" id="ch10-5">
+        <h3 class="section-title">多种视角可作为寻找替代原因的指导</h3>
+        <p>从不同角度审视问题：</p>
+        <ul>
+          <li><strong>经济角度</strong>：有没有经济因素？</li>
+          <li><strong>文化角度</strong>：有没有文化传统的影响？</li>
+          <li><strong>政治角度</strong>：有没有政治利益在起作用？</li>
+          <li><strong>心理角度</strong>：有没有心理因素？</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch10-6">
+        <h3 class="section-title">组间差异的替代原因</h3>
+        <p>当我们比较两个群体时，<strong>表面上的差异</strong>可能有多种原因：</p>
+        <ul>
+          <li>真实的本质差异</li>
+          <li>测量方式带来的差异</li>
+          <li>取样偏差</li>
+          <li>历史和社会背景的影响</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch10-7">
+        <h3 class="section-title">相关性不能证明因果关系</h3>
+        <p><strong>这是统计学和科学方法中最重要的原则之一</strong>。两件事相关，并不意味着一件事导致了另一件事。</p>
+        <div class="quote">"冰淇淋销量高的月份，溺水人数也高。"——两者都因为是<strong>夏天</strong>，并不是冰淇淋导致溺水。</div>
+        <div class="key-question">
+          <span class="label">常见误区</span>
+          <div class="content">"因为 A 和 B 相关，所以 A 导致 B"——这是科学研究和日常推理中常见的逻辑错误。</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch10-8">
+        <h3 class="section-title">混淆"在这之后"与"因为这个"之间的关系</h3>
+        <p><strong>post hoc 谬误</strong>（post hoc ergo propter hoc）：因为一件事发生在另一件事之后，就认为前者导致了后者。</p>
+        <div class="quote">"我爷爷得了癌症，吃了某保健品后好了，所以保健品能治癌。"——典型的post hoc谬误。</div>
+      </div>
+
+      <div class="section" id="ch10-9">
+        <h3 class="section-title">很多事件并非只有一种解释</h3>
+        <p>培养<strong>多角度思考</strong>的习惯，对任何现象都尝试找出多种可能的解释。这会让我们避免过早下结论。</p>
+      </div>
+
+      <div class="section" id="ch10-10">
+        <h3 class="section-title">评价替代原因</h3>
+        <p>评价替代原因时，要考虑：</p>
+        <ul>
+          <li>替代原因与原解释的<strong>证据强度对比</strong></li>
+          <li>替代原因是否能<strong>解释更多现象</strong></li>
+          <li>替代原因是否与<strong>已知事实</strong>一致</li>
+          <li>替代原因<strong>可检验性</strong>如何</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch10-11">
+        <h3 class="section-title">替代原因和你自己的表达和交流</h3>
+        <p>在自己表达观点时，要<strong>主动考虑替代原因</strong>。这会让你的论证更全面、更具说服力，也更显诚实。</p>
+      </div>
+
+      <div class="section" id="ch10-12">
+        <h3 class="section-title">发掘潜在的原因</h3>
+        <p>有时<strong>真正的原因</strong>藏在表面原因的背后。培养深度追问的习惯——"为什么"之后再问"为什么"。</p>
+      </div>
+    </section>
+
+    <!-- 第11章 -->
+    <section class="chapter" id="ch11">
+      <div class="chapter-header">
+        <span class="chapter-num">第 11 章</span>
+        <h2 class="chapter-title">数据有没有欺骗性</h2>
+      </div>
+      <p class="chapter-desc">"数字不会撒谎，但骗子会算术。"数据本身不会欺骗，但数据的使用方式可以。本章教你识别统计数据的陷阱。</p>
+
+      <div class="key-question">
+        <span class="label">本章关键问题</span>
+        <div class="content">数据有没有欺骗性？</div>
+      </div>
+
+      <div class="section" id="ch11-1">
+        <h3 class="section-title">不知来历和带有偏见的数据</h3>
+        <p>首先要看数据的<strong>来源</strong>：</p>
+        <ul>
+          <li>数据<strong>从哪里来</strong>？</li>
+          <li><strong>谁</strong>收集的？</li>
+          <li>收集数据时<strong>用了什么方法</strong>？</li>
+          <li>有没有<strong>利益相关方</strong>在影响数据？</li>
+        </ul>
+        <div class="tip danger">不知来历的数据不可信。永远要问"数据从哪里来"。</div>
+      </div>
+
+      <div class="section" id="ch11-2">
+        <h3 class="section-title">令人困惑的平均值</h3>
+        <p>"平均"这个词可以指：</p>
+        <ul>
+          <li><strong>平均数</strong>（mean）：所有数值的总和除以数量</li>
+          <li><strong>中位数</strong>（median）：所有数值按大小排列后中间那个</li>
+          <li><strong>众数</strong>（mode）：出现次数最多的数值</li>
+        </ul>
+        <p>不同情况下，"平均"含义差别巨大。例如：5个人的收入分别是1万、1万、1万、1万、96万，平均数是20万，但<strong>中位数只有1万</strong>。</p>
+        <div class="tip warning">在收入等分布不均的数据中，中位数往往比平均数更有参考价值。</div>
+      </div>
+
+      <div class="section" id="ch11-3">
+        <h3 class="section-title">把一件事的结论用来证明另一件事</h3>
+        <p>常见的统计误导：</p>
+        <ul>
+          <li>把<strong>个体数据</strong>当成<strong>整体趋势</strong></li>
+          <li>把<strong>短期数据</strong>当成<strong>长期趋势</strong></li>
+          <li>把<strong>相关数据</strong>当成<strong>因果数据</strong></li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch11-4">
+        <h3 class="section-title">通过省略信息欺骗</h3>
+        <p>统计数据可以<strong>通过省略</strong>来欺骗：</p>
+        <ul>
+          <li>只报告<strong>对自己有利</strong>的数据</li>
+          <li>不报告<strong>样本大小</strong></li>
+          <li>不报告<strong>数据收集时间</strong>和方式</li>
+          <li>用<strong>绝对数</strong>掩盖<strong>相对比例</strong></li>
+        </ul>
+        <div class="quote">"这个药让1000人中的999人活了下来！"——这听起来很厉害，但你不知道对照组的数据。</div>
+      </div>
+
+      <div class="section" id="ch11-5">
+        <h3 class="section-title">在自己的写作中使用统计数字</h3>
+        <p>当你使用统计数据时：</p>
+        <ul>
+          <li><strong>提供来源</strong>，让读者可以验证</li>
+          <li><strong>说明样本</strong>，让读者知道数据代表什么</li>
+          <li><strong>诚实呈现</strong>，包括不利的数据</li>
+          <li>用<strong>多种方式</strong>（图表、文字、相对数）帮助理解</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 第12章 -->
+    <section class="chapter" id="ch12">
+      <div class="chapter-header">
+        <span class="chapter-num">第 12 章</span>
+        <h2 class="chapter-title">有什么重要信息被省略了</h2>
+      </div>
+      <p class="chapter-desc">很多论证的质量不取决于它说了什么，而取决于它没说什么。识别省略的信息是批判性思维的高阶技能。</p>
+
+      <div class="key-question">
+        <span class="label">本章关键问题</span>
+        <div class="content">有什么重要信息被省略了？</div>
+      </div>
+
+      <div class="section" id="ch12-1">
+        <h3 class="section-title">找到省略掉的信息有好处</h3>
+        <p>几乎所有的结论或者产品都有一些积极的特点。<strong>那些只想告诉我们他们想让我们知道的信息的人</strong>，会告诉我们所有这些积极的特点，但不厌其详。而<strong>他们会隐藏那些结论的消极方面</strong>。</p>
+        <div class="quote">薯片一直作为既好吃又酥脆的食品热销，但是它们所含的热量非常高，并且含有多种防腐剂，这个信息却没人提。</div>
+      </div>
+
+      <div class="section" id="ch12-2">
+        <h3 class="section-title">不完整的论证在所难免</h3>
+        <p>由于时间和篇幅限制，<strong>任何论证都是不完整的</strong>。关键是要知道哪些省略是合理的，哪些是不合理的。</p>
+      </div>
+
+      <div class="section" id="ch12-3">
+        <h3 class="section-title">可以帮你识别省略信息的问题</h3>
+        <p>以下是一些识别省略信息的<strong>关键问题</strong>：</p>
+        <ul>
+          <li><strong>谁</strong>从这项主张中<strong>受益</strong>？谁<strong>受损</strong>？</li>
+          <li>省略的<strong>事实</strong>会改变结论吗？</li>
+          <li>有<strong>相反的证据</strong>被忽略了吗？</li>
+          <li>立论者有没有<strong>提到不利证据</strong>？</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch12-4">
+        <h3 class="section-title">但是我们需要知道确切的数字</h3>
+        <p>"很多人""大多数""很少"——这些<strong>模糊的量化词</strong>常常是省略信息的标志。</p>
+        <div class="tip">"很多人"到底是多少？1%？50%？99%？问清楚确切的数字。</div>
+      </div>
+
+      <div class="section" id="ch12-5">
+        <h3 class="section-title">考虑是否有负面效果</h3>
+        <p>我们要<strong>特别强调</strong>被提倡的行动带来的<strong>潜在负面效果</strong>。</p>
+        <ul>
+          <li><strong>社会的哪一部分</strong>并没有从提议的行动中受益？谁<strong>蒙受了损失</strong>？</li>
+          <li>提议的行动对<strong>权力分配</strong>有什么影响？</li>
+          <li>这个行动对我们的<strong>健康</strong>有什么影响？</li>
+          <li>这个行动怎么影响我们<strong>相互之间</strong>的人际关系？怎么影响我们与<strong>自然环境</strong>之间的关系？</li>
+        </ul>
+        <div class="key-question">
+          <span class="label">关键问题</span>
+          <div class="content">这个行动潜在的<strong>长期</strong>的<strong>负面</strong>效果是什么？</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch12-6">
+        <h3 class="section-title">省略的信息还是找不到</h3>
+        <p>有时即使我们努力去找，也找不到<strong>关键信息</strong>。这本身就是重要的信息：</p>
+        <ul>
+          <li>立论者可能<strong>自己也没有</strong>这些信息</li>
+          <li>信息可能<strong>真的不存在</strong></li>
+          <li>信息可能被<strong>有意隐瞒</strong>了</li>
+        </ul>
+        <div class="tip">在这种情况下，要特别<strong>谨慎</strong>地对待那个论证。</div>
+      </div>
+    </section>
+
+    <!-- 第13章 -->
+    <section class="chapter" id="ch13">
+      <div class="chapter-header">
+        <span class="chapter-num">第 13 章</span>
+        <h2 class="chapter-title">能得出什么合理的结论</h2>
+      </div>
+      <p class="chapter-desc">一个论证可以支持多个结论。本章教你如何跳出二分式思维，找到更全面、更合理的结论。</p>
+
+      <div class="key-question">
+        <span class="label">本章关键问题</span>
+        <div class="content">能得出什么合理的结论？</div>
+      </div>
+
+      <div class="section" id="ch13-1">
+        <h3 class="section-title">二分式思维方法：妨碍我们考虑多种可能的结论</h3>
+        <p><strong>二分式思维</strong>（either-or thinking）把复杂问题简化为<strong>非此即彼</strong>的两个选择。这是思维的大敌。</p>
+        <div class="quote">"你要么支持我们，要么反对我们。"——典型的二分式陷阱。</div>
+        <div class="tip danger">警惕"要么……要么……"的句式，这往往是二分式思维。</div>
+      </div>
+
+      <div class="section" id="ch13-2">
+        <h3 class="section-title">两面还是多面</h3>
+        <p>大多数问题都有<strong>超过两个</strong>的方面：</p>
+        <ul>
+          <li>支持、反对、<strong>中立</strong></li>
+          <li>支持、反对、<strong>部分支持</strong>、<strong>有条件支持</strong></li>
+          <li>多种不同的<strong>实现方式</strong></li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch13-3">
+        <h3 class="section-title">寻找多个结论</h3>
+        <p>寻找多个结论的方法：</p>
+        <ul>
+          <li><strong>使用条件句</strong>：在什么条件下得出什么结论</li>
+          <li><strong>考虑多种立场</strong>：从不同群体的视角看问题</li>
+          <li><strong>结合所有理由</strong>：哪些理由支持哪些结论</li>
+        </ul>
+        <div class="quote">"我们不应该采取甲措施"或"我们不应该采取乙措施"——也许还有"我们应该采取<strong>丙措施</strong>"这一结论。</div>
+      </div>
+
+      <div class="section" id="ch13-4">
+        <h3 class="section-title">条件句的衍生能力</h3>
+        <p>用<strong>条件句</strong>表达结论，能体现<strong>思维的灵活</strong>：</p>
+        <ul>
+          <li>如果 X，则结论 A</li>
+          <li>如果 Y，则结论 B</li>
+          <li>如果 Z，则结论 C</li>
+        </ul>
+        <div class="tip">条件句让结论更精确、更有针对性。</div>
+      </div>
+
+      <div class="section" id="ch13-5">
+        <h3 class="section-title">备选的解决方法作为结论</h3>
+        <p>很多论证的目的是<strong>解决问题</strong>。要思考：</p>
+        <ul>
+          <li>除了作者建议的方法，<strong>还有没有其他方法</strong>？</li>
+          <li>这些方法的<strong>成本和效果</strong>如何？</li>
+          <li>有没有<strong>更好的组合</strong>方案？</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch13-6">
+        <h3 class="section-title">让思维更灵活</h3>
+        <p>培养思维灵活性的方法：</p>
+        <ul>
+          <li><strong>问"还有没有其他可能性？"</strong></li>
+          <li><strong>收集不同的观点</strong></li>
+          <li><strong>想象自己站在不同立场</strong></li>
+          <li><strong>不要急于下结论</strong></li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch13-7">
+        <h3 class="section-title">小结</h3>
+        <p>本书的<strong>核心关键问题</strong>回顾：</p>
+        <div class="steps">
+          <div class="step">论题和结论是什么？</div>
+          <div class="step">理由是什么？</div>
+          <div class="step">哪些词语意思不明确？</div>
+          <div class="step">什么是价值观假设和描述性假设？</div>
+          <div class="step">论证中有没有谬误？</div>
+          <div class="step">证据的效力如何？</div>
+          <div class="step">有没有替代原因？</div>
+          <div class="step">数据有没有欺骗性？</div>
+          <div class="step">有什么重要信息被省略了？</div>
+          <div class="step">能得出什么合理的结论？</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch13-8">
+        <h3 class="section-title">最后的话</h3>
+        <p>批判性思维是一个<strong>工具</strong>。它能助你一臂之力——可能让你如虎添翼，也可能让你折戟沉沙。</p>
+        <div class="quote">作为临别赠言，我们想鼓励你将批判性思维和不同的论题结合。批判性思维不是只开花不结果的业余爱好，只能在教室里摆摆架子，在考试时临阵磨枪，或者要显摆你智力超群时拿出来充充门面。<strong>它是通情达理的人相互采取联合行动的坚实基础。</strong></div>
+        <p>信念固然很奇妙，但是信念的回报却寓于我们随后的行为之中。在你发现一个问题的最佳答案之后，请依据这个答案采取行动。</p>
+        <div class="tip">让批判性思维成为创造新一代身份的基础，你会为这个新身份而感到骄傲自豪。让批判性思维为你自己效力，为你身处其中的集体效力。</div>
+      </div>
+    </section>
+
+    <!-- 总结 -->
+    <section class="chapter" id="epilogue" data-type="preface">
+      <div class="chapter-header">
+        <span class="chapter-num">总 结 · EPILOGUE</span>
+        <h2 class="chapter-title">译后记与知识脑图总结</h2>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">📚 全书核心精神</h3>
+        <p>《学会提问》是一本关于<strong>批判性思维</strong>的入门经典。它的核心目标不是让你接受某些"标准答案"，而是<strong>训练你独立思考和判断的能力</strong>。</p>
+        <p>全书的逻辑链条可以概括为：</p>
+        <div class="steps">
+          <div class="step">面对一个论证时，<strong>先识别</strong>它的论题和结论。</div>
+          <div class="step">再找出<strong>支持结论的理由</strong>。</div>
+          <div class="step">检查<strong>关键概念的含义</strong>是否清晰。</div>
+          <div class="step">挖掘论证背后的<strong>假设</strong>（价值观假设和描述性假设）。</div>
+          <div class="step">识别论证中可能存在的<strong>谬误</strong>。</div>
+          <div class="step">评估<strong>证据的效力</strong>，看是否支持理由和结论。</div>
+          <div class="step">寻找<strong>替代原因</strong>，看是否有其他解释。</div>
+          <div class="step">检查<strong>数据是否被欺骗性地使用</strong>。</div>
+          <div class="step">识别<strong>被省略的重要信息</strong>。</div>
+          <div class="step">综合以上分析，得出<strong>自己的合理结论</strong>。</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">🌟 批判性思维者的特质</h3>
+        <div class="concept-grid">
+          <div class="concept-card green">
+            <h4>谦逊</h4>
+            <p>知道自己可能犯错，对不同观点保持开放。</p>
+          </div>
+          <div class="concept-card green">
+            <h4>好奇</h4>
+            <p>对各种问题充满兴趣，渴望了解真相。</p>
+          </div>
+          <div class="concept-card green">
+            <h4>独立</h4>
+            <p>不盲从权威，敢于独立判断。</p>
+          </div>
+          <div class="concept-card green">
+            <h4>理性</h4>
+            <p>用证据和逻辑说话，不被情绪左右。</p>
+          </div>
+          <div class="concept-card green">
+            <h4>公正</h4>
+            <p>对所有观点一视同仁，包括自己原有观点。</p>
+          </div>
+          <div class="concept-card green">
+            <h4>勤勉</h4>
+            <p>愿意投入时间和精力去深入思考。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">🎯 实践建议</h3>
+        <ul>
+          <li><strong>日常练习</strong>：每天用一个关键问题来分析一篇文章或一个观点。</li>
+          <li><strong>讨论中应用</strong>：在与他人的讨论中，尝试用书中的关键问题来组织你的思考。</li>
+          <li><strong>写作中应用</strong>：写作时检查自己的论证是否清晰、有力、诚实。</li>
+          <li><strong>阅读中应用</strong>：阅读时带着批判的眼光，识别作者的论证结构和潜在问题。</li>
+          <li><strong>跨领域应用</strong>：把批判性思维应用到消费、医疗、法律、伦理等各个生活领域。</li>
+        </ul>
+      </div>
+
+      <div class="quote">"批判性思维不是要你对一切都持怀疑态度，而是要你<strong>用理性和证据来支持你的判断</strong>。这是一种力量，也是一种责任。"</div>
+    </section>
+
+    <div class="footer">
+      <p>📘 《学会提问》知识脑图 · 原书第11版 · 基于Neil Browne &amp; Stuart Hall经典著作整理</p>
+      <p>本脑图仅供学习参考使用 · 详细内容请阅读原书</p>
+    </div>
+    </div>
+  </main>
+</div>
+
+<button class="back-top" id="backTop" onclick="scrollToSection('main-content')">↑</button>
+
+<script>
+// 默认全部折叠
+document.addEventListener('DOMContentLoaded', function() {
+  // 默认所有子目录都折叠
+  // 什么都不做，因为CSS中 toc-sub 默认是 max-height: 0
+
+  // 监听滚动显示回到顶部
+  const backTop = document.getElementById('backTop');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 300) {
+      backTop.classList.add('show');
+    } else {
+      backTop.classList.remove('show');
+    }
+  });
+});
+
+// 切换章节展开/折叠
+function toggleChapter(el, subId) {
+  const sub = document.getElementById(subId);
+  if (!sub) return;
+  const isExpanded = el.classList.contains('expanded');
+
+  if (isExpanded) {
+    el.classList.remove('expanded');
+    sub.classList.remove('expanded');
+  } else {
+    el.classList.add('expanded');
+    sub.classList.add('expanded');
+  }
+}
+
+// 滚动到指定章节
+function scrollToSection(id) {
+  const target = document.getElementById(id);
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // 更新面包屑
+    updateBreadcrumb(id);
+    // 标记 active
+    markActive(id);
+  }
+}
+
+// 展开所有
+function expandAll() {
+  document.querySelectorAll('.toc-chapter').forEach(ch => {
+    if (ch.dataset.target) {
+      ch.classList.add('expanded');
+    }
+  });
+  document.querySelectorAll('.toc-sub').forEach(sub => {
+    sub.classList.add('expanded');
+  });
+}
+
+// 折叠所有
+function collapseAll() {
+  document.querySelectorAll('.toc-chapter').forEach(ch => {
+    ch.classList.remove('expanded');
+  });
+  document.querySelectorAll('.toc-sub').forEach(sub => {
+    sub.classList.remove('expanded');
+  });
+}
+
+// 头部按钮的切换
+function toggleAll(expand) {
+  if (expand) expandAll();
+  else collapseAll();
+}
+
+// 面包屑更新
+function updateBreadcrumb(id) {
+  const breadcrumb = document.getElementById('breadcrumb-current');
+  const element = document.getElementById(id);
+  if (!element) return;
+
+  let title = '';
+  if (id === 'main-content' || id === 'preface') {
+    title = id === 'preface' ? '前言' : '全书概览';
+  } else {
+    const titleEl = element.querySelector('.chapter-title');
+    title = titleEl ? titleEl.textContent.trim() : id;
+  }
+  breadcrumb.textContent = title;
+}
+
+// 标记当前活动
+function markActive(id) {
+  document.querySelectorAll('.toc-sub-item, .toc-chapter').forEach(el => {
+    el.classList.remove('active');
+  });
+
+  // 找到对应的 toc-sub-item
+  document.querySelectorAll('.toc-sub-item').forEach(item => {
+    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(id)) {
+      item.classList.add('active');
+      // 自动展开父级
+      const parentSub = item.closest('.toc-sub');
+      if (parentSub) {
+        parentSub.classList.add('expanded');
+        const parentChapter = parentSub.previousElementSibling;
+        if (parentChapter) {
+          parentChapter.classList.add('expanded');
+        }
+      }
+    }
+  });
+}
+</script>
+
+</body>
+</html>
