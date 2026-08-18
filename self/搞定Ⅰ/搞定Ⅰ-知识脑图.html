@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>搞定Ⅰ：无压工作的艺术 - 知识脑图</title>
+<style>
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --ink: #1f2937;
+  --ink-soft: #4b5563;
+  --ink-mute: #6b7280;
+  --line: #e5e7eb;
+  --line-soft: #f0f2f5;
+  --brand: #2563eb;
+  --brand-soft: #eff4ff;
+  --brand-deep: #1d4ed8;
+  --accent: #0f766e;
+  --accent-soft: #ecfdf5;
+  --warn: #b45309;
+  --warn-soft: #fef3c7;
+  --tag-bg: #eef2ff;
+  --tag-ink: #3730a3;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+  --radius: 10px;
+  --radius-sm: 6px;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Layout */
+.app { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+aside.sidebar {
+  width: 320px;
+  flex: 0 0 320px;
+  background: #ffffff;
+  border-right: 1px solid var(--line);
+  position: sticky; top: 0; align-self: flex-start;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 20px 14px 30px 18px;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 4px 14px 4px;
+  border-bottom: 1px dashed var(--line);
+  margin-bottom: 12px;
+}
+.brand .logo {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 16px;
+}
+.brand h1 { font-size: 14px; margin: 0; color: var(--ink); }
+.brand small { color: var(--ink-mute); font-size: 11px; display: block; }
+
+.search {
+  position: relative; margin: 8px 0 14px 0;
+}
+.search input {
+  width: 100%; padding: 8px 10px 8px 30px;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg); font-size: 13px; color: var(--ink);
+  outline: none;
+}
+.search input:focus { border-color: var(--brand); background: #fff; }
+.search::before {
+  content: "🔍"; position: absolute; left: 9px; top: 7px; font-size: 13px;
+}
+
+.toc-title {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: var(--ink-mute);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin: 6px 6px 8px 6px;
+}
+.toc-title button {
+  border: none; background: transparent; color: var(--brand);
+  font-size: 12px; cursor: pointer; padding: 0;
+}
+
+.toc { list-style: none; padding: 0; margin: 0; }
+.toc li { margin: 0; }
+.toc-group {
+  margin: 4px 0 6px 0;
+}
+.toc-group > .label {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 8px;
+  border-radius: 8px;
+  font-weight: 600; color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  font-size: 13.5px;
+  background: transparent;
+  border: none; width: 100%; text-align: left;
+}
+.toc-group > .label:hover { background: var(--brand-soft); color: var(--brand-deep); }
+.toc-group > .label .caret {
+  display: inline-block; width: 14px; text-align: center;
+  font-size: 10px; color: var(--ink-mute);
+  transition: transform .15s ease;
+}
+.toc-group.open > .label .caret { transform: rotate(90deg); }
+.toc-group > .label .label-text { flex: 1; }
+.toc-group > .label .label-count {
+  font-size: 11px; color: var(--ink-mute); font-weight: 500;
+  background: var(--line-soft); padding: 1px 7px; border-radius: 10px;
+}
+.toc-group > .label:hover .label-count { background: #dbeafe; color: var(--brand-deep); }
+
+.toc-children {
+  list-style: none; padding: 0 0 4px 22px; margin: 0;
+  display: none;
+  border-left: 1px dashed var(--line);
+  margin-left: 14px;
+}
+.toc-group.open > .toc-children { display: block; }
+.toc-children li { margin: 0; }
+.toc-children a {
+  display: block; padding: 6px 10px;
+  font-size: 12.5px; color: var(--ink-soft);
+  border-radius: 6px;
+  line-height: 1.4;
+  text-decoration: none;
+}
+.toc-children a:hover { background: var(--brand-soft); color: var(--brand-deep); }
+.toc-children a.active { background: var(--brand-soft); color: var(--brand-deep); font-weight: 600; }
+
+.toc-leaf { list-style: none; padding: 0 0 4px 22px; margin: 0; }
+.toc-leaf a {
+  display: block; padding: 6px 10px;
+  font-size: 12.5px; color: var(--ink-soft);
+  border-radius: 6px;
+  line-height: 1.4;
+  text-decoration: none;
+}
+.toc-leaf a:hover { background: var(--brand-soft); color: var(--brand-deep); }
+.toc-leaf a.active { background: var(--brand-soft); color: var(--brand-deep); font-weight: 600; }
+
+/* Main */
+main {
+  flex: 1; min-width: 0;
+  padding: 28px 36px 80px 36px;
+  max-width: 100%;
+}
+
+.cover {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #0ea5e9 100%);
+  color: #fff;
+  border-radius: 14px;
+  padding: 30px 32px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.cover .tag {
+  display: inline-block; font-size: 11px; padding: 3px 10px;
+  background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3);
+  border-radius: 100px; letter-spacing: .04em;
+}
+.cover h2 { font-size: 26px; margin: 10px 0 4px 0; line-height: 1.3; }
+.cover .sub { opacity: .9; font-size: 14px; margin-bottom: 14px; }
+.cover .core {
+  display: inline-block; background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 8px; padding: 8px 14px; font-size: 13px;
+  margin-top: 6px;
+}
+
+.section {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow);
+  scroll-margin-top: 16px;
+}
+.section h3 {
+  margin: 0 0 4px 0;
+  font-size: 20px; color: var(--ink);
+  display: flex; align-items: center; gap: 10px;
+}
+.section h3 .num {
+  font-size: 12px; color: var(--brand);
+  background: var(--brand-soft); padding: 2px 8px; border-radius: 100px; font-weight: 600;
+}
+.section .desc {
+  color: var(--ink-soft); font-size: 13.5px; margin: 4px 0 16px 0;
+  line-height: 1.7;
+}
+.section .part {
+  font-size: 11.5px; color: var(--accent);
+  background: var(--accent-soft); padding: 2px 8px; border-radius: 100px;
+  font-weight: 600;
+}
+
+.chapter {
+  background: #fafbfd;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 18px 20px;
+  margin: 12px 0;
+}
+.chapter h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px; color: var(--ink);
+  display: flex; align-items: center; gap: 8px;
+}
+.chapter h4::before {
+  content: "▎"; color: var(--brand); font-weight: 700;
+}
+.chapter ul { list-style: none; padding: 0; margin: 0; }
+.chapter li { margin: 10px 0; }
+.kv {
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.kv .key {
+  flex: 0 0 110px;
+  font-weight: 600; color: var(--brand-deep);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+.kv .val {
+  flex: 1; color: var(--ink); font-size: 14px; line-height: 1.75;
+}
+.kv .quote {
+  background: #fff8e1; border-left: 3px solid #f59e0b;
+  padding: 8px 12px; border-radius: 4px;
+  color: #92400e; font-style: italic;
+  font-size: 13.5px;
+}
+
+.intro { color: var(--ink-soft); font-size: 14px; line-height: 1.8; }
+.intro p { margin: 8px 0; }
+
+.footer {
+  margin-top: 30px; text-align: center; color: var(--ink-mute); font-size: 12px;
+  padding: 18px;
+  border-top: 1px dashed var(--line);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .app { flex-direction: column; }
+  aside.sidebar {
+    width: 100%; flex: none; height: auto; position: relative;
+    border-right: none; border-bottom: 1px solid var(--line);
+  }
+  main { padding: 20px 18px 60px 18px; }
+  .cover { padding: 22px 20px; }
+  .cover h2 { font-size: 20px; }
+  .kv { flex-direction: column; gap: 4px; }
+  .kv .key { flex: none; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo">G</div>
+    <div>
+      <h1>搞定Ⅰ：无压工作的艺术</h1>
+      <small>GTD · 戴维·艾伦 · 知识脑图</small>
+    </div>
+  </div>
+
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="搜索章节、关键词…">
+  </div>
+
+  <div class="toc-title">
+    <span>目录导航</span>
+    <button id="expandAll">全部展开</button>
+  </div>
+  <nav class="toc" id="toc"></nav>
+</aside>
+
+<main>
+  <div class="cover">
+    <span class="tag">GTD · 知识脑图</span>
+    <h2>搞定Ⅰ：无压工作的艺术</h2>
+    <div class="sub">戴维·艾伦 (David Allen) · 全球工作者都在学习使用的时间管理系统</div>
+    <div class="core">核心：横向管理（工作流程 5 步）+ 纵向管理（自然计划法 5 阶段）= 心如止水</div>
+  </div>
+
+  <div id="content"></div>
+
+  <div class="footer">基于《搞定Ⅰ：无压工作的艺术》戴维·艾伦 · 整理生成的知识脑图 · 仅供学习</div>
+</main>
+</div>
+
+<script>
+const DATA = {"title": "搞定Ⅰ：无压工作的艺术 (GTD)", "author": "戴维·艾伦 (David Allen)", "core": "横向管理 + 纵向管理 = 心如止水", "branches": [{"name": "序章", "items": [{"k": "序言", "v": "戴维·艾伦自述，解释为何要写这本书：大多数人因未管理好'承诺'而陷入压力，GTD是一套解放心智的方法论。"}, {"k": "最新版介绍", "v": "介绍本版在原版基础上更新的内容：增加认知科学验证、精进路径，并扩展为终身实践体系。"}, {"k": "《搞定》欢迎你", "v": "本书面向所有人——不是只给管理者、精英或极客。任何'知识工作者'都能从中受益，因为压力的来源是'未完成的事'。"}]}, {"name": "PART 1 搞定：通向从容之道", "items": [{"k": "第1章 新情况，新做法", "v": [{"h": "核心问题", "t": "需求在增长，资源在匮乏；工作不再有清楚界限——这是新千年最显著的自相矛盾。"}, {"h": "知识工作的挑战", "t": "工作职责定义不断变化、彼此无明确边界；信息无穷无尽；时空边界模糊；与更多人产生关联。"}, {"h": "本书的三个目的", "t": "（1）收集所有需要处理或有用的事情进入可靠的外部系统；（2）在任何'输入'到来时即分析与决策，形成'下一步行动'清单；（3）管理并履行你对自己和他人的所有承诺。"}, {"h": "三个方法", "t": "横向（捕捉、理清、组织、回顾、行动）+ 纵向（自然计划法5阶段）。"}, {"h": "金句", "t": "通过行动让自己感觉良好，要比通过让自己感觉良好来实现更好的行动容易得多。——O·H·莫尼尔"}]}, {"k": "第2章 掌控生活：横向管理工作流程的5个步骤", "v": [{"h": "5个步骤", "t": "（1）收集引起我们注意的事务和信息；（2）理清每个项目的意义和相关措施；（3）组织整理结果，提出选项；（4）进行思考回顾；（5）选择行动。"}, {"h": "薄弱环节原理", "t": "管理的效果取决于5个环节中最薄弱的一环；任何一环缺失，整体效果都难以保证。"}, {"h": "阶段一·收集", "t": "百分之百地收集所有'未竟之事'——任何需要做、应当做、想要做的事，无论大小、轻重、缓急。"}, {"h": "阶段二·理清", "t": "识别每个东西是什么、意味着什么、是否需要行动。"}, {"h": "阶段三·组织", "t": "把处理结果归入清单、日程、参考资料等合适位置。"}, {"h": "阶段四·回顾", "t": "定期审视系统，保持其时效。"}, {"h": "阶段五·行动", "t": "基于情境、时间、精力、重要性做出选择。"}, {"h": "金句", "t": "别让生活成为你的拦路虎。"}]}, {"k": "第3章 控制项目：纵向管理项目的5个阶段", "v": [{"h": "自然计划法5阶段", "t": "（1）定义目标和原则；（2）展望结果；（3）头脑风暴/集思广益；（4）组织整理；（5）明确下一步行动方案。"}, {"h": "简式计划", "t": "又称'信封背面的计划'，一支笔和一张纸就足以让你发挥创造力。非正式思考投入产出比最高。"}, {"h": "为何要纵向", "t": "横向管理日常事务时仍需'着眼于大局'，否则琐碎小事将无法沿着正确方向发展。"}, {"h": "目标 + 原则", "t": "意愿是你的目标，自然而然启动计划；原则限定了计划的界限（标准、能力、舒适度等）。"}, {"h": "结果展望", "t": "在采取行动前先在脑海中'看到'成果——这是创造性思考的起点。"}, {"h": "头脑风暴", "t": "一旦承诺目标，大脑会接二连三地发问填补'认知失调'。"}]}]}, {"name": "PART 2 远离压力，提高效率", "items": [{"k": "第4章 准备工作：确定时间、空间和工具", "v": [{"h": "下定决心", "t": "高效、创新、富有成效的思维和行动的诀窍，是在正确的时间关注适当的事情。"}, {"h": "两个小窍门", "t": "（1）'两分钟原则'——能两分钟做完的事立刻做；（2）'放在门口'——把必带的东西放在出门必经之处。"}, {"h": "预留时间", "t": "理想是两整天不间断。收集需6小时+，理清+下一步行动需8小时+。选择周末或节假日，关闭所有通知。"}, {"h": "工作区基本要素", "t": "一张书桌、工作篮放置空间、核心数字工具、独立空间（在家或办公）。"}, {"h": "工作区禁忌", "t": "不可在下属面前做；不可在下班后体力不支时做。"}, {"h": "金句", "t": "你必须准备一个专门、私人和独立的工作区——在家里、在工作场所，如果可能的话，甚至在旅途中也要有一个工作区。"}]}, {"k": "第5章 收集阶段：归拢材料", "v": [{"h": "收集对象", "t": "所有未完成的工作和尚未开始的工作，全部放入'工作篮'。"}, {"h": "不收集的4类", "t": "（1）日用品；（2）参考资料；（3）装饰品；（4）办公设备。"}, {"h": "例外", "t": "即使属于上述4类，若感觉'不到位'也应放入工作篮。"}, {"h": "过程中可能遇到的问题", "t": "资料太多装不下、工作篮不够大、偏离到打扫整理、碰到以前整理过的东西、紧急事项。"}, {"h": "处理原则", "t": "立刻扔掉垃圾；不确定的放入工作篮；不要在收集时做判断；可在纸条上记录时间。"}, {"h": "金句", "t": "悬而未决的事务存在两个地方，即任务所处的实际位置和你的大脑。大脑中的未竟之事会折磨你的心志。"}]}, {"k": "第6章 理清阶段：清空工作篮", "v": [{"h": "清空 ≠ 完成", "t": "清空工作篮指识别每样东西、判定它是什么、意味着什么、需要什么行动，而不是完成所有工作。"}, {"h": "三条原则", "t": "（1）首先处理最上面事务；（2）一次一事；（3）永远不要把事务再次放回工作篮。"}, {"h": "关键问题", "t": "'下一步行动是什么？'——是加工处理过程中最核心的问题。"}, {"h": "不需要行动的三类", "t": "垃圾、参考资料、将来/也许。"}, {"h": "两分钟原则", "t": "凡是两分钟之内可以完成的事，应立即完成，不必再放入行动清单。"}, {"h": "认知疲劳", "t": "每个决定都会消耗脑力；'不做决定'本身也是一个决定，同样消耗精力。"}, {"h": "金句", "t": "'处理'并不仅仅意味着'花费时间'。"}]}, {"k": "第7章 组织整理：建立好清单", "v": [{"h": "7个基本分类", "t": "（1）'项目'清单；（2）项目的辅助资料；（3）日程表中的行动和信息；（4）'下一步行动'清单；（5）'等待'清单；（6）参考资料；（7）'将来/也许'清单。"}, {"h": "界线重要性", "t": "保持不同类别事项彼此界线分明；混淆会让人对这些事项无动于衷。"}, {"h": "日程表 = 圣域", "t": "日程表只记录对时间有刚性要求的行动，其他行动不应写入。"}, {"h": "情境分类", "t": "ASAP行动按情境分类：电话、外出、电脑旁、办公室、艾米莉（与某人相关）等。"}, {"h": "清单的形式", "t": "（1）文件夹/容器；（2）有标题的纸/活页本；（3）软件/数字设备列表。"}, {"h": "金句", "t": "我不在乎复杂事物所呈现出的简单表象，我追求隐藏在复杂现象背后的简单本质。——霍姆斯"}]}, {"k": "第8章 回顾阶段：保障系统的有效运行", "v": [{"h": "系统必须实时更新", "t": "回顾过程是保持系统清晰度和稳定性的前提；不更新的系统大脑不再信任。"}, {"h": "每日回顾内容", "t": "（1）先看日程表；（2）再看当前情境下的行动清单。"}, {"h": "每周回顾·三大举措", "t": "（1）确认：归拢所有碎片化结果；（2）更新：审查所有清单；（3）创新：自然形成新想法。"}, {"h": "确认5步走", "t": "收集散落纸片和材料 → 清空收集工具 → 清空大脑 → 回顾行动清单 → 回顾项目清单。"}, {"h": "每周回顾作用", "t": "夺回生活主动权；重新评估、重新安排、重新平衡；保持清晰方向。"}, {"h": "金句", "t": "为了让知识转变为生产力，我们必须学会见林观木。——彼得·德鲁克"}]}, {"k": "第9章 执行阶段：选择最合适的行动", "v": [{"h": "四标准法", "t": "（1）情境；（2）有多少时间；（3）有多少精力；（4）重要性。"}, {"h": "情境", "t": "身处哪里？有什么工具？根据情境分类清单让选择更轻松。"}, {"h": "时间", "t": "10分钟 vs 连续几小时，做不同的选择。短小行动利用零碎时间更有效率。"}, {"h": "精力", "t": "准备一份'小事清单'（不需动脑的简单行动），状态不佳时也能完成工作。"}, {"h": "重要性", "t": "基于前三个要素筛选后再考虑。"}, {"h": "三分类法", "t": "（1）做预先确定的事；（2）做出现的事；（3）定义自己的工作。"}, {"h": "六层次法", "t": "（1）当前行动；（2）当前关注；（3）短期目标；（4）中期目标；（5）长期目标；（6）人生宗旨。"}]}, {"k": "第10章 学会控制项目", "v": [{"h": "为何需要非正式计划", "t": "正式的甘特图/项目管理软件对很多人已经足够，但缺少简单有效的非正式思考是最大短板。"}, {"h": "哪些项目需要计划", "t": "（1）已确定下一步行动但仍吸引注意力的项目；（2）意外冒出新点子/细节的项目。"}, {"h": "典型计划步骤", "t": "（1）头脑风暴；（2）组织整理；（3）召开会议；（4）收集信息。"}, {"h": "思维辅助工具", "t": "合适的工具激发好想法；书写工具随时准备。形式决定功能。"}, {"h": "金句", "t": "任何一个成功的项目在进行到中途时，看起来都如同一场灾难。——坎特"}]}]}, {"name": "PART 3 三个关键原则", "items": [{"k": "第11章 原则一：养成收集的习惯", "v": [{"h": "收集的两面感受", "t": "收集时既感'难以招架'又'如释重负'——前者因直面问题，后者因开始掌控。"}, {"h": "消极情绪的来源", "t": "不是因为要做的事太多，而是因为你撕毁了同自己的约定（'毁约'）。"}, {"h": "减少消极情绪3法", "t": "（1）不签订协议（学会说'不'）；（2）完成协议（用两分钟原则）；（3）重新商定协议（调整预期）。"}, {"h": "收集习惯的好处", "t": "你不可能同自己重新商议那些你已经记不起来的协议——收集让'重新协商'成为可能。"}, {"h": "金句", "t": "焦虑和内疚并不是因为承担了太多工作而造成的，而是由于你撕毁了同自己的约定而导致的。"}]}, {"k": "第12章 原则二：确定\"下一步行动\"", "v": [{"h": "核心观点", "t": "对任何'未竟之事'必须立即判定'下一步行动是什么'。"}, {"h": "技巧的来源", "t": "戴维·艾伦30年前从迪安·艾奇逊处学来，这位经理的实验证实了'下一步行动'的威力。"}, {"h": "为何不自然", "t": "这个思维过程并非天生，似乎也不自然发生，需要后天学习与实践。"}, {"h": "10秒的力量", "t": "几乎每件事都只需10秒思考即可确定下一步行动；正是这区区的10秒钟，决定了事情是否推进。"}, {"h": "聪明人延误更多", "t": "神经系统分不清大脑想象与现实——越聪明越敏感，越容易对未完成事项产生抗拒。"}, {"h": "金句", "t": "在行动中保持领先的秘诀在于尽早开始行动。而尽早开始行动的秘诀在于，把复杂的大任务分解成易操作的小任务。——马克·吐温"}]}, {"k": "第13章 原则三：学会关注结果", "v": [{"h": "两大基本要素", "t": "定义结果 + 确定行动。"}, {"h": "生活中的两个问题", "t": "史蒂文·施耐德：'（1）你知道目标但不知如何达成；（2）你不知道目标是什么。'"}, {"h": "解决之道", "t": "找到目标（结果）+ 找到办法（行动）——对应阴/阳、右脑/左脑、破/立等模型。"}, {"h": "在多个层面关注结果", "t": "从人生观、价值观到日常琐事；让远大理想融入平凡日常。"}, {"h": "精通日常琐事的魔力", "t": "你每次只能有意识地关注一件事；如果那唯一的事吸引你注意，你就处于'沉浸'状态。"}, {"h": "金句", "t": "人生的最大乐趣莫过于克服困难、坚定脚步，目睹自己将目标一一实现。——塞缪尔·约翰逊"}]}, {"k": "第14章 GTD和认知科学", "v": [{"h": "积极心理学", "t": "GTD侧重有意义的工作、有思想的生活，以及心理健康，而不只是高效率。"}, {"h": "分布式认知：外脑的价值", "t": "你的大脑是用来获得想法的，而不是用来保存想法。"}, {"h": "减轻认知负荷", "t": "鲍迈斯特：未完成项目占据大脑空间，削弱清晰度与注意力；无需完成项目，只要'下一步行动'有可靠安排就足以。"}, {"h": "沉浸理论", "t": "GTD符合沉浸条件：明确目标、及时反馈、专注单任务。"}, {"h": "自我领导理论", "t": "自己设定目标、自我激励、自我评估，GTD是其在个人管理领域的应用。"}, {"h": "执行意向", "t": "如果……那么……的计划方式，GTD的'触发因素+提示内容'正是其体现。"}, {"h": "心理资本 PsyCap", "t": "希望、自信、乐观、韧性——GTD实践能显著增强这些心理资源。"}]}, {"k": "第15章 GTD精进之路", "v": [{"h": "精通的3个层次", "t": "（1）基本工作流程管理；（2）集成生活管理；（3）利用技能创造明确空间，表现越来越得体。"}, {"h": "类比：学习开车", "t": "第一阶段——拿到驾照；第二阶段——上下班成为习惯；第三阶段——驾驶高性能车，强调预判与车人合一。"}, {"h": "基本要领", "t": "记录、确定下一步行动、'等待'清单、日程表'硬质景观'、归档、每周回顾——6个核心动作。"}, {"h": "脱离轨道很正常", "t": "新行为方式需要时间扎根；建议至少2年才能将GTD完全融入生活。"}, {"h": "重新步入正轨也容易", "t": "拿起纸笔再次清空大脑；更新清单；重演基本套路。"}, {"h": "GTD = 终身实践", "t": "它是涵盖多层次精通程度的终身实践，像拉小提琴、打网球一样永无止境。"}]}]}, {"name": "尾声", "items": [{"k": "结语", "v": [{"h": "主旨", "t": "事半功倍 + 减轻精神压力 = 心如止水 + 创造才能。"}, {"h": "行动建议", "t": "建立个人组织整理设施；安排整理工作区；准备几个工作篮；预留时间清空办公室与家；3-6个月再回顾本书。"}, {"h": "金句", "t": "我真心希望你通过运用这些技巧能体会到'心如止水'的境界，并施展出你的创造才能。"}]}, {"k": "附录", "v": [{"h": "资源", "t": "GTD官方网站 www.gettingthingsdone.com 提供辅助材料、全球共享网络及培训服务。"}]}]}]};
+
+function buildTOC() {
+  const toc = document.getElementById('toc');
+  toc.innerHTML = '';
+  DATA.branches.forEach((branch, bi) => {
+    const group = document.createElement('div');
+    group.className = 'toc-group';
+    const isPart = branch.items.length > 0 && branch.name.startsWith('PART') || branch.name === '序章' || branch.name === '尾声';
+    group.innerHTML = `
+      <button class="label" data-bi="${bi}">
+        <span class="caret">▶</span>
+        <span class="label-text">${branch.name}</span>
+        <span class="label-count">${branch.items.length}</span>
+      </button>
+      <ul class="toc-children">
+        ${branch.items.map((it, ii) => `
+          <li><a href="#c-${bi}-${ii}" data-bi="${bi}" data-ii="${ii}">${it.k}</a></li>
+        `).join('')}
+      </ul>
+    `;
+    toc.appendChild(group);
+  });
+
+  toc.querySelectorAll('.label').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.parentElement.classList.toggle('open');
+    });
+  });
+  toc.querySelectorAll('a[data-bi]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const bi = a.getAttribute('data-bi');
+      const ii = a.getAttribute('data-ii');
+      // open parent group
+      const grp = a.closest('.toc-group');
+      if (grp) grp.classList.add('open');
+      // active state
+      toc.querySelectorAll('a').forEach(x => x.classList.remove('active'));
+      a.classList.add('active');
+      const target = document.getElementById(`c-${bi}-${ii}`);
+      if (target) {
+        // small offset for sticky-like feel
+        const rect = target.getBoundingClientRect();
+        window.scrollTo({top: window.scrollY + rect.top - 20, behavior: 'smooth'});
+      }
+    });
+  });
+}
+
+function renderContent() {
+  const root = document.getElementById('content');
+  DATA.branches.forEach((branch, bi) => {
+    const sec = document.createElement('section');
+    sec.className = 'section';
+    sec.id = `part-${bi}`;
+    let partBadge = '';
+    if (branch.name.startsWith('PART') || branch.name === '序章' || branch.name === '尾声') {
+      partBadge = `<span class="part">${branch.name}</span>`;
+    }
+    sec.innerHTML = `
+      <h3>${partBadge} <span class="num">${(bi+1).toString().padStart(2,'0')}</span> ${branch.name.replace(/^PART\s*\d+\s*/, '').replace(/^序章$/, '').replace(/^尾声$/, '')}</h3>
+    `;
+    branch.items.forEach((it, ii) => {
+      const chap = document.createElement('div');
+      chap.className = 'chapter';
+      chap.id = `c-${bi}-${ii}`;
+      let html = `<h4>${it.k}</h4>`;
+      if (typeof it.v === 'string') {
+        html += `<p class="intro">${it.v}</p>`;
+      } else if (Array.isArray(it.v)) {
+        html += '<ul>';
+        it.v.forEach(p => {
+          let valHtml = p.t;
+          if ((p.t || '').includes('——') && (p.h || '').includes('金句') === false && p.h === '金句' || p.h === '金句') {
+            valHtml = `<span class="quote">"${p.t}"</span>`;
+          } else if (p.h === '金句') {
+            valHtml = `<span class="quote">"${p.t}"</span>`;
+          }
+          html += `<li><div class="kv"><div class="key">${p.h}</div><div class="val">${valHtml}</div></div></li>`;
+        });
+        html += '</ul>';
+      }
+      chap.innerHTML = html;
+      sec.appendChild(chap);
+    });
+    root.appendChild(sec);
+  });
+}
+
+// Search
+function setupSearch() {
+  const input = document.getElementById('searchInput');
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    const groups = document.querySelectorAll('.toc-group');
+    if (!q) {
+      groups.forEach(g => {
+        // collapse
+        g.classList.remove('open');
+        g.querySelectorAll('a').forEach(a => a.parentElement.style.display = '');
+      });
+      document.querySelectorAll('.chapter').forEach(c => c.style.opacity = '');
+      return;
+    }
+    groups.forEach(g => {
+      let anyMatch = false;
+      g.querySelectorAll('a').forEach(a => {
+        const text = a.textContent.toLowerCase();
+        if (text.includes(q)) { a.parentElement.style.display = ''; anyMatch = true; }
+        else a.parentElement.style.display = 'none';
+      });
+      if (anyMatch) g.classList.add('open'); else g.classList.remove('open');
+    });
+    document.querySelectorAll('.chapter').forEach(c => {
+      const t = c.textContent.toLowerCase();
+      c.style.opacity = (t.includes(q) || !q) ? '' : '0.3';
+    });
+  });
+}
+
+// Expand all
+function setupExpandAll() {
+  const btn = document.getElementById('expandAll');
+  let expanded = false;
+  btn.addEventListener('click', () => {
+    expanded = !expanded;
+    document.querySelectorAll('.toc-group').forEach(g => {
+      if (expanded) g.classList.add('open'); else g.classList.remove('open');
+    });
+    btn.textContent = expanded ? '全部折叠' : '全部展开';
+  });
+}
+
+// init
+buildTOC();
+renderContent();
+setupSearch();
+setupExpandAll();
+</script>
+</body>
+</html>

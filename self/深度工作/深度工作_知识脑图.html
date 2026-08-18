@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>《深度工作》知识脑图 · Deep Work Knowledge Map</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f5f1ea;
+    --paper: #ffffff;
+    --ink: #2a2a2a;
+    --ink-soft: #5c5c5c;
+    --line: #d9d2c5;
+    --accent: #7a4a2b;
+    --accent-soft: #b97f54;
+    --gold: #c89860;
+    --teal: #2c5f5d;
+    --teal-soft: #3e7d7a;
+    --rose: #a04848;
+    --indigo: #404a7a;
+    --shadow: 0 4px 14px rgba(50, 30, 10, 0.08);
+    --radius: 8px;
+    --mono: "Source Han Serif SC", "Songti SC", "Noto Serif CJK SC", "STSong", serif;
+    --sans: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.7;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ==== Layout ==== */
+  .app {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: 100vh;
+  }
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: relative !important; height: auto !important; }
+  }
+
+  /* ==== Sidebar / Vertical Navigation ==== */
+  .sidebar {
+    background: linear-gradient(180deg, #2a2520 0%, #3a3128 100%);
+    color: #f5e9d4;
+    padding: 28px 20px 40px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    box-shadow: 4px 0 12px rgba(0,0,0,0.08);
+  }
+  .brand {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .brand .seal {
+    display: inline-block;
+    width: 56px; height: 56px;
+    line-height: 56px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    box-shadow: 0 0 0 4px rgba(201, 152, 96, 0.25);
+  }
+  .brand h1 {
+    font-family: var(--mono);
+    font-size: 19px;
+    margin: 6px 0 2px;
+    letter-spacing: 1px;
+  }
+  .brand .sub {
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 2px;
+  }
+  .legend {
+    background: rgba(255,255,255,0.05);
+    border-left: 3px solid var(--gold);
+    padding: 10px 12px;
+    font-size: 12.5px;
+    color: #d8c8a8;
+    margin-bottom: 20px;
+    border-radius: 4px;
+  }
+
+  .nav-list { list-style: none; padding: 0; margin: 0; }
+  .nav-group { margin-bottom: 6px; }
+  .nav-group > .nav-toggle {
+    cursor: pointer;
+    padding: 10px 12px;
+    border-radius: 6px;
+    color: #f3e6cd;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .nav-group > .nav-toggle:hover { background: rgba(255,255,255,0.08); }
+  .nav-group > .nav-toggle .caret {
+    display: inline-block;
+    transition: transform 0.2s;
+    font-size: 11px;
+    color: var(--gold);
+  }
+  .nav-group.collapsed > .nav-toggle .caret { transform: rotate(-90deg); }
+  .nav-group.collapsed > .nav-sub { display: none; }
+  .nav-group > .nav-sub {
+    list-style: none;
+    padding-left: 22px;
+    margin: 4px 0 10px;
+    border-left: 1px dashed rgba(201, 152, 96, 0.35);
+  }
+  .nav-group > .nav-sub li { margin: 2px 0; }
+  .nav-group > .nav-sub a {
+    color: #d8c8a8;
+    font-size: 13px;
+    display: block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .nav-group > .nav-sub a:hover {
+    background: rgba(201, 152, 96, 0.15);
+    color: #fff;
+    text-decoration: none;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-right: 4px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+  }
+  .tag.theory { background: var(--teal); }
+  .tag.rule { background: var(--indigo); }
+  .tag.chap { background: var(--rose); }
+  .tag.conc { background: var(--gold); color:#2a2a2a; }
+
+  .sidebar-footer {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 11.5px;
+    color: #a89878;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* ==== Main / Content ==== */
+  .main {
+    padding: 36px 56px 80px;
+    max-width: 1180px;
+  }
+  .hero {
+    background: linear-gradient(135deg, #fff 0%, #f9f3e8 100%);
+    border: 1px solid var(--line);
+    border-left: 6px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 36px;
+    box-shadow: var(--shadow);
+  }
+  .hero h2 {
+    font-family: var(--mono);
+    font-size: 28px;
+    margin: 0 0 6px;
+    color: var(--accent);
+  }
+  .hero .en { color: var(--ink-soft); font-style: italic; font-size: 14px; }
+  .hero p { color: var(--ink-soft); margin: 10px 0 0; }
+
+  .core-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 22px;
+  }
+  .core-card {
+    padding: 14px 18px;
+    border-radius: 6px;
+    border-left: 4px solid;
+  }
+  .core-card.def { background: #fdf6ec; border-color: var(--accent); }
+  .core-card.shallow { background: #f4f4f7; border-color: var(--indigo); }
+  .core-card strong { display:block; font-size: 14px; margin-bottom: 4px; color: var(--accent); }
+  .core-card.shallow strong { color: var(--indigo); }
+  .core-card p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+
+  .hypothesis {
+    margin-top: 22px;
+    padding: 16px 20px;
+    background: #fff8ec;
+    border: 1px dashed var(--gold);
+    border-radius: 6px;
+  }
+  .hypothesis .label { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: 1px; }
+  .hypothesis p { margin: 6px 0 0; color: var(--ink); }
+
+  section.chapter {
+    margin: 48px 0;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px 34px;
+    box-shadow: var(--shadow);
+    scroll-margin-top: 20px;
+  }
+  section.chapter > h3 {
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 24px;
+    margin: 0 0 4px;
+    border-bottom: 2px solid var(--accent-soft);
+    padding-bottom: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  section.chapter .ch-no {
+    font-size: 14px;
+    background: var(--accent);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+  section.chapter .ch-en {
+    color: var(--ink-soft);
+    font-style: italic;
+    font-size: 14px;
+  }
+  section.chapter > p.lead { color: var(--ink-soft); margin: 12px 0 18px; font-size: 14.5px; }
+
+  section.part-header {
+    margin: 56px 0 24px;
+    padding: 22px 30px;
+    border-radius: var(--radius);
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  section.part-header.part-1 {
+    background: linear-gradient(135deg, #fdf6ec 0%, #fff 100%);
+    border: 1px solid var(--gold);
+  }
+  section.part-header.part-2 {
+    background: linear-gradient(135deg, #ecf0f7 0%, #fff 100%);
+    border: 1px solid var(--indigo);
+  }
+  section.part-header h2 {
+    font-family: var(--mono);
+    margin: 0;
+    font-size: 26px;
+    letter-spacing: 2px;
+  }
+  section.part-header.part-1 h2 { color: var(--accent); }
+  section.part-header.part-2 h2 { color: var(--indigo); }
+  section.part-header .en {
+    color: var(--ink-soft);
+    font-style: italic;
+    font-size: 14px;
+    margin-left: 12px;
+  }
+  section.part-header p { color: var(--ink-soft); margin: 8px 0 0; font-size: 14px; }
+
+  .mindmap {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .branch {
+    background: #fbf7f0;
+    border-left: 4px solid var(--accent-soft);
+    border-radius: 6px;
+    padding: 14px 18px;
+    transition: all 0.2s;
+  }
+  .branch:hover { transform: translateX(2px); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .branch .b-title {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 16px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .branch .b-title::before {
+    content: "▸";
+    color: var(--gold);
+    font-size: 13px;
+  }
+  .branch p { margin: 4px 0 8px; color: var(--ink-soft); font-size: 14px; }
+  .branch ul { margin: 6px 0 0; padding-left: 20px; color: var(--ink); font-size: 14px; }
+  .branch ul li { margin: 4px 0; }
+  .branch .quote {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #fff;
+    border-left: 3px solid var(--gold);
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    border-radius: 0 4px 4px 0;
+  }
+  .branch .formula {
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: #fff;
+    border: 1px dashed var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    text-align: center;
+    font-size: 15px;
+    border-radius: 4px;
+    font-family: var(--mono);
+  }
+
+  /* Variation per section */
+  .branch.teal { background: #ecf3f3; border-color: var(--teal); }
+  .branch.teal .b-title { color: var(--teal); }
+  .branch.teal .b-title::before { color: var(--teal-soft); }
+  .branch.indigo { background: #eef0f7; border-color: var(--indigo); }
+  .branch.indigo .b-title { color: var(--indigo); }
+  .branch.indigo .b-title::before { color: var(--indigo); }
+  .branch.rose { background: #f7ecec; border-color: var(--rose); }
+  .branch.rose .b-title { color: var(--rose); }
+  .branch.rose .b-title::before { color: var(--rose); }
+  .branch.gold { background: #fdf6ec; border-color: var(--gold); }
+  .branch.gold .b-title { color: var(--accent); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 800px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .core-grid { grid-template-columns: 1fr; }
+    .main { padding: 24px 18px 60px; }
+  }
+
+  .sub-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+  }
+  .sub-card h5 {
+    margin: 0 0 6px;
+    color: var(--accent);
+    font-size: 14px;
+  }
+  .sub-card p { margin: 0; color: var(--ink-soft); font-size: 13px; }
+
+  .strategy-list {
+    counter-reset: strat;
+    list-style: none;
+    padding: 0;
+  }
+  .strategy-list > li {
+    counter-increment: strat;
+    background: #fbf7f0;
+    border-left: 4px solid var(--accent-soft);
+    border-radius: 6px;
+    padding: 14px 18px 14px 56px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .strategy-list > li::before {
+    content: "策略 " counter(strat);
+    position: absolute;
+    left: 12px; top: 14px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .strategy-list > li .st-name { font-weight: 700; color: var(--accent); display:block; margin-bottom: 4px; font-size: 15px; }
+  .strategy-list > li p { margin: 4px 0; color: var(--ink-soft); font-size: 14px; }
+  .strategy-list > li ul { margin: 6px 0 0; padding-left: 20px; }
+
+  .figure-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .figure-card .name { font-weight: 700; color: var(--accent); font-size: 15px; }
+  .figure-card .role { color: var(--ink-soft); font-size: 13px; }
+  .figure-card .desc { margin-top: 6px; font-size: 13.5px; }
+
+  .callout {
+    margin-top: 18px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #fff8ec 0%, #fff 100%);
+    border-radius: 6px;
+    border: 1px solid var(--gold);
+  }
+  .callout h4 { margin: 0 0 8px; color: var(--accent); font-size: 16px; }
+  .callout p { margin: 0; color: var(--ink-soft); }
+
+  section.conclusion {
+    margin: 56px 0 0;
+    background: linear-gradient(135deg, #2a2520 0%, #3a3128 100%);
+    color: #f3e6cd;
+    border-radius: var(--radius);
+    padding: 32px 36px;
+    box-shadow: var(--shadow);
+  }
+  section.conclusion h3 { font-family: var(--mono); color: var(--gold); margin: 0 0 8px; font-size: 22px; }
+  section.conclusion p { color: #e8d8b8; }
+
+  .scroll-top {
+    position: fixed;
+    right: 24px; bottom: 24px;
+    width: 44px; height: 44px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    display: none;
+    z-index: 99;
+  }
+  .scroll-top:hover { background: var(--accent-soft); }
+  .scroll-top.visible { display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ============ Sidebar (Vertical Navigation) ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="seal">深</div>
+      <h1>深度工作</h1>
+      <div class="sub">DEEP&nbsp;WORK · 知识脑图</div>
+    </div>
+    <div class="legend">
+      点击章节标题可展开 / 收起二级目录。所有分组默认折叠，点击展开。
+    </div>
+    <ul class="nav-list" id="nav">
+      <li class="nav-group collapsed" data-target="preface">
+        <div class="nav-toggle"><span class="caret">▼</span> 前言 · 卡尔·荣格的塔楼</div>
+        <ul class="nav-sub">
+          <li><a href="#preface-quote">引子故事</a></li>
+          <li><a href="#preface-def">核心概念</a></li>
+          <li><a href="#preface-jason">杰森·本的转变</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed" data-target="part1">
+        <div class="nav-toggle"><span class="caret">▼</span> <span class="tag theory">第一部分</span> 理论 The Idea</div>
+        <ul class="nav-sub">
+          <li><a href="#ch1">第 1 章 · 深度工作是有价值的</a></li>
+          <li><a href="#ch2">第 2 章 · 深度工作是少见的</a></li>
+          <li><a href="#ch3">第 3 章 · 深度工作是有意义的</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed" data-target="part2">
+        <div class="nav-toggle"><span class="caret">▼</span> <span class="tag rule">第二部分</span> 准则 The Rules</div>
+        <ul class="nav-sub">
+          <li><a href="#r1">准则 1 · 工作要深入</a></li>
+          <li><a href="#r2">准则 2 · 拥抱无聊</a></li>
+          <li><a href="#r3">准则 3 · 远离社交媒体</a></li>
+          <li><a href="#r4">准则 4 · 摒弃浮浅</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed" data-target="conc">
+        <div class="nav-toggle"><span class="caret">▼</span> <span class="tag conc">结论</span> Conclusion</div>
+        <ul class="nav-sub">
+          <li><a href="#conclusion">比尔·盖茨与深度工作</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="sidebar-footer">
+      卡尔·纽波特 (Cal Newport) 著<br>
+      宋伟 译 · 知识脑图整理版
+    </div>
+  </aside>
+
+  <!-- ============ Main Content ============ -->
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <h2>深度工作：如何有效使用每一点脑力</h2>
+      <div class="en">Deep Work: Rules for Focused Success in a Distracted World</div>
+      <p>本书论证：在信息经济时代，能够培养深度工作能力并将其内化为生活核心的人，将会取得成功。</p>
+      <div class="core-grid">
+        <div class="core-card def">
+          <strong>深度工作 (Deep Work)</strong>
+          <p>在无干扰状态下专注进行职业活动，使个人的认知能力达到极限。这种努力能够创造新价值，提升技能，而且难以复制。</p>
+        </div>
+        <div class="core-card shallow">
+          <strong>浮浅工作 (Shallow Work)</strong>
+          <p>对认知要求不高的事务性任务，往往在受到干扰的情况下开展。此类工作通常不会为世界创造太多新价值，且容易复制。</p>
+        </div>
+      </div>
+      <div class="hypothesis">
+        <div class="label">深度工作假设 · The Deep Work Hypothesis</div>
+        <p>深度工作的能力日益稀少，而几乎同时，其在社会经济中的价值也日益提升。因此，能够培养这项技能，并将其内化为工作生活之核心的人，将会取得成功。</p>
+      </div>
+    </div>
+
+    <!-- ===================== Preface ===================== -->
+    <section class="chapter" id="preface">
+      <h3><span class="ch-no">前言</span> 卡尔·荣格的伯林根塔楼</h3>
+      <p class="lead">从荣格在湖边建起石头塔楼开始讲起，引出"深度工作"概念的源头。</p>
+      <div class="mindmap">
+        <div class="branch" id="preface-quote">
+          <div class="b-title">引子：荣格的工作方式</div>
+          <p>1922 年，荣格在瑞士伯林根（Bollingen）建起两层石头"塔楼"，并在其中开辟私人办公室。"在休息室时，我可以独处……没有我的允许，任何人都不得进入这个房间。"</p>
+          <ul>
+            <li>早晨 7 点起床，丰盛早餐后进行 2 小时不被打扰的写作</li>
+            <li>下午冥想或长距离乡村漫步</li>
+            <li>晚上 10 点熄灯入寝，依靠油灯与壁炉工作</li>
+            <li>频繁离开苏黎世诊所，专心于分析心理学的写作与思考</li>
+          </ul>
+          <div class="quote">"从一开始，我就感觉能够在这座塔楼里得到很好的休息和恢复。" —— 卡尔·荣格</div>
+        </div>
+
+        <div class="branch teal" id="preface-def">
+          <div class="b-title">历史上践行深度工作的人物</div>
+          <ul>
+            <li>米歇尔·德·蒙田（16 世纪散文家）— 远离城堡建私人图书馆</li>
+            <li>马克·吐温 — 在纽约库阿里农场的小屋写作《汤姆·索亚历险记》</li>
+            <li>伍迪·艾伦 — 1969–2013 年用 44 年编写 44 部电影，斩获 23 项奥斯卡提名，全程使用德国奥林匹亚 SM3 手动打字机</li>
+            <li>彼得·希格斯 — 几乎与世隔绝工作，获得诺贝尔奖后记者都找不到他</li>
+            <li>J.K.·罗琳 — 写《哈利·波特》时远离社交媒体</li>
+            <li>比尔·盖茨 — 每年两次"思考周"；1995 年写出著名的"互联网浪潮"备忘录</li>
+            <li>尼尔·斯蒂芬森 — 网站不提供邮箱，反网络朋克作家本人却不用网络</li>
+          </ul>
+          <div class="quote">"如果我如此安排生活，能够得到很长的、连续的、不受人打扰的时间，我就能写作小说。反之，如果我备受打扰又会怎样？不会有一部传世的小说……而是会有许多封发给个人的电子邮件。" —— 尼尔·斯蒂芬森</div>
+        </div>
+
+        <div class="branch rose" id="preface-jason">
+          <div class="b-title">当代案例：杰森·本（Jason Benn）的蜕变</div>
+          <p>弗吉尼亚大学经济学毕业生，曾在金融公司用 6 小时人工完成 Excel 报告。在顿悟到"自己大部分工作可被宏自动化"后，他辞职、搬出舒适区，把自己锁在没有电脑的房间里自学编程：</p>
+          <ul>
+            <li>远离电子设备，每天专注学习 5 小时以上，持续两个月</li>
+            <li>阅读 18 本相关书籍，做笔记卡片大声朗读练习</li>
+            <li>进入 Dev Bootcamp 训练营（每周 100 小时），成为班里顶尖学生</li>
+            <li>毕业 → 旧金山创业公司开发员（年薪从 4 万 → 10 万美元）</li>
+            <li>办公室对面租公寓，每天争得 4 小时无干扰深度工作</li>
+          </ul>
+          <div class="quote">"我总是不停地上网，查看电邮；我根本停不下来，好似一种强迫症。" —— 辞职前的杰森·本</div>
+        </div>
+
+        <div class="branch indigo">
+          <div class="b-title">关于本书</div>
+          <p>作者 Cal Newport 是乔治城大学理论计算机科学家、终身教授。他用 10 年时间培养深度工作习惯，出版 4 本书、获得博士学位、产出高质量同行评审论文，且很少在下午五六点之后继续工作。</p>
+          <ul>
+            <li>第一部分目标：让你相信深度工作假设的真实性</li>
+            <li>第二部分目标：教会你如何训练大脑、转变工作习惯</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Part 1 ===================== -->
+    <section class="part-header part-1" id="part1">
+      <h2>第一部分 · 理论 <span class="en">The Idea</span></h2>
+      <p>用三个章节分别从经济、稀缺、意义三个角度论证深度工作的价值。</p>
+    </section>
+
+    <!-- Chapter 1 -->
+    <section class="chapter" id="ch1">
+      <h3><span class="ch-no">第 1 章</span> 深度工作是有价值的 <span class="ch-en">Deep Work is Valuable</span></h3>
+      <p class="lead">以三位经济赢家为引，论证深度工作是新经济时代稀缺且高价值的核心能力。</p>
+      <div class="mindmap">
+        <div class="branch">
+          <div class="b-title">新经济中的三类赢家（布林约尔松 & 麦卡菲 / Brynjolfsson & McAfee）</div>
+          <div class="grid-3">
+            <div class="sub-card">
+              <h5>高级技术工人</h5>
+              <p>代表：内特·西尔弗（Nate Silver）— 棒球数据极客 → 总统选举预测模型。掌握复杂数据分析工具（Stata、SQL）。</p>
+            </div>
+            <div class="sub-card">
+              <h5>超级明星</h5>
+              <p>代表：大卫·汉森（David Heinemeier Hansson）— Ruby on Rails 之父。远程工作时代，精英个体赢得全球市场。</p>
+            </div>
+            <div class="sub-card">
+              <h5>所有者</h5>
+              <p>代表：约翰·杜尔（John Doerr）— 凯鹏华盈合伙人。资本投入新科技：Instagram 13 人 → 10 亿美元。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="branch teal">
+          <div class="b-title">成为赢家的两种核心能力</div>
+          <ul>
+            <li><strong>迅速掌握复杂工具的能力</strong>：智能机器（如 SQL、Stata）并不友好；掌握它们需要长期深度学习。</li>
+            <li><strong>在工作质量和速度方面都达到精英层次的能力</strong>：学会技能 ≠ 能产出真正有价值的成果。</li>
+          </ul>
+          <div class="quote">"关键问题在于，你是否擅长使用智能机器？" —— 泰勒·考恩</div>
+        </div>
+
+        <div class="branch gold">
+          <div class="b-title">深度工作帮助你迅速掌握困难的事物</div>
+          <p>佛罗里达州立大学教授 K. 安德鲁·艾利克森（Anders Ericsson）提出"刻意练习（Deliberate Practice）"理论：</p>
+          <ul>
+            <li>（1）注意力全情投入于你希望提升的技能或理念</li>
+            <li>（2）能得到反馈意见，从而调整方法</li>
+          </ul>
+          <p>神经科学解释：刻意练习促使少突细胞在相关神经元周围包裹髓磷脂，固化回路，提升能力。<strong>因此，分心状态下学习 SQL 等复杂技能，相关回路只能得到偶尔隔离，无法真正强化。</strong></p>
+          <div class="quote">"注意力涣散基本上与刻意练习要求的聚精会神是相对立的。" —— 艾利克森</div>
+        </div>
+
+        <div class="branch indigo">
+          <div class="b-title">深度工作有助于精英级产出的实现</div>
+          <p>案例：沃顿商学院最年轻正教授亚当·格兰特（Adam Grant）。2012 年发 7 篇论文 + 一本《纽约时报》畅销书。</p>
+          <ul>
+            <li>秋季集中教学，春夏集中研究</li>
+            <li>每段时间 2–4 天"消失"，关电邮自动回复，与世隔绝写作</li>
+            <li>把学术论文写作分三阶段：分析数据 → 草稿 → 编辑</li>
+          </ul>
+          <div class="formula">高质量工作产出 = 时间 × 专注度</div>
+          <p><strong>注意力残留（Attention Residue）</strong>：明尼苏达大学 Sophie Leroy 提出，任务转换后，注意力并不会立即转移，残留的注意力会显著降低下一项任务的表现——这正是分心工作的最大隐性成本。</p>
+        </div>
+
+        <div class="branch rose">
+          <div class="b-title">杰克·多西（Jack Dorsey）是怎么回事？</div>
+          <p>多西身兼推特 + Square 首席，日常被会议、即时通讯打断，看似没有深度工作，却坐拥 11 亿美元净资产。</p>
+          <ul>
+            <li>但多西是<strong>公司高管</strong>：CEO 是决策引擎，分心是其特定角色的必然</li>
+            <li>这类案例<strong>不可外推</strong>到普通知识工作者</li>
+            <li>对于大多数人：除非有充分证据证明分散精力的价值，否则请优先考虑深度工作</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter 2 -->
+    <section class="chapter" id="ch2">
+      <h3><span class="ch-no">第 2 章</span> 深度工作是少见的 <span class="ch-en">Deep Work is Rare</span></h3>
+      <p class="lead">三种商业潮流悖论：开放办公、即时通讯、社交媒体繁荣背后，深度工作却越来越稀少。</p>
+      <div class="mindmap">
+        <div class="branch">
+          <div class="b-title">悖论：商业潮流反其道而行</div>
+          <ul>
+            <li>脸谱网 4 万㎡ 开放式办公设计（Frank Gehry 操刀）</li>
+            <li>Jack Dorsey 重金改造《旧金山纪事报》大楼为开放长桌</li>
+            <li>IBM 每天发送 250 万条即时讯息</li>
+            <li>《纽约时报》800 多名记者编辑被要求开推特</li>
+            <li>硅谷创业公司 Hall 推广"实时协作"</li>
+          </ul>
+          <div class="quote">"如果你刚沉下心来准备做某项工作，电话铃声突然响起，就会搅乱你的注意力……大脑会对干扰做出反应。" —— 英国电视台"办公室建筑的秘密生活"实验</div>
+        </div>
+
+        <div class="branch teal">
+          <div class="b-title">原因一：度量的黑洞</div>
+          <p>大西洋传媒 CTO Tom Cochran 调研发现：公司每年花费 100 多万美元处理电子邮件，每封邮件折合 95 美分劳动力成本。</p>
+          <p>知识工作者的产出难以直接衡量——管理者无法判断"深度 vs 浮浅"对底线的真实影响，从而形成托马斯·皮克提（Thomas Piketty）所说"从客观上难以衡量个体对公司产出的贡献"的现象。</p>
+        </div>
+
+        <div class="branch gold">
+          <div class="b-title">原因二：最小阻力原则（The Principle of Least Resistance）</div>
+          <p>在工作环境下，若各种行为对底线的影响没有明确反馈，我们倾向于采用当下最简单易行的行为。</p>
+          <ul>
+            <li>哈佛 Leslie Perlow 教授实验：要求波士顿咨询集团团队每周<strong>整日离线</strong> → 咨询师更愉快、沟通更顺畅、产出更佳、客户毫无怨言</li>
+            <li>频繁例会、转发开放式邮件、即时通讯，都是"最不费力"的清理方式</li>
+          </ul>
+        </div>
+
+        <div class="branch rose">
+          <div class="b-title">原因三：忙碌代表生产能力（Busyness as Proxy for Productivity）</div>
+          <p>知识工作者在缺少明确指标时，回溯到工业时代"可视的忙碌"。</p>
+          <ul>
+            <li>玛丽莎·梅耶尔（Marissa Mayer）上任雅虎后禁止员工在家工作：登录虚拟专用网时间不够多即被惩罚</li>
+            <li>对照：亚当·格兰特与世隔绝写作——若在雅虎或许已被辞退，但这种深度策略才能创造真正价值</li>
+          </ul>
+        </div>
+
+        <div class="branch indigo">
+          <div class="b-title">原因四：对互联网的顶礼膜拜</div>
+          <p>已故传播学者 Neil Postman 提出"技术垄断（Technopoly）"概念：社会不再权衡新科技的利弊，凡是高科技即被默认为"好"。</p>
+          <ul>
+            <li>叶夫根尼·莫洛佐夫（Evgeny Morozov）"优步-意识形态"：将"网络"等同于进步、未来</li>
+            <li>《纽约时报》设立"社交媒体办公室"，强制严肃记者发推</li>
+            <li>乔纳森·弗兰岑因反对作家发推，被嘲讽为"对网络的孤独战争"</li>
+          </ul>
+          <div class="quote">"深度工作已经让位于分散精力的高科技行为……支持深度工作往往要抵制新的高科技。" —— Cal Newport</div>
+        </div>
+
+        <div class="callout">
+          <h4>结论：对商业整体是坏事，对个人是好事</h4>
+          <p>如果深度工作的价值不断升高、商业潮流却让深度越来越稀缺，那么<strong>少数能抵抗潮流的人将获得巨大的个人优势</strong>。这正是本书后半部分策略的目标。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter 3 -->
+    <section class="chapter" id="ch3">
+      <h3><span class="ch-no">第 3 章</span> 深度工作是有意义的 <span class="ch-en">Deep Work is Meaningful</span></h3>
+      <p class="lead">以铁匠里克·富勒尔（Ric Furrer）开场，从神经学、心理学、哲学三个角度论证深度带来意义。</p>
+      <div class="mindmap">
+        <div class="branch">
+          <div class="b-title">引子：威斯康星州铁匠的"打剑"</div>
+          <p>里克·富勒尔在改造的乡村谷仓中手工锻造维京时期的剑：8 小时反复锤炼、退火、淬火。铸锭稍有分神便会碎裂。</p>
+          <div class="quote">"我不需要一把剑。但是我必须造剑。" —— 里克·富勒尔</div>
+        </div>
+
+        <div class="branch teal">
+          <div class="b-title">论证一：神经学角度</div>
+          <p>科学作家 Winifred Gallagher 在《全神贯注》（Rapt）中提出注意力决定生活质量：</p>
+          <ul>
+            <li>经历癌症诊断后，她刻意将注意力放在"电影、散步、马提尼"上，生活中积极的体验被放大</li>
+            <li>Stanford 心理学家 Laura Carstensen 用 fMRI 实验：年长者面对积极意象时，杏仁核反应仍活跃；面对消极意象时已脱敏</li>
+            <li>结论：你的为人、你的思考、你的感受和所做之事，恰是你所关注事物的概括</li>
+          </ul>
+          <div class="quote">"我将活出专注的人生，因为这是最好的选择。" —— Winifred Gallagher</div>
+        </div>
+
+        <div class="branch gold">
+          <div class="b-title">论证二：心理学角度 · 心流（Mihaly Csikszentmihalyi）</div>
+          <p>芝加哥大学契克森米哈赖与 Reed Larson 共同开发"经验抽样法（ESM）"，用传呼机随机抽样询问感受：</p>
+          <ul>
+            <li>"当一个人的身体或头脑在自觉努力完成某项艰难且有价值的工作过程中达到极限时，往往是最优体验发生的时候"</li>
+            <li>心流经历越多 → 生活满意度越高</li>
+            <li>深度工作恰好满足心流条件：脑力开发到极限、专注、达到忘我</li>
+          </ul>
+          <div class="quote">"工作其实比休闲时光更容易带来享受……工作类似于心流活动，有其内在目标、反馈规则和挑战。"</div>
+        </div>
+
+        <div class="branch indigo">
+          <div class="b-title">论证三：哲学角度 · 《万物闪耀》</div>
+          <p>伯克利 Hubert Dreyfus 与哈佛 Sean Dorrance Kelly 共同著作《All Things Shining》：</p>
+          <ul>
+            <li>笛卡尔之后的启蒙运动虽带来人权观念，却剥夺了世界的秩序与神圣感</li>
+            <li>工匠重新开启"神圣感"大门：轮匠面对"每一片独一无二的木头"——价值内化于材料本身</li>
+            <li>知识工作同样可以成为"匠心"——圣地亚哥·冈萨雷斯："精妙的代码简洁明了……那感觉很像在写一首诗"</li>
+          </ul>
+          <div class="quote">"工匠的任务并非产出意义，而是培养内在技能，辨别本已存在的意义。"</div>
+        </div>
+
+        <div class="branch rose">
+          <div class="b-title">结论：深度智人（Homo Sapiens Deepensis）</div>
+          <p>在信息经济时代，深度工作唤醒意识、使生活更有价值。任何对高水平技能的追求——物质的或认知的——都可以带来"对神圣的一瞥"。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Part 2 ===================== -->
+    <section class="part-header part-2" id="part2">
+      <h2>第二部分 · 准则 <span class="en">The Rules</span></h2>
+      <p>四条准则，将深度工作从渴望转化为日常习惯：</p>
+      <p>准则 1 安排深度 · 准则 2 训练专注 · 准则 3 远离分心 · 准则 4 减少浮浅</p>
+    </section>
+
+    <!-- Rule 1 -->
+    <section class="chapter" id="r1">
+      <h3><span class="ch-no">准则 1</span> 工作要深入 <span class="ch-en">Work Deeply</span></h3>
+      <p class="lead">你的意志力是有限的（鲍迈斯特：意志力像肌肉，会疲劳）。因此，深度工作需要依赖设计良好的惯例和固定程序，把"启动专注"消耗的意志力最小化。</p>
+
+      <div class="mindmap">
+        <div class="branch">
+          <div class="b-title">第 1 步：选定你的深度哲学</div>
+          <p>四种成熟的深度工作哲学，各有适用场景：</p>
+          <div class="grid-2">
+            <div class="sub-card">
+              <h5>1. 禁欲主义哲学 (Monastic)</h5>
+              <p>代表：Donald Knuth、Neal Stephenson。完全摒弃或最小化浮浅职责。适用于目标价值极高、成果可个体化的人。</p>
+            </div>
+            <div class="sub-card">
+              <h5>2. 双峰哲学 (Bimodal)</h5>
+              <p>代表：卡尔·荣格、亚当·格兰特。按周/季/年将时间划为深度段和开放段。深度时间单位至少一整天。</p>
+            </div>
+            <div class="sub-card">
+              <h5>3. 节奏哲学 (Rhythmic)</h5>
+              <p>代表：Bryan Chappell 博士（每天 5:00–7:30 雷打不动）。链条法 / 固定启动时间。把深度变成简单日常习惯。</p>
+            </div>
+            <div class="sub-card">
+              <h5>4. 新闻记者哲学 (Journalistic)</h5>
+              <p>代表：Walter Isaacson、Cal Newport 本人。一旦有空就立刻转入深度模式。技能熟练 + 信念坚定者专用。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="branch teal">
+          <div class="b-title">第 2 步：习惯化执行（Habitization）</div>
+          <p>使深度工作成为固定日常行为，4 个核心原则：</p>
+          <div class="grid-2">
+            <div class="sub-card"><h5>原则 1</h5><p>关注点放到极端重要的事情上</p></div>
+            <div class="sub-card"><h5>原则 2</h5><p>抓住引领性指标（深度时间长度）</p></div>
+            <div class="sub-card"><h5>原则 3</h5><p>准备一个醒目的计分板（如办公室记分板）</p></div>
+            <div class="sub-card"><h5>原则 4</h5><p>定期问责（每周例会向伙伴汇报）</p></div>
+          </div>
+          <div class="callout">
+            <h4>4DX（4 Disciplines of Execution）</h4>
+            <p>源自 FranklinCovey：<strong>聚焦极端重要目标 → 采取引领性指标 → 维持醒目的计分板 → 建立规律性问责</strong>。这四条原则能让你在纷乱的环境中坚持深度工作。</p>
+          </div>
+        </div>
+
+        <div class="branch gold">
+          <div class="b-title">第 3 步：支持深度工作的环境</div>
+          <ul>
+            <li>为深度工作专门设计一个空间 / 时段</li>
+            <li>适度利用"白板效应"：与他人并肩解决问题可以互相推动，进入更深层次的深度状态</li>
+            <li>极乐机（Eudaimonia Machine）— 戴维·德怀恩的建筑设计提案：5 间不连通的房间，最终进入 6×10 英尺的"深度工作室"中工作 90 分钟</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rule 2 -->
+    <section class="chapter" id="r2">
+      <h3><span class="ch-no">准则 2</span> 拥抱无聊 <span class="ch-en">Embrace Boredom</span></h3>
+      <p class="lead">准则是关于训练你的大脑，最大化你进入深度状态的能力。两个核心目标：高强度提高集中注意力 + 克服分心欲望。</p>
+
+      <div class="mindmap">
+        <ol class="strategy-list">
+          <li>
+            <span class="st-name">策略 1：不要不断分心，要专注于工作</span>
+            <p>关键洞察：使用网络工具这件事本身<strong>并不能</strong>减损你大脑专注的能力。真正减损能力的，是"稍有无聊就从低刺激高价值活动转向高刺激低价值活动"。</p>
+            <p><strong>做法</strong>：预先计划好你使用网络的时间，在这些时间之外完全避免使用网络。在电脑旁放一个笔记本，记录下一次使用网络的时间。</p>
+            <ul>
+              <li>第一点：即使工作需要大量使用网络和快速回复邮件，这个策略也适用</li>
+              <li>第二点：在离线时段中遇到需要上网查询的情况，先用笔记下，等下一段网络时间再统一处理</li>
+              <li>第三点：在工作外也按计划使用网络，可以进一步提升专注训练的效果</li>
+            </ul>
+            <div class="quote">"静静等待并忍受无聊已经成为现代生活的一种新奇体验，从集中注意力训练的角度出发，这具有不可思议的重要价值。"</div>
+          </li>
+
+          <li>
+            <span class="st-name">策略 2：像罗斯福一样工作</span>
+            <p>年轻时的小西奥多·罗斯福在争分夺秒的哈佛生活中，发明"罗斯福冲锋"：找出一项优先性很高的深度任务，估算出通常完成时间，然后设定一个<strong>硬性截止期限</strong>，留出的时间<strong>远远少于</strong>估算时间。如果可以，公开截止期限。</p>
+            <ul>
+              <li>深度工作需要专注的强度超出多数知识工作者的舒适区</li>
+              <li>每一次"冲锋"都是抵抗新奇刺激的训练</li>
+              <li>你的抵抗力越练越强</li>
+            </ul>
+          </li>
+
+          <li>
+            <span class="st-name">策略 3：有成果的冥想（Productive Meditation）</span>
+            <p>在身体劳作而心智空闲的时候（走路、慢跑、开车、淋浴），将注意力集中到一件<strong>定义明确的专业难题</strong>上。如同佛教打坐，注意力涣散时不断把它重新集中。</p>
+            <ul>
+              <li>建议频率：一周至少 2–3 次</li>
+              <li>利用通常被浪费的时间（遛狗、通勤）</li>
+              <li>需要耐心与练习；初期你会发现"努力想了很久却没有结果"</li>
+            </ul>
+          </li>
+
+          <li>
+            <span class="st-name">策略 4：记住一副牌</span>
+            <p>借鉴俄罗斯记忆冠军 Kirov 的训练方法：记忆一副 52 张洗过的牌——任何需要持久注意力的有组织思维过程（学习《塔木德》、冥想、辨识吉他演奏）都可以提升专注能力。</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Rule 3 -->
+    <section class="chapter" id="r3">
+      <h3><span class="ch-no">准则 3</span> 远离社交媒体 <span class="ch-en">Quit Social Media</span></h3>
+      <p class="lead">采用"工具选择的手艺人方法（Craftsman Approach）"——工具应服务于手艺，而非反过来绑架你的时间和注意力。</p>
+
+      <div class="mindmap">
+        <div class="branch">
+          <div class="b-title">原则：手艺人的工具选择</div>
+          <p>将网络工具类比为农具：佛利斯特·普里查德（Forrest Pritchard）在选干草打捆机之前做了艰难探索——对人生中的网络工具也应如此。</p>
+        </div>
+
+        <ol class="strategy-list">
+          <li>
+            <span class="st-name">策略 1：明确个人职业与私人生活中主要的高层次目标</span>
+            <p>列出最重要目标清单（保持高层次，避免"销售额突破 100 万"这种太具体的指标）。</p>
+            <ul>
+              <li>私人目标：例如做个好家长、经营有组织的家庭</li>
+              <li>职业目标：例如成为课堂上有成效的老师 + 有所成就的研究员</li>
+            </ul>
+          </li>
+
+          <li>
+            <span class="st-name">策略 2：关键少数法则（The Law of the Vital Few）</span>
+            <p>20% 最重要的活动决定 80% 的成果。对每个网络工具，问自己："它对支持我的 2–3 个关键活动，是有实质积极影响、消极影响，还是无影响？"<strong>只有当积极影响大于消极影响时，才继续使用。</strong></p>
+            <div class="grid-2">
+              <div class="sub-card">
+                <h5>案例 1：迈克尔·路易斯（Michael Lewis） + 推特</h5>
+                <p>无证据表明推特可裨益于其长篇深度报道与认真写作 → 应当放弃推特。</p>
+              </div>
+              <div class="sub-card">
+                <h5>案例 2：一般人 + 脸谱网</h5>
+                <p>对"与孩子一起参加线下活动 + 经营有组织的家庭"无实质帮助 → 应当放弃脸谱网。</p>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <span class="st-name">策略 3：在 30 天内戒除你识别出的不良网络习惯</span>
+            <p>借鉴 Ryan Nicodemus 的"打包派对"策略：把所有东西打包进纸盒，看一个月内是否真的需要。</p>
+            <ul>
+              <li>一个月不使用这些服务</li>
+              <li>用事实解除对"落伍"的担忧</li>
+              <li>你会发现：这些工具对你的生活没那么重要</li>
+            </ul>
+            <div class="callout">
+              <h4>特别注意：娱乐类网站（BuzzFeed、Reddit、Huffington Post）</h4>
+              <p>这类网站不需要登录，因此更难戒掉。要将它们也纳入"手艺人的工具选择"评估范围。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Rule 4 -->
+    <section class="chapter" id="r4">
+      <h3><span class="ch-no">准则 4</span> 摒弃浮浅 <span class="ch-en">Drain the Shallows</span></h3>
+      <p class="lead">浮浅工作不可避免，但你可以严格限制其占你日程的比例——以确保深度工作能真正进行。</p>
+
+      <div class="mindmap">
+        <ol class="strategy-list">
+          <li>
+            <span class="st-name">策略 1：每一分钟都要做计划</span>
+            <p>在每个工作日开始的笔记本上，把一天划成半小时方格，将活动安排在方格中。未安排的小任务可统一放入"杂项"方格，列在页面右手边。</p>
+            <ul>
+              <li>为深度工作优先安排<strong>大块时间格</strong></li>
+              <li>一旦有灵光乍现，允许暂时抛开日程（之后再重新规划）</li>
+              <li>没有计划 → 时间被浮浅事务自动占满（电邮、社交、网页）</li>
+            </ul>
+            <div class="callout">
+              <h4>备用方格技巧</h4>
+              <p>对不确定时间长度的任务，先初步预估 + 多安排一个备用方格；如未使用，则用来做非紧急事务。</p>
+            </div>
+          </li>
+
+          <li>
+            <span class="st-name">策略 2：定量分析每一项活动的深度</span>
+            <p>对每项候选任务问自己一个简单却极有启发性的问题：</p>
+            <div class="formula">"在少于一小时的时间内，能否将一个新员工培训到可以执行这项高级任务？"</div>
+            <ul>
+              <li>不能 → 深度任务（优先安排）</li>
+              <li>能 → 浮浅任务（应减少时间投入）</li>
+            </ul>
+          </li>
+
+          <li>
+            <span class="st-name">策略 3：给老板证明深度工作有效</span>
+            <p>和老板谈："我上周在浮浅工作上的时间占比是 X%"——用数据迫使对方明确同意你的比例。"让一位受过高等训练的专业人士一周参加 30 个小时的会议是不可思议的浪费。"</p>
+          </li>
+
+          <li>
+            <span class="st-name">策略 4：固定日程生产力（Fixed-Schedule Productivity）</span>
+            <p>设定一个固定时间后不再工作的目标，然后在工作中寻找提高产出的策略达成目标。Cal Newport 已经实行 6 年。</p>
+            <ul>
+              <li>Booth 学院 Charlene 见习教授：设定每周 50 小时上限，限定每年最多出差 5 次</li>
+              <li>拒绝单看无害的浮浅任务 → 进入"稀缺思维"，准入门槛提高</li>
+              <li>你会发现工作文化比想象中更有弹性</li>
+            </ul>
+            <div class="quote">"也许我应该把这些做完了才去开会。" —— 优秀的年轻计算机科学教授的真实工作日（Cal Newport 引用作为反例）</div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================== Conclusion ===================== -->
+    <section class="conclusion" id="conclusion">
+      <h3>结论 · Conclusion</h3>
+      <p class="lead" style="color:#e8d8b8; margin-top:0;">1974 年冬天，比尔·盖茨在《大众电子》看到 Altair 后抛弃一切，与保罗·艾伦、蒙特·大卫杜夫用 8 周时间写出 BASIC 编程语言。盖茨"睡倒在键盘上"，"专注力的惊人之举"——<strong>正是深度工作</strong>。</p>
+      <p>致力于深度工作并不涉及道德立场，也不是哲学论断——只从实用角度认可：专注的能力可以完成有价值的事情。"我们说深度工作是重要的，不是因为分心是邪恶的，而是因为深度工作能够使比尔·盖茨在一个学期创立起 10 亿美元的产业。"</p>
+      <p>Cal Newport 本人在乔治城大学成为教授后，工作任务更多，但发表的论文数从平均每年 2 篇提升到 4 篇；2013–2014 年，他将学术产出提升一倍多（9 篇同行评审），同时写完了 7 万字的书稿，且始终坚持<strong>晚上不工作</strong>的原则。</p>
+      <div class="callout" style="background: rgba(255,255,255,0.05); border-color: var(--gold);">
+        <h4 style="color: var(--gold);">最终论断</h4>
+        <p>脱离思想不集中的大众，加入那些能集中精力的少数人群——<strong>这是一个能让你脱胎换骨的转变</strong>。真正的奖励不会留给那些熟练使用脸谱网的人，而是留给那些能够构建创新、分散式体系的人。</p>
+      </div>
+    </section>
+
+    <div class="hero" style="margin-top:40px;">
+      <h2 style="font-size:22px;">读懂深度工作</h2>
+      <p>通过这四条准则，让深度工作从一种渴望，转变为你日常工作计划中的常规安排和重要组成部分。培养在日益浮躁的世界里创造真实价值的能力——<strong>深度的生活才是优质生活</strong>。</p>
+    </div>
+  </main>
+</div>
+
+<button class="scroll-top" id="scrollTop" title="回到顶部">↑</button>
+
+<script>
+  // Toggle nav groups
+  document.querySelectorAll('.nav-group > .nav-toggle').forEach(function(t) {
+    t.addEventListener('click', function() {
+      this.parentElement.classList.toggle('collapsed');
+    });
+  });
+
+  // Smooth scroll for in-page anchors
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      var id = this.getAttribute('href');
+      if (id.length > 1) {
+        var el = document.querySelector(id);
+        if (el) {
+          e.preventDefault();
+          el.scrollIntoView({behavior: 'smooth', block: 'start'});
+          // Auto-expand parent nav group
+          var group = this.closest('.nav-group');
+          if (group) group.classList.remove('collapsed');
+        }
+      }
+    });
+  });
+
+  // Scroll-to-top button
+  var btn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 400) btn.classList.add('visible');
+    else btn.classList.remove('visible');
+  });
+  btn.addEventListener('click', function() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+</script>
+</body>
+</html>

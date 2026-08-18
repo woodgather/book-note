@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《巅峰表现：如何实现高绩效的五项准则》知识脑图</title>
+<style>
+:root { color-scheme: light; --bg:#f7f8fb; --panel:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb; --primary:#2c5282; --accent:#c53030; --soft:#edf2f7; --soft2:#e6fffa; --soft3:#fef5e7; --soft4:#f0fff4; --soft5:#fff5f7; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: "PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.7; }
+.layout { display:flex; min-height:100vh; }
+
+/* ===== Sidebar ===== */
+.sidebar { width: 300px; flex-shrink:0; background: linear-gradient(180deg,#1a365d 0%, #2c5282 100%); color:#fff; position:sticky; top:0; align-self:flex-start; height:100vh; overflow-y:auto; padding:20px 0; box-shadow: 2px 0 12px rgba(0,0,0,0.08); }
+.sidebar h1 { font-size:16px; margin:0 20px 12px; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.2); line-height:1.4; }
+.sidebar h1 .sub { display:block; font-size:12px; color:#cbd5e0; font-weight:normal; margin-top:6px; }
+.sidebar h1 .badge { display:inline-block; font-size:11px; background:#ecc94b; color:#744210; padding:1px 6px; border-radius:3px; margin-right:4px; }
+.nav-list { list-style:none; margin:0; padding:0; }
+.nav-list li { margin:0; }
+.nav-list .nav-section { padding:8px 20px; font-size:11px; color:#a0aec0; text-transform:uppercase; letter-spacing:1px; margin-top:10px; }
+.nav-list a { display:flex; align-items:center; gap:6px; padding:9px 20px 9px 28px; color:#e2e8f0; text-decoration:none; font-size:13.5px; border-left:3px solid transparent; transition: all .15s; }
+.nav-list a:hover { background:rgba(255,255,255,0.08); color:#fff; }
+.nav-list a.l1 { font-weight:600; color:#fff; padding-left:20px; font-size:14px; background: rgba(255,255,255,0.04); }
+.nav-list a.l2 { padding-left:40px; font-size:13px; }
+.nav-list a.l3 { padding-left:54px; font-size:12.5px; color:#cbd5e0; }
+.nav-list a::before { content:"▸"; font-size:10px; opacity:0.6; flex-shrink:0; }
+
+/* ===== Main content ===== */
+.main { flex:1; min-width:0; padding:32px 48px 80px; max-width: 100%; }
+.crumbs { font-size:13px; color:var(--muted); margin-bottom:14px; }
+.crumbs span { margin:0 6px; }
+.hero { background:linear-gradient(135deg, #1a365d 0%, #2c5282 60%, #3182ce 100%); color:#fff; padding:36px 40px; border-radius:12px; margin-bottom:32px; box-shadow: 0 6px 24px rgba(44,82,130,0.18); }
+.hero h2 { margin:0 0 8px; font-size:28px; }
+.hero .sub { opacity:0.92; font-size:15px; margin-bottom:18px; }
+.hero .meta { display:flex; flex-wrap:wrap; gap:18px; font-size:13px; opacity:0.95; }
+.hero .meta b { color:#fbd38d; }
+
+section.chapter { background:var(--panel); border-radius:12px; margin-bottom:28px; box-shadow:0 2px 10px rgba(0,0,0,0.04); overflow:hidden; border:1px solid var(--line); }
+section.chapter > header { padding:22px 30px; color:#fff; }
+section.chapter.ch1 > header { background: linear-gradient(90deg, #2c5282, #3182ce); }
+section.chapter.ch2 > header { background: linear-gradient(90deg, #2f855a, #48bb78); }
+section.chapter.ch3 > header { background: linear-gradient(90deg, #b7791f, #d69e2e); }
+section.chapter.ch4 > header { background: linear-gradient(90deg, #c05621, #ed8936); }
+section.chapter.ch5 > header { background: linear-gradient(90deg, #6b46c1, #9f7aea); }
+section.chapter.ch6 > header { background: linear-gradient(90deg, #b83280, #ed64a6); }
+section.chapter.epi > header { background: linear-gradient(90deg, #4a5568, #718096); }
+section.chapter h2 { margin:0; font-size:22px; }
+section.chapter h2 small { display:block; font-size:13px; font-weight:normal; opacity:0.85; margin-top:4px; }
+.chapter .body { padding:8px 30px 26px; }
+
+h3 { font-size:18px; color:var(--primary); margin:26px 0 10px; padding-left:12px; border-left:4px solid var(--primary); }
+h3.method { color:#2f855a; border-color:#48bb78; }
+h3.tip { color:#b7791f; border-color:#d69e2e; }
+h3.point { color:#6b46c1; border-color:#9f7aea; }
+h4 { font-size:15.5px; margin:18px 0 8px; color:#2d3748; }
+h4 .num { display:inline-block; background:#edf2f7; color:#2c5282; width:24px; height:24px; line-height:24px; text-align:center; border-radius:50%; margin-right:8px; font-size:13px; }
+p { margin: 8px 0 12px; }
+ul, ol { margin: 8px 0 14px; padding-left: 24px; }
+ul li, ol li { margin: 4px 0; }
+.callout { background: var(--soft); border-left:4px solid #3182ce; padding:12px 16px; border-radius:6px; margin:12px 0; font-size:14px; }
+.callout.green { background: var(--soft4); border-color:#48bb78; }
+.callout.gold { background: var(--soft3); border-color:#d69e2e; }
+.callout.purple { background:#faf5ff; border-color:#9f7aea; }
+.callout.pink { background: var(--soft5); border-color:#ed64a6; }
+.callout .label { display:inline-block; background:#3182ce; color:#fff; font-size:11px; padding:1px 8px; border-radius:3px; margin-right:8px; font-weight:600; }
+.callout.green .label { background:#48bb78; }
+.callout.gold .label { background:#d69e2e; }
+.callout.purple .label { background:#9f7aea; }
+.callout.pink .label { background:#ed64a6; }
+.law { font-style:italic; color:#744210; background:#fefcbf; padding:10px 14px; border-left:4px solid #ecc94b; border-radius:6px; margin:12px 0; }
+.law::before { content:"⚡ 绩效定律："; font-weight:600; font-style:normal; }
+.list-card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px 18px; margin:10px 0; }
+.list-card h5 { margin:0 0 6px; font-size:15px; color:#2c5282; }
+.list-card .sub { color:var(--muted); font-size:13px; margin-bottom:6px; }
+.principle-banner { background:linear-gradient(135deg, #fff5f7 0%, #fed7e2 100%); border:1px solid #fbbee2; padding:18px 22px; border-radius:10px; margin:18px 0; }
+.principle-banner.ch2 { background:linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); border-color:#9ae6b4; }
+.principle-banner.ch3 { background:linear-gradient(135deg, #fffaf0 0%, #feebc8 100%); border-color:#f6ad55; }
+.principle-banner.ch4 { background:linear-gradient(135deg, #fff5f7 0%, #fed7e2 100%); border-color:#fbb6ce; }
+.principle-banner.ch5 { background:linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%); border-color:#d6bcfa; }
+.principle-banner.ch6 { background:linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%); border-color:#90cdf4; }
+.principle-banner h4 { margin:0 0 6px; color:#97266d; }
+.principle-banner.ch2 h4 { color:#22543d; }
+.principle-banner.ch3 h4 { color:#7b341e; }
+.principle-banner.ch4 h4 { color:#97266d; }
+.principle-banner.ch5 h4 { color:#44337a; }
+.principle-banner.ch6 h4 { color:#2a4365; }
+.principle-banner p { margin:0; }
+.grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin:14px 0; }
+@media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } .sidebar { display:none; } .main { padding: 16px; } .hero { padding: 20px; } }
+.toc-card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px 18px; }
+.toc-card h5 { margin:0 0 8px; color:#2c5282; }
+.quote { background:#f7fafc; border-left:3px solid #cbd5e0; padding:10px 14px; margin:10px 0; color:#4a5568; font-style:italic; }
+.quote::before { content:"“"; color:#a0aec0; font-size:20px; }
+.quote::after { content:"”"; color:#a0aec0; font-size:20px; }
+table { width:100%; border-collapse: collapse; margin: 12px 0; font-size:14px; }
+table th, table td { border:1px solid var(--line); padding:8px 12px; text-align:left; }
+table th { background:var(--soft); color:#2c5282; font-weight:600; }
+table tr:nth-child(even) td { background:#fafbfc; }
+
+/* 折叠导航 */
+details.nav-group > summary { list-style:none; cursor:pointer; padding:6px 20px; color:#fbd38d; font-weight:600; font-size:13px; display:flex; align-items:center; user-select:none; }
+details.nav-group > summary::-webkit-details-marker { display:none; }
+details.nav-group > summary::before { content:"▸"; margin-right:6px; transition:transform .15s; }
+details.nav-group[open] > summary::before { transform:rotate(90deg); }
+details.nav-group > summary:hover { color:#fff; }
+details.nav-group .nav-list { padding:4px 0; }
+
+/* 返回顶部 */
+.back-top { position:fixed; right:24px; bottom:24px; background:var(--primary); color:#fff; border:none; border-radius:50%; width:42px; height:42px; font-size:18px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.15); display:none; }
+.back-top.show { display:block; }
+
+/* 字体小标 */
+.tag { display:inline-block; font-size:11.5px; padding:1px 7px; border-radius:10px; background:#edf2f7; color:#4a5568; margin-right:4px; }
+.tag.green { background:#c6f6d5; color:#22543d; }
+.tag.gold { background:#feebc8; color:#7b341e; }
+.tag.purple { background:#e9d8fd; color:#44337a; }
+.tag.pink { background:#fed7e2; color:#97266d; }
+.tag.blue { background:#bee3f8; color:#2a4365; }
+.coach-grid { display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin:12px 0; }
+@media (max-width:760px) { .coach-grid { grid-template-columns: repeat(2, 1fr); } }
+.coach-item { background:#fff5f7; border:1px solid #fbb6ce; border-radius:8px; padding:10px; text-align:center; }
+.coach-item .c { font-size:24px; font-weight:700; color:#b83280; display:block; }
+.coach-item .cn { font-size:13px; color:#97266d; margin-top:2px; }
+.coach-item .en { font-size:10.5px; color:#a0aec0; margin-top:2px; }
+.matrix { display:grid; grid-template-columns: 70px 1fr 1fr; gap:6px; margin:14px 0; font-size:13.5px; }
+.matrix .cell { padding:10px 12px; border-radius:6px; }
+.matrix .h { background:#edf2f7; color:#2c5282; font-weight:600; text-align:center; }
+.matrix .q1 { background:#c6f6d5; }
+.matrix .q2 { background:#bee3f8; }
+.matrix .q3 { background:#feebc8; }
+.matrix .q4 { background:#fed7e2; }
+hr { border:none; border-top:1px dashed var(--line); margin:24px 0; }
+.footer-note { text-align:center; color:var(--muted); font-size:12.5px; padding:30px 0 10px; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- 侧边栏导航 -->
+  <aside class="sidebar">
+    <h1>《巅峰表现》<span class="sub"><span class="badge">五项准则</span>知识脑图导航</span></h1>
+    <nav>
+      <details class="nav-group" open>
+        <summary>导论</summary>
+        <ul class="nav-list">
+          <li><a class="l1" href="#intro">书籍概览</a></li>
+          <li><a class="l2" href="#ch1">第1章 业绩为先</a></li>
+        </ul>
+      </details>
+      <details class="nav-group">
+        <summary>准则一 · 建立认同感</summary>
+        <ul class="nav-list">
+          <li><a class="l1" href="#ch2">第2章 明确组织目标</a></li>
+          <li><a class="l2" href="#ch2-goal">为组织设定明确目标</a></li>
+          <li><a class="l2" href="#ch2-role">阐明领导角色</a></li>
+          <li><a class="l2" href="#ch2-kpi">绩效目标与考核</a></li>
+          <li><a class="l2" href="#ch2-employee">灵活界定员工角色</a></li>
+        </ul>
+      </details>
+      <details class="nav-group">
+        <summary>准则二 · 准备战斗</summary>
+        <ul class="nav-list">
+          <li><a class="l1" href="#ch3">第3章 配备工具/才干/技术</a></li>
+          <li><a class="l2" href="#ch3-plan">系统化计划</a></li>
+          <li><a class="l2" href="#ch3-staff">进行式人员配备</a></li>
+          <li><a class="l2" href="#ch3-train">即时培训与教育</a></li>
+          <li><a class="l2" href="#ch3-tool">提供关键工具与资源</a></li>
+        </ul>
+      </details>
+      <details class="nav-group">
+        <summary>准则三 · 增进绩效</summary>
+        <ul class="nav-list">
+          <li><a class="l1" href="#ch4">第4章 营造争创佳绩的氛围</a></li>
+          <li><a class="l2" href="#ch4-track">即时跟踪与评价</a></li>
+          <li><a class="l2" href="#ch4-motiv">激发主人翁意识</a></li>
+          <li><a class="l2" href="#ch4-coach">COACH五要素指导</a></li>
+          <li><a class="l2" href="#ch4-barrier">清除绩效障碍</a></li>
+        </ul>
+      </details>
+      <details class="nav-group">
+        <summary>准则四 · 培养人际关系</summary>
+        <ul class="nav-list">
+          <li><a class="l1" href="#ch5">第5章 架设通往成功之桥</a></li>
+          <li><a class="l2" href="#ch5-360">360度工作关系</a></li>
+          <li><a class="l2" href="#ch5-trust">令人信赖的领导力</a></li>
+          <li><a class="l2" href="#ch5-team">团队合作精神</a></li>
+          <li><a class="l2" href="#ch5-comm">有效沟通</a></li>
+        </ul>
+      </details>
+      <details class="nav-group">
+        <summary>准则五 · 不断更新</summary>
+        <ul class="nav-list">
+          <li><a class="l1" href="#ch6">第6章 保持音调和谐</a></li>
+          <li><a class="l2" href="#ch6-process">改进工作流程</a></li>
+          <li><a class="l2" href="#ch6-eval">员工评估和发展</a></li>
+          <li><a class="l2" href="#ch6-self">个人发展计划</a></li>
+          <li><a class="l2" href="#ch6-balance">工作生活平衡</a></li>
+        </ul>
+      </details>
+      <details class="nav-group">
+        <summary>后记与行动</summary>
+        <ul class="nav-list">
+          <li><a class="l1" href="#epi">后记 付诸行动</a></li>
+          <li><a class="l2" href="#epi-step">四大行动步骤</a></li>
+          <li><a class="l2" href="#epi-assess">业绩创造评估</a></li>
+        </ul>
+      </details>
+    </nav>
+  </aside>
+
+  <!-- 主内容 -->
+  <main class="main">
+    <div class="crumbs">首页 <span>›</span> 知识脑图 <span>›</span> 《巅峰表现》</div>
+
+    <div class="hero" id="intro">
+      <h2>《巅峰表现：如何实现高绩效的五项准则》</h2>
+      <div class="sub">Getting Results — Five Absolutes for High Performance</div>
+      <div class="meta">
+        <span><b>作者：</b>克林顿·O·朗格内克 & 杰克·L·西蒙内提</span>
+        <span><b>译者：</b>李鹏 & 魏红</span>
+        <span><b>出版社：</b>上海交通大学出版社 / Wiley</span>
+        <span><b>研究样本：</b>2000+名高绩效经理人，合计27,000+年管理经验</span>
+      </div>
+    </div>
+
+    <!-- ===== 第1章 业绩为先 ===== -->
+    <section class="chapter ch1" id="ch1">
+      <header>
+        <h2>第1章 · 业绩为先 <small>Results First —— 一切以成果为导向</small></h2>
+      </header>
+      <div class="body">
+        <h3>为什么业绩决定一切</h3>
+        <p>在21世纪竞争白热化的市场环境中，企业和组织正经历着前所未有的竞争压力。重视绩效改善在企业中表现为：各级经理人必须更加擅长于达成预期的成果，以使工作乃至职业生涯顺利发展。</p>
+        <div class="callout"><span class="label">核心发现</span>研究团队调查了全美5000名经理人，研究对象覆盖高层、中层和基层，范围涉及高科技、化工、健康护理、汽车、银行、金融服务、钢铁、零售、电信和运输业等所有主要行业。结果显示：<b>达成业绩目标永远是事业成功的首要因素和职业竞争的主题</b>。</p></div>
+
+        <h3>经理人对事业成功的10种代表性观点</h3>
+        <p>当被问到"如何保持并发展您的事业"时，经理们提出以下观点：</p>
+        <ul>
+          <li>确保实现最低目标</li>
+          <li>所有的一切都取决于您的人际关系和网络</li>
+          <li>您必须愿意付出代价</li>
+          <li>尽可能获取较多的跨部门工作经验</li>
+          <li>寻找一个导师为您指点事业迷津</li>
+          <li>多与杰出人物交朋友</li>
+          <li>不断进取，天天向上</li>
+          <li>优化系统和流程，使之运作顺畅</li>
+          <li>积极参与能引人关注的项目</li>
+          <li>面对复杂情况，能够并且敢于做出决策</li>
+        </ul>
+
+        <h3>创造业绩最重要的20个管理原则（表1.1）</h3>
+        <p>研究总结出的 20 项关键原则，按重要性排序：</p>
+        <ol>
+          <li>运用积极有效的沟通方法</li>
+          <li>身体力行，充分展示您的个性和才能</li>
+          <li>建立并维护一个清晰而富有意义的远景和使命</li>
+          <li>激励员工以发挥他们的主人翁精神和完成使命的责任感</li>
+          <li>向所有的员工阐明绩效期望</li>
+          <li>培养团队合作精神</li>
+          <li>建立明确而全面的绩效目标和方法</li>
+          <li>发展关键的工作协作关系</li>
+          <li>对员工进行即时培训和教育</li>
+          <li>制定恰当而周详的计划</li>
+          <li>及时清除绩效障碍</li>
+          <li>更新观念、发展自我</li>
+          <li>及时进行绩效反馈和指导</li>
+          <li>对组织的人员配备给予足够重视</li>
+          <li>阐明您作为一名经理的角色——创造价值</li>
+          <li>进行即时的绩效跟踪和评估</li>
+          <li>为员工提供完成任务所需要的资源</li>
+          <li>积极改进您的工作方法</li>
+          <li>进行建设性的工作绩效评估和人员培养</li>
+          <li>在工作和个人生活之间保持平衡</li>
+        </ol>
+
+        <div class="callout green"><span class="label">颠覆误区</span>研究推翻了两个长期误解：①"成果导向"等于"任务导向"——实际研究表明成果导向型经理人更倾向于员工导向；②"关心员工"等于"达成业绩"——单有爱心而无方法、不给资源同样难以获得预期成果。结论：<b>必须在员工导向与任务导向之间取得平衡，并更倾向于员工导向</b>。</div>
+
+        <h3>游戏规则：高绩效的五项准则</h3>
+        <p>上述 20 项原则可归结为 5 项准则，它们相互关联，缺一不可。经理们若想创造和保持高绩效，必须充分运用这五项准则：</p>
+
+        <div class="grid-2">
+          <div class="principle-banner"><h4>准则一 · 建立认同感</h4><p>明确组织目标：总览全局，为您自己和您的员工及组织建立一个目标，并时刻关注预期目标的达成。</p></div>
+          <div class="principle-banner ch2"><h4>准则二 · 准备战斗</h4><p>为团队配备工具、才干和技术：为企业配备高素质人员，开发有效企划手段，对员工进行现场培训。</p></div>
+          <div class="principle-banner ch3"><h4>准则三 · 增进绩效</h4><p>营造争创佳绩的氛围：创造一个评估绩效的良好氛围，进行即时评估和反馈，给员工以激励。</p></div>
+          <div class="principle-banner ch4"><h4>准则四 · 培养人际关系</h4><p>架设通往成功之桥：辨识、培养并维持良好人际关系，通过有效沟通建立值得信赖的领导关系。</p></div>
+          <div class="principle-banner ch5"><h4>准则五 · 不断更新</h4><p>保持音调和谐：不断提高和革新自己，改进工作方法，提升员工素质，并保持生活平衡。</p></div>
+          <div class="principle-banner ch6"><h4>系统整合观点</h4><p>五项准则必须连贯通融才能形成完整的高绩效管理系统。忽略任何一项都会使系统不完整，绩效势必受影响。</p></div>
+        </div>
+
+        <h3>业绩创造评估（工作表1.1）</h3>
+        <p>使用 1（从不）—5（一贯）的等级，对上述 20 项原则进行自我评估。任何得分低于 4 的项目就是您今后努力的方向。</p>
+        <div class="callout"><span class="label">方法</span>阅读完本书后再次评估，对比前后变化——这将帮助您制订一个工作绩效改善计划。</div>
+      </div>
+    </section>
+
+    <!-- ===== 第2章 准则一 ===== -->
+    <section class="chapter ch2" id="ch2">
+      <header>
+        <h2>第2章 · 准则一：建立认同感 —— 明确组织目标 <small>Principle 1: Build a Shared Identity</small></h2>
+      </header>
+      <div class="body">
+        <div class="quote">"如果您领导一个团队并正努力想达到目标，您最好让每个人都同唱一首歌，否则它将变成一曲哀乐。"</div>
+        <p>如果没有明确的方向感、界定明晰的目标和职责，任何工作团队——不论是小组、部门还是整个组织——都会发现他们自己忙于事务而没有取得任何成果。</p>
+
+        <h3>明确目标的四个关键方法</h3>
+        <ol>
+          <li><b>为组织设定明确的目标</b>——通过设定工作团队的首要目标和使命，使组织每一位成员在思想上保持一致。</li>
+          <li><b>阐明您在组织中的领导角色</b>——从上司、部属以及任何能提供有效支持的人那里获得信息。</li>
+          <li><b>形成富有意义的绩效目标和考核方法</b>——帮助团队形成清晰而富有意义的目标和考核方法。</li>
+          <li><b>灵活界定每位员工在组织中的角色</b>——使每位成员对自己的职责有清晰的概念。</li>
+        </ol>
+
+        <h3 class="method" id="ch2-goal">方法一：为您的组织设定明确的目标</h3>
+        <div class="law">拥有明确目标的工作团队，其绩效要超过那些没有明确使命的团队。</div>
+        <p>市场领先者之所以获得成功，是因为他们确立了清晰的使命：低成本、高品质或出色的客户服务——<b>三选一全力以赴，另外两项基本达标即可</b>。"只有瞄准一个目标全力以赴才能获得成功。"</p>
+
+        <h4>现场诊断：我们有明确的使命吗？</h4>
+        <ul>
+          <li>把一张公司名片递给一位得力部下，让他"在名片背面写出团队的使命"。</li>
+          <li>对不同的人，至少五次，看看您会有什么发现。</li>
+        </ul>
+
+        <h4>使命宣言五部曲</h4>
+        <div class="list-card">
+          <h5>① 与您的上司面谈</h5>
+          <div class="sub">征询三个问题：期望我们取得哪些具体成果？谁是顾客？哪些工作必须确保圆满完成？</div>
+        </div>
+        <div class="list-card">
+          <h5>② 起草初稿</h5>
+          <div class="sub">回答：我们的业务是什么？谁是顾客？什么应优先？哪些活动对成功至关重要？</div>
+        </div>
+        <div class="list-card">
+          <h5>③ 让核心员工检查草案</h5>
+          <div class="sub">讨论：这是我们的目标吗？符合实际吗？能否作为评估手段？如有辅导员参与将更有效。</div>
+        </div>
+        <div class="list-card">
+          <h5>④ 将宣言分发给员工</h5>
+          <div class="sub">注明使命由来、用途；让员工阅读并小组讨论；回答提问，辅以指导以形成认同感。</div>
+        </div>
+        <div class="list-card">
+          <h5>⑤ 检查反馈并最终定稿</h5>
+          <div class="sub">与核心成员检查反馈并完善；撰写清晰简明的使命宣言；分发到每一位成员手中。</div>
+        </div>
+
+        <h3 class="method" id="ch2-role">方法二：阐明您在组织中的领导角色</h3>
+        <p>通过回答三个问题来阐明角色：</p>
+        <ul>
+          <li>我的上司对我以及我的组织有何期望？</li>
+          <li>我的员工对我有何需求？</li>
+          <li>我必须做哪些能创造价值的工作以取得理想的成果？</li>
+        </ul>
+        <div class="callout green"><span class="label">实战技巧</span>制作一份"工作表现备忘录"：列明您需要为谁做什么、何时做。这一方法已为许多企业所采用：征求员工、同事和客户的意见——如何才能更好地为他们服务。</div>
+        <p>案例：某高科技计算机组装厂基层经理从"强壮的保姆"转变为计划者、教练和推进者。他们每日开工准备、班前会、班中跟踪、班后交接——形成完整工作表现备忘录。</p>
+
+        <h3 class="method" id="ch2-kpi">方法三：形成富有意义的绩效目标和考核方法</h3>
+        <p>绩效目标应具体、可衡量、有挑战性、相关且有时限。运用<b>平衡记分卡</b>从多个维度评估：财务、客户、内部流程、学习与成长。</p>
+        <div class="callout"><span class="label">步骤</span>① 明确哪些具体的绩效目标最为重要；② 决定如何评价这些目标；③ 把所有指标整合到一张平衡记分卡上；④ 与员工一起就目标达成共识。</div>
+
+        <h3 class="method" id="ch2-employee">方法四：灵活界定每位员工在组织中的角色</h3>
+        <h4>授权——阐明员工在工作中的角色</h4>
+        <p>关于授权的精确定义：<b>向下属分派和交付工作并给予他们完成工作所必须的权限的行为</b>。成果导向型领导的目标是：在恰当的时机将合适的工作交给合适的人，并配之以合适的资源和权限。</p>
+
+        <h4>与授权有关的三项活动</h4>
+        <div class="list-card">
+          <h5>① 明确职责</h5>
+          <div class="sub">通过有效沟通明确下属的责任、工作任务和目标，以此形成工作职责。</div>
+        </div>
+        <div class="list-card">
+          <h5>② 赋权</h5>
+          <div class="sub">确保下属具有履行职责所需的权力、许可、知识、信息和资源。</div>
+        </div>
+        <div class="list-card">
+          <h5>③ 建立成果责任制</h5>
+          <div class="sub">建立实时控制和反馈机制，以判断工作进展是否符合要求。</div>
+        </div>
+
+        <div class="callout gold"><span class="label">授权的三角关系</span>职责 + 赋权 + 成果责任制 = 完整授权。缺少任何一点，结构就将不复存在。大多数管理者的问题不是不知道授权，而是<b>没有花时间做到彻底和持续地执行这一过程</b>。</div>
+      </div>
+    </section>
+
+    <!-- ===== 第3章 准则二 ===== -->
+    <section class="chapter ch3" id="ch3">
+      <header>
+        <h2>第3章 · 准则二：准备战斗 —— 配备工具、才干和技术 <small>Principle 2: Prepare for Battle</small></h2>
+      </header>
+      <div class="body">
+        <div class="quote">"如果你们没有全力做好赛前准备，再多的呐喊也不能帮助你们赢得比赛……一切都基于充分的准备。" —— Division I 大学橄榄球教练</div>
+        <p>无备而战必然铩羽而归。每个组织都有不同的要求，但本项研究中的经理们总结出战前准备的四种主要方法。</p>
+
+        <h3>战前准备的四种方法</h3>
+        <div class="grid-2">
+          <div class="list-card"><h5>① 系统化计划</h5><div class="sub">在各个层次上开展系统化的计划活动，使突发事件和混乱无序成为例外而非惯例。</div></div>
+          <div class="list-card"><h5>② 进行式人员配备</h5><div class="sub">确保组织在恰当的时间，有具备合格技能的合适人选，担负相应的工作。</div></div>
+          <div class="list-card"><h5>③ 即时培训与教育</h5><div class="sub">确保所有员工都受过良好的培训和教育，能够胜任工作并具有商业思维。</div></div>
+          <div class="list-card"><h5>④ 提供关键工具与资源</h5><div class="sub">确保员工拥有完成工作所需的工具、设备、技术、信息和资源。</div></div>
+        </div>
+
+        <h3 class="method" id="ch3-plan">方法一：开发并运用系统而即时的计划方法</h3>
+        <div class="law">有效的计划工作对于成果导向型的领导者来说绝不是可有可无的，因为组织的快速发展比以往任何时候都需要系统化的前瞻性思考。</div>
+        <p>计划 = 举枪、瞄准、射击。现实中许多管理者在做的却是：<b>射击、准备、瞄准</b>——未经准备和瞄准就扣动扳机。</p>
+
+        <h4>计划方面要避免的八个常见错误</h4>
+        <ol>
+          <li>太忙或过于懒散而不去做计划</li>
+          <li>所做的计划与您在组织中所处的地位不相称</li>
+          <li>在尚未获得充分信息和上司意见的情况下做计划</li>
+          <li>在没有获得计划执行者意见的情况下闭门造车</li>
+          <li>制订的计划不切合实际或过于复杂而难以落实</li>
+          <li>未能贯彻执行计划</li>
+          <li>计划缺少精确数据</li>
+          <li>计划缺乏明确的方向或目的</li>
+        </ol>
+
+        <h4>提高计划有效性的方法</h4>
+        <ul>
+          <li>无论制定何种计划，首先考虑："什么是我们真正想追求的结果？"</li>
+          <li>辨识您所要制订计划的层次和类型</li>
+          <li>形成您自己的计划工作模型</li>
+          <li>确定您需要采取哪些行动来领导组织的计划工作以及何时行动</li>
+          <li>形成一个合理的计划工作周期</li>
+          <li>让核心员工参与计划的过程</li>
+          <li>保持自律——槟弃短浅目光，坚持将既定的计划贯彻执行下去</li>
+        </ul>
+
+        <h3 class="method" id="ch3-staff">方法二：实行进行式人员配备</h3>
+        <p>进行式人员配备包括：</p>
+        <ul>
+          <li>有效的人力资源规划</li>
+          <li>出色的人员甄别和筛选技巧</li>
+          <li>有效的工作进程安排</li>
+          <li>明确每位员工必须做什么、何时做、需要哪些支持</li>
+        </ul>
+        <div class="callout gold"><span class="label">忠告</span>如果缺乏人员配备上的提前规划与执行，您就会在"正确的时间把错误的人放在错误的岗位上"。<b>让合适的人上车，比让车开动起来更重要</b>。</div>
+
+        <h3 class="method" id="ch3-train">方法三：即时培训和教育</h3>
+        <p>培训不应被视为一次性事件，而应嵌入日常工作之中。培训内容应当包括：</p>
+        <ul>
+          <li>岗位核心技能（硬技能）</li>
+          <li>商业思维（让员工理解公司如何赚钱）</li>
+          <li>软技能（沟通、协作、解决问题）</li>
+          <li>领导力发展（高潜员工）</li>
+        </ul>
+        <p>一个有力的问题：<b>您希望所有的人都成功</b>——培训是表明这一态度的最好方式。</p>
+
+        <h3 class="method" id="ch3-tool">方法四：提供关键的工具、资金和物料</h3>
+        <p>没有工具，再优秀的员工也无法完成任务。管理者必须问自己：</p>
+        <ul>
+          <li>员工是否拥有完成任务所需的工具、设备？</li>
+          <li>信息系统是否真正帮助员工提升了效率？</li>
+          <li>关键物料、资金的供应是否稳定、及时？</li>
+          <li>工作环境是否支持高效率？</li>
+        </ul>
+        <div class="callout"><span class="label">调研发现</span>"他们工作很努力，为人也不错，但是作为一个管理团队他们养成了一些很不好的习惯，这从整体上影响了其组织和员工的绩效。"——一家未能做到有备而战的配送中心</div>
+      </div>
+    </section>
+
+    <!-- ===== 第4章 准则三 ===== -->
+    <section class="chapter ch4" id="ch4">
+      <header>
+        <h2>第4章 · 准则三：增进绩效 —— 营造争创佳绩的氛围 <small>Principle 3: Boost Performance</small></h2>
+      </header>
+      <div class="body">
+        <p>一旦计划就绪、人员培训到位并配之以绩效工具后，管理者就必须通过营造一个追求成果的氛围以增进绩效。经理们总结了四种方法。</p>
+
+        <h3>增进绩效的四种方法</h3>
+        <ol>
+          <li>即时跟踪和评价绩效（洞悉现况）</li>
+          <li>激发员工主人翁意识和成果责任感</li>
+          <li>即时反馈与指导（COACH 教练角色）</li>
+          <li>清除绩效障碍</li>
+        </ol>
+
+        <h3 class="method" id="ch4-track">方法一：即时跟踪和评价绩效</h3>
+        <div class="law">为了使领导更有效，您必须随时了解组织的营运状况。</div>
+        <p>如今经理们被淹没在各种信息和数据中——"超载"。但获取信息并不必然意味着真正了解组织现在的营运状况（"洞悉现况"）。在运作出色的组织中，管理者与团队和员工保持紧密联系，了解现在工作的进展情况，利用精确、真实的信息指导行动。</p>
+        <p>反观陷入困境的企业，管理者经常被指责为"一无所知"、"脱离实际"、"闭门造车"、"蒙在鼓里"、"孤陋寡闻"。</p>
+
+        <h4>现场诊断：您洞悉现状吗？</h4>
+        <p>用工作表 4.1 自测：每天/每周/每月/每季/每年，您分别在多大程度上考察员工和团队的绩效表现、绩效目标和指标？</p>
+
+        <h3 class="method" id="ch4-motiv">方法二：激发主人翁意识和成果责任感</h3>
+        <p>激励的定义：<b>当某种努力能够满足人们的某个重要需求时，他们就愿意付出这种努力</b>。挫伤员工的积极性远比激发他们的工作热情容易得多。</p>
+
+        <h4>提升对业绩的主人翁意识的方法</h4>
+        <ul>
+          <li>与每位员工发展一种私人关系，以便了解他们的长处和短处</li>
+          <li>通过有效的授权阐明员工的职责</li>
+          <li>确保员工受过良好的培训并拥有完成任务所需的工具</li>
+          <li>确保员工拥有决策（这会影响其绩效）所需的权限和信息</li>
+          <li>让员工参与那些关系他们切身利益的决策</li>
+          <li>善于倾听，当问题发生时，鼓励员工参与讨论</li>
+          <li>实行"开卷管理"，经常与员工就目标、计划、绩效反馈沟通</li>
+          <li>将绩效与报酬及其他激励措施挂钩</li>
+          <li>给员工以个人发展和增进技能与才干的机会</li>
+          <li>庆贺胜利，因为员工都希望自己是成功企业的一分子</li>
+        </ul>
+
+        <h4>激发对成果的责任感的方法</h4>
+        <ul>
+          <li>阐明职责和目标之后，建立既富挑战性又符合实际的绩效标准</li>
+          <li>向员工提供全面、即时的绩效反馈</li>
+          <li>即时指导员工如何提高绩效</li>
+          <li>对那些无所事事、损害团队绩效和士气的员工采取措施</li>
+        </ul>
+
+        <h3 class="method" id="ch4-coach">方法三：给予即时反馈与指导 —— COACH 五要素</h3>
+        <p>真正的指导并非仅仅指提供反馈。著名的舒拉和布兰查德总结出指导的五个要素：</p>
+        <div class="coach-grid">
+          <div class="coach-item"><span class="c">C</span><div class="cn">关心</div><div class="en">Concern</div></div>
+          <div class="coach-item"><span class="c">O</span><div class="cn">观察</div><div class="en">Observation</div></div>
+          <div class="coach-item"><span class="c">A</span><div class="cn">建立认同</div><div class="en">Alignment</div></div>
+          <div class="coach-item"><span class="c">C</span><div class="cn">沟通</div><div class="en">Communication</div></div>
+          <div class="coach-item"><span class="c">H</span><div class="cn">帮助</div><div class="en">Help</div></div>
+        </div>
+        <p>指导的目的在于：<b>在提升员工自身素质的同时改善他们的绩效</b>。</p>
+
+        <h4>绩效等式</h4>
+        <div class="callout purple"><span class="label">核心公式</span><b>绩效 = 能力 × 动机 × 支持</b>。作为一名教练，必须同时关注这三个方面。如果绩效不尽如人意，先检查支持，再考察能力和激励。</div>
+
+        <h4>员工能力—激励矩阵（图4.3）</h4>
+        <div class="matrix">
+          <div class="cell h"></div>
+          <div class="cell h">高激励</div>
+          <div class="cell h">低激励</div>
+          <div class="cell h">高能力</div>
+          <div class="cell q1"><b>类型1：梦幻员工</b><br>教练作为激励者——别以为一切理所当然，肯定他们的成绩</div>
+          <div class="cell q3"><b>类型3：后进员工</b><br>教练作为培养者——重点恢复信心和动力</div>
+          <div class="cell h">低能力</div>
+          <div class="cell q2"><b>类型2：成长型员工</b><br>教练作为培训者——给任务、给支持、给资源</div>
+          <div class="cell q4"><b>类型4：不改进就离开</b><br>教练作为奇迹创造者——明确改进期或请其离开</div>
+        </div>
+
+        <h3 class="method" id="ch4-barrier">方法四：清除绩效障碍</h3>
+        <div class="law">如果管理者能一贯坚持清除绩效障碍，就能使员工更容易地完成任务并取得理想的效果。</div>
+        <p>绩效障碍：任何阻碍或损害个人或团队达成预期目标能力的东西。尽管有些障碍（资本成本、劳动力短缺、政府报表、通货膨胀等）管理者无能为力，本节关注的是管理者可以清除（却由于某种原因而未能如愿）的障碍。</p>
+
+        <h4>某银行副总裁列出的现实障碍</h4>
+        <ul>
+          <li>人事政策缺乏吸引力，难以留住顶尖人才</li>
+          <li>先进的技术带来了全新信息系统，但引发了许多问题</li>
+          <li>一线经理不能有效监督几个主要分行的客户服务代表</li>
+          <li>公司和分行未能就借贷流程进行有效沟通与合作</li>
+          <li>零售信贷经理和商业信贷经理在内部开展竞争</li>
+          <li>出纳员流失严重，缺乏有效的留人办法</li>
+          <li>几个重要的分行之间沟通不畅</li>
+          <li>员工手册和相关政策已不合时宜</li>
+          <li>现时的一线经理发展计划效果不佳</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== 第5章 准则四 ===== -->
+    <section class="chapter ch5" id="ch5">
+      <header>
+        <h2>第5章 · 准则四：架设通往成功之桥 —— 培养人际关系 <small>Principle 4: Build the Bridge to Success</small></h2>
+      </header>
+      <div class="body">
+        <div class="quote">"我的第一位老板告诉我：作为一名经理人，要么与您取得业绩所需要的员工建立良好的工作关系，否则就无异于毁了这种关系。"</div>
+        <p>人际关系是所有绩效管理活动的"软基础"。没有良好的人际关系，准则一至三的执行效果会大打折扣。</p>
+
+        <h3>培养人际关系的四种方法</h3>
+        <ol>
+          <li>形成有效的 360 度工作关系</li>
+          <li>展现令人信赖的领导能力</li>
+          <li>培养团队合作精神</li>
+          <li>进行有效沟通</li>
+        </ol>
+
+        <h3 class="method" id="ch5-360">方法一：形成有效的 360 度工作关系</h3>
+        <div class="law">成果导向型经理人会与所有对实现业绩目标起重要作用的员工建立有效的 360 度工作关系，并不断保持这种关系的有效性。</div>
+        <p>现代组织的基本原则之一是系统思维：组织是复杂系统，由许多子系统构成。管理者必须了解和掌握系统各组成部分之间的相互作用和相互依赖关系。</p>
+
+        <h4>3R 教育的局限</h4>
+        <p>传统教育注重 Reading（阅读）、Writing（写作）、Arithmetic（计算）——但在第 4 个 R——<b>人际关系（Relationships）</b>方面的正规培训却少得可怜。整个课程安排中只有不到 5% 是针对如何掌握有效共事技能而设计的。</p>
+
+        <h4>损害工作关系的愚蠢行为</h4>
+        <ul>
+          <li>在公众场合贬低员工</li>
+          <li>成功时争荣誉，失败时推责任</li>
+          <li>不尊重和蔑视员工</li>
+          <li>玩弄权术</li>
+          <li>说谎和不诚实</li>
+          <li>自认为"永远正确"并好无理争辩</li>
+          <li>高高在上，从不听取下面的意见</li>
+          <li>道听途说，散布谣言</li>
+          <li>行为多变，喜怒无常</li>
+          <li>事事"以我为先"，不顾别人</li>
+        </ul>
+        <p>所有这些的共同点：<b>它们不是激发而是挫伤了员工的工作热情</b>。</p>
+
+        <h3 class="method" id="ch5-trust">方法二：展现令人信赖的领导能力</h3>
+        <div class="law">在培养令人信赖的领导能力以增进长期成功的过程中，没有任何东西可以替代个人素质和品格。</div>
+        <p>领导能力 = 影响和激发他人完成目标的能力。管理者如何使得员工追随他们？这是必须回答的重要问题——如果身处管理岗位却无人追随，那实际上您是在单干。</p>
+
+        <h4>令人信赖的领导两大要素</h4>
+        <ol>
+          <li><b>能力</b>：您具备履行职务所需的各种技能吗？您是否在运用您的技能帮助您的员工完成任务？您的领导风格适应每个员工的需要吗？</li>
+          <li><b>品格</b>：您信守诺言吗？您尊重每一位员工吗？您在对待员工时是否将心比心？您的员工在"任何事上"都能信任您吗？</li>
+        </ol>
+
+        <h4>员工愿意追随您的理由</h4>
+        <div class="grid-2">
+          <div class="list-card"><h5>价值贡献</h5><div class="sub">您能时刻清楚自己所处的位置；我清楚我们的目标；我能为您的事业发展提供帮助。</div></div>
+          <div class="list-card"><h5>支持承诺</h5><div class="sub">我会帮助您实现您的目标；我会向您提供完成任务所需的资源；您有立足之地。</div></div>
+          <div class="list-card"><h5>共事氛围</h5><div class="sub">我将把我所知道的全部东西悉数传授给您；我会倾听您的意见；我会尽量使工作充满乐趣。</div></div>
+          <div class="list-card"><h5>协作共赢</h5><div class="sub">我们将共同努力完成任务；您的成功需要我的帮助；我将把我所知道的全部东西悉数传授给您。</div></div>
+        </div>
+
+        <h3 class="method" id="ch5-team">方法三：培养团队合作精神</h3>
+        <h4>工作组 vs. 团队</h4>
+        <ul>
+          <li><b>工作群体</b>：一批具有共同目标的人的集合</li>
+          <li><b>团队</b>：一群致力于运用明确方法、手段去达成具体目标的人，他们具有高度参与性和协作性</li>
+        </ul>
+        <div class="callout purple"><span class="label">关键洞察</span>协作本身不是目标，而是一种在运用得当的情况下有助于目标达成的方法。仅仅把一群人称作"团队"并不必然意味着团队合作的形成。</div>
+
+        <h4>促进团队合作的12+1 项实践（工作表5.3 节选）</h4>
+        <ol>
+          <li>我的工作团队有一个为全体成员所理解的明确使命</li>
+          <li>员工有明确的职责和绩效标准，并为其他员工所理解</li>
+          <li>员工致力于达成工作团队目标</li>
+          <li>员工有完成任务所需的信息</li>
+          <li>员工能及时了解那些会影响到他们的问题并能发表自己的见解</li>
+          <li>我们作为一个团队来培训</li>
+          <li>员工积极参与计划过程</li>
+          <li>员工觉得他们在决策和问题解决的过程中能提供自己的意见</li>
+          <li>员工经常就业务问题展开讨论</li>
+          <li>团队定期审视工作流程以提高效率</li>
+          <li>团队与团队之间能开展富有成效的合作</li>
+          <li>团队能获得完成工作所需的各种资源和支持</li>
+          <li><b>领导不力</b>——既破坏了协作又损害了绩效</li>
+        </ol>
+
+        <h3 class="method" id="ch5-comm">方法四：进行有效沟通</h3>
+        <div class="law">在商业领域，良好的工作关系、令人信赖的领导以及基于员工需求的有效沟通三者结合，才能使员工相互合作实现目标。</div>
+
+        <h4>沟通机会的清单</h4>
+        <ul>
+          <li>日常的非正式单独交往</li>
+          <li>正式场合的单独沟通，如绩效回顾和指导过程</li>
+          <li>员工大会</li>
+          <li>正式的报告和讨论</li>
+          <li>电子邮件</li>
+          <li>电话交流</li>
+          <li>私人通信</li>
+          <li>经营系统报告</li>
+          <li>团队计划及难题攻关会</li>
+          <li>通过机械或电子的方法公布信息</li>
+        </ul>
+
+        <h4>系统沟通五要素</h4>
+        <ol>
+          <li><b>需求</b>：员工需要了解哪些具体信息以便有效地开展工作？</li>
+          <li><b>重要性</b>：所沟通的信息是"必须了解的"还是可有可无的？</li>
+          <li><b>手段</b>：在某一特定场合，采用哪些手段最为合适？</li>
+          <li><b>频率</b>：对于某些特别的问题，我们需要多久沟通一次？</li>
+          <li><b>有效性</b>：我们如何才能确保切实满足了员工的沟通需求？</li>
+        </ol>
+
+        <div class="callout"><span class="label">KISS 法则</span>Keep It Short and Simple —— 力求简洁易懂。沟通时要针对主题，并采用深入浅出和对方易于理解的方式。</div>
+      </div>
+    </section>
+
+    <!-- ===== 第6章 准则五 ===== -->
+    <section class="chapter ch6" id="ch6">
+      <header>
+        <h2>第6章 · 准则五：保持音调和谐 —— 不断更新与发展 <small>Principle 5: Stay in Tune — Continuous Renewal</small></h2>
+      </header>
+      <div class="body">
+        <div class="quote">"我工作中最令人激动和沮丧的一个部分就是保持正确的前进方向。就在一切都进展顺利之时，事情发生了变化，这时我们就必须做出调整。我的工作就是保持音调和谐，这样我们才能够演奏出顾客和股东们所喜爱的音乐。" —— 某银行 CEO</div>
+        <p>为了取得成功和提高生产率，不论是组织还是管理者都必须坚持滚动式发展。本章聚焦面向业绩的更新和发展，关注四个关键问题：</p>
+        <ol>
+          <li>改进工作流程</li>
+          <li>员工评估和发展</li>
+          <li>管理者自身的发展</li>
+          <li>创造并维持工作与生活的平衡</li>
+        </ol>
+
+        <h3 class="method" id="ch6-process">方法一：积极改进工作流程</h3>
+        <p>持续改进对组织而言既是目标又是过程。评估一个流程的关键问题：</p>
+        <ul>
+          <li>这个流程有助于我们达成期望成果吗？</li>
+          <li>这个流程记录准确吗？</li>
+          <li>这个流程是否得到了严格执行？</li>
+          <li>这个流程是否得到了系统地评估？</li>
+          <li>所有运用这个流程的人都能正确理解它吗？</li>
+          <li>这一流程需要进一步改善吗？</li>
+        </ul>
+        <div class="law">如果您不能评估一个事物，您就不能控制它；如果您不能控制它，您就不能管理它；如果您不能管理它，您就不能改善它。</div>
+
+        <h4>建立流程改善小组的指导原则</h4>
+        <ul>
+          <li>根据员工的专长、可信度、性格、气质以及与组织的关联度等挑选组员</li>
+          <li>给小组一个明确的任务——致力于改善——并允许他们定期开会</li>
+          <li>在团队动力和技术、与流程有关的技能方面给予恰当的引导和培训</li>
+          <li>授予小组决策权，但要有一定的限制</li>
+          <li>鼓励小组采用有效的分析手段和流程改善技术</li>
+          <li>定期向经理和员工们通报小组的活动、建议和行动</li>
+          <li>及时肯定成绩，以强化期望成果</li>
+          <li>把参加小组工作作为培养员工和经理的一个手段</li>
+        </ul>
+
+        <h3 class="method" id="ch6-eval">方法二：员工评估和发展</h3>
+        <p>正式绩效评估流程（见图6.2）：明确评估目标 → 有效的绩效计划 → 员工绩效 → 即时评估与反馈 → 员工自我评估意见 → 正式书面评估 → 正式绩效回顾面谈 → 跟进发展活动。</p>
+
+        <h4>导致正式评估无效的因素</h4>
+        <ul>
+          <li>管理者不重视这个过程</li>
+          <li>绩效标准不明确或主观臆断</li>
+          <li>管理者对下属的绩效情况没有充分了解</li>
+          <li>缺乏即时的绩效反馈</li>
+          <li>管理者缺乏真诚、诚实和信任</li>
+          <li>管理者没有准备</li>
+          <li>对员工发展问题的讨论没有成效</li>
+          <li>管理者缺乏实施评估的技能</li>
+          <li>过多的批评和否定</li>
+          <li>语言表述含混不清</li>
+        </ul>
+
+        <h3 class="method" id="ch6-self">方法三：制订一个绩效改善计划</h3>
+        <p>对自我发展负责：确定一个清晰的行动计划以改善当前的绩效，并为将来发展打下坚实的基础。</p>
+
+        <h4>管理开发的现状</h4>
+        <ul>
+          <li>经理们很少获得上司的指示，指导他们如何阐明增值角色</li>
+          <li>经理们在如何改善绩效方面很少得到上司的反馈和指导</li>
+          <li>管理评估的质量不像下级经理期望的那么理想</li>
+          <li>在没有危机的情况下很少讨论管理风格</li>
+          <li>大多数经理没有一个定期会面并保持良好关系的导师</li>
+          <li>在管理开发方面，通常过多依赖管理教育和研讨会等形式</li>
+          <li>许多经理在绩效改善和为下一步发展准备方面缺乏完善成熟的发展计划</li>
+          <li>许多经理倾向于等待企业帮助他们发展技能</li>
+        </ul>
+
+        <h4>个人发展计划的建议</h4>
+        <ol>
+          <li>必须清晰地阐明您在组织中的增值作用——一名帮助其他员工有效改善绩效的管理者</li>
+          <li>全程跟踪您的个人绩效和您工作团队的绩效指标</li>
+          <li>如有可能，寻求 360 度反馈</li>
+          <li>与您的老板一起合作，每年至少一次结构化的正式绩效评估</li>
+          <li>制订一个一年和三年的发展计划</li>
+          <li>与一个您信赖的人发展一种师徒关系</li>
+          <li>寻求交叉培训和更多接触客户的机会</li>
+          <li>指导一个更为年轻的经理</li>
+          <li>利用正式的培训课程来磨炼您的技能</li>
+          <li>利用书籍、录像带、录音带、自我评估工具、网上资源等增进持续学习</li>
+        </ol>
+
+        <div class="callout purple"><span class="label">自我提醒</span>所有的一切都从辨识对创造业绩影响最大的工作职能开始，然后才是发展和提高有效履行这些职能所需要的技能。<b>最终没有人会像您自己那样关心您的职业发展。没有人会！</b></div>
+
+        <h3 class="method" id="ch6-balance">方法四：创造并维持工作与生活的平衡</h3>
+        <div class="law">真正关注全面长期发展的经理人会创造和维持事业与生活的平衡，以获得切实持久的成功。</div>
+        <p>压力管理通常是被动的，而创造和维持平衡是积极的。在急剧变化、多任务处理和充满压力的环境中，这是一个艰巨的挑战，但又是必须成功应对的挑战。</p>
+
+        <h4>规划个人生活的 8 个领域（工作表6.2）</h4>
+        <div class="grid-2">
+          <div class="list-card"><h5>① 婚姻和家庭关系</h5><div class="sub">建立健康的亲密关系，分配家庭时间。</div></div>
+          <div class="list-card"><h5>② 养育子女</h5><div class="sub">深度陪伴孩子成长，参与他们的教育与人生重要时刻。</div></div>
+          <div class="list-card"><h5>③ 社交生活</h5><div class="sub">维护友谊，拓展有意义的社会网络。</div></div>
+          <div class="list-card"><h5>④ 身体健康</h5><div class="sub">规律运动、定期体检、合理饮食。</div></div>
+          <div class="list-card"><h5>⑤ 智力发展</h5><div class="sub">持续学习，保持好奇心和阅读习惯。</div></div>
+          <div class="list-card"><h5>⑥ 休闲</h5><div class="sub">培养兴趣爱好，定期度假放松。</div></div>
+          <div class="list-card"><h5>⑦ 兴趣爱好</h5><div class="sub">发展与工作无关的激情与技能。</div></div>
+          <div class="list-card"><h5>⑧ 精神生活</h5><div class="sub">寻找生命的意义和价值感，建立内心平静。</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 后记 付诸行动 ===== -->
+    <section class="chapter epi" id="epi">
+      <header>
+        <h2>后记 · 付诸行动 <small>Epilogue: Putting It Into Action</small></h2>
+      </header>
+      <div class="body">
+        <h3>高绩效的"橄榄球哲学"</h3>
+        <p>世界冠军格林·贝·派克斯的杰出天才教练文斯·朗巴德，在每个赛季训练营开始时总要手里举着一个橄榄球对大家说："先生们，这是一个橄榄球。"他强调：<b>如果我们能在跑动、挡球、投球和接球方面比我们的对手做得更好，我们就能取得胜利</b>。克莱斯勒前任 CEO 李·艾柯卡也表达过类似观点："当我卸任之时，我想我唯一能够带走的，就是一些基本规律。"</p>
+
+        <h3 id="epi-step">改善绩效的四大行动步骤</h3>
+        <ol>
+          <li><b>一切从目标和成果出发。</b>辨识您和您的员工获得成功所需的成果的种类和层次。决定去哪里（目标）是决定如何到达（方法）的前提。</li>
+          <li><b>建立一个对于获得所需成果至关重要的准则模型。</b>一旦明确了所期望的成果，辨识和建立一个达到目标所不可或缺的实践运转模型。</li>
+          <li><b>辨识对于成功最为重要的做法。</b>将这些做法构建成一个高绩效的模型——您必须加以实践和不断优化。向自己提一个简单的问题：如果我不能有效地实施这些做法，我的绩效将会如何？</li>
+          <li><b>开发贯彻实施高绩效准则所需的才能。</b>分析自己在改善绩效所需的知识、技能和态度方面具有哪些优势，以及存在哪些不足。</li>
+        </ol>
+
+        <h3>成功准则的四个共同点</h3>
+        <div class="grid-2">
+          <div class="list-card"><h5>① 无时不在</h5><div class="sub">它们持续存在于日常工作的每一个时刻。</div></div>
+          <div class="list-card"><h5>② 相互联系</h5><div class="sub">它们针对大量相互联系的取得高绩效所必需的需求。</div></div>
+          <div class="list-card"><h5>③ 可控因素</h5><div class="sub">它们都是可控的因素，能够为每一个经理人的行动和行为所影响。</div></div>
+          <div class="list-card"><h5>④ 不间断实施</h5><div class="sub">它们的实施必须是不间断的，并需要勤奋、责任和热情。</div></div>
+        </div>
+
+        <h3 id="epi-assess">业绩创造评估（再测）</h3>
+        <p>使用 1（从不）—5（一贯）的等级，再做一遍评估，看看您在阅读本书后对这些做法的观点有何变化：</p>
+        <table>
+          <thead><tr><th>#</th><th>我做得如何</th><th>评分 (1-5)</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>进行有效的沟通以达成相互理解？</td><td></td></tr>
+            <tr><td>2</td><td>在工作中以身作则，展现出应有的素质和品格？</td><td></td></tr>
+            <tr><td>3</td><td>对于我所领导的团队具有清晰的远景和明确的使命？</td><td></td></tr>
+            <tr><td>4</td><td>令员工有责任感并激励他们提高绩效？</td><td></td></tr>
+            <tr><td>5</td><td>向所有员工阐明绩效期望？</td><td></td></tr>
+            <tr><td>6</td><td>在那些需要相互帮助以共创业绩的员工中培养团队合作精神？</td><td></td></tr>
+            <tr><td>7</td><td>用明确的、平衡的绩效指标体系来评价绩效？</td><td></td></tr>
+            <tr><td>8</td><td>不断致力于发展和培养重要的工作关系？</td><td></td></tr>
+            <tr><td>9</td><td>确保员工受到良好的培训和教育以创造业绩？</td><td></td></tr>
+            <tr><td>10</td><td>进行适当的、有系统的计划活动？</td><td></td></tr>
+            <tr><td>11</td><td>致力于迅速清除影响成果达成的绩效障碍？</td><td></td></tr>
+            <tr><td>12</td><td>自己不断学习和掌握有效开展工作所必需的最新技能？</td><td></td></tr>
+            <tr><td>13</td><td>向员工提供即时的绩效反馈和工作指导？</td><td></td></tr>
+            <tr><td>14</td><td>对企业中的人员配置问题给予高度重视？</td><td></td></tr>
+            <tr><td>15</td><td>积极阐明自身在组织中的增值角色？</td><td></td></tr>
+            <tr><td>16</td><td>定期跟踪和评价营运绩效？</td><td></td></tr>
+            <tr><td>17</td><td>确保员工拥有履行职务所需的技能和资源？</td><td></td></tr>
+            <tr><td>18</td><td>有能够即时改善流程的良好机制？</td><td></td></tr>
+            <tr><td>19</td><td>对员工的绩效进行积极的评价并为他们制订发展计划？</td><td></td></tr>
+            <tr><td>20</td><td>致力于保持生活各方面的平衡？</td><td></td></tr>
+          </tbody>
+        </table>
+        <div class="callout"><span class="label">评估准则</span>若以上任何一个问题您的得分低于 4 分，那么这就是您今后努力的方向，它有助于提高您的个人绩效和管理习惯，以获取更佳业绩。</div>
+
+        <h3>最后的自问</h3>
+        <ul>
+          <li>我清楚地知道获得成功需要哪些成果吗？</li>
+          <li>我是否已经开发并实施了一个最适合当前成功运营需要的准则模型？</li>
+          <li>我目前是否具备有效贯彻这些做法的技能和知识？</li>
+        </ul>
+
+        <div class="callout green"><span class="label">时不我待</span>事情变得越来越复杂——但不要因此不知所措。<b>这些准则是您事业成功之母</b>。如果您真想改善您的绩效，获得更理想的成果，您就必须全情投入制订一个行动计划，着眼于提高您的基本技能。</div>
+      </div>
+    </section>
+
+    <div class="footer-note">本知识脑图根据《巅峰表现：如何实现高绩效的五项准则》（克林顿·O·朗格内克 & 杰克·L·西蒙内提 著）整理 · 仅供学习参考</div>
+  </main>
+</div>
+<button class="back-top" id="backTop" title="返回顶部">↑</button>
+<script>
+  // 导航折叠：默认全部折叠
+  document.querySelectorAll('details.nav-group').forEach(d => { d.open = false; });
+  // 第一个保留打开（导论）
+  const firstGroup = document.querySelector('details.nav-group');
+  if (firstGroup) firstGroup.open = true;
+
+  // 平滑滚动到锚点
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) { e.preventDefault(); t.scrollIntoView({behavior:'smooth', block:'start'}); }
+    });
+  });
+
+  // 返回顶部
+  const btn = document.getElementById('backTop');
+  window.addEventListener('scroll', () => { btn.classList.toggle('show', window.scrollY > 400); });
+  btn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+</script>
+</body>
+</html>
