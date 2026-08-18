@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>《精力管理》知识脑图</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f5f6fa;
+  --panel: #ffffff;
+  --panel-2: #fafbff;
+  --border: #e3e6ef;
+  --text: #1f2330;
+  --text-soft: #4a4f63;
+  --muted: #6b7080;
+  --accent: #3b5bdb;
+  --accent-soft: #dbe4ff;
+  --tag-1: #e7f5ff;
+  --tag-2: #fff4e6;
+  --tag-3: #e6fcf5;
+  --tag-4: #f3f0ff;
+  --tag-5: #fff0f6;
+  --tag-6: #f8f0e3;
+  --shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 6px 18px rgba(15, 23, 42, .06);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 100vh;
+}
+
+aside.toc {
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  padding: 24px 18px 60px 18px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.toc h1 {
+  font-size: 18px;
+  margin: 0 0 6px 0;
+  color: var(--accent);
+  letter-spacing: .5px;
+}
+
+.toc .subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc li {
+  margin: 0;
+}
+
+.toc details {
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+
+.toc details > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+  transition: background .15s;
+}
+
+.toc details > summary:hover {
+  background: var(--accent-soft);
+}
+
+.toc details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.toc details > summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 14px;
+  color: var(--accent);
+  font-size: 11px;
+  transition: transform .15s;
+  flex-shrink: 0;
+}
+
+.toc details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.toc .level-1 > details > summary {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.toc .level-2 > details > summary {
+  font-weight: 500;
+  color: var(--text-soft);
+  padding-left: 22px;
+  font-size: 13px;
+}
+
+.toc a {
+  display: block;
+  text-decoration: none;
+  color: var(--text-soft);
+  padding: 5px 10px 5px 36px;
+  font-size: 12.5px;
+  border-radius: 6px;
+  transition: background .15s, color .15s;
+}
+
+.toc a:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.toc .actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 6px;
+}
+
+.toc .actions button {
+  flex: 1;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 7px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+
+.toc .actions button:hover { opacity: .85; }
+.toc .actions button.secondary { background: #e9ecef; color: var(--text); }
+
+main.content {
+  padding: 36px 48px 80px 48px;
+  max-width: 1100px;
+}
+
+.cover {
+  background: linear-gradient(135deg, #3b5bdb 0%, #5c7cfa 100%);
+  color: #fff;
+  padding: 36px 40px;
+  border-radius: 14px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+
+.cover .badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, .18);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+.cover h1 {
+  font-size: 28px;
+  margin: 0 0 8px 0;
+  font-weight: 700;
+}
+
+.cover .sub {
+  font-size: 14px;
+  opacity: .9;
+  margin: 0 0 18px 0;
+}
+
+.cover .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 26px;
+  font-size: 13px;
+  opacity: .92;
+}
+
+.cover .meta span::before {
+  content: "•";
+  margin-right: 6px;
+  opacity: .6;
+}
+
+.cover .meta span:first-child::before { content: ""; margin: 0; }
+
+.intro {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 26px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+
+.intro h2 {
+  margin: 0 0 10px 0;
+  font-size: 17px;
+  color: var(--accent);
+}
+
+.intro p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14px;
+}
+
+section.part {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.part-header {
+  padding: 18px 24px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.part-header .tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.part-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.part-header .desc {
+  color: var(--muted);
+  font-size: 12.5px;
+  margin-left: auto;
+}
+
+.chapter {
+  border-top: 1px solid var(--border);
+  padding: 22px 26px 22px 26px;
+}
+
+.chapter:first-child { border-top: none; }
+
+.chapter-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.chapter-title .num {
+  font-size: 12px;
+  color: #fff;
+  background: var(--accent);
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.chapter-title h3 {
+  margin: 0;
+  font-size: 16.5px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.chapter-title .sub {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: italic;
+  margin-left: 4px;
+}
+
+.chapter > p.lead {
+  margin: 0 0 12px 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.section {
+  margin: 14px 0 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+  background: var(--panel-2);
+}
+
+.section-title {
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 14px;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-title .dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.section ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.section li {
+  margin: 4px 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+}
+
+.section li strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.kpi {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.kpi .k-title {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.kpi .k-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.principle-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.principle {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.principle .p-title {
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.principle .p-body {
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.callout {
+  margin: 12px 0 0 0;
+  padding: 12px 14px;
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 8px;
+  color: #5a4500;
+  font-size: 13.5px;
+}
+
+.callout .c-title {
+  font-weight: 600;
+  color: #b58a00;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.callout ul { padding-left: 18px; margin: 4px 0 0 0; }
+.callout li { margin: 2px 0; }
+
+.quote {
+  background: #f1f3f5;
+  border-left: 3px solid var(--accent);
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-style: italic;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  border-radius: 0 6px 6px 0;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 0 0;
+}
+
+.tab {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12.5px;
+  color: var(--text-soft);
+}
+
+.tag-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 0 0;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 11.5px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--tag-1);
+  color: #1864ab;
+  border: 1px solid #d0ebff;
+}
+
+.tag.t2 { background: var(--tag-2); color: #d9480f; border-color: #ffd8a8; }
+.tag.t3 { background: var(--tag-3); color: #0b7285; border-color: #c3fae8; }
+.tag.t4 { background: var(--tag-4); color: #5f3dc4; border-color: #d0bfff; }
+.tag.t5 { background: var(--tag-5); color: #c2255c; border-color: #fcc2d7; }
+.tag.t6 { background: var(--tag-6); color: #8a6300; border-color: #ffe1a3; }
+
+footer.foot {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 30px 0 0 0;
+}
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  aside.toc { position: relative; height: auto; max-height: 60vh; }
+  main.content { padding: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ============== 左侧目录导航 ============== -->
+  <aside class="toc">
+    <h1>《精力管理》</h1>
+    <div class="subtitle">知识脑图 · 目录导航</div>
+
+    <div class="actions">
+      <button onclick="document.querySelectorAll('aside.toc details').forEach(d=>d.open=true)">展开全部</button>
+      <button class="secondary" onclick="document.querySelectorAll('aside.toc details').forEach(d=>d.open=false)">折叠全部</button>
+    </div>
+
+    <ul class="level-1">
+      <li>
+        <details>
+          <summary>导览：核心思想</summary>
+          <ul class="level-2">
+            <li><a href="#intro">导言与核心理念</a></li>
+            <li><a href="#principles">精力管理四原则</a></li>
+            <li><a href="#steps">管理精力的三个步骤</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>第一部分 · 如何做到全情投入</summary>
+          <ul class="level-2">
+            <li><a href="#ch1">第一章 什么是精力及如何管理</a></li>
+            <li><a href="#ch2">第二章 罗杰的5个障碍</a></li>
+            <li><a href="#ch3">第三章 劳逸结合的平衡</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>第二部分 · 精力的四个来源</summary>
+          <ul class="level-2">
+            <li><a href="#ch4">第四章 体能精力</a></li>
+            <li><a href="#ch5">第五章 情感精力</a></li>
+            <li><a href="#ch6">第六章 思维精力</a></li>
+            <li><a href="#ch7">第七章 意志精力</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>第三部分 · 精力管理训练系统</summary>
+          <ul class="level-2">
+            <li><a href="#ch8">第八章 明确目标</a></li>
+            <li><a href="#ch9">第九章 正视现实</a></li>
+            <li><a href="#ch10">第十章 付诸行动</a></li>
+            <li><a href="#ch11">第十一章 又见罗杰</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>附录</summary>
+          <ul class="level-2">
+            <li><a href="#summary">全本核心要点速记</a></li>
+          </ul>
+        </details>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- ============== 主体内容 ============== -->
+  <main class="content">
+    <!-- 封面 -->
+    <div class="cover">
+      <span class="badge">知识脑图 · 全本精读</span>
+      <h1>《精力管理：管理精力，而非时间》</h1>
+      <p class="sub">—— 互联网+时代顺势腾飞的关键 ——</p>
+      <div class="meta">
+        <span>作者：[美] 吉姆·洛尔（Jim Loehr）& 托尼·施瓦茨（Tony Schwartz）</span>
+        <span>核心理念：管理精力，而非时间，才是高效表现的基础</span>
+        <span>结构：三大部分 + 十一章 + 实用资料</span>
+      </div>
+    </div>
+
+    <!-- 导言 -->
+    <section class="intro" id="intro">
+      <h2>导言 · 核心理念</h2>
+      <p>本书革命性地提出：精力的多少、质量、集中程度和力度，决定了一切事情的效果。<strong>有技巧的精力管理</strong>是高度表现、健康和幸福的基础。<strong>全情投入</strong>意味着身体活跃、情感联动、思维集中，并且达到超出个人短期利益的意志高度。领导者首先是个人精力的统筹人，继而才能调动和投入团队的集体精力。</p>
+      <div class="tag-block">
+        <span class="tag">精力 = 做事情的能力</span>
+        <span class="tag t2">全情投入 = 最佳表现状态</span>
+        <span class="tag t3">盖洛普：仅30%员工全情投入</span>
+        <span class="tag t4">入门6个月 → 38%全情投入</span>
+        <span class="tag t5">入职3年 → 仅22%全情投入</span>
+      </div>
+    </section>
+
+    <!-- 精力管理四原则 -->
+    <section class="intro" id="principles">
+      <h2>精力管理的四个基本原则</h2>
+      <div class="principle-list">
+        <div class="principle">
+          <div class="p-title">原则一 · 四种独立且相关联的精力源</div>
+          <div class="p-body">全情投入需要调动体能、情感、思维、意志四个相互关联的精力源，每一种都不可缺位，恰如发动机的一个气缸熄火便会噼啪作响。精力象限：高/正面 = 最佳；高/负面、低/正面、低/负面 = 表现受损。</div>
+        </div>
+        <div class="principle">
+          <div class="p-title">原则二 · 平衡消耗与更新</div>
+          <div class="p-body">使用过度和使用不足都会削弱精力，必须有节奏地消耗和更新。最丰富、最高产的生命是全情应对眼前挑战、同时留出精力再生的空间。</div>
+        </div>
+        <div class="principle">
+          <div class="p-title">原则三 · 突破惯常极限的系统训练</div>
+          <div class="p-body">为了提升能力必须承受压力（造成肌肉纤维的微小撕裂），并在之后得到充分恢复（24~48小时变强）。体能、情感、思维、意志皆可如此训练。打不倒我们的会让我们变得更强（尼采）。</div>
+        </div>
+        <div class="principle">
+          <div class="p-title">原则四 · 积极的精力仪式习惯</div>
+          <div class="p-body">变革艰难，因为意愿和自律远比想象的薄弱。仪式习惯是定义明确、高度计划性的行为，能在非必要情况下尽量减少意识精力的消耗，确保行为自动、可重复。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 三个步骤 -->
+    <section class="intro" id="steps">
+      <h2>管理精力的三个步骤（目标-事实-行动）</h2>
+      <div class="principle-list">
+        <div class="principle">
+          <div class="p-title">① 明确目标</div>
+          <div class="p-body">梳理人生中最重要的事，构建切合实际的愿景；既为变革提供高纯度动力，也如罗盘指引人们度过无常变幻。</div>
+        </div>
+        <div class="principle">
+          <div class="p-title">② 正视现实</div>
+          <div class="p-body">从可靠数据收集开始，进行体能测试、饮食分析、问卷调查；并请最亲近的5人填写问卷，量化"理想的我"与"现实的我"的差距。</div>
+        </div>
+        <div class="principle">
+          <div class="p-title">③ 付诸行动</div>
+          <div class="p-body">建立以良好精力仪式习惯为基础的个人发展计划，由深层价值观驱动（亚里士多德："我们都是由自己一再重复的行为所铸造的"）。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第一部分 =================== -->
+    <section class="part" id="part1">
+      <div class="part-header">
+        <span class="tag">第一部分</span>
+        <h2>如何做到全情投入</h2>
+        <span class="desc">从认知到节奏</span>
+      </div>
+
+      <!-- 第一章 -->
+      <div class="chapter" id="ch1">
+        <div class="chapter-title">
+          <span class="num">第一章</span>
+          <h3>什么是精力及如何管理精力</h3>
+          <span class="sub">Energy is our most precious resource</span>
+        </div>
+        <p class="lead">精力就是做事情的能力，包括体能、情感、思维、意志四个方面。如果精力运用不恰当，一切事情的效果都会大打折扣。生命终极质量不取决于寿命，而取决于如何在拥有的时间里投资精力。</p>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>数字时代的困境</div>
+          <ul>
+            <li>时间被打碎成比特和字节，重广度轻深度，重速度轻思考</li>
+            <li>大多数人仅希望"竭尽所能"，但当需求超出能力，便着眼现状提权宜之计</li>
+            <li>用睡眠、外带快餐、咖啡因、酒精和安眠药硬撑，导致暴躁、注意力涣散</li>
+            <li>日程表、待办清单、即时通讯使人们陷入"全天候"连轴转</li>
+            <li><strong>再高效的时间管理也无法确保有足够的精力处理每一件事</strong></li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>运动员研究的启示</div>
+          <ul>
+            <li>30年来与世界顶级运动员合作，超过80位世界顶尖网球选手曾参与</li>
+            <li>合作过的明星：桑普拉斯、考瑞尔、桑吉丝、古利克森兄弟、布鲁格拉、萨巴蒂尼、塞莱斯、欧米拉、艾尔斯、林德罗斯、里克特、曼奇尼、安德森、希尔、詹森（奥运金牌）</li>
+            <li>秘诀不在于技巧或战略，而在于<strong>精力管理</strong>——完全点燃才华和技能</li>
+            <li>后拓展至：联邦调查局人质解救小组、法警、医院重症监护工作者、高管、创业者、教师、牧师、律师、医学生</li>
+            <li>企业客户：雅诗兰黛、所罗门美邦、辉瑞制药、美林证券、百时美施贵宝、凯悦酒店集团</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <div class="c-title">⚡ 意料之外的发现</div>
+          运动员的精力需求跟普通人日常生活的精力需求相比简直相形见绌——
+          <ul>
+            <li>运动员90%时间训练，10%时间出结果；普通人每天需8-12小时最佳表现</li>
+            <li>运动员每年享受4-5个月淡季；普通人仅几周假期</li>
+            <li>运动员职业生涯5-7年；普通人要面对40-50年的工作生活</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 第二章 -->
+      <div class="chapter" id="ch2">
+        <div class="chapter-title">
+          <span class="num">第二章</span>
+          <h3>成功人士罗杰遇到的5个障碍</h3>
+          <span class="sub">The disengaged life of Roger</span>
+        </div>
+        <p class="lead">罗杰42岁，大型软件公司销售经理，6年内4次升迁，家庭幸福美满。却因5个表现障碍让老板对他的工作表现越来越不满意。透过表面看清生活实质发生了什么，是面对现实的第一步。</p>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>罗杰的基本档案</div>
+          <ul>
+            <li>42岁，6位数薪水，主管西部4州业务，1年半前升副总经理</li>
+            <li>妻子瑞秋39岁，学校心理咨询师；女儿艾莉莎9岁、伊莎贝尔7岁</li>
+            <li>住在凤凰城郊区，与6个年轻家庭同巷为邻</li>
+            <li>老板评价：从A级降至C+，影响整个销售团队</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>5个表现障碍</div>
+          <ul>
+            <li><strong>障碍1：精力低下</strong>——体能管理方式的共因</li>
+            <li><strong>障碍2：焦躁</strong>——幽默带棱角，温和自嘲变尖刻讽刺</li>
+            <li><strong>障碍3：消极</strong>——感受不到积极向上的情绪</li>
+            <li><strong>障碍4：人际关系淡薄</strong>——与妻子公事公办，无暇陪伴女儿</li>
+            <li><strong>障碍5：缺乏激情</strong>——对任何事情都没有激情</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>障碍1 详情：体能不足是罪魁祸首</div>
+          <ul>
+            <li>高中大学校运动员，毕业后体重增长23磅，体脂比例27%（超出上限25%）</li>
+            <li>血压150/90（高血压临界点），总胆固醇235，肚腩越过皮带扣</li>
+            <li>饮食极不规律：不吃早餐、午餐凑合、下午曲奇饼干、晚餐最丰盛</li>
+            <li>几乎不运动：自行车、划艇机、跑步机、健身俱乐部全部冷落</li>
+            <li>咖啡因依赖：上午2-3杯咖啡 + 下午2-3瓶健怡可乐</li>
+            <li>社交饮酒：马提尼+红酒+招待客户时大量饮酒</li>
+            <li>睡眠不足：12点半-1点入睡，时梦时醒，最多5-6小时，常需安眠药</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>障碍2-5 详情</div>
+          <ul>
+            <li><strong>情感账户告急</strong>：老板不再关注、与瑞秋浪漫变少、艾莉莎学习障碍</li>
+            <li><strong>徒劳地强打精神</strong>：每天50-75封邮件+两打语音信息；度假也强迫查邮件</li>
+            <li><strong>到底什么最重要</strong>：张口无言，缺乏深刻价值观和人生目标</li>
+            <li><strong>罗杰的自白</strong>："我只想继续前进，还要留心别绊倒自己。这不是我理想中的生活，或许真有更好的，但我还没有找到。"</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <div class="c-title">⚡ 关键洞察</div>
+          几乎所有表现障碍都受到多重因素影响，归因于<strong>低效的精力管理</strong>：各项精力不是补充不足就是储备不足，有时候二者兼具。
+        </div>
+      </div>
+
+      <!-- 第三章 -->
+      <div class="chapter" id="ch3">
+        <div class="chapter-title">
+          <span class="num">第三章</span>
+          <h3>高效表现有节奏——劳逸结合的平衡</h3>
+          <span class="sub">Balancing stress and recovery</span>
+        </div>
+        <p class="lead">人需要顺应消耗与恢复的节奏，运动与休息的交替进行可以最大限度提高表现。"张弛有度"是全情投入、维持机能和保持健康的关键。</p>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>训练-休息理论的历史</div>
+          <ul>
+            <li>古希腊运动员训练手册编撰者斐洛斯特拉图斯提出</li>
+            <li>20世纪60年代前苏联运动科学家重启，指导奥运会选手取得惊人成功</li>
+            <li>如今"训练-休息"的比例搭配仍是建立训练周期的基础理论</li>
+            <li>消耗的能量通过"补偿"恢复；训练强度增大，能力恢复和补偿也必须相应增加</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>活跃-休整基础循环（BRAC）</div>
+          <ul>
+            <li>睡眠周期90-120分钟（浅层睡眠 ↔ 深度睡眠）</li>
+            <li>大脑清醒状态下也存在90-120分钟的次昼夜节律（生理学家阿瑟林斯基和克莱特曼）</li>
+            <li>90-120分钟后身体开始渴望休息：打哈欠、伸懒腰、阵发饥饿、压力增大、难以集中、做事拖拉、胡思乱想、容易犯错</li>
+            <li>多数人用压力荷尔蒙"勉力斗争"克服，长期积累毒素导致精疲力竭甚至崩溃</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>9个关键子主题</div>
+          <ul>
+            <li><strong>遵循生命的节奏</strong>：自然本身存在规律脉动；人类是波动世界内的波动个体</li>
+            <li><strong>利用碎片时间见缝插针地休息</strong>：顶级网球选手得分后16-20秒心率降至每分钟20次</li>
+            <li><strong>工作中如何休息</strong>：温克传播的"猎狮"、李岱艾比安奇飞机不办公、吉伯斯每月四天周末</li>
+            <li><strong>团队如何休息</strong>：布鲁斯每90分钟组织15分钟休息（含爬楼梯、抛物杂耍）</li>
+            <li><strong>这世界憎恶休息</strong>：科技革新步伐超过思考后果的能力</li>
+            <li><strong>压力成瘾</strong>：肾上腺素迷幻；25%美国人工作成瘾；工作狂匿名互助小组10年仅4人</li>
+            <li><strong>过劳致死</strong>：日本1969年首例；5诱因；日本年3120h工人从300万增至700万</li>
+            <li><strong>精力超支怎么办</strong>：超量补偿；拓展能力需要为长期回报接受短期不适</li>
+            <li><strong>超出极限与定期休整的平衡</strong>：复健过程；婴儿测试安全区</li>
+          </ul>
+        </div>
+
+        <div class="quote">"要想保持生命的跃动，我们必须学习如何有节奏地消耗和更新精力。"</div>
+
+        <div class="callout">
+          <div class="c-title">⚡ 经典案例：丘吉尔的午睡</div>
+          "你必须在午餐和晚餐之间抽空睡一会儿，别无他法。脱下衣服躺在床上……你总能收获更多。你能把一天当作两天用——至少是一天半，我敢肯定。"
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第二部分 =================== -->
+    <section class="part" id="part2">
+      <div class="part-header">
+        <span class="tag" style="background:#37b24d">第二部分</span>
+        <h2>精力的四个来源</h2>
+        <span class="desc">体能 · 情感 · 思维 · 意志</span>
+      </div>
+
+      <!-- 第四章 -->
+      <div class="chapter" id="ch4">
+        <div class="chapter-title">
+          <span class="num">第四章</span>
+          <h3>体能精力——为身体添柴加火</h3>
+          <span class="sub">Fueling the fire</span>
+        </div>
+        <p class="lead">体能不仅是敏锐度和生命力的核心，还影响着我们管理情绪、保持专注、创新思考甚至投入工作的能力。体能是燃料的基本来源，即使大部分工作时间都坐着一动不动。</p>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>调整饮食方式</div>
+          <ul>
+            <li>进食不足→糖原不够；过度进食→肥胖损害精力</li>
+            <li>选择升糖指数低的食物：全麦、蛋白质、低糖水果（草莓、梨、苹果）</li>
+            <li>避免高升糖指数食物：松饼、甜麦片、不涂黄油的面包圈+橙汁</li>
+            <li>一天5-6餐低热量高营养；纽约西奈山实验：受试者平均每96分钟进食一次</li>
+            <li>两餐零食100-150卡路里（坚果、葵花籽、水果、半条200卡能量棒）</li>
+            <li>80/20原则：80%健康高效食物，20%喜欢的食物（控制分量）</li>
+            <li>早上多摄入热量、晚上少摄入（明尼苏达大学研究证实）</li>
+            <li>喝水最常被忽略：每天至少1.8公斤；缺水3%失去10%肌肉力量、8%速度</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>调整生理周期与睡眠</div>
+          <ul>
+            <li>睡眠需求因年龄、性别、基因而异，但普遍共识：每晚7-8小时</li>
+            <li>丹·克里普克百万研究：睡7-8h死亡率最低；不足4h高出2.5倍；超10h高出1.5倍</li>
+            <li>倒班工作者道路交通事故多一倍，更易诱发冠状动脉疾病和心脏病</li>
+            <li>大型工业事故（切尔诺贝利、艾克森瓦尔迪兹、博帕尔、三里岛）多发生在半夜</li>
+            <li>挑战者号悲剧：官员连续工作20多小时做出继续发射的不幸决定</li>
+            <li>医学：纽约州实习医师每周不超过80小时，倒班不超过24小时</li>
+            <li>日本：连续工作24小时死亡归为过劳死；美国每年10万起医疗失误死亡</li>
+            <li>斯坦皮实验：剥夺睡眠但每4小时小憩20-30分钟可保持24小时高效</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>调整每天的工作节奏</div>
+          <ul>
+            <li>下午3-4点是次昼夜和昼夜节律的最低点（"极限点"）</li>
+            <li>美国航空航天局：小睡40分钟效能可提高34%，达到完全清醒</li>
+            <li>哈佛大学：多项任务精力可降低50%，午睡1小时重回效能顶峰</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>间歇性训练的价值</div>
+          <ul>
+            <li>20-30分钟连续锻炼、心率最大值的60-85%（传统）</li>
+            <li>哈佛+哥伦比亚联合研究：60秒高强度+完整有氧恢复，8周后心血管显著提升</li>
+            <li>间断性训练是体能训练系统的核心：增大精力容量、提高恢复效率</li>
+            <li>包含短跑、爬楼梯、骑自行车、举重，关键是节奏性提高和降低心率</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>增加力量训练提高精力</div>
+          <ul>
+            <li>40岁后无力量训练每年失去1/2磅肌肉</li>
+            <li>塔夫茨大学米丽亚姆·尼尔森研究：52-70岁女性每周3次力量训练1年后，骨质密度+1%、平衡感+14%</li>
+            <li>SERE课程研究：高强度压力+间歇休息训练能更快从压力中恢复（"压力免疫法"）</li>
+            <li>《手术刀》论文：16,000患者卧床休息研究显示延长卧床无益，反而延缓康复</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <div class="c-title">⚡ 案例：精力不够的乔治</div>
+          41岁音乐公司管理层，身高1.8米体重240磅，体脂比例30%——
+          <ul>
+            <li>改变后6个月减重24磅，体脂降至23%</li>
+            <li>解决方案：7点早餐全麦/蛋白粉 → 10点半条能量棒 → 12:30沙拉 → 15:30同10点 → 19点晚餐减份量 → 20:30低卡甜点</li>
+            <li>一次性解决步骤：购物清单加入健康食物；清除家里垃圾食品；周日晚备好一周点心</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 第五章 -->
+      <div class="chapter" id="ch5">
+        <div class="chapter-title">
+          <span class="num">第五章</span>
+          <h3>情感精力——把威胁转化为挑战</h3>
+          <span class="sub">Threat into challenge</span>
+        </div>
+        <p class="lead">情商的意义在于有技巧地管控情感以保持正面积极的精力，并最终为全情投入服务。实际应用中，自信、自控、社交技巧及共情能够牵动积极情感的"肌肉"。</p>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>情感的双面性</div>
+          <ul>
+            <li>正面情感（喜悦、挑战、冒险、机遇）→ 有效支配个人表现</li>
+            <li>负面情感（恐惧、沮丧、愤怒、悲伤）→ 与皮质醇分泌相关，代价昂贵且效率低下</li>
+            <li>负面情感对领导者具有双倍危险——极易传染，损害他人工作能力</li>
+            <li>流行病学家大卫·斯诺登修女实验：写"正面情感"文章的修女寿命更长、成就更多</li>
+            <li>长期抑郁会成倍增加患阿兹海默症的风险</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>麦肯罗 vs 康纳斯的对比</div>
+          <ul>
+            <li>麦肯罗：负面情感贯穿职业生涯，34岁退役</li>
+            <li>康纳斯：从负面到愉悦激情，40岁才退役，多年保持顶级</li>
+            <li>麦肯罗自省："如果我不陷入那样的情绪，表现会更好。但我却不能信任自己的才能"</li>
+            <li>盖洛普发现：员工与顶头上司的关系比其他因素更决定效率</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>5个关键子主题</div>
+          <ul>
+            <li><strong>如何获得正面情感</strong>：单纯变换频道；看电视如同垃圾食品，深度丰富的活动才是真正的恢复</li>
+            <li><strong>学会从跌倒处站起</strong>：9·11事件后杰弗里的故事（坚持健身+陪伴女儿+参加葬礼纪念）</li>
+            <li><strong>让人际关系促使精力再生</strong>：芭芭拉通过健身课程建立新友谊，工作效率提升</li>
+            <li><strong>积极扩充情感容量</strong>：迈出舒适区→休整→恢复→成长；克服不安全感</li>
+            <li><strong>学会接纳不同的情感</strong>：斯多葛派"破格文体"——美德的共同存在性；终极目标是在对立面间自由灵活转换</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <div class="c-title">⚡ 情感容量的最高境界</div>
+          足以驾驭所有情感的能力。例如：强硬与温和、自控与积极、坦率与感伤、慷慨与节俭、开放与审慎、激情与淡漠、耐心与急迫、谨慎与鲁莽、自信与谦逊。
+        </div>
+      </div>
+
+      <!-- 第六章 -->
+      <div class="chapter" id="ch6">
+        <div class="chapter-title">
+          <span class="num">第六章</span>
+          <h3>思维精力——保持专注和乐观</h3>
+          <span class="sub">Focus and realistic optimism</span>
+        </div>
+        <p class="lead">只占体重2%的大脑需要人体25%的氧气供给。为了发挥出最好水平，我们必须保持专注，在整体方向和局部目标之间灵活游走，并调用现实的乐观主义。</p>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>思维精力的关键因素</div>
+          <ul>
+            <li>思维准备、构建愿景、积极的自我暗示、高效的时间管理、创造力</li>
+            <li>思维能力需要平衡消耗和再生：间歇地变换思维频道</li>
+            <li>体能、情感、思维精力相辅相成：亚健康→注意力难集中；焦虑挫败→干扰注意力</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>曼奇尼的"一个消极想法"案例</div>
+          <ul>
+            <li>"你不明白，博士。一个消极想法足够让你被一拳打倒了。"</li>
+            <li>马丁·塞利格曼ASQ研究：乐观得分前50%销售员比后50%多售37%保险</li>
+            <li>排名前10% vs 后10% 差距88%；后50%离职率比前50%高一倍</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>3个关键子主题</div>
+          <ul>
+            <li><strong>在放松中思考</strong>：达·芬奇《最后的晚餐》期间白天花几小时做梦；"最伟大的天才，有时工作越少，成果越出色"</li>
+            <li><strong>精力恢复产生创造力</strong>：斯佩里诺贝尔奖——左半球（语言/逻辑）vs 右半球（视觉化/空间/全局观）；创造五步论：洞察、汲取、孵育、启示、验证</li>
+            <li><strong>重塑大脑</strong>：贝勒医学院4年研究100名64+人群——活跃者智商和脑血测试更高；伊利诺伊大学60-75岁女性每周3次快步走6个月后认知测试高出25%；斯诺登修女：使用复杂语法可预测低阿兹海默症风险</li>
+          </ul>
+        </div>
+
+        <div class="quote">"不管你处于哪个年龄阶段，都可以持续地优化大脑。肝脏、肺和肾使用过度会发生损耗，而大脑只会因为使用而日益敏锐，越磨越利。" —— 理查德·雷斯塔克</div>
+      </div>
+
+      <!-- 第七章 -->
+      <div class="chapter" id="ch7">
+        <div class="chapter-title">
+          <span class="num">第七章</span>
+          <h3>意志精力——活出人生的意义</h3>
+          <span class="sub">Spiritual energy: he who has a "why" to live</span>
+        </div>
+        <p class="lead">任何能够点燃人类精神的事物都有助于全情投入、促进最佳表现。意志精力的关键动力在于性格品质——一个人如果有自己的人生目标，他的勇气和信念即使面对艰难困苦和个人牺牲也在所不惜。</p>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>意志精力的支柱</div>
+          <ul>
+            <li>激情、奉献、正直与诚实</li>
+            <li>意志力量可以扭转最可怕的情况（维克多·弗兰克尔《活出生命的意义》）</li>
+            <li>拓展意志精力需要将个人需求置于次位，为超出个人利益的目标让路</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>2个关键子主题</div>
+          <ul>
+            <li><strong>知晓生命的意义方能忍耐一切</strong>：尼采名言；维克多·弗兰克尔从集中营幸存；兰斯·阿姆斯特朗战胜癌症后7次环法冠军——"癌症教会了我一件事——我的运动员生涯从未告诉我，我们比自己想象的要坚强得多"</li>
+            <li><strong>重视他人</strong>：巴里CEO案例——价值观"尊重他人" vs 总是让人等待；重新认知后下决心改变</li>
+          </ul>
+        </div>
+
+        <div class="quote">"知晓生命的意义，方能忍耐一切。" —— 尼采</div>
+      </div>
+    </section>
+
+    <!-- =================== 第三部分 =================== -->
+    <section class="part" id="part3">
+      <div class="part-header">
+        <span class="tag" style="background:#f59f00">第三部分</span>
+        <h2>精力管理训练系统</h2>
+        <span class="desc">目标 · 现实 · 行动</span>
+      </div>
+
+      <!-- 第八章 -->
+      <div class="chapter" id="ch8">
+        <div class="chapter-title">
+          <span class="num">第八章</span>
+          <h3>明确目标——知道什么最重要才能全情投入</h3>
+          <span class="sub">The rules of engagement</span>
+        </div>
+        <p class="lead">只有树立目标，真正深刻地关心自己所做的事情，认为自己所为真正有意义，人们才有可能做到全情投入。使命感是我们的火种、动力和精神食粮。</p>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>成长的方向</div>
+          <ul>
+            <li>成长和发展是自下而上的：体能 → 情感 → 思维 → 意志</li>
+            <li>改变则是自上而下进行的：意志力量是目标最充足的源泉</li>
+            <li>"英雄之旅"（约瑟夫·坎贝尔）：冒险的召唤 → 不确定、恐惧、困境 → 终极考验 → 直面内心黑暗 → 创造人生意义</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>衡量人生目标的力量</div>
+          <ul>
+            <li>问题1：每天早晨上班时的兴奋度（1-10）</li>
+            <li>问题2：享受做事多大程度因事情本身而非回报（1-10）</li>
+            <li>问题3：认为自己对价值取向负有多大的责任（1-10）</li>
+            <li><strong>27分以上</strong>：已带强烈人生目标生活</li>
+            <li><strong>22分以下</strong>：生活只是走过场</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>7个关键子主题</div>
+          <ul>
+            <li><strong>积极的人生目标</strong>：从消极→积极、外部→内部、自己→他人；负面目标充满防备心理，限制视野（珍妮特追求"卓越"实为"避免出错"）</li>
+            <li><strong>内心的目标</strong>：内在动机比外在动机提供更持久的精力；金钱买不到幸福，幸福帮你变富（詹姆斯案例：降薪60%转行教书）</li>
+            <li><strong>超越个人的目标</strong>：将目标设定从满足自我需求变为超越个人利益；士兵、纽约消防员、医者仁心</li>
+            <li><strong>价值观与美德</strong>：大众普遍推崇的价值观——正直、慷慨、勇气、谦逊、怜悯、忠诚、恒心；体现在行为中的价值观才是美德</li>
+            <li><strong>言行一致</strong>：不符行为的价值观只是空话；苏珊案例：从抱怨老板到重新专注于卓越和投入</li>
+            <li><strong>全情投入的构想</strong>：谨慎的平衡——远大目标 vs 脚踏实地；莎拉的构想蓝图范例；文斯从交易主管到更好的丈夫和父亲</li>
+            <li><strong>深层价值取向清单</strong>：3个问题——人生尽头最重要的3件事、最敬重的人身上3种品质、最好自己的样子、墓志铭</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 第九章 -->
+      <div class="chapter" id="ch9">
+        <div class="chapter-title">
+          <span class="num">第九章</span>
+          <h3>正视现实——你的精力管理做得如何</h3>
+          <span class="sub">Face the truth: how are you managing your energy now?</span>
+        </div>
+        <p class="lead">古代希腊人在帕纳萨斯山一侧刻下"认识你自己"和"认识你全部的自己"。我们只有满怀震惊地看到真实的自己，才算迈向个人生活现实的第一步。</p>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>R.D.莱因的诗</div>
+          <div class="quote">"我们思想与行动的上限，是我们未看清的事实。因为我们看不清，所以无法做出改变。直到我们明白，正是无法看清的现实，塑造了我们的思想和行动。"</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>7个关键子主题</div>
+          <ul>
+            <li><strong>防御系统</strong>：麻木、文饰、纯理性探讨、影射、为最坏做打算、病体化、过度补偿</li>
+            <li><strong>影子中的自我</strong>：卡尔·荣格"影子"——从自我意识上剥离出去、违背自我形象的一部分；"邪恶的本质缺陷并非是罪恶本身，而是自我否认"</li>
+            <li><strong>未察觉的事实</strong>：罗杰的"活得好好的"病症；呼吸系统治疗师20年烟龄却患上肺癌</li>
+            <li><strong>收集事实</strong>：用至少30分钟回答清单问题（10个常见问题清单）</li>
+            <li><strong>观点与现实</strong>：托比案例——错过邮件并非客户没兴趣，而是对方度假两周</li>
+            <li><strong>"我也可能是错的"</strong>：朱莉培训师案例；丹尼斯·米勒的调侃</li>
+            <li><strong>"我怎么会是那样的人"</strong>：最蔑视的人往往代表自己最想否认的部分</li>
+          </ul>
+        </div>
+
+        <div class="quote">"上帝，请赐予我平静，接受我无法改变的；请给予我勇气，改变我能改变的；请赋予我智慧，分辨这两者的区别。" —— 《平静祷文》</div>
+      </div>
+
+      <!-- 第十章 -->
+      <div class="chapter" id="ch10">
+        <div class="chapter-title">
+          <span class="num">第十章</span>
+          <h3>付诸行动——积极仪式习惯的力量</h3>
+          <span class="sub">Of positive rituals</span>
+        </div>
+        <p class="lead">所有表现卓越的人都依靠积极的仪式习惯管理精力和规范行为。人类行为只有5%受自我意识支配，95%是自动反应或对应激的应对。</p>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>为什么仪式习惯有效</div>
+          <ul>
+            <li>主观意愿和自律性远比想象的薄弱</li>
+            <li>人类行为95%是自动反应或对应激的应对</li>
+            <li>三点重要性：①确保精力有效使用在当下任务 ②减少对主观意愿和自律的依赖 ③将价值观和目标感有效转化为行动</li>
+            <li>"每次我们参加一项仪式习惯，都是在表达自身信仰"</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>8个关键子主题</div>
+          <ul>
+            <li><strong>应激性适应</strong>：罗杰的不良习惯（不吃早餐、咖啡因、酒精、回避家人）</li>
+            <li><strong>压力与恢复的仪式习惯</strong>：彼得作家案例——4.5小时集中产出=往日10小时的2倍</li>
+            <li><strong>持续性与改变</strong>：伦德尔发球程序（擦眉毛/磕鞋跟/弹球4次/想象击球）；仪式还有助于改变</li>
+            <li><strong>关键的行为</strong>：泰德和多娜每周六1.5小时（先8点固定时间→前45分钟多娜掌控）</li>
+            <li><strong>精准具体的规划</strong>：圣诞报告实验（75% vs 33%按时提交）；乳腺自查实验（100% vs 53%）；脱瘾者简历实验（0% vs 80%）</li>
+            <li><strong>做还是不做</strong>：事前准备——将意图以正面方式表达；乔治微笑深呼吸案例</li>
+            <li><strong>量变达到质变</strong>：一次只关注一项重大变化；串联仪式习惯</li>
+            <li><strong>基本训练</strong>：规划方式（每日任务/重复预想）+ 记录进展（自查日志）</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <div class="c-title">⚡ 案例：道格的"重要举措"</div>
+          <ul>
+            <li>每周与妻子约会</li>
+            <li>承诺女儿比赛每场必到</li>
+            <li>每周三下午1点外出打1小时网球</li>
+            <li>每周五下午1点在青年教会打1.5小时篮球</li>
+            <li>秘书将这两次运动记入周日程，当作重要安排</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <div class="c-title">⚡ 案例：本·卡森医生的晨间习惯</div>
+          "我发现良好的晨间习惯——冥想或安静地阅读可以为一天定下良好的基调。每天早上我会用半个小时阅读《圣经》，尤其是《箴言》……箴言16章32节，'不轻易发怒，胜过勇士；治服己心，强过夺城。'"
+        </div>
+      </div>
+
+      <!-- 第十一章 -->
+      <div class="chapter" id="ch11">
+        <div class="chapter-title">
+          <span class="num">第十一章</span>
+          <h3>又见罗杰——重获新生</h3>
+          <span class="sub">The reengaged life of Roger</span>
+        </div>
+        <p class="lead">在我们认识罗杰12个月后，他的事业迅速重新走上了正轨。他在日程里加入了一项重大改变——经老板批准，每周一可在家上班。</p>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>罗杰的5个关键改变</div>
+          <ul>
+            <li><strong>人生目标是动力</strong>：5种核心价值观——善良、卓越、家庭、正直、健康；"我知道我听起来很像个伪君子……即使我没能做到，我还是希望把这些道理讲给我的孩子"</li>
+            <li><strong>回归家庭</strong>：在公园旁的"眼泪仪式"——每天下班回家前在公园附近停几分钟</li>
+            <li><strong>看得见的改变</strong>：6个月减重12磅（→ 19磅）；体脂27%→19%；胆固醇245→185；耐力+25%、力量+35%；工作与家庭专注度均从5/3→9/9</li>
+            <li><strong>更进一步</strong>：每周一在家办公；3项仪式习惯（任务优先级、严格间歇休息、每周与下属共进午餐"三明治原则"）</li>
+            <li><strong>路途漫漫</strong>：承认还有改进空间（抽烟、出差习惯）；新建出差仪式（带健康零食、预订健身房酒店、限酒1杯）</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>罗杰的"应急习惯"</div>
+          <ul>
+            <li>腹部深呼吸（4-6次）</li>
+            <li>回想老板作为榜样的危机处理方式</li>
+            <li>点头说："我了解了，不过我需要一点时间想一下"</li>
+            <li>下属反馈越多，团队营业额增长15%（公司业绩平平情况下）</li>
+          </ul>
+        </div>
+
+        <div class="quote">"最让我惊讶的是，一旦价值观清晰起来，而我又懂得仪式习惯的重要性，大多数改变做起来也不那么困难了。我的生活有了特定的节奏，能深切感受到自己的精力带给他人的影响。现在我的挑战仅仅是感受到生命的脉动，并保持生活的活力。" —— 罗杰</div>
+      </div>
+    </section>
+
+    <!-- =================== 附录：核心要点速记 =================== -->
+    <section class="part" id="summary">
+      <div class="part-header">
+        <span class="tag" style="background:#868e96">附录</span>
+        <h2>全本核心要点速记</h2>
+        <span class="desc">一图速览《精力管理》</span>
+      </div>
+
+      <div class="chapter">
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>导言 + 第一章 速记</div>
+          <ul>
+            <li>精力管理，而非时间，才是高效表现的基础</li>
+            <li>领导者是团体精力的统筹人</li>
+            <li>全情投入 = 体能+情感+思维+意志的"高-正面"象限</li>
+            <li>原则一~四：四精力源、平衡消耗与更新、突破极限、仪式习惯</li>
+            <li>三个步骤：明确目标 → 正视现实 → 付诸行动</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>第二章 速记</div>
+          <ul>
+            <li>罗杰的5个障碍：精力低下、焦躁、消极、人际关系淡薄、缺乏激情</li>
+            <li>体能不足是罪魁祸首</li>
+            <li>情感账户告急 → 徒劳地强打精神 → 到底什么最重要</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>第三章 速记</div>
+          <ul>
+            <li>精力的消耗与恢复 = 人类最基本的需求（波动）</li>
+            <li>波动的反面是直线：消耗大于恢复或恢复大于消耗</li>
+            <li>BRAC活跃-休整基础循环90-120分钟</li>
+            <li>压力成瘾 / 过劳死 / 团队休息 / 碎片时间见缝插针</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>第四章 速记</div>
+          <ul>
+            <li>调整饮食：低升糖指数、5-6餐、80/20原则、每天1.8公斤水</li>
+            <li>调整睡眠：每晚7-8小时、避免倒班、小憩20-30分钟</li>
+            <li>工作节奏：下午3-4点极限点、小睡40分钟效能+34%</li>
+            <li>间歇训练 + 力量训练 双管齐下</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>第五章 速记</div>
+          <ul>
+            <li>正面情感 vs 负面情感（高效 vs 高代价）</li>
+            <li>麦肯罗 vs 康纳斯：负面情绪让职业生涯缩短6年</li>
+            <li>盖洛普：员工与上司关系比其他因素更决定效率</li>
+            <li>情感容量的最高境界：驾驭所有情感、融合对立品质</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>第六章 速记</div>
+          <ul>
+            <li>思维精力 = 专注 + 现实乐观主义</li>
+            <li>乐观销售员比悲观者多售37%（塞利格曼ASQ）</li>
+            <li>在放松中思考 / 精力恢复产生创造力 / 重塑大脑</li>
+            <li>大脑因使用而日益敏锐，越磨越利</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>第七章 速记</div>
+          <ul>
+            <li>意志精力 = 激情、奉献、正直、诚实</li>
+            <li>尼采：知晓生命的意义，方能忍耐一切</li>
+            <li>弗兰克尔、阿姆斯特朗：超越个人利益的目标</li>
+            <li>重视他人：将个人需求置于次位</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>第八章 速记</div>
+          <ul>
+            <li>成长自下而上：体能→情感→思维→意志</li>
+            <li>改变自上而下：意志力量是目标源泉</li>
+            <li>人生目标从消极→积极、外部→内部、自我→他人</li>
+            <li>内在动机比外在动机提供更持久的精力</li>
+            <li>体现在行为中的价值观才是美德</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>第九章 速记</div>
+          <ul>
+            <li>面对真相能够释放精力，是通往全情投入的第二阶段</li>
+            <li>我们会自我欺骗以保护自尊（防御系统）</li>
+            <li>不带怜悯的诚实是种残酷</li>
+            <li>观点 ≠ 现实（托比的客户其实在度假）</li>
+            <li>承认局限性 = 降低自我防御 + 增强积极精力</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>第十章 速记</div>
+          <ul>
+            <li>人类行为95%是自动反应；5%受自我意识支配</li>
+            <li>主观意愿和自制力有局限性（巧克力饼干实验、冰水实验）</li>
+            <li>精确性和具体性是30-60天养成习惯的关键</li>
+            <li>基本训练 = 规划方式 + 记录进展</li>
+            <li>量变达到质变：一次只作一项重大改变</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><span class="dot"></span>第十一章 速记</div>
+          <ul>
+            <li>罗杰最终：体脂27%→19%、胆固醇245→185、耐力+25%</li>
+            <li>工作与家庭专注度均从5/3→9/9</li>
+            <li>团队营业额增长15%（公司业绩平平情况下）</li>
+            <li>罗杰的觉醒：价值观清晰 + 仪式习惯 = 大多数改变并不困难</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      © 知识脑图 · 《精力管理》（吉姆·洛尔 & 托尼·施瓦茨） · 基于书籍全本结构整理
+    </footer>
+  </main>
+</div>
+</body>
+</html>
