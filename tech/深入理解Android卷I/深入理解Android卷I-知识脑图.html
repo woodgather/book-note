@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《深入理解Android卷I》知识脑图 - 邓凡平</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f5f7fb;
+    --panel: #ffffff;
+    --panel-2: #fafbff;
+    --border: #e2e6ef;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --primary: #2563eb;
+    --primary-soft: #eaf1ff;
+    --accent: #0ea5e9;
+    --warn: #f59e0b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --code-bg: #0f172a;
+    --code-fg: #e2e8f0;
+    --shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px 12px 24px;
+  }
+  .sidebar h1 {
+    font-size: 18px;
+    margin: 4px 8px 8px;
+    color: var(--primary);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    line-height: 1.3;
+  }
+  .sidebar h1 .title-main {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .sidebar h1 .title-sub {
+    display: inline-block;
+    background: var(--primary-soft);
+    color: var(--primary);
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 2px 8px;
+    font-weight: 600;
+    align-self: flex-start;
+  }
+  .sidebar .sub {
+    color: var(--muted);
+    font-size: 12px;
+    margin: 0 8px 12px;
+  }
+  .sidebar .actions {
+    display: flex;
+    gap: 6px;
+    margin: 0 4px 12px;
+  }
+  .sidebar .actions button {
+    flex: 1;
+    background: var(--primary-soft);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sidebar .actions button:hover {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  /* Tree (collapsible nav) */
+  .nav { list-style: none; padding: 0; margin: 0; }
+  .nav .nav { padding-left: 14px; }
+  .nav-item { user-select: none; }
+  .nav-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 13.5px;
+    transition: background 0.12s;
+  }
+  .nav-row:hover { background: var(--primary-soft); }
+  .nav-row.active {
+    background: var(--primary);
+    color: #fff;
+  }
+  .nav-row .caret {
+    display: inline-block;
+    width: 14px;
+    text-align: center;
+    color: var(--muted);
+    transition: transform 0.2s;
+    font-size: 10px;
+  }
+  .nav-row.has-children .caret::before { content: "▶"; }
+  .nav-item.open > .nav-row.has-children .caret { transform: rotate(90deg); }
+  .nav-item.open > .nav { display: block; }
+  .nav-item:not(.open) > .nav { display: none; }
+  .nav-row .label { flex: 1; }
+  .nav-row.leaf .caret { visibility: hidden; }
+
+  /* Content */
+  .content {
+    overflow-y: auto;
+    padding: 24px 32px 60px;
+  }
+  .content-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .content h1.chapter {
+    font-size: 28px;
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 10px;
+    margin-top: 0;
+  }
+  .content h2.section {
+    font-size: 22px;
+    color: #0f172a;
+    margin-top: 32px;
+    padding-left: 12px;
+    border-left: 4px solid var(--primary);
+  }
+  .content h3.subsection {
+    font-size: 18px;
+    color: #1e40af;
+    margin-top: 22px;
+  }
+  .content p { margin: 10px 0; }
+  .content ul, .content ol { padding-left: 24px; }
+  .content li { margin: 4px 0; }
+
+  .meta {
+    background: var(--primary-soft);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin: 12px 0 18px;
+    color: #1e3a8a;
+    font-size: 14px;
+  }
+  .meta strong { color: var(--primary); }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin: 12px 0;
+    box-shadow: var(--shadow);
+  }
+  .card .title {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 6px;
+    font-size: 15px;
+  }
+  .card ul { margin: 6px 0 0; padding-left: 20px; }
+  .card li { font-size: 14px; }
+
+  .tag {
+    display: inline-block;
+    background: var(--primary-soft);
+    color: var(--primary);
+    border-radius: 4px;
+    padding: 1px 8px;
+    font-size: 12px;
+    margin-right: 4px;
+  }
+  .tag.warn { background: #fff7ed; color: var(--warn); }
+  .tag.danger { background: #fef2f2; color: var(--danger); }
+  .tag.success { background: #ecfdf5; color: var(--success); }
+
+  pre.code {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 12px 14px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: "JetBrains Mono", Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  code.inline {
+    background: #eef2ff;
+    color: #3730a3;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 13px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 900px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: #f0f9ff;
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    margin: 12px 0;
+  }
+  .callout.warn { border-color: var(--warn); background: #fffbeb; }
+  .callout.danger { border-color: var(--danger); background: #fef2f2; }
+  .callout strong { color: #0c4a6e; }
+  .callout.warn strong { color: #92400e; }
+  .callout.danger strong { color: #991b1b; }
+
+  .toc-inline {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 18px;
+  }
+  .toc-inline .toc-title {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  .toc-inline ol { margin: 0; padding-left: 22px; }
+  .toc-inline a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+  }
+  .toc-inline a:hover { color: var(--primary); }
+
+  .footer-tip {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 40px;
+  }
+
+  /* Sidebar scrollbar */
+  .sidebar::-webkit-scrollbar, .content::-webkit-scrollbar {
+    width: 8px;
+  }
+  .sidebar::-webkit-scrollbar-thumb, .content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  .sidebar::-webkit-scrollbar-thumb:hover, .content::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <h1>
+      <span class="title-main">《深入理解 Android 卷 I》</span>
+    </h1>
+    <div class="sub">作者：邓凡平 · 共 10 章 · 含 1-10 章全部要点</div>
+    <div class="actions">
+      <button id="btn-expand">全部展开</button>
+      <button id="btn-collapse">全部折叠</button>
+    </div>
+    <ul class="nav" id="nav-root">
+      <li class="nav-item" data-target="preface">
+        <div class="nav-row leaf"><span class="caret"></span><span class="label">📖 推荐序 & 前言</span></div>
+      </li>
+      <li class="nav-item" data-target="ch1">
+        <div class="nav-row has-children"><span class="caret"></span><span class="label">第 1 章 阅读前的准备工作</span></div>
+        <ul class="nav">
+          <li class="nav-item" data-target="ch1-arch"><div class="nav-row leaf"><span class="caret"></span><span class="label">1.1 系统架构</span></div></li>
+          <li class="nav-item" data-target="ch1-env"><div class="nav-row leaf"><span class="caret"></span><span class="label">1.2 搭建开发环境</span></div></li>
+          <li class="nav-item" data-target="ch1-tools"><div class="nav-row leaf"><span class="caret"></span><span class="label">1.3 工具介绍</span></div></li>
+        </ul>
+      </li>
+      <li class="nav-item" data-target="ch2">
+        <div class="nav-row has-children"><span class="caret"></span><span class="label">第 2 章 深入理解 JNI</span></div>
+        <ul class="nav">
+          <li class="nav-item" data-target="ch2-overview"><div class="nav-row leaf"><span class="caret"></span><span class="label">2.1 JNI 概述</span></div></li>
+          <li class="nav-item" data-target="ch2-example"><div class="nav-row leaf"><span class="caret"></span><span class="label">2.2 实例：MediaScanner</span></div></li>
+          <li class="nav-item" data-target="ch2-java"><div class="nav-row leaf"><span class="caret"></span><span class="label">2.3 Java 层分析</span></div></li>
+          <li class="nav-item" data-target="ch2-jni"><div class="nav-row leaf"><span class="caret"></span><span class="label">2.4 JNI 层分析</span></div></li>
+        </ul>
+      </li>
+      <li class="nav-item" data-target="ch3">
+        <div class="nav-row has-children"><span class="caret"></span><span class="label">第 3 章 深入理解 init</span></div>
+        <ul class="nav">
+          <li class="nav-item" data-target="ch3-overview"><div class="nav-row leaf"><span class="caret"></span><span class="label">3.1 概述</span></div></li>
+          <li class="nav-item" data-target="ch3-init"><div class="nav-row leaf"><span class="caret"></span><span class="label">3.2 init 分析</span></div></li>
+        </ul>
+      </li>
+      <li class="nav-item" data-target="ch4">
+        <div class="nav-row has-children"><span class="caret"></span><span class="label">第 4 章 深入理解 zygote</span></div>
+        <ul class="nav">
+          <li class="nav-item" data-target="ch4-zygote"><div class="nav-row leaf"><span class="caret"></span><span class="label">4.2 zygote 分析</span></div></li>
+          <li class="nav-item" data-target="ch4-systemserver"><div class="nav-row leaf"><span class="caret"></span><span class="label">4.3 SystemServer 分析</span></div></li>
+          <li class="nav-item" data-target="ch4-fork"><div class="nav-row leaf"><span class="caret"></span><span class="label">4.4 zygote 的分裂</span></div></li>
+          <li class="nav-item" data-target="ch4-extras"><div class="nav-row leaf"><span class="caret"></span><span class="label">4.5 拓展思考</span></div></li>
+        </ul>
+      </li>
+      <li class="nav-item" data-target="ch5">
+        <div class="nav-row has-children"><span class="caret"></span><span class="label">第 5 章 深入理解常见类</span></div>
+        <ul class="nav">
+          <li class="nav-item" data-target="ch5-refbase"><div class="nav-row leaf"><span class="caret"></span><span class="label">5.2 RefBase、sp、wp</span></div></li>
+          <li class="nav-item" data-target="ch5-thread"><div class="nav-row leaf"><span class="caret"></span><span class="label">5.3 Thread 与同步类</span></div></li>
+          <li class="nav-item" data-target="ch5-looper"><div class="nav-row leaf"><span class="caret"></span><span class="label">5.4 Looper 与 Handler</span></div></li>
+        </ul>
+      </li>
+      <li class="nav-item" data-target="ch6">
+        <div class="nav-row has-children"><span class="caret"></span><span class="label">第 6 章 深入理解 Binder</span></div>
+        <ul class="nav">
+          <li class="nav-item" data-target="ch6-overview"><div class="nav-row leaf"><span class="caret"></span><span class="label">6.2 庖丁解 MediaServer</span></div></li>
+          <li class="nav-item" data-target="ch6-sm"><div class="nav-row leaf"><span class="caret"></span><span class="label">6.3 ServiceManager</span></div></li>
+          <li class="nav-item" data-target="ch6-mp"><div class="nav-row leaf"><span class="caret"></span><span class="label">6.4 MediaPlayerService</span></div></li>
+          <li class="nav-item" data-target="ch6-extra"><div class="nav-row leaf"><span class="caret"></span><span class="label">6.5/6.6 拓展 & 学以致用</span></div></li>
+        </ul>
+      </li>
+      <li class="nav-item" data-target="ch7">
+        <div class="nav-row has-children"><span class="caret"></span><span class="label">第 7 章 深入理解 Audio 系统</span></div>
+        <ul class="nav">
+          <li class="nav-item" data-target="ch7-track"><div class="nav-row leaf"><span class="caret"></span><span class="label">7.2 AudioTrack 破解</span></div></li>
+          <li class="nav-item" data-target="ch7-flinger"><div class="nav-row leaf"><span class="caret"></span><span class="label">7.3 AudioFlinger 破解</span></div></li>
+          <li class="nav-item" data-target="ch7-policy"><div class="nav-row leaf"><span class="caret"></span><span class="label">7.4 AudioPolicyService</span></div></li>
+        </ul>
+      </li>
+      <li class="nav-item" data-target="ch8">
+        <div class="nav-row has-children"><span class="caret"></span><span class="label">第 8 章 深入理解 Surface 系统</span></div>
+        <ul class="nav">
+          <li class="nav-item" data-target="ch8-activity"><div class="nav-row leaf"><span class="caret"></span><span class="label">8.2 一个 Activity 的显示</span></div></li>
+          <li class="nav-item" data-target="ch8-surface"><div class="nav-row leaf"><span class="caret"></span><span class="label">8.3-8.4 Surface 深入分析</span></div></li>
+          <li class="nav-item" data-target="ch8-sf"><div class="nav-row leaf"><span class="caret"></span><span class="label">8.5 SurfaceFlinger 分析</span></div></li>
+        </ul>
+      </li>
+      <li class="nav-item" data-target="ch9">
+        <div class="nav-row has-children"><span class="caret"></span><span class="label">第 9 章 深入理解 Vold 和 Rild</span></div>
+        <ul class="nav">
+          <li class="nav-item" data-target="ch9-vold"><div class="nav-row leaf"><span class="caret"></span><span class="label">9.2 Vold 原理</span></div></li>
+          <li class="nav-item" data-target="ch9-rild"><div class="nav-row leaf"><span class="caret"></span><span class="label">9.3 Rild 原理</span></div></li>
+        </ul>
+      </li>
+      <li class="nav-item" data-target="ch10">
+        <div class="nav-row has-children"><span class="caret"></span><span class="label">第 10 章 深入理解 MediaScanner</span></div>
+        <ul class="nav">
+          <li class="nav-item" data-target="ch10-pm"><div class="nav-row leaf"><span class="caret"></span><span class="label">10.2 android.process.media</span></div></li>
+          <li class="nav-item" data-target="ch10-ms"><div class="nav-row leaf"><span class="caret"></span><span class="label">10.3 MediaScanner 分析</span></div></li>
+        </ul>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="content">
+    <div class="content-inner">
+
+      <!-- Preface -->
+      <section id="preface">
+        <h1 class="chapter">📖 《深入理解 Android 卷 I》知识脑图</h1>
+        <div class="meta">
+          <strong>作者：</strong>邓凡平　|　<strong>副标题：</strong>卷 I 主要分析 Native 层、Java Framework 层及 Java Application 层
+        </div>
+        <div class="card">
+          <div class="title">本书主要内容</div>
+          <ul>
+            <li><span class="tag">Native</span>init 进程、Audio 系统、Surface 系统、RefBase/sp/wp、Vold、Rild</li>
+            <li><span class="tag">Java Framework</span>zygote、SystemServer、Handler/Looper、MediaScanner</li>
+            <li><span class="tag">Java Application</span>MediaProvider、Phone</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="title">本书特色</div>
+          <ul>
+            <li>以源码为依据，从模块化角度逐层展开</li>
+            <li>以 Native 世界为切入点，揭示 Google 隐藏的底层实现</li>
+            <li>配合实例（如 MediaScanner）讲解抽象原理</li>
+            <li>每章末尾含拓展思考，启发进阶理解</li>
+          </ul>
+        </div>
+        <div class="callout">
+          <strong>阅读路径建议：</strong>先读第 1 章准备工作 → 第 3 章 init → 第 4 章 zygote → 第 6 章 Binder → 再按需阅读 Audio/Surface/Vold/Rild/MediaScanner。
+        </div>
+      </section>
+
+      <!-- Chapter 1 -->
+      <section id="ch1">
+        <h1 class="chapter">第 1 章 · 阅读前的准备工作</h1>
+        <div class="meta">本章为整书铺垫：了解 Android 系统分层、搭建源码阅读与编译环境、掌握常用调试工具。</div>
+        <div class="toc-inline">
+          <div class="toc-title">本章目录</div>
+          <ol>
+            <li><a href="#ch1-arch">1.1 系统架构</a></li>
+            <li><a href="#ch1-env">1.2 搭建开发环境</a></li>
+            <li><a href="#ch1-tools">1.3 工具介绍</a></li>
+          </ol>
+        </div>
+
+        <h2 id="ch1-arch" class="section">1.1 系统架构</h2>
+        <h3 class="subsection">1.1.1 Android 系统架构</h3>
+        <div class="card">
+          <div class="title">四层架构（自下而上）</div>
+          <div class="grid-2">
+            <div>
+              <strong>① Linux 内核层</strong>
+              <ul>
+                <li>包含 Linux 内核及驱动（USB / Camera / 蓝牙等）</li>
+                <li>本书以 Android 2.2（Froyo）/ Linux 2.6 为蓝本</li>
+              </ul>
+            </div>
+            <div>
+              <strong>② Libraries 层（Native）</strong>
+              <ul>
+                <li>动态库（共享库）+ Android 运行时库 + Dalvik 虚拟机</li>
+                <li>以 C/C++ 为主，可视为 <code class="inline">Native 层</code></li>
+              </ul>
+            </div>
+            <div>
+              <strong>③ Framework 层（Java）</strong>
+              <ul>
+                <li>Android 平台 Java 世界的基石</li>
+                <li>zygote、SystemServer、Handler/Looper 等</li>
+              </ul>
+            </div>
+            <div>
+              <strong>④ Applications 层</strong>
+              <ul>
+                <li>与用户直接交互的应用（Java 实现）</li>
+                <li>典型代表：MediaProvider、Phone</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="callout">
+          <strong>核心观点：</strong>Android 表面是 Java 世界，底层依赖 Google 隐藏的 <code class="inline">Native 世界</code>。Java 经由 JNI 通过 IPC（Binder / Socket）与 Native 交互。
+        </div>
+
+        <h3 class="subsection">1.1.2 本书的架构</h3>
+        <ul>
+          <li><span class="tag">Native</span>init、Audio（Track/Flinger/PolicyService）、Surface（SurfaceFlinger）、RefBase/sp/wp、Vold、Rild</li>
+          <li><span class="tag">Java Framework</span>zygote、SystemServer、Handler/Looper</li>
+          <li><span class="tag">Java Application</span>MediaProvider、Phone</li>
+        </ul>
+
+        <h2 id="ch1-env" class="section">1.2 搭建开发环境</h2>
+        <h3 class="subsection">1.2.1 下载源码</h3>
+        <ol>
+          <li>系统推荐 Ubuntu 10.04（32 位），建议 <code class="inline">root</code> 登录并安装 VMWare Tools</li>
+          <li>设置合适的软件源（如北京交大镜像）</li>
+          <li>依次执行：
+            <pre class="code">apt-get install git-core curl
+mkdir -p /develop/download-froyo
+cd /develop/download-froyo
+curl http://Android.git.kernel.org/repo &gt; ./repo
+chmod a+x repo
+./repo init -u git://Android.git.kernel.org/platform/manifest.git -b froyo
+./repo sync      # 约 2GB，耗时 &gt;2 小时</pre>
+          </li>
+          <li>Kernel 单独下载：<code class="inline">git clone git://android.git.kernel.org/kernel/common.git kernel</code></li>
+        </ol>
+
+        <h3 class="subsection">1.2.2 编译源码</h3>
+        <ul>
+          <li>部署 JDK 1.5（设置 <code class="inline">JAVA_HOME</code>、<code class="inline">CLASSPATH</code>、<code class="inline">PATH</code> 后重新登录）</li>
+          <li>执行 <code class="inline">. build/envsetup.sh</code> 后 <code class="inline">choosecombo</code> 选择目标</li>
+          <li>三种编译命令对比：
+            <div class="grid-3">
+              <div class="card">
+                <div class="title">make &lt;模块&gt;</div>
+                <ul>
+                  <li>编译整个系统或单个模块及其依赖</li>
+                  <li>首次编译推荐</li>
+                </ul>
+              </div>
+              <div class="card">
+                <div class="title">mmm &lt;目录&gt;</div>
+                <ul>
+                  <li>只编译指定目录下模块</li>
+                  <li>首次需先 make 依赖</li>
+                </ul>
+              </div>
+              <div class="card">
+                <div class="title">mm</div>
+                <ul>
+                  <li>进入目录后执行，只编当前目录</li>
+                  <li>速度最快</li>
+                </ul>
+              </div>
+            </div>
+          </li>
+          <li>增量编译可用 <code class="inline">-B</code> 强制全部重编</li>
+        </ul>
+
+        <h2 id="ch1-tools" class="section">1.3 工具介绍</h2>
+        <h3 class="subsection">1.3.1 Source Insight</h3>
+        <ul>
+          <li>源码阅读神器：建议分目录加入工程，避免卡顿</li>
+          <li>调节 Screen Fonts 让眼睛舒适</li>
+          <li>左下角"定位文件"按钮 + 输入文件名快速跳转</li>
+        </ul>
+        <h3 class="subsection">1.3.3 Busybox</h3>
+        <ul>
+          <li>Android 系统裁掉了多数标准 Linux 工具，Busybox 补齐缺失</li>
+          <li>下载：<code class="inline">busybox-armv6l</code>（对应 armv7l CPU）</li>
+          <li>推送并安装：<code class="inline">adb push busybox /system/xbin &amp;&amp; busybox --install</code></li>
+          <li>需要 root 权限</li>
+        </ul>
+      </section>
+
+      <!-- Chapter 2 -->
+      <section id="ch2">
+        <h1 class="chapter">第 2 章 · 深入理解 JNI</h1>
+        <div class="meta">JNI 是 Java 世界与 Native 世界的桥梁。本章通过 MediaScanner 实例深入分析 JNI 各种机制。</div>
+        <div class="toc-inline">
+          <div class="toc-title">本章目录</div>
+          <ol>
+            <li><a href="#ch2-overview">2.1 JNI 概述</a></li>
+            <li><a href="#ch2-example">2.2 学习实例：MediaScanner</a></li>
+            <li><a href="#ch2-java">2.3 Java 层 MediaScanner</a></li>
+            <li><a href="#ch2-jni">2.4 JNI 层 MediaScanner</a></li>
+          </ol>
+        </div>
+
+        <h2 id="ch2-overview" class="section">2.1 JNI 概述</h2>
+        <ul>
+          <li><strong>JNI = Java Native Interface</strong>，中文"Java 本地调用"</li>
+          <li>Java 函数可调用 Native（C/C++）函数，反之亦然</li>
+          <li>存在的意义：
+            <ul>
+              <li>承载 Java 的虚拟机本身由 Native 实现，JNI 屏蔽不同 OS 差异（如 Windows 的 <code class="inline">OpenFile</code> vs Linux 的 <code class="inline">open</code>）</li>
+              <li>复用已有 Native 模块、追求效率/速度的场合</li>
+            </ul>
+          </li>
+        </ul>
+        <div class="callout">Android 平台上 JNI 即是连接 Java 与 Native 世界的"桥梁"，没有它将寸步难行。</div>
+
+        <h2 id="ch2-example" class="section">2.2 学习 JNI 的实例：MediaScanner</h2>
+        <p>选择 MediaScanner 作为实例的原因：</p>
+        <ul>
+          <li>Java 框架层调用 → JNI → Native 实现 → 媒体库 → ContentProvider，跨层完整</li>
+          <li>代码量适中，逻辑清晰</li>
+        </ul>
+
+        <h2 id="ch2-java" class="section">2.3 Java 层的 MediaScanner 分析</h2>
+        <h3 class="subsection">2.3.1 加载 JNI 库</h3>
+        <pre class="code">static {
+    System.loadLibrary("media_jni");   // 加载 libmedia_jni.so
+}</pre>
+        <h3 class="subsection">2.3.2 Java 的 native 函数和总结</h3>
+        <ul>
+          <li><code class="inline">native_init()</code>：构造 Native 层 MediaScanner 对象，缓存字段 ID</li>
+          <li><code class="inline">processFile(String path, String mimeType, MediaScannerClient client)</code>：处理单个文件</li>
+          <li><code class="inline">processDirectory(String path, String extensions, MediaScannerClient client)</code>：处理目录</li>
+          <li>小结：Java 层职责薄，主要把请求透传到 JNI 层</li>
+        </ul>
+
+        <h2 id="ch2-jni" class="section">2.4 JNI 层 MediaScanner 的分析</h2>
+        <p>对应文件：<code class="inline">android_media_MediaScanner.cpp</code></p>
+        <h3 class="subsection">2.4.1 注册 JNI 函数</h3>
+        <p>两种注册方式：</p>
+        <div class="grid-2">
+          <div class="card">
+            <div class="title">① 静态注册（默认）</div>
+            <ul>
+              <li>函数命名规则：<code class="inline">Java_包名_类名_方法名</code></li>
+              <li>依赖包路径，反编译即可看到</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="title">② 动态注册（RegisterNatives）</div>
+            <ul>
+              <li><code class="inline">JNINativeMethod</code> 数组 + <code class="inline">RegisterNatives</code></li>
+              <li>灵活性高、可读性更好、本书重点</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 class="subsection">2.4.2 数据类型转换</h3>
+        <ul>
+          <li>基本类型：<code class="inline">jint ↔ int</code>、<code class="inline">jlong ↔ long</code> 等</li>
+          <li>引用类型：<code class="inline">jobject</code>、<code class="inline">jclass</code>、<code class="inline">jstring</code>、<code class="inline">jarray</code> 等</li>
+          <li>使用原则：明确生命周期，避免内存泄漏</li>
+        </ul>
+
+        <h3 class="subsection">2.4.3 JNIEnv 介绍</h3>
+        <ul>
+          <li><code class="inline">JNIEnv*</code> 是线程局部存储，指向函数表指针</li>
+          <li>Native 方法第一个参数都是 <code class="inline">JNIEnv*</code></li>
+          <li>通过它调用 JNI 函数（如 <code class="inline">FindClass</code>、<code class="inline">GetMethodID</code>）</li>
+        </ul>
+
+        <h3 class="subsection">2.4.4 通过 JNIEnv 操作 jobject</h3>
+        <ul>
+          <li>获取字段：<code class="inline">GetFieldID</code> + <code class="inline">Get&lt;Type&gt;Field</code></li>
+          <li>设置字段：<code class="inline">Set&lt;Type&gt;Field</code></li>
+          <li>调用方法：<code class="inline">Call&lt;Type&gt;Method</code> / <code class="inline">CallStatic&lt;Type&gt;Method</code></li>
+        </ul>
+
+        <h3 class="subsection">2.4.5 jstring 介绍</h3>
+        <ul>
+          <li><code class="inline">GetStringUTFChars</code>：获取 UTF-8 字符指针</li>
+          <li><code class="inline">ReleaseStringUTFChars</code>：必须成对释放</li>
+          <li><code class="inline">GetStringChars</code> / <code class="inline">ReleaseStringChars</code>：Unicode 形式</li>
+          <li><code class="inline">NewStringUTF</code> / <code class="inline">NewString</code>：创建 Java 端 String</li>
+        </ul>
+
+        <h3 class="subsection">2.4.6 JNI 类型签名介绍</h3>
+        <pre class="code">Java 类型    签名
+-------------------------
+byte        B
+char        C
+short       S
+int         I
+long        J
+float       F
+double      D
+boolean     Z
+void        V
+对象         L&lt;完整类名&gt;;
+数组         [类型</pre>
+
+        <h3 class="subsection">2.4.7 垃圾回收</h3>
+        <ul>
+          <li>JNI 中通过 <code class="inline">NewLocalRef</code> / <code class="inline">NewGlobalRef</code> 控制引用</li>
+          <li>Local 引用：方法返回后自动释放</li>
+          <li>Global 引用：跨方法/跨线程使用，需 <code class="inline">DeleteGlobalRef</code> 释放</li>
+          <li>Weak 引用：<code class="inline">NewWeakGlobalRef</code>，不阻止 GC</li>
+        </ul>
+
+        <h3 class="subsection">2.4.8 JNI 中的异常处理</h3>
+        <ul>
+          <li>检查：<code class="inline">ExceptionCheck</code> / <code class="inline">ExceptionOccurred</code></li>
+          <li>抛出：<code class="inline">Throw</code> / <code class="inline">ThrowNew</code></li>
+          <li>清除：<code class="inline">ExceptionClear</code></li>
+          <li>JNI 中抛出异常不会自动返回，<strong>需手动检查并处理</strong></li>
+        </ul>
+      </section>
+
+      <!-- Chapter 3 -->
+      <section id="ch3">
+        <h1 class="chapter">第 3 章 · 深入理解 init</h1>
+        <div class="meta">init 是 Android 用户空间的第一个进程（PID=1），负责孵化关键进程（如 zygote）和提供 property service。</div>
+        <div class="toc-inline">
+          <div class="toc-title">本章目录</div>
+          <ol>
+            <li><a href="#ch3-overview">3.1 概述</a></li>
+            <li><a href="#ch3-init">3.2 init 分析</a></li>
+          </ol>
+        </div>
+
+        <h2 id="ch3-overview" class="section">3.1 概述</h2>
+        <ul>
+          <li>init 负责孵化关键进程（<strong>尤其 zygote</strong>）</li>
+          <li>init 提供 property service（属性服务）统一管理系统属性</li>
+        </ul>
+
+        <h2 id="ch3-init" class="section">3.2 init 分析</h2>
+        <h3 class="subsection">3.2.1 解析配置文件</h3>
+        <ul>
+          <li>主配置文件：<code class="inline">init.rc</code>（<code class="inline">system/core/rootdir/init.rc</code>）</li>
+          <li>解析入口：<code class="inline">init_parse_config_file</code>，使用关键字表 <code class="inline">keywords.h</code></li>
+          <li>四种关键语句：
+            <ul>
+              <li><span class="tag">Action</span>：<code class="inline">on &lt;trigger&gt;</code> 触发条件</li>
+              <li><span class="tag">Command</span>：Action / Service 中的命令</li>
+              <li><span class="tag">Service</span>：<code class="inline">service &lt;name&gt; &lt;path&gt; [args]</code> 启动守护进程</li>
+              <li><span class="tag">Option</span>：Service 的属性（class、socket 等）</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3 class="subsection">3.2.2 解析 service</h3>
+        <ul>
+          <li><code class="inline">service_start</code> → <code class="inline">fork</code> → 子进程 <code class="inline">execve</code></li>
+          <li>Service 结构体记录 name、path、args、pid、flags、sockets 等</li>
+          <li>通过 <code class="inline">class_start default</code> 启动一类服务</li>
+        </ul>
+
+        <h3 class="subsection">3.2.3 init 控制 service</h3>
+        <ul>
+          <li>SIGCHLD 信号触发 <code class="inline">sigchld_handler</code>，回收僵尸进程</li>
+          <li>通过 <code class="inline">restart_on_failure</code> 等机制重启服务</li>
+          <li><code class="inline">write_file</code>、<code class="inline">chmod</code> 等 builtins 工具</li>
+        </ul>
+
+        <h3 class="subsection">3.2.4 属性服务</h3>
+        <ul>
+          <li>实现文件：<code class="inline">properties_service.c</code>、<code class="inline">properties.c</code></li>
+          <li>服务端：init 创建 socket 监听客户端的 set/get 请求</li>
+          <li>客户端 API：<code class="inline">property_set</code>、<code class="inline">property_get</code></li>
+          <li>属性区域（prop 区）：init 启动时从 <code class="inline">/default.prop</code> 等文件加载</li>
+          <li>关键点：<strong>只有 init 进程可写</strong>，其他进程通过 socket 请求修改</li>
+        </ul>
+        <div class="callout">
+          <strong>关键流程：</strong>init.rc 中 <code class="inline">on boot</code> 触发 <code class="inline">class_start core</code> → 启动 service_manager、zygote、media 等服务。
+        </div>
+      </section>
+
+      <!-- Chapter 4 -->
+      <section id="ch4">
+        <h1 class="chapter">第 4 章 · 深入理解 zygote</h1>
+        <div class="meta">zygote 是 Android Java 世界的开创者；SystemServer 启动全部核心服务；zygote 通过 fork 孵化新进程。</div>
+        <div class="toc-inline">
+          <div class="toc-title">本章目录</div>
+          <ol>
+            <li><a href="#ch4-zygote">4.2 zygote 分析</a></li>
+            <li><a href="#ch4-systemserver">4.3 SystemServer 分析</a></li>
+            <li><a href="#ch4-fork">4.4 zygote 的分裂</a></li>
+            <li><a href="#ch4-extras">4.5 拓展思考</a></li>
+          </ol>
+        </div>
+
+        <h2 id="ch4-zygote" class="section">4.2 zygote 分析</h2>
+        <h3 class="subsection">4.2.1 AppRuntime 分析</h3>
+        <ul>
+          <li>zygote 进程入口：<code class="inline">app_main.cpp</code></li>
+          <li><code class="inline">AppRuntime</code> 继承 <code class="inline">AndroidRunTime</code>，负责创建虚拟机、调用 <code class="inline">CallMain</code></li>
+        </ul>
+        <h3 class="subsection">4.2.2 Welcome to Java World</h3>
+        <ul>
+          <li>调用 <code class="inline">startVM</code> 创建 Dalvik 虚拟机</li>
+          <li>注册 JNI 函数</li>
+          <li>调用 <code class="inline">ZygoteInit.main</code> 进入 Java 世界</li>
+        </ul>
+        <h3 class="subsection">4.2.3 关于 zygote 的总结</h3>
+        <ul>
+          <li>zygote 是 Native 与 Java 的"接驳点"</li>
+          <li>预加载常用类与资源（preloadClasses、preloadResources）以加速 fork</li>
+        </ul>
+
+        <h2 id="ch4-systemserver" class="section">4.3 SystemServer 分析</h2>
+        <h3 class="subsection">4.3.1 SystemServer 的诞生</h3>
+        <ul>
+          <li>zygote 通过 <code class="inline">forkSystemServer</code> 创建 SystemServer 进程</li>
+          <li>启动类路径：<code class="inline">com.android.server.SystemServer</code></li>
+        </ul>
+        <h3 class="subsection">4.3.2 SystemServer 的重要使命</h3>
+        <ul>
+          <li>启动核心服务（线程）：
+            <ul>
+              <li>ActivityManagerService (AMS)</li>
+              <li>WindowManagerService (WMS)</li>
+              <li>PackageManagerService (PMS)</li>
+              <li>PowerManagerService、BatteryService 等</li>
+            </ul>
+          </li>
+          <li>通过 <code class="inline">ServiceManager.addService</code> 注册到 Binder 大管家</li>
+        </ul>
+        <h3 class="subsection">4.3.3 关于 SystemServer 的总结</h3>
+        <p>SystemServer 是 Android Framework 的"总装车间"，几乎所有 Java 层服务都在这里完成启动。</p>
+
+        <h2 id="ch4-fork" class="section">4.4 zygote 的分裂</h2>
+        <h3 class="subsection">4.4.1 ActivityManagerService 发送请求</h3>
+        <ul>
+          <li>AMS 通过 <code class="inline">Process.start</code> → <code class="inline">Process.startViaZygote</code></li>
+          <li>将启动参数打包成 socket 消息发给 zygote</li>
+        </ul>
+        <h3 class="subsection">4.4.2 有求必应之响应请求</h3>
+        <ul>
+          <li>zygote 监听 socket：<code class="inline">ZygoteInit.runSelectLoop</code></li>
+          <li>读取参数后调用 <code class="inline">ZygoteConnection.runOnce</code></li>
+          <li>核心：<code class="inline">forkAndSpecialize</code>（普通应用） / <code class="inline">forkSystemServer</code>（系统服务）</li>
+        </ul>
+        <h3 class="subsection">4.4.3 关于 zygote 分裂的总结</h3>
+        <p>所有 Java 进程（含应用）几乎都源于 zygote 的 fork。这种方式天然共享已加载的类与资源，启动快。</p>
+
+        <h2 id="ch4-extras" class="section">4.5 拓展思考</h2>
+        <h3 class="subsection">4.5.1 虚拟机 heapsize 的限制</h3>
+        <ul>
+          <li><code class="inline">dalvik.vm.heapgrowthlimit</code>：普通应用上限</li>
+          <li><code class="inline">dalvik.vm.heapsize</code>：系统进程上限</li>
+          <li>大内存应用需在 manifest 声明 <code class="inline">largeHeap="true"</code></li>
+        </ul>
+        <h3 class="subsection">4.5.2 开机速度优化</h3>
+        <ul>
+          <li>优化 init.rc 中服务启动顺序与并发度</li>
+          <li>精简预加载类（<code class="inline">preloaded-classes</code>）</li>
+          <li>使用 <code class="inline">read-ahead</code>、<code class="inline">dm-verity</code> 优化 IO</li>
+        </ul>
+        <h3 class="subsection">4.5.3 Watchdog 分析</h3>
+        <ul>
+          <li>位于 <code class="inline">system_server</code> 中，定期检查关键线程</li>
+          <li>如果主线程 Looper 卡住 &gt; 30s，抓取 trace 并重启系统</li>
+        </ul>
+      </section>
+
+      <!-- Chapter 5 -->
+      <section id="ch5">
+        <h1 class="chapter">第 5 章 · 深入理解常见类</h1>
+        <div class="meta">本章围绕 Android 系统中极具特色的"智能指针"与消息机制展开，是理解 Native 层的钥匙。</div>
+        <div class="toc-inline">
+          <div class="toc-title">本章目录</div>
+          <ol>
+            <li><a href="#ch5-refbase">5.2 RefBase / sp / wp</a></li>
+            <li><a href="#ch5-thread">5.3 Thread 与同步类</a></li>
+            <li><a href="#ch5-looper">5.4 Looper 与 Handler</a></li>
+          </ol>
+        </div>
+
+        <h2 id="ch5-refbase" class="section">5.2 以"三板斧"揭秘 RefBase、sp 和 wp</h2>
+        <p>Android 智能指针借鉴 C++ 11 的 <code class="inline">shared_ptr</code> / <code class="inline">weak_ptr</code>。</p>
+        <h3 class="subsection">5.2.1 第一板斧——初识影子对象</h3>
+        <ul>
+          <li>每个 <code class="inline">RefBase</code> 子类内部持有一个 <code class="inline">weakref_impl</code>（影子对象）</li>
+          <li>影子对象统一管理 <strong>强引用计数</strong>（<code class="inline">mStrong</code>）和 <strong>弱引用计数</strong>（<code class="inline">mWeak</code>）</li>
+        </ul>
+        <h3 class="subsection">5.2.2 第二板斧——由弱生强</h3>
+        <ul>
+          <li><code class="inline">wp::promote()</code> → <code class="inline">weakref_type::promote()</code> 尝试升级为 sp</li>
+          <li>目标对象未死时返回有效 sp；已死时返回空 sp</li>
+        </ul>
+        <h3 class="subsection">5.2.3 第三板斧——破解生死魔咒</h3>
+        <ul>
+          <li>当强引用计数归零，触发 <code class="inline">onLastWeakRef</code> → <code class="inline">onLastStrongRef</code> → <code class="inline">delete</code></li>
+          <li>通过 <code class="inline">extendObjectLifetime(OBJECT_LIFETIME_WEAK)</code> 等策略可调整生命周期</li>
+        </ul>
+        <h3 class="subsection">5.2.4 轻量级引用计数控制类 LightRefBase</h3>
+        <ul>
+          <li>不区分强弱，仅一个原子计数；开销最小</li>
+          <li>适合线程局部、不需要 weak 引用的对象</li>
+        </ul>
+        <h3 class="subsection">5.2.5 题外话——三板斧的来历</h3>
+        <p>作者受武侠文化启发，把"看影子—升级—判生死"的过程形象化为三板斧。</p>
+
+        <h2 id="ch5-thread" class="section">5.3 Thread 类及常用同步类分析</h2>
+        <h3 class="subsection">5.3.1 一个变量引发的思考</h3>
+        <ul>
+          <li>多线程下 <code class="inline">++i</code> 不是原子操作，需要互斥</li>
+          <li>引出 <code class="inline">Mutex</code>、<code class="inline">Condition</code>、<code class="inline">Semaphore</code> 等同步原语</li>
+        </ul>
+        <h3 class="subsection">5.3.2 常用同步类</h3>
+        <div class="grid-2">
+          <div class="card">
+            <div class="title">Mutex（互斥锁）</div>
+            <ul>
+              <li><code class="inline">Mutex::Autolock</code> 利用 RAII 自动加解锁</li>
+              <li>不可重入（线程内重复 lock 会死锁）</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="title">Condition（条件变量）</div>
+            <ul>
+              <li><code class="inline">wait</code> / <code class="inline">waitRelative</code> / <code class="inline">signal</code></li>
+              <li>必须与 Mutex 配合使用</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="title">Semaphore（信号量）</div>
+            <ul>
+              <li>基于计数的同步，适合生产者-消费者</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="title">Barrier（栅栏）</div>
+            <ul>
+              <li>所有线程到达后一起放行</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2 id="ch5-looper" class="section">5.4 Looper 和 Handler 类分析</h2>
+        <h3 class="subsection">5.4.1 Looper 类分析</h3>
+        <ul>
+          <li>一个线程最多一个 Looper，通过 <code class="inline">prepare</code> 创建</li>
+          <li>核心循环：<code class="inline">loopOnce</code> → <code class="inline">pollOnce</code> → <code class="inline">epoll_wait</code></li>
+          <li><code class="inline">getMainLooper</code> 返回主线程 Looper</li>
+        </ul>
+        <h3 class="subsection">5.4.2 Handler 分析</h3>
+        <ul>
+          <li>绑定 Looper + MessageQueue</li>
+          <li><code class="inline">sendMessage</code> / <code class="inline">post(Runnable)</code> 入队</li>
+          <li><code class="inline">dispatchMessage</code> 分发到 callback / handleMessage</li>
+        </ul>
+        <h3 class="subsection">5.4.3 Looper 和 Handler 的同步关系</h3>
+        <ul>
+          <li>Handler 与 Looper 不必同线程，但操作 MessageQueue 时需 <code class="inline">epoll</code> 唤醒</li>
+          <li>Native 层有对应 <code class="inline">Looper</code>（用于无 Java 线程的轮询）</li>
+        </ul>
+        <h3 class="subsection">5.4.4 HandlerThread 介绍</h3>
+        <ul>
+          <li>封装"启动线程 + 准备 Looper"的工具类</li>
+          <li>对外提供 <code class="inline">getLooper</code> 让其他 Handler 投递消息</li>
+        </ul>
+      </section>
+
+      <!-- Chapter 6 -->
+      <section id="ch6">
+        <h1 class="chapter">第 6 章 · 深入理解 Binder</h1>
+        <div class="meta">Binder 是 Android 最核心的 IPC 机制。本章以 MediaServer 为例庖丁解牛。</div>
+        <div class="toc-inline">
+          <div class="toc-title">本章目录</div>
+          <ol>
+            <li><a href="#ch6-overview">6.2 庖丁解 MediaServer</a></li>
+            <li><a href="#ch6-sm">6.3 ServiceManager</a></li>
+            <li><a href="#ch6-mp">6.4 MediaPlayerService 与 Client</a></li>
+            <li><a href="#ch6-extra">6.5 拓展 / 6.6 学以致用</a></li>
+          </ol>
+        </div>
+
+        <h2 id="ch6-overview" class="section">6.2 庖丁解 MediaServer</h2>
+        <h3 class="subsection">6.2.1 MediaServer 的入口函数</h3>
+        <ul>
+          <li>位置：<code class="inline">frameworks/base/media/mediaserver/main_mediaserver.cpp</code></li>
+          <li>创建进程：<code class="inline">ProcessState::self()</code> → 打开 /dev/binder</li>
+          <li>获取 ServiceManager：<code class="inline">defaultServiceManager()</code></li>
+        </ul>
+        <h3 class="subsection">6.2.2 独一无二的 ProcessState</h3>
+        <ul>
+          <li>每个进程一个 ProcessState（单例）</li>
+          <li>负责打开 binder 设备、内存映射（mmap）、管理线程池</li>
+        </ul>
+        <h3 class="subsection">6.2.3 时空穿越魔术——defaultServiceManager</h3>
+        <ul>
+          <li>ServiceManager 本身是 Binder 服务，无注册地址</li>
+          <li>通过特殊句柄 0 拿到 ServiceManager 代理（<code class="inline">BpServiceManager</code>）</li>
+        </ul>
+        <h3 class="subsection">6.2.4 注册 MediaPlayerService</h3>
+        <ul>
+          <li>实例化 <code class="inline">MediaPlayerService</code> 并调用 <code class="inline">addService</code></li>
+          <li>内部通过 <code class="inline">IPCThreadState::self()</code> 发送 BC_TRANSACTION</li>
+        </ul>
+        <h3 class="subsection">6.2.5 StartThreadPool 和 joinThreadPool</h3>
+        <ul>
+          <li><code class="inline">startThreadPool</code> 启动工作线程，循环 <code class="inline">talkWithDriver</code></li>
+          <li><code class="inline">joinThreadpool</code> 阻塞等待 binder 事件</li>
+        </ul>
+        <h3 class="subsection">6.2.6 你彻底明白了吗</h3>
+        <p>通过 MediaServer 流程梳理"打开 binder 设备 → 注册服务 → 启动线程池 → 进入循环"四步曲。</p>
+
+        <h2 id="ch6-sm" class="section">6.3 服务总管 ServiceManager</h2>
+        <h3 class="subsection">6.3.1 ServiceManager 的原理</h3>
+        <ul>
+          <li>独立进程 <code class="inline">/system/bin/servicemanager</code></li>
+          <li>维护 svclist（服务列表），提供 addService / checkService</li>
+        </ul>
+        <h3 class="subsection">6.3.2 服务的注册</h3>
+        <ul>
+          <li>服务进程通过 binder 句柄 0 调用 SVC_MGR_ADD_SERVICE</li>
+          <li>ServiceManager 写入 svclist，赋予唯一句柄</li>
+        </ul>
+        <h3 class="subsection">6.3.3 ServiceManager 存在的意义</h3>
+        <ul>
+          <li>是服务的"黄页"，让 Client 按名字查找</li>
+          <li>无中心目录则所有 Client 必须硬编码服务地址，扩展性差</li>
+        </ul>
+
+        <h2 id="ch6-mp" class="section">6.4 MediaPlayerService 和它的 Client</h2>
+        <h3 class="subsection">6.4.1 查询 ServiceManager</h3>
+        <ul>
+          <li>Client 通过 <code class="inline">defaultServiceManager()-&gt;checkService(name)</code> 拿到远程代理 Bp</li>
+        </ul>
+        <h3 class="subsection">6.4.2 子承父业</h3>
+        <ul>
+          <li>MediaPlayer 客户端通过 Binder 代理跨进程调用 Server 方法</li>
+          <li>最终由 <code class="inline">BBinder::transact</code> / BnMediaPlayerService 处理请求</li>
+        </ul>
+
+        <h2 id="ch6-extra" class="section">6.5 拓展 / 6.6 学以致用</h2>
+        <h3 class="subsection">6.5.1 Binder 和线程的关系</h3>
+        <ul>
+          <li>Server 端一个 binder 实体可被多线程并发访问</li>
+          <li>需要 <code class="inline">IPCThreadState</code> 保证线程安全</li>
+        </ul>
+        <h3 class="subsection">6.5.2 有人情味的讣告</h3>
+        <p>当 Client 异常退出，Server 通过 <code class="inline">linkToDeath</code> / <code class="inline">unlinkToDeath</code> 收到死亡通知，释放资源。</p>
+        <h3 class="subsection">6.5.3 匿名 Service</h3>
+        <ul>
+          <li>不上报 ServiceManager，直接在进程间互传 binder 句柄</li>
+        </ul>
+        <h3 class="subsection">6.6.1 纯 Native 的 Service</h3>
+        <p>完整示例：编写一个不依赖 Java 世界的 Native Binder 服务。</p>
+        <h3 class="subsection">6.6.2 扶得起的"阿斗"（aidl）</h3>
+        <ul>
+          <li>使用 AIDL 自动生成 Java/C++ Stub</li>
+          <li>可快速搭建跨进程服务</li>
+        </ul>
+      </section>
+
+      <!-- Chapter 7 -->
+      <section id="ch7">
+        <h1 class="chapter">第 7 章 · 深入理解 Audio 系统</h1>
+        <div class="meta">Audio 系统涉及三方：Client（AudioTrack）、Server（AudioFlinger）、策略（AudioPolicyService）。</div>
+        <div class="toc-inline">
+          <div class="toc-title">本章目录</div>
+          <ol>
+            <li><a href="#ch7-track">7.2 AudioTrack 破解</a></li>
+            <li><a href="#ch7-flinger">7.3 AudioFlinger 破解</a></li>
+            <li><a href="#ch7-policy">7.4 AudioPolicyService</a></li>
+          </ol>
+        </div>
+
+        <h2 id="ch7-track" class="section">7.2 AudioTrack 的破解</h2>
+        <h3 class="subsection">7.2.1 用例介绍</h3>
+        <pre class="code">AudioTrack track = new AudioTrack(STREAM_MUSIC, 44100,
+        AudioFormat.CHANNEL_CONFIGURATION_MONO,
+        AudioFormat.ENCODING_PCM_16BIT, minBufSize, MODE_STREAM);
+track.play();
+track.write(pcmData, 0, pcmData.length);</pre>
+        <h3 class="subsection">7.2.2 AudioTrack（Java 空间）分析</h3>
+        <ul>
+          <li>Java 层封装 JNI 调用，缓存字段、方法 ID</li>
+          <li>维护状态：STATE_INITIALIZED / STATE_NO_STATIC_DATA / STATE_UNINITIALIZED</li>
+        </ul>
+        <h3 class="subsection">7.2.3 AudioTrack（Native 空间）分析</h3>
+        <ul>
+          <li>对应 <code class="inline">AudioTrack.cpp</code>，内部通过 IAudioTrack 与 AudioFlinger 通信</li>
+          <li>共享内存：<code class="inline">audio_track_cblk_t</code> 配合环形缓冲区</li>
+        </ul>
+        <h3 class="subsection">7.2.4 关于 AudioTrack 的总结</h3>
+        <p>AudioTrack 是生产者角色，跨进程把 PCM 数据送给 AudioFlinger。</p>
+
+        <h2 id="ch7-flinger" class="section">7.3 AudioFlinger 的破解</h2>
+        <h3 class="subsection">7.3.1 AudioFlinger 的诞生</h3>
+        <ul>
+          <li>在 mediaserver 进程中被实例化为单例</li>
+          <li>通过 <code class="inline">addService</code> 注册</li>
+        </ul>
+        <h3 class="subsection">7.3.2 通过流程分析 AudioFlinger</h3>
+        <ul>
+          <li>创建 Track：<code class="inline">createTrack</code></li>
+          <li>回放线程：<code class="inline">MixerThread</code> / <code class="inline">DirectOutputThread</code> / <code class="inline">DuplicatingThread</code></li>
+          <li>核心数据流：<code class="inline">AudioBufferProvider</code> 拉数据</li>
+        </ul>
+        <h3 class="subsection">7.3.3 audio_track_cblk_t 分析</h3>
+        <ul>
+          <li>在共享内存中：服务器 front / 用户 rear，配合睡眠/唤醒</li>
+          <li>解决跨进程生产者-消费者同步问题</li>
+        </ul>
+        <h3 class="subsection">7.3.4 关于 AudioFlinger 的总结</h3>
+        <p>AudioFlinger 是音频系统的中枢，负责混音、路由、与硬件驱动交互。</p>
+
+        <h2 id="ch7-policy" class="section">7.4 AudioPolicyService 的破解</h2>
+        <h3 class="subsection">7.4.1 AudioPolicyService 的创建</h3>
+        <ul>
+          <li>由 audioserver 启动（Android 8.0+ 拆分为独立进程）</li>
+          <li>内部维护 <code class="inline">AudioPolicyManager</code>，负责设备选择与音量策略</li>
+        </ul>
+        <h3 class="subsection">7.4.2 重回 AudioTrack</h3>
+        <ul>
+          <li>当 AudioTrack 启动时，向 AudioPolicyService 查询合适的输出</li>
+        </ul>
+        <h3 class="subsection">7.4.3 声音路由切换实例分析</h3>
+        <p>插上耳机：从扬声器切换到耳机；触发 <code class="inline">setOutputDevice</code>，重新绑定 AudioOutput。</p>
+        <h3 class="subsection">7.4.4 关于 AudioPolicy 的总结</h3>
+        <p>AudioPolicyService 是"策略层"，AudioFlinger 是"执行层"。两者解耦，分工明确。</p>
+        <h3 class="subsection">7.5.1 DuplicatingThread 破解</h3>
+        <p>用于一对多输出（如同时输出到蓝牙和本地）。</p>
+        <h3 class="subsection">7.5.2 题外话</h3>
+        <p>音频延迟、AAudio / Oboe 等更现代方案。</p>
+      </section>
+
+      <!-- Chapter 8 -->
+      <section id="ch8">
+        <h1 class="chapter">第 8 章 · 深入理解 Surface 系统</h1>
+        <div class="meta">Surface 系统是 Android 显示的核心。理解 Activity → Window → Surface → SurfaceFlinger 的链路。</div>
+        <div class="toc-inline">
+          <div class="toc-title">本章目录</div>
+          <ol>
+            <li><a href="#ch8-activity">8.2 一个 Activity 的显示</a></li>
+            <li><a href="#ch8-surface">8.3-8.4 Surface 深入分析</a></li>
+            <li><a href="#ch8-sf">8.5 SurfaceFlinger 分析</a></li>
+          </ol>
+        </div>
+
+        <h2 id="ch8-activity" class="section">8.2 一个 Activity 的显示</h2>
+        <h3 class="subsection">8.2.1 Activity 的创建</h3>
+        <ul>
+          <li>AMS 通过 <code class="inline">startActivity</code> 触发 <code class="inline">ActivityThread.performLaunchActivity</code></li>
+          <li>回调 onCreate / onStart / onResume</li>
+        </ul>
+        <h3 class="subsection">8.2.2 Activity 的 UI 绘制</h3>
+        <ul>
+          <li><code class="inline">WindowManagerGlobal</code> → <code class="inline">ViewRootImpl</code></li>
+          <li><code class="inline">setView</code> 触发 <code class="inline">requestLayout</code> + <code class="inline">invalidate</code></li>
+          <li><code class="inline">draw</code> → <code class="inline">Surface.lockCanvas</code> → 渲染 → <code class="inline">unlockCanvasAndPost</code></li>
+        </ul>
+        <h3 class="subsection">8.2.3 关于 Activity 的总结</h3>
+        <p>Activity 的显示路径是：Java 控件树 → 测量/布局/绘制 → 通过 Surface 提交到 SurfaceFlinger。</p>
+
+        <h2 id="ch8-surface" class="section">8.3-8.4 Surface 深入分析</h2>
+        <h3 class="subsection">8.3.1 和 Surface 有关的流程总结</h3>
+        <ul>
+          <li>Client 端：<code class="inline">Surface</code> + <code class="inline">SurfaceComposerClient</code></li>
+          <li>Server 端：<code class="inline">SurfaceFlinger</code> 持有 <code class="inline">Layer</code>（BufferQueue 生产者）</li>
+        </ul>
+        <h3 class="subsection">8.3.2 Surface 之乾坤大挪移</h3>
+        <ul>
+          <li>在 Client 端构造 Surface，封装 BufferQueue 的 Consumer 端</li>
+        </ul>
+        <h3 class="subsection">8.3.3 乾坤大挪移的 JNI 层分析</h3>
+        <ul>
+          <li><code class="inline">android_view_Surface.cpp</code> 中实现 native 方法</li>
+        </ul>
+        <h3 class="subsection">8.3.4 Surface 和画图</h3>
+        <ul>
+          <li>通过 <code class="inline">lockCanvas</code> 取得 SkBitmap，软件渲染或硬件加速</li>
+        </ul>
+        <h3 class="subsection">8.4.x 深入分析</h3>
+        <ul>
+          <li><code class="inline">SurfaceComposerClient</code> 负责与 SurfaceFlinger 通信</li>
+          <li><code class="inline">SurfaceControl</code> 跨进程控制 Layer 状态（位置、可见性、透明度）</li>
+          <li><code class="inline">writeToParcel</code> / <code class="inline">readFromParcel</code> 序列化 Surface 信息</li>
+          <li><code class="inline">GraphicBuffer</code>：跨进程共享的图形缓冲区</li>
+        </ul>
+
+        <h2 id="ch8-sf" class="section">8.5 SurfaceFlinger 分析</h2>
+        <h3 class="subsection">8.5.1 SurfaceFlinger 的诞生</h3>
+        <ul>
+          <li>独立进程 <code class="inline">/system/bin/surfaceflinger</code></li>
+          <li>作为系统服务的"显示中枢"</li>
+        </ul>
+        <h3 class="subsection">8.5.2 SF 工作线程分析</h3>
+        <ul>
+          <li>主线程：响应 Client 请求、维护 Layer 树</li>
+          <li>渲染线程：合成所有 Layer → 提交显示硬件</li>
+        </ul>
+        <h3 class="subsection">8.5.3 Transaction 分析</h3>
+        <ul>
+          <li>使用 <code class="inline">Transaction</code> 批量化参数修改，避免一次一 commit</li>
+          <li>同步机制：<code class="inline">Barrier</code> + 回调</li>
+        </ul>
+        <h3 class="subsection">8.5.4 关于 SurfaceFlinger 的总结</h3>
+        <p>SurfaceFlinger = Layer 树管理 + 多 Buffer 合成 + 与 HWComposer 交互。</p>
+        <h3 class="subsection">8.6.x 拓展思考</h3>
+        <ul>
+          <li>CB（CallBack）对象机制：<code class="inline">SurfaceTexture</code> 监听帧可用</li>
+          <li>ViewRoot 的提问：测量/布局/绘制与 Surface 生命周期配合</li>
+          <li>LayerBuffer 与 EGLImage 等高级主题</li>
+        </ul>
+      </section>
+
+      <!-- Chapter 9 -->
+      <section id="ch9">
+        <h1 class="chapter">第 9 章 · 深入理解 Vold 和 Rild</h1>
+        <div class="meta">Vold 负责存储卷管理，Rild 负责与基带通信，是两个常被忽略但极重要的守护进程。</div>
+        <div class="toc-inline">
+          <div class="toc-title">本章目录</div>
+          <ol>
+            <li><a href="#ch9-vold">9.2 Vold 原理</a></li>
+            <li><a href="#ch9-rild">9.3 Rild 原理</a></li>
+          </ol>
+        </div>
+
+        <h2 id="ch9-vold" class="section">9.2 Vold 的原理与机制分析</h2>
+        <h3 class="subsection">9.2.1 Netlink 和 Uevent 介绍</h3>
+        <ul>
+          <li>Netlink：内核与用户态通信的 socket 协议族</li>
+          <li>Uevent：内核向用户态广播设备插拔事件</li>
+        </ul>
+        <h3 class="subsection">9.2.2 初识 Vold</h3>
+        <ul>
+          <li>位置：<code class="inline">system/vold/</code></li>
+          <li>职责：接收 Uevent、管理卷（mount/format）、响应 Framework 命令</li>
+        </ul>
+        <h3 class="subsection">9.2.3 NetlinkManager 模块分析</h3>
+        <ul>
+          <li>封装 Netlink socket，监听 SUBSYSTEM 消息</li>
+        </ul>
+        <h3 class="subsection">9.2.4 VolumeManager 模块分析</h3>
+        <ul>
+          <li>维护 <code class="inline">Volume</code> 列表（SDCard / Emulated / Auto）</li>
+          <li>处理 mount / unmount / format</li>
+        </ul>
+        <h3 class="subsection">9.2.5 CommandListener 模块分析</h3>
+        <ul>
+          <li>监听 <code class="inline">/dev/socket/vold</code>，解析 Framework 命令</li>
+        </ul>
+        <h3 class="subsection">9.2.6 Vold 实例分析</h3>
+        <p>从插入 U 盘到挂载到 <code class="inline">/mnt/sdcard</code> 的全流程跟踪。</p>
+        <h3 class="subsection">9.2.7 关于 Vold 的总结</h3>
+        <p>Vold = Uevent 接收者 + 卷管理器 + Framework 代理。</p>
+
+        <h2 id="ch9-rild" class="section">9.3 Rild 的原理与机制分析</h2>
+        <h3 class="subsection">9.3.1 初识 Rild</h3>
+        <ul>
+          <li>位置：<code class="inline">hardware/ril/</code></li>
+          <li>职责：与基带 modem 通信，把 AT 命令 / 事件转换为 Java 端 RIL 请求</li>
+        </ul>
+        <h3 class="subsection">9.3.2 RIL_startEventLoop</h3>
+        <ul>
+          <li>创建事件循环线程，epoll 等待</li>
+        </ul>
+        <h3 class="subsection">9.3.3 RIL_Init</h3>
+        <ul>
+          <li>初始化 RIL 库、注册回调</li>
+        </ul>
+        <h3 class="subsection">9.3.4 RIL_register</h3>
+        <ul>
+          <li>向 rild 注册回调函数（onRequest / onStateRequest 等）</li>
+        </ul>
+        <h3 class="subsection">9.3.6 Rild 实例分析</h3>
+        <p>追踪一次拨号请求：Phone → RILJ → rild → reference-ril → modem。</p>
+        <h3 class="subsection">9.3.7 关于 Rild 的总结</h3>
+        <p>Rild 是 Java 框架与 modem 硬件的中间人，屏蔽厂商差异。</p>
+        <h3 class="subsection">9.4.x 拓展思考</h3>
+        <ul>
+          <li>嵌入式存储：MMC、eMMC、UFS 的差异</li>
+          <li>Rild 改进方向：多 SIM 策略、与 Phone 进程的解耦</li>
+        </ul>
+      </section>
+
+      <!-- Chapter 10 -->
+      <section id="ch10">
+        <h1 class="chapter">第 10 章 · 深入理解 MediaScanner</h1>
+        <div class="meta">本章是对第 2 章的延伸，从系统服务角度再看 MediaScanner：android.process.media 启动、扫描流程。</div>
+        <div class="toc-inline">
+          <div class="toc-title">本章目录</div>
+          <ol>
+            <li><a href="#ch10-pm">10.2 android.process.media</a></li>
+            <li><a href="#ch10-ms">10.3 MediaScanner 分析</a></li>
+          </ol>
+        </div>
+
+        <h2 id="ch10-pm" class="section">10.2 android.process.media 分析</h2>
+        <h3 class="subsection">10.2.1 MSR 模块分析</h3>
+        <ul>
+          <li><strong>MediaScannerReceiver</strong>：接收 BOOT_COMPLETED / ACTION_MEDIA_SCANNER_SCAN_FILE 等广播</li>
+          <li>内部启动 MediaScannerService</li>
+        </ul>
+        <h3 class="subsection">10.2.2 MSS 模块分析</h3>
+        <ul>
+          <li><strong>MediaScannerService</strong>：通过 <code class="inline">scanFile / scanDirectory</code> 接受请求</li>
+          <li>内部调用 native 层 MediaScanner 扫描</li>
+        </ul>
+        <h3 class="subsection">10.2.3 工作流程总结</h3>
+        <ol>
+          <li>Framework 或 App 发起扫描请求</li>
+          <li>通过 AMS 启动 android.process.media 进程</li>
+          <li>MSR 收到广播 → 启动 MSS → MSS 调用 Native MediaScanner</li>
+          <li>扫描结果写入 MediaProvider 数据库</li>
+        </ol>
+
+        <h2 id="ch10-ms" class="section">10.3 MediaScanner 分析</h2>
+        <h3 class="subsection">10.3.1 Java 层分析</h3>
+        <ul>
+          <li>同第 2 章描述，包含 <code class="inline">MediaScanner</code> / <code class="inline">MediaScannerClient</code> / <code class="inline">MediaFile</code> 等</li>
+        </ul>
+        <h3 class="subsection">10.3.2 JNI 层分析</h3>
+        <ul>
+          <li><code class="inline">android_media_MediaScanner.cpp</code> 中注册 JNI 方法</li>
+          <li>核心：<code class="inline">processFile</code> / <code class="inline">processDirectory</code></li>
+        </ul>
+        <h3 class="subsection">10.3.3 PVMediaScanner 分析</h3>
+        <ul>
+          <li>位于 <code class="inline">frameworks/base/media/libmediaplayerservice/</code></li>
+          <li>对应 <code class="inline">PVMediaScanner</code>：使用 OpenCore / stagefright 解析媒体元数据</li>
+        </ul>
+        <h3 class="subsection">10.3.4 关于 MediaScanner 的总结</h3>
+        <p>MediaScanner 是 Android 媒体系统的"户籍登记员"，负责把媒体文件登记到 MediaProvider。</p>
+        <h3 class="subsection">10.4.1 MediaScannerConnection 介绍</h3>
+        <p>App 主动通知系统扫描新文件：<code class="inline">MediaScannerConnection.scanFile()</code></p>
+        <h3 class="subsection">10.4.2 我问你答</h3>
+        <p>思考题：扫描性能、ID3 解析、媒体类型识别边界等。</p>
+      </section>
+
+      <div class="footer-tip">📚 《深入理解 Android 卷 I》— 邓凡平 · 知识脑图整理完毕</div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Default: collapse all nav items
+  document.querySelectorAll('#nav-root .nav-item').forEach(item => {
+    if (item.querySelector('.nav-row.has-children')) {
+      item.classList.remove('open');
+    }
+  });
+
+  // Toggle on click
+  document.querySelectorAll('#nav-root .nav-row.has-children').forEach(row => {
+    row.addEventListener('click', e => {
+      e.stopPropagation();
+      const item = row.parentElement;
+      item.classList.toggle('open');
+    });
+  });
+
+  // Click on leaf row to scroll
+  document.querySelectorAll('#nav-root .nav-row').forEach(row => {
+    row.addEventListener('click', e => {
+      if (row.classList.contains('has-children')) return;
+      const item = row.parentElement;
+      const target = item.getAttribute('data-target');
+      if (!target) return;
+      const section = document.getElementById(target);
+      if (section) {
+        // open ancestors
+        let parent = item.parentElement;
+        while (parent && parent.id !== 'nav-root') {
+          if (parent.classList && parent.classList.contains('nav-item')) {
+            parent.classList.add('open');
+          }
+          parent = parent.parentElement;
+        }
+        // mark active
+        document.querySelectorAll('.nav-row').forEach(r => r.classList.remove('active'));
+        row.classList.add('active');
+        // scroll
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Expand / collapse all
+  document.getElementById('btn-expand').addEventListener('click', () => {
+    document.querySelectorAll('#nav-root .nav-item').forEach(item => {
+      if (item.querySelector('.nav-row.has-children')) {
+        item.classList.add('open');
+      }
+    });
+  });
+  document.getElementById('btn-collapse').addEventListener('click', () => {
+    document.querySelectorAll('#nav-root .nav-item').forEach(item => {
+      if (item.querySelector('.nav-row.has-children')) {
+        item.classList.remove('open');
+      }
+    });
+  });
+</script>
+</body>
+</html>
