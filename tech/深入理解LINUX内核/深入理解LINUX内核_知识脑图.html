@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>深入理解 LINUX 内核 · 知识脑图</title>
+<style>
+:root {
+    --bg: #f7f7f5;
+    --bg-card: #ffffff;
+    --bg-sidebar: #1f2933;
+    --bg-sidebar-hover: #2a3743;
+    --bg-sidebar-active: #3e4c59;
+    --text: #1f2933;
+    --text-muted: #6b7280;
+    --text-sidebar: #d1d5db;
+    --text-sidebar-active: #ffffff;
+    --accent: #b8520b;
+    --accent-light: #f5e6d3;
+    --accent-2: #1e6091;
+    --accent-2-light: #e3eef7;
+    --border: #e5e7eb;
+    --border-strong: #d1d5db;
+    --code-bg: #f3f4f6;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    --radius: 6px;
+    --radius-lg: 10px;
+    --transition: 0.18s ease;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Layout */
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 320px;
+    background: var(--bg-sidebar);
+    color: var(--text-sidebar);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+    z-index: 10;
+    border-right: 1px solid rgba(255,255,255,0.04);
+}
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+.sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.18);
+}
+.sidebar-title {
+    margin: 0;
+    font-size: 18px;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.sidebar-sub {
+    margin: 4px 0 0 0;
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 300;
+}
+.sidebar-tools {
+    padding: 12px 20px;
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.btn {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-sidebar);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn:hover { background: rgba(255,255,255,0.12); }
+
+.nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.nav-list .nav-list {
+    padding-left: 14px;
+    border-left: 1px solid rgba(255,255,255,0.06);
+    margin-left: 14px;
+}
+.nav-item { margin: 0; }
+
+.nav-summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 8px 20px;
+    font-size: 13.5px;
+    color: var(--text-sidebar);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+    user-select: none;
+}
+.nav-summary::-webkit-details-marker { display: none; }
+.nav-summary:hover { background: var(--bg-sidebar-hover); color: #fff; }
+.nav-arrow {
+    display: inline-block;
+    font-size: 9px;
+    color: #9ca3af;
+    transition: transform 0.2s;
+    width: 10px;
+    text-align: center;
+}
+details[open] > .nav-summary > .nav-arrow { transform: rotate(90deg); color: #fbbf24; }
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 20px;
+    color: #9ca3af;
+    text-decoration: none;
+    font-size: 13px;
+    transition: var(--transition);
+    border-left: 2px solid transparent;
+}
+.nav-link:hover {
+    background: var(--bg-sidebar-hover);
+    color: #fff;
+    border-left-color: #fbbf24;
+}
+.nav-bullet { color: #6b7280; font-size: 14px; }
+
+.nav-depth-0 > details > .nav-summary { font-weight: 600; color: #fff; padding-top: 12px; padding-bottom: 12px; }
+.nav-depth-0 > .nav-link { font-weight: 600; color: #fff; padding-top: 12px; padding-bottom: 12px; }
+
+/* Main content */
+.main {
+    margin-left: 320px;
+    flex: 1;
+    padding: 40px 56px 80px 56px;
+    max-width: 1100px;
+}
+
+.book-header {
+    background: linear-gradient(135deg, #ffffff 0%, #faf6f0 100%);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-lg);
+    padding: 32px 40px;
+    margin-bottom: 36px;
+    box-shadow: var(--shadow-sm);
+}
+.book-title {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.book-subtitle {
+    margin: 0 0 16px 0;
+    font-size: 15px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+.book-authors {
+    margin: 0 0 20px 0;
+    font-size: 14px;
+    color: var(--text-muted);
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+.book-intro {
+    margin: 0;
+    font-size: 15px;
+    color: #374151;
+    line-height: 1.8;
+}
+
+.toc-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+.toc-stats .stat {
+    background: #fff;
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+}
+
+/* Chapter card */
+.chapter {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 28px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+.chapter:hover { box-shadow: var(--shadow-md); }
+
+.chapter-header {
+    display: flex;
+    gap: 20px;
+    padding: 24px 32px;
+    background: linear-gradient(to right, #faf6f0 0%, #ffffff 100%);
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+}
+.chapter-num {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    box-shadow: 0 2px 6px rgba(184,82,11,0.3);
+}
+.chapter-title-wrap { flex: 1; }
+.chapter-title {
+    margin: 0;
+    font-size: 20px;
+    color: var(--text);
+    font-weight: 700;
+}
+.chapter-summary {
+    margin: 6px 0 0 0;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* Sections */
+.sections {
+    padding: 20px 32px 28px 32px;
+}
+.sub {
+    padding: 14px 16px;
+    border-left: 3px solid var(--accent-light);
+    background: #fafaf8;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin-bottom: 10px;
+}
+.sub + .sub { margin-top: 0; }
+.sub-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14.5px;
+    margin-bottom: 4px;
+}
+.sub-desc {
+    color: #4b5563;
+    font-size: 13.5px;
+    line-height: 1.7;
+    margin-top: 4px;
+}
+.subsub {
+    margin-top: 8px;
+    padding-left: 14px;
+    border-left: 2px dashed #e5d3b8;
+    color: #6b5d4e;
+    font-size: 13.5px;
+}
+.subsub-desc {
+    color: #78716c;
+    font-size: 12.5px;
+    line-height: 1.6;
+    margin-top: 2px;
+}
+
+/* Highlight keywords in sub-name */
+.sub-name strong, .subsub strong { color: var(--accent); font-weight: 600; }
+
+/* Footer */
+.footer {
+    margin-top: 60px;
+    padding: 24px 32px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* Back to top */
+.back-to-top {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 44px;
+    height: 44px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border: none;
+    font-size: 18px;
+    z-index: 9;
+}
+.back-to-top.show { display: flex; }
+.back-to-top:hover { transform: translateY(-2px); }
+
+/* Responsive */
+@media (max-width: 900px) {
+    .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+    .sidebar.open { transform: translateX(0); }
+    .main { margin-left: 0; padding: 20px; }
+    .menu-toggle { display: block !important; }
+}
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 11;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="sidebar-title">📖 深入理解 LINUX 内核</h1>
+            <p class="sidebar-sub">知识脑图 · 目录导航</p>
+        </div>
+        <div class="sidebar-tools">
+            <button class="btn" onclick="expandAll()">全部展开</button>
+            <button class="btn" onclick="collapseAll()">全部折叠</button>
+        </div>
+        <nav>
+            <ul class="nav-list" id="nav-root">
+                <li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">绪论</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-intro-s0"><span class="nav-bullet">·</span><span class="nav-title">Linux 与其他类 Unix 内核的比较</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-intro-s1"><span class="nav-bullet">·</span><span class="nav-title">操作系统基本概念</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-intro-s2"><span class="nav-bullet">·</span><span class="nav-title">Unix 文件系统概述</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-intro-s3"><span class="nav-bullet">·</span><span class="nav-title">Unix 内核概述</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-intro-s4"><span class="nav-bullet">·</span><span class="nav-title">进程管理</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-intro-s5"><span class="nav-bullet">·</span><span class="nav-title">内存管理</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-intro-s6"><span class="nav-bullet">·</span><span class="nav-title">设备驱动程序</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第一章  内存寻址</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-mem-s0"><span class="nav-bullet">·</span><span class="nav-title">内存地址</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-mem-s1"><span class="nav-bullet">·</span><span class="nav-title">硬件中的分段</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-mem-s2"><span class="nav-bullet">·</span><span class="nav-title">Linux 中的分段</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-mem-s3"><span class="nav-bullet">·</span><span class="nav-title">硬件中的分页</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-mem-s4"><span class="nav-bullet">·</span><span class="nav-title">硬件高速缓存</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-mem-s5"><span class="nav-bullet">·</span><span class="nav-title">Linux 中的分页</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第二章  进程</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-proc-s0"><span class="nav-bullet">·</span><span class="nav-title">进程、轻量级进程和线程</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-proc-s1"><span class="nav-bullet">·</span><span class="nav-title">进程描述符</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-proc-s2"><span class="nav-bullet">·</span><span class="nav-title">等待队列</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-proc-s3"><span class="nav-bullet">·</span><span class="nav-title">进程资源限制</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-proc-s4"><span class="nav-bullet">·</span><span class="nav-title">进程切换</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-proc-s5"><span class="nav-bullet">·</span><span class="nav-title">创建进程</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-proc-s6"><span class="nav-bullet">·</span><span class="nav-title">内核线程</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-proc-s7"><span class="nav-bullet">·</span><span class="nav-title">撤消进程</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第三章  中断和异常</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s0"><span class="nav-bullet">·</span><span class="nav-title">中断信号的作用</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s1"><span class="nav-bullet">·</span><span class="nav-title">中断和异常</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s2"><span class="nav-bullet">·</span><span class="nav-title">IRQ 和中断</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s3"><span class="nav-bullet">·</span><span class="nav-title">异常</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s4"><span class="nav-bullet">·</span><span class="nav-title">中断描述符表</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s5"><span class="nav-bullet">·</span><span class="nav-title">异常处理</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s6"><span class="nav-bullet">·</span><span class="nav-title">中断处理</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s7"><span class="nav-bullet">·</span><span class="nav-title">软中断及 tasklet</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s8"><span class="nav-bullet">·</span><span class="nav-title">工作队列</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s9"><span class="nav-bullet">·</span><span class="nav-title">从中断和异常返回</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s10"><span class="nav-bullet">·</span><span class="nav-title">内核同步</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s11"><span class="nav-bullet">·</span><span class="nav-title">同步原语</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s12"><span class="nav-bullet">·</span><span class="nav-title">对内核数据结构的同步访问</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-int-s13"><span class="nav-bullet">·</span><span class="nav-title">避免竞争条件的实例</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第四章  定时测量</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-time-s0"><span class="nav-bullet">·</span><span class="nav-title">时钟和定时器电路</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-time-s1"><span class="nav-bullet">·</span><span class="nav-title">Linux 计时体系结构</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-time-s2"><span class="nav-bullet">·</span><span class="nav-title">软定时器和延迟函数</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-time-s3"><span class="nav-bullet">·</span><span class="nav-title">与定时测量相关的系统调用</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第五章  进程调度</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-sched-s0"><span class="nav-bullet">·</span><span class="nav-title">调度策略</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-sched-s1"><span class="nav-bullet">·</span><span class="nav-title">调度算法</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-sched-s2"><span class="nav-bullet">·</span><span class="nav-title">调度程序所使用的数据结构</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-sched-s3"><span class="nav-bullet">·</span><span class="nav-title">调度程序所使用的函数</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-sched-s4"><span class="nav-bullet">·</span><span class="nav-title">多处理器系统中运行队列的平衡</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-sched-s5"><span class="nav-bullet">·</span><span class="nav-title">与调度相关的系统调用</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第六章  内存管理</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-memmgt-s0"><span class="nav-bullet">·</span><span class="nav-title">页框管理</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-memmgt-s1"><span class="nav-bullet">·</span><span class="nav-title">高端内存页框的内核映射</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-memmgt-s2"><span class="nav-bullet">·</span><span class="nav-title">伙伴系统算法</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-memmgt-s3"><span class="nav-bullet">·</span><span class="nav-title">每 CPU 页框高速缓存</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-memmgt-s4"><span class="nav-bullet">·</span><span class="nav-title">管理区分配器</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-memmgt-s5"><span class="nav-bullet">·</span><span class="nav-title">内存区管理(slab 分配器)</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-memmgt-s6"><span class="nav-bullet">·</span><span class="nav-title">内存池(mempool)</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-memmgt-s7"><span class="nav-bullet">·</span><span class="nav-title">非连续内存区管理</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第七章  进程地址空间</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-addr-s0"><span class="nav-bullet">·</span><span class="nav-title">进程的地址空间</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-addr-s1"><span class="nav-bullet">·</span><span class="nav-title">内存描述符 mm_struct</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-addr-s2"><span class="nav-bullet">·</span><span class="nav-title">内核线程的内存描述符</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-addr-s3"><span class="nav-bullet">·</span><span class="nav-title">线性区 VMA</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-addr-s4"><span class="nav-bullet">·</span><span class="nav-title">缺页异常处理程序</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-addr-s5"><span class="nav-bullet">·</span><span class="nav-title">创建和删除进程的地址空间</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-addr-s6"><span class="nav-bullet">·</span><span class="nav-title">堆的管理</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第八章  系统调用</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-syscall-s0"><span class="nav-bullet">·</span><span class="nav-title">POSIX API 和系统调用</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-syscall-s1"><span class="nav-bullet">·</span><span class="nav-title">系统调用处理程序及服务例程</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-syscall-s2"><span class="nav-bullet">·</span><span class="nav-title">进入和退出系统调用</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-syscall-s3"><span class="nav-bullet">·</span><span class="nav-title">参数传递</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-syscall-s4"><span class="nav-bullet">·</span><span class="nav-title">验证参数</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-syscall-s5"><span class="nav-bullet">·</span><span class="nav-title">访问进程地址空间</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-syscall-s6"><span class="nav-bullet">·</span><span class="nav-title">内核封装例程</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第九章  信号</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-signal-s0"><span class="nav-bullet">·</span><span class="nav-title">信号的作用</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-signal-s1"><span class="nav-bullet">·</span><span class="nav-title">信号产生</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-signal-s2"><span class="nav-bullet">·</span><span class="nav-title">信号传递</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-signal-s3"><span class="nav-bullet">·</span><span class="nav-title">与信号相关的数据结构</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-signal-s4"><span class="nav-bullet">·</span><span class="nav-title">在信号数据结构上的操作</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-signal-s5"><span class="nav-bullet">·</span><span class="nav-title">产生信号</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-signal-s6"><span class="nav-bullet">·</span><span class="nav-title">传递信号</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-signal-s7"><span class="nav-bullet">·</span><span class="nav-title">与信号处理相关的系统调用</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第十章  虚拟文件系统(VFS)</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s0"><span class="nav-bullet">·</span><span class="nav-title">虚拟文件系统(VFS)的作用</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s1"><span class="nav-bullet">·</span><span class="nav-title">文件系统类型</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s2"><span class="nav-bullet">·</span><span class="nav-title">通用文件模型</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s3"><span class="nav-bullet">·</span><span class="nav-title">VFS 所处理的系统调用</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s4"><span class="nav-bullet">·</span><span class="nav-title">VFS 的数据结构</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s5"><span class="nav-bullet">·</span><span class="nav-title">与进程相关的文件</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s6"><span class="nav-bullet">·</span><span class="nav-title">文件系统类型注册</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s7"><span class="nav-bullet">·</span><span class="nav-title">命名空间</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s8"><span class="nav-bullet">·</span><span class="nav-title">文件系统安装</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s9"><span class="nav-bullet">·</span><span class="nav-title">路径名查找</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s10"><span class="nav-bullet">·</span><span class="nav-title">VFS 系统调用的实现</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-vfs-s11"><span class="nav-bullet">·</span><span class="nav-title">文件加锁</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第十一章  I/O 体系结构和设备驱动程序</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-io-s0"><span class="nav-bullet">·</span><span class="nav-title">I/O 体系结构</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-io-s1"><span class="nav-bullet">·</span><span class="nav-title">设备驱动程序模型</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-io-s2"><span class="nav-bullet">·</span><span class="nav-title">设备文件</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-io-s3"><span class="nav-bullet">·</span><span class="nav-title">设备驱动程序</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-io-s4"><span class="nav-bullet">·</span><span class="nav-title">直接内存访问(DMA)</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-io-s5"><span class="nav-bullet">·</span><span class="nav-title">字符设备驱动程序</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-io-s6"><span class="nav-bullet">·</span><span class="nav-title">块设备驱动程序</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-io-s7"><span class="nav-bullet">·</span><span class="nav-title">页高速缓存</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-io-s8"><span class="nav-bullet">·</span><span class="nav-title">访问文件</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-io-s9"><span class="nav-bullet">·</span><span class="nav-title">回收页框</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-io-s10"><span class="nav-bullet">·</span><span class="nav-title">交换(swap)</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第十二章  Ext2 和 Ext3 文件系统</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-fs-s0"><span class="nav-bullet">·</span><span class="nav-title">Ext2 的一般特征</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-fs-s1"><span class="nav-bullet">·</span><span class="nav-title">Ext2 磁盘数据结构</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-fs-s2"><span class="nav-bullet">·</span><span class="nav-title">Ext2 的内存数据结构</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-fs-s3"><span class="nav-bullet">·</span><span class="nav-title">Ext2 的方法</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-fs-s4"><span class="nav-bullet">·</span><span class="nav-title">创建 Ext2 文件系统</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-fs-s5"><span class="nav-bullet">·</span><span class="nav-title">管理 Ext2 磁盘空间</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-fs-s6"><span class="nav-bullet">·</span><span class="nav-title">Ext3 文件系统</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第十三章  日志块设备层(JBD)</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-jbd-s0"><span class="nav-bullet">·</span><span class="nav-title">日志记录</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-jbd-s1"><span class="nav-bullet">·</span><span class="nav-title">原子操作处理</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-jbd-s2"><span class="nav-bullet">·</span><span class="nav-title">事务</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-jbd-s3"><span class="nav-bullet">·</span><span class="nav-title">未完成的</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-jbd-s4"><span class="nav-bullet">·</span><span class="nav-title">日志如何工作</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第十四章  进程通信</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-ipc-s0"><span class="nav-bullet">·</span><span class="nav-title">管道(pipe)</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-ipc-s1"><span class="nav-bullet">·</span><span class="nav-title">FIFO</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-ipc-s2"><span class="nav-bullet">·</span><span class="nav-title">System V IPC</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-ipc-s3"><span class="nav-bullet">·</span><span class="nav-title">POSIX 消息队列</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第十五章  程序的执行</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-exec-s0"><span class="nav-bullet">·</span><span class="nav-title">不同的可执行文件格式</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-exec-s1"><span class="nav-bullet">·</span><span class="nav-title">共享库</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-exec-s2"><span class="nav-bullet">·</span><span class="nav-title">进程的信任状和权能</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-exec-s3"><span class="nav-bullet">·</span><span class="nav-title">命令行参数和 shell 环境</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-exec-s4"><span class="nav-bullet">·</span><span class="nav-title">程序段和进程的线性区</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-exec-s5"><span class="nav-bullet">·</span><span class="nav-title">灵活线性区布局</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-exec-s6"><span class="nav-bullet">·</span><span class="nav-title">执行跟踪</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-exec-s7"><span class="nav-bullet">·</span><span class="nav-title">可执行格式</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-exec-s8"><span class="nav-bullet">·</span><span class="nav-title">执行域</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-exec-s9"><span class="nav-bullet">·</span><span class="nav-title">exec 函数</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第十六章  系统启动</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-boot-s0"><span class="nav-bullet">·</span><span class="nav-title">史前时代：BIOS</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-boot-s1"><span class="nav-bullet">·</span><span class="nav-title">远古时代：引导装入程序</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-boot-s2"><span class="nav-bullet">·</span><span class="nav-title">从磁盘启动 Linux</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-boot-s3"><span class="nav-bullet">·</span><span class="nav-title">中世纪：setup() 函数</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-boot-s4"><span class="nav-bullet">·</span><span class="nav-title">文艺复兴时期：startup_32() 函数</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-boot-s5"><span class="nav-bullet">·</span><span class="nav-title">现代：start_kernel() 函数</span></a></li></ul></details></li><li class="nav-item nav-depth-0 nav-has-children"><details><summary class="nav-summary"><span class="nav-arrow">▶</span><span class="nav-title">第十七章  模块</span></summary><ul class="nav-list"><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-mod-s0"><span class="nav-bullet">·</span><span class="nav-title">是否使用模块？</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-mod-s1"><span class="nav-bullet">·</span><span class="nav-title">模块许可证</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-mod-s2"><span class="nav-bullet">·</span><span class="nav-title">模块的实现</span></a></li><li class="nav-item nav-depth-1"><a class="nav-link" href="#ch-mod-s3"><span class="nav-bullet">·</span><span class="nav-title">模块的链接和取消</span></a></li></ul></details></li>
+            </ul>
+        </nav>
+    </aside>
+    <main class="main">
+        <div class="book-header">
+            <h1 class="book-title">深入理解 LINUX 内核</h1>
+            <p class="book-subtitle">Understanding the Linux Kernel — 第三版 · 知识脑图</p>
+            <p class="book-authors">Daniel P. Bovet · Marco Cesati  著  /  陈莉君 · 张琼声 · 张宏伟  译</p>
+            <p class="book-intro">本书以 Linux 2.6 为蓝本，自底向上系统讲述 Linux 内核的内部工作机理：从内存寻址、进程管理、调度，到中断与同步、虚拟文件系统、设备驱动、Ext2/Ext3、进程通信、程序执行与系统启动。整体强调&#x27;内核如何为不同请求提供服务&#x27;这一核心主线。</p>
+        </div>
+        <div class="toc-stats">
+            <span class="stat">📚 共 18 章</span>
+            <span class="stat">🧠 知识脑图版</span>
+            <span class="stat">🔍 横向阅读 · 纵向导航</span>
+        </div>
+        
+        <section class="chapter" id="ch-intro">
+            <header class="chapter-header">
+                <div class="chapter-num">01</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">绪论</h2>
+                    <p class="chapter-summary">Linux 内核概述、与类 Unix 内核对比、操作系统基本概念、文件系统与内核关键术语。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-intro-s0"><div class="sub-name">· Linux 与其他类 Unix 内核的比较</div><div class="sub-desc">单块结构、模块化、抢占式、多处理器支持、文件系统、硬件依赖、Linux 版本。</div></div><div class="sub" id="ch-intro-s1"><div class="sub-name">· 操作系统基本概念</div><div class="sub-desc">多用户系统、用户与组、进程、内核体系结构（模块化、平台无关性、节省内存、无性能损失）。</div></div><div class="sub" id="ch-intro-s2"><div class="sub-name">· Unix 文件系统概述</div><div class="sub-desc">文件、硬链接/软链接、文件类型、文件描述符与索引节点、访问权限、文件操作（open/read/write/close/rename/unlink）。</div></div><div class="sub" id="ch-intro-s3"><div class="sub-name">· Unix 内核概述</div><div class="sub-desc">进程/内核模式、可重入内核、进程地址空间、同步与临界区、信号与进程间通信。</div></div><div class="sub" id="ch-intro-s4"><div class="sub-name">· 进程管理</div><div class="sub-desc">僵死进程、进程组和登录会话。</div></div><div class="sub" id="ch-intro-s5"><div class="sub-name">· 内存管理</div><div class="sub-desc">虚拟内存、RAM 使用、内核内存分配器、进程虚拟地址空间、高速缓存。</div></div><div class="sub" id="ch-intro-s6"><div class="sub-name">· 设备驱动程序</div><div class="sub-desc">设备驱动在内核中的角色。</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-mem">
+            <header class="chapter-header">
+                <div class="chapter-num">02</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第一章  内存寻址</h2>
+                    <p class="chapter-summary">本章先讲 80x86 的内存地址、三种地址（逻辑/线性/物理）以及硬件中的分段与分页机制；接着介绍 Linux 中的分段（几乎被禁用）与分页实现；最后讨论高速缓存与 TLB。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-mem-s0"><div class="sub-name">· 内存地址</div><div class="sub-desc">逻辑地址 → 线性地址 → 物理地址的转换链；地址映射的硬件基础。</div></div><div class="sub" id="ch-mem-s1"><div class="sub-name">· 硬件中的分段</div><div class="sub-desc">[[&#x27;段选择符和段寄存器&#x27;, &#x27;CS/DS/SS/ES/FS/GS；段选择符 = 索引 + TI + RPL。&#x27;], [&#x27;段描述符&#x27;, &#x27;8 字节描述符格式：基地址 Base(32) + 段界限 Limit(20) + G/D/B/P/DPL/S/类型。&#x27;], [&#x27;代码段/数据段/任务状态段(TSSD)/局部描述符表描述符(LDTD)&#x27;, &#x27;各描述符的字段含义与用途。&#x27;], [&#x27;快速访问段描述符&#x27;, &#x27;段寄存器隐藏高速缓存；CPU 自动缓存描述符内容。&#x27;], [&#x27;分段单元&#x27;, &#x27;逻辑地址→线性地址：选择符查 GDT/LDT 得 Base + Offset。&#x27;]]</div></div><div class="sub" id="ch-mem-s2"><div class="sub-name">· Linux 中的分段</div><div class="sub-desc">[[&#x27;Linux GDT&#x27;, &#x27;内核代码/数据、用户代码/数据、TSS、LDT 等若干固定描述符。&#x27;], [&#x27;Linux LDT&#x27;, &#x27;绝大多数进程不使用 LDT；为兼容 80x86 而保留。&#x27;]]</div></div><div class="sub" id="ch-mem-s3"><div class="sub-name">· 硬件中的分页</div><div class="sub-desc">[[&#x27;常规分页（4 KB 页）&#x27;, &#x27;两级页表 PGD→PT；PTE 标志位：Present/RW/US/Accessed/Dirty/PCD/PWT/Global。&#x27;], [&#x27;扩展分页（4 MB 页）&#x27;, &#x27;单级页表，Page Directory Entry 直接指向 4 MB 页框。&#x27;], [&#x27;硬件保护方案&#x27;, &#x27;页级 R/W 与 U/S 权限检查，禁止越权访问。&#x27;], [&#x27;物理地址扩展(PAE)分页机制&#x27;, &#x27;36 位物理地址，64 位 PTE，三级页表 PGD→PMD→PT。&#x27;], [&#x27;2MB 页中的偏移量&#x27;, &#x27;PAE 下的 2MB 大页寻址方式。&#x27;], [&#x27;64 位系统中的分页&#x27;, &#x27;IA-64 / x86_64 的四级页表 PGD→PUD→PMD→PT。&#x27;]]</div></div><div class="sub" id="ch-mem-s4"><div class="sub-name">· 硬件高速缓存</div><div class="sub-desc">[[&#x27;转换后援缓冲器(TLB)&#x27;, &#x27;缓存线性→物理地址转换，对分页性能至关重要。&#x27;]]</div></div><div class="sub" id="ch-mem-s5"><div class="sub-name">· Linux 中的分页</div><div class="sub-desc">[[&#x27;线性地址字段&#x27;, &#x27;PAGE_SHIFT、PMD_SHIFT、PUD_SHIFT、PGDIR_SHIFT 的含义与计算。&#x27;], [&#x27;页表处理&#x27;, &#x27;PGD/PUD/PMD/PTE 宏、页表项的分配、填充、释放。&#x27;], [&#x27;物理内存布局&#x27;, &#x27;DMA/Normal/HighMem 三区，896 MB 分界线。&#x27;], [&#x27;进程页表&#x27;, &#x27;每个进程拥有独立的 PGD。&#x27;], [&#x27;内核页表&#x27;, [[&#x27;临时内核页表&#x27;, &#x27;系统启动初期建立的最简化映射。&#x27;], [&#x27;当 RAM &lt; 896 MB 时的最终内核页表&#x27;, &#x27;直接映射所有物理内存。&#x27;], [&#x27;当 896 MB ≤ RAM ≤ 4096 MB 时的最终内核页表&#x27;, &#x27;低端直接映射 + 高端临时映射。&#x27;], [&#x27;当 RAM &gt; 4096 MB 时的最终内核页表&#x27;, &#x27;必须启用 PAE 或 64 位扩展。&#x27;], [&#x27;固定映射的线性地址&#x27;, &#x27;fix_to_virt()：编译期确定的常量虚拟地址。&#x27;]]], [&#x27;处理硬件高速缓存和 TLB&#x27;, &#x27;flush_tlb_mm/vma/range；CLFLUSH 指令刷新高速缓存行。&#x27;]]</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-proc">
+            <header class="chapter-header">
+                <div class="chapter-num">03</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第二章  进程</h2>
+                    <p class="chapter-summary">本章先讲进程、轻量级进程(LWP)、线程的概念差别；再讲进程描述符、链表组织、等待队列、资源限制；然后是进程切换的硬件上下文；最后是创建/撤消进程以及 Linux 内核线程。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-proc-s0"><div class="sub-name">· 进程、轻量级进程和线程</div><div class="sub-desc">Linux 中&#x27;线程 = 共享地址空间的进程&#x27;；task_struct 即进程描述符。</div></div><div class="sub" id="ch-proc-s1"><div class="sub-name">· 进程描述符</div><div class="sub-desc">[[&#x27;进程状态&#x27;, &#x27;TASK_RUNNING/TASK_INTERRUPTIBLE/TASK_UNINTERRUPTIBLE/TASK_STOPPED/TASK_TRACED/EXIT_ZOMBIE/EXIT_DEAD。&#x27;], [&#x27;标识一个进程&#x27;, &#x27;PID、TGID、PGID、SID、PGRP 等。&#x27;], [&#x27;进程描述符处理&#x27;, &#x27;current 宏、thread_info 内嵌于栈底。&#x27;], [&#x27;双向链表&#x27;, &#x27;list_head 与 list_for_each 宏族。&#x27;], [&#x27;进程链表&#x27;, &#x27;init_task 为表头，所有进程串成单链。&#x27;], [&#x27;TASK_RUNNING 状态的进程链表&#x27;, &#x27;runqueue 上的可运行进程。&#x27;], [&#x27;进程间的关系&#x27;, &#x27;real_parent、parent、children、sibling、group_leader、thread_group。&#x27;], [&#x27;pidhash 表及链表&#x27;, &#x27;由 PID 快速定位 task_struct。&#x27;], [&#x27;魔数常量&#x27;, &#x27;检测栈溢出、对象破坏的简单工具。&#x27;], [&#x27;如何组织进程&#x27;, &#x27;TASK_RUNNING 链表 + 等待队列 + PID 哈希。&#x27;]]</div></div><div class="sub" id="ch-proc-s2"><div class="sub-name">· 等待队列</div><div class="sub-desc">[[&#x27;等待队列的操作&#x27;, &#x27;wait_event / wake_up / sleep_on 族宏；基于自旋锁+链表。&#x27;]]</div></div><div class="sub" id="ch-proc-s3"><div class="sub-name">· 进程资源限制</div><div class="sub-desc">rlim[RLIM_NLIMITS] 数组保存 CPU 时间、文件大小、打开文件数等软硬限制。</div></div><div class="sub" id="ch-proc-s4"><div class="sub-name">· 进程切换</div><div class="sub-desc">[[&#x27;硬件上下文&#x27;, &#x27;切换时保存/恢复的寄存器集合。&#x27;], [&#x27;任务状态段&#x27;, &#x27;TSS 描述符，由 TR 寄存器指向。&#x27;], [&#x27;thread 字段&#x27;, &#x27;thread.cpu_context 内嵌保存切换所需的栈顶与指令指针。&#x27;], [&#x27;执行进程切换&#x27;, [[&#x27;switch_to 宏&#x27;, &#x27;汇编实现 prev/next/last 三参数切换。&#x27;], [&#x27;__switch_to() 函数&#x27;, &#x27;C 部分：切换 TLS、调试寄存器、内核栈。&#x27;], [&#x27;保存和加载 FPU/MMX/XMM 寄存器&#x27;, &#x27;lazy FPU 上下文切换。&#x27;]]]]</div></div><div class="sub" id="ch-proc-s5"><div class="sub-name">· 创建进程</div><div class="sub-desc">[[&#x27;clone()、fork() 及 vfork() 系统调用&#x27;, &#x27;参数 arg、flags、child_stack、tls、ctid 的语义。&#x27;], [&#x27;do_fork() 函数&#x27;, &#x27;统一入口，分配 PID，调度新进程。&#x27;], [&#x27;copy_process() 函数&#x27;, &#x27;复制 task_struct、打开文件、信号、内存描述符等。&#x27;]]</div></div><div class="sub" id="ch-proc-s6"><div class="sub-name">· 内核线程</div><div class="sub-desc">[[&#x27;创建一个内核线程&#x27;, &#x27;kthread_create / kthread_run。&#x27;], [&#x27;进程 0&#x27;, &#x27;idle 进程，所有进程的祖先。&#x27;], [&#x27;进程 1&#x27;, &#x27;init，所有用户态进程的祖先；完成挂载根文件系统。&#x27;], [&#x27;其他内核线程&#x27;, &#x27;keventd/kapmd/kswapd/pdflush/kblockd/ksoftirqd 等守护线程。&#x27;]]</div></div><div class="sub" id="ch-proc-s7"><div class="sub-name">· 撤消进程</div><div class="sub-desc">[[&#x27;进程终止&#x27;, &#x27;do_exit() 关闭文件、释放资源、设置 EXIT_ZOMBIE。&#x27;], [&#x27;do_group_exit() 函数&#x27;, &#x27;向整个线程组发退出信号。&#x27;], [&#x27;do_exit() 函数&#x27;, &#x27;删除进程的核心流程。&#x27;], [&#x27;进程删除&#x27;, &#x27;wait4() 由父进程回收，release_task() 释放 task_struct。&#x27;]]</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-int">
+            <header class="chapter-header">
+                <div class="chapter-num">04</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第三章  中断和异常</h2>
+                    <p class="chapter-summary">本章先讲中断与异常的概念差别；再讲 80x86 的中断描述符表、IDT 初始化、异常/中断处理；最后讲软中断、tasklet、工作队列等可延迟函数。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-int-s0"><div class="sub-name">· 中断信号的作用</div><div class="sub-desc">异步通知机制：让 CPU 立即停止当前流而响应外部事件。</div></div><div class="sub" id="ch-int-s1"><div class="sub-name">· 中断和异常</div><div class="sub-desc">中断 = 异步外部事件；异常 = 同步内部事件（Fault/Trap/Abort）。</div></div><div class="sub" id="ch-int-s2"><div class="sub-name">· IRQ 和中断</div><div class="sub-desc">[[&#x27;高级可编程中断控制器(APIC)&#x27;, &#x27;I/O APIC + Local APIC，支持多处理器路由。&#x27;], [&#x27;静态分发 vs 动态分发&#x27;, &#x27;静态 = 固定 IRQ 号；动态 = 启动时协商。&#x27;]]</div></div><div class="sub" id="ch-int-s3"><div class="sub-name">· 异常</div><div class="sub-desc">[[&#x27;处理器探测异常&#x27;, &#x27;0/#DE Divide error、14/#PF Page fault 等。&#x27;], [&#x27;陷阱(Trap)&#x27;, &#x27;int 3、into、bound 等可恢复异常。&#x27;], [&#x27;异常中止(Abort)&#x27;, &#x27;#DF、#MC 等严重错误。&#x27;]]</div></div><div class="sub" id="ch-int-s4"><div class="sub-name">· 中断描述符表</div><div class="sub-desc">[[&#x27;中断和异常的硬件处理&#x27;, &#x27;CPU 自动压栈 EFLAGS/CS/EIP/ErrorCode，再跳 IDT。&#x27;], [&#x27;中断和异常处理程序的嵌套执行&#x27;, &#x27;内核栈 + 任务门切换。&#x27;], [&#x27;初始化中断描述符表&#x27;, &#x27;trap_init() 填充 256 个门描述符。&#x27;], [&#x27;中断门、陷阱门及系统门&#x27;, &#x27;DPL 与 IF 位差异。&#x27;], [&#x27;set_intr_gate / set_system_gate / set_system_intr_gate / set_trap_gate&#x27;, &#x27;门描述符安装宏。&#x27;], [&#x27;IDT 的初步初始化&#x27;, &#x27;early_trap_init() / trap_init() 分两阶段。&#x27;]]</div></div><div class="sub" id="ch-int-s5"><div class="sub-name">· 异常处理</div><div class="sub-desc">[[&#x27;为异常处理程序保存寄存器的值&#x27;, &#x27;C wrapper 入口 / 出口。&#x27;], [&#x27;进入和离开异常处理程序&#x27;, &#x27;ret_from_exception / error_code 模板。&#x27;]]</div></div><div class="sub" id="ch-int-s6"><div class="sub-name">· 中断处理</div><div class="sub-desc">[[&#x27;I/O 中断、时钟中断、处理器间中断(IPI)&#x27;, &#x27;三类中断源。&#x27;], [&#x27;I/O 中断处理&#x27;, [[&#x27;IRQ 共享&#x27;, &#x27;多个设备共用一条 IRQ 线，action 链表。&#x27;], [&#x27;IRQ 动态分配&#x27;, &#x27;启动时 PCI/PNP 协商。&#x27;], [&#x27;紧急/非紧急/非紧急可延迟&#x27;, &#x27;中断处理的分层策略。&#x27;]]], [&#x27;中断向量&#x27;, &#x27;0~15 异常 + 16~255 中断。&#x27;], [&#x27;IRQ 数据结构&#x27;, &#x27;irq_desc[NR_IRQS]、irqaction 链表。&#x27;], [&#x27;IRQ 在多处理器系统上的分发&#x27;, &#x27;IO-APIC 把中断路由到指定 CPU。&#x27;], [&#x27;多种类型的内核栈&#x27;, &#x27;软中断可能切换到独立栈。&#x27;], [&#x27;为中断处理程序保存寄存器的值&#x27;, &#x27;do_IRQ 入口汇编。&#x27;], [&#x27;do_IRQ() / __do_IRQ() 函数&#x27;, &#x27;中断分发核心。&#x27;], [&#x27;IRQ_DISABLED / IRQ_INPROGRESS 标志&#x27;, &#x27;中断嵌套与同步状态机。&#x27;], [&#x27;挽救丢失的中断&#x27;, &#x27;中断丢失后的恢复机制。&#x27;], [&#x27;中断服务例程&#x27;, &#x27;由设备驱动注册的具体 handler。&#x27;], [&#x27;IRQ 线的动态分配&#x27;, &#x27;request_irq/free_irq。&#x27;], [&#x27;处理器间中断处理&#x27;, &#x27;RESCHEDULE / CALL_FUNCTION / TLB_FLUSH。&#x27;]]</div></div><div class="sub" id="ch-int-s7"><div class="sub-name">· 软中断及 tasklet</div><div class="sub-desc">[[&#x27;软中断&#x27;, &#x27;softirq_action 数组；HI_SOFTIRQ/TIMER_SOFTIRQ/NET_TX/NET_RX 等。&#x27;], [&#x27;软中断所使用的数据结构&#x27;, &#x27;软中断号 → 处理函数 映射表。&#x27;], [&#x27;处理软中断&#x27;, &#x27;do_softirq / __do_softirq；末尾 ksoftirqd。&#x27;], [&#x27;tasklet&#x27;, &#x27;基于软中断之上、实现更简单的延迟机制。&#x27;]]</div></div><div class="sub" id="ch-int-s8"><div class="sub-name">· 工作队列</div><div class="sub-desc">[[&#x27;工作队列的数据结构&#x27;, &#x27;work_struct、cpu_workqueue_struct、worker_thread。&#x27;], [&#x27;工作队列函数&#x27;, &#x27;schedule_work / queue_work / flush_work。&#x27;], [&#x27;预定义工作队列&#x27;, &#x27;events/n 前缀的共享工作队列。&#x27;]]</div></div><div class="sub" id="ch-int-s9"><div class="sub-name">· 从中断和异常返回</div><div class="sub-desc">[[&#x27;内核控制路径并发执行的数量&#x27;, &#x27;中断/异常/软中断的最大并发数估算。&#x27;], [&#x27;挂起进程的切换请求&#x27;, &#x27;need_resched 标志。&#x27;], [&#x27;单步执行模式&#x27;, &#x27;TF 标志位。&#x27;], [&#x27;Virtual-8086 模式&#x27;, &#x27;实模式程序的现代保护。&#x27;], [&#x27;入口点&#x27;, &#x27;ret_from_intr / ret_from_exception / resume_userspace。&#x27;], [&#x27;恢复内核控制路径&#x27;, &#x27;检查抢占、调度。&#x27;], [&#x27;恢复用户态程序&#x27;, &#x27;sysenter/sysexit 与 iret 路径。&#x27;], [&#x27;检测重调度标志&#x27;, &#x27;schedule() 调用点。&#x27;]]</div></div><div class="sub" id="ch-int-s10"><div class="sub-name">· 内核同步</div><div class="sub-desc">[[&#x27;内核如何为不同的请求提供服务&#x27;, &#x27;单线程/多线程/可重入内核模型。&#x27;], [&#x27;内核抢占&#x27;, &#x27;CONFIG_PREEMPT 开启后的安全点。&#x27;], [&#x27;什么时候同步是必需的/不必要的&#x27;, &#x27;单 CPU 单进程、原子上下文等特例。&#x27;]]</div></div><div class="sub" id="ch-int-s11"><div class="sub-name">· 同步原语</div><div class="sub-desc">[[&#x27;每 CPU 变量&#x27;, &#x27;DEFINE_PER_CPU 宏，关闭抢占后安全访问。&#x27;], [&#x27;原子操作&#x27;, &#x27;atomic_t 与 80x86 的 lock 前缀指令。&#x27;], [&#x27;优化和内存屏障&#x27;, &#x27;barrier()/mb()/rmb()/wmb()/smp_mb()。&#x27;], [&#x27;自旋锁&#x27;, [[&#x27;具有内核抢占的 spin_lock 宏&#x27;, &#x27;preempt_disable + lock。&#x27;], [&#x27;非抢占式内核中的 spin_lock 宏&#x27;, &#x27;直接 lock 指令。&#x27;], [&#x27;读/写自旋锁&#x27;, &#x27;rwlock_t，多读单写。&#x27;], [&#x27;顺序锁(seqlock)&#x27;, &#x27;写优先，读端乐观重试。&#x27;], [&#x27;读-拷贝-更新(RCU)&#x27;, &#x27;读者无锁、写者复制后延迟回收。&#x27;]]], [&#x27;信号量&#x27;, [[&#x27;获取和释放信号量&#x27;, &#x27;down/up/sleeping。&#x27;], [&#x27;读/写信号量&#x27;, &#x27;rw_semaphore，多读单写。&#x27;]]], [&#x27;补充原语&#x27;, [[&#x27;禁止本地中断&#x27;, &#x27;local_irq_disable / save。&#x27;], [&#x27;禁止和激活可延迟函数&#x27;, &#x27;local_bh_disable/enable。&#x27;]]]]</div></div><div class="sub" id="ch-int-s12"><div class="sub-name">· 对内核数据结构的同步访问</div><div class="sub-desc">[[&#x27;在自旋锁、信号量及中断禁止之间选择&#x27;, &#x27;根据上下文选择最轻量的同步机制。&#x27;], [&#x27;保护异常/中断/可延迟函数所访问的数据结构&#x27;, &#x27;具体场景的加锁建议。&#x27;]]</div></div><div class="sub" id="ch-int-s13"><div class="sub-name">· 避免竞争条件的实例</div><div class="sub-desc">[[&#x27;引用计数器&#x27;, &#x27;kref / atomic_t。&#x27;], [&#x27;大内核锁(BKL)&#x27;, &#x27;已废弃，仅作历史了解。&#x27;], [&#x27;内存描述符读/写信号量&#x27;, &#x27;mm-&gt;mmap_sem。&#x27;], [&#x27;slab 高速缓存链表的信号量&#x27;, &#x27;cache_chain_sem。&#x27;], [&#x27;索引节点的信号量&#x27;, &#x27;i_sem / i_mutex。&#x27;]]</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-time">
+            <header class="chapter-header">
+                <div class="chapter-num">05</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第四章  定时测量</h2>
+                    <p class="chapter-summary">本章讲 Linux 计时体系结构(RTC/TSC/PIT/HPET/ACPI)、jiffies 与 xtime、动态定时器、延迟函数，以及定时测量相关的系统调用。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-time-s0"><div class="sub-name">· 时钟和定时器电路</div><div class="sub-desc">[[&#x27;实时时钟(RTC)&#x27;, &#x27;持久保存当前时间。&#x27;], [&#x27;时间戳计数器(TSC)&#x27;, &#x27;CPU 周期计数器，高精度。&#x27;], [&#x27;可编程间隔定时器(PIT)&#x27;, &#x27;传统 8253/8254。&#x27;], [&#x27;CPU 本地定时器&#x27;, &#x27;Local APIC timer。&#x27;], [&#x27;高精度事件定时器(HPET)&#x27;, &#x27;多通道高精度定时器。&#x27;], [&#x27;ACPI 电源管理定时器&#x27;, &#x27;PM timer，备用时钟源。&#x27;]]</div></div><div class="sub" id="ch-time-s1"><div class="sub-name">· Linux 计时体系结构</div><div class="sub-desc">[[&#x27;计时体系结构的数据结构&#x27;, &#x27;clocksource、clock_event_device。&#x27;], [&#x27;定时器对象&#x27;, &#x27;timer_list。&#x27;], [&#x27;jiffies 变量&#x27;, &#x27;自启动以来的 tick 数。&#x27;], [&#x27;xtime 变量&#x27;, &#x27;wall-clock 时间。&#x27;], [&#x27;单处理器系统上的计时体系结构&#x27;, &#x27;初始化、tick 中断处理。&#x27;], [&#x27;多处理器系统上的计时体系结构&#x27;, &#x27;全局 tick + 本地 tick。&#x27;], [&#x27;更新时间和日期&#x27;, &#x27;do_timer() 与 update_wall_time()。&#x27;], [&#x27;更新系统统计数&#x27;, &#x27;task_struct 时间统计。&#x27;], [&#x27;记录系统负载&#x27;, &#x27;avenrun[] 数组。&#x27;], [&#x27;监管内核代码&#x27;, &#x27;watchdog / lockup detector。&#x27;], [&#x27;检查不可屏蔽中断(NMI)监视器&#x27;, &#x27;看门狗。&#x27;]]</div></div><div class="sub" id="ch-time-s2"><div class="sub-name">· 软定时器和延迟函数</div><div class="sub-desc">[[&#x27;动态定时器&#x27;, &#x27;timer_list 链表组织。&#x27;], [&#x27;动态定时器与竞争条件&#x27;, &#x27;SMP 上的锁。&#x27;], [&#x27;动态定时器的数据结构&#x27;, &#x27;function/data/expires/base。&#x27;], [&#x27;动态定时器处理&#x27;, &#x27;run_timer_softirq → cascade → __run_timers。&#x27;], [&#x27;延迟函数&#x27;, &#x27;udelay/mdelay/sleep/schedule_timeout。&#x27;]]</div></div><div class="sub" id="ch-time-s3"><div class="sub-name">· 与定时测量相关的系统调用</div><div class="sub-desc">[[&#x27;time() 和 gettimeofday() 系统调用&#x27;, &#x27;读取时间。&#x27;], [&#x27;adjtimex() 系统调用&#x27;, &#x27;时钟漂移调整。&#x27;], [&#x27;setitimer() 和 alarm() 系统调用&#x27;, &#x27;间隔定时器。&#x27;], [&#x27;POSIX 定时器&#x27;, &#x27;timer_create / timer_settime。&#x27;]]</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-sched">
+            <header class="chapter-header">
+                <div class="chapter-num">06</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第五章  进程调度</h2>
+                    <p class="chapter-summary">本章讲 Linux 调度策略、调度算法(runqueue/优先级/时间片)、schedule() 的实现细节、多处理器上的负载均衡，以及调度相关的系统调用。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-sched-s0"><div class="sub-name">· 调度策略</div><div class="sub-desc">[[&#x27;进程分类：交互式/批处理/实时&#x27;, &#x27;三种负载特性。&#x27;], [&#x27;进程的抢占&#x27;, &#x27;基于时间片与 need_resched。&#x27;], [&#x27;时间片长度&#x27;, &#x27;取决于 HZ 与 nice。&#x27;]]</div></div><div class="sub" id="ch-sched-s1"><div class="sub-name">· 调度算法</div><div class="sub-desc">[[&#x27;普通进程的调度&#x27;, &#x27;基于动态优先级 + 平均睡眠时间。&#x27;], [&#x27;动态优先级和平均睡眠时间&#x27;, &#x27;sleep_avg 决定奖励/惩罚。&#x27;], [&#x27;活动和过期进程&#x27;, &#x27;防止低优先级进程饿死。&#x27;], [&#x27;实时进程的调度&#x27;, &#x27;SCHED_FIFO/SCHED_RR。&#x27;]]</div></div><div class="sub" id="ch-sched-s2"><div class="sub-name">· 调度程序所使用的数据结构</div><div class="sub-desc">[[&#x27;runqueue&#x27;, &#x27;prio_array 数组 + bitmap。&#x27;], [&#x27;进程描述符中的调度字段&#x27;, &#x27;policy、prio、time_slice、first_time_slice。&#x27;]]</div></div><div class="sub" id="ch-sched-s3"><div class="sub-name">· 调度程序所使用的函数</div><div class="sub-desc">[[&#x27;scheduler_tick() 函数&#x27;, &#x27;时钟 tick 入口，更新时间片。&#x27;], [&#x27;try_to_wake_up() 函数&#x27;, &#x27;把睡眠进程放回 runqueue。&#x27;], [&#x27;recalc_task_prio() 函数&#x27;, &#x27;动态优先级计算。&#x27;], [&#x27;schedule() 函数&#x27;, [[&#x27;直接调用&#x27;, &#x27;current-&gt;state = TASK_RUNNING 等场景。&#x27;], [&#x27;延迟调用&#x27;, &#x27;scheduler_tick() 之后。&#x27;], [&#x27;进程切换前 schedule() 所执行的操作&#x27;, &#x27;pick_next_task → context_switch。&#x27;], [&#x27;进程切换后 schedule() 所执行的操作&#x27;, &#x27;重新计算负载。&#x27;]]]]</div></div><div class="sub" id="ch-sched-s4"><div class="sub-name">· 多处理器系统中运行队列的平衡</div><div class="sub-desc">[[&#x27;标准多处理器体系结构&#x27;, &#x27;SMP 拓扑。&#x27;], [&#x27;超线程(HyperThreading)&#x27;, &#x27;共享核心逻辑 CPU。&#x27;], [&#x27;NUMA&#x27;, &#x27;非一致内存访问拓扑。&#x27;], [&#x27;调度域&#x27;, &#x27;sched_domain 一层层分组的负载均衡。&#x27;], [&#x27;rebalance_tick() 函数&#x27;, &#x27;逐级向上尝试平衡。&#x27;], [&#x27;load_balance() 函数&#x27;, &#x27;跨 runqueue 迁移任务。&#x27;], [&#x27;move_tasks() 函数&#x27;, &#x27;实际拉取/推送任务。&#x27;]]</div></div><div class="sub" id="ch-sched-s5"><div class="sub-name">· 与调度相关的系统调用</div><div class="sub-desc">[[&#x27;nice() 系统调用&#x27;, &#x27;调整静态优先级。&#x27;], [&#x27;getpriority() / setpriority() 系统调用&#x27;, &#x27;读/写 nice。&#x27;], [&#x27;sched_getaffinity() / sched_setaffinity() 系统调用&#x27;, &#x27;CPU 亲和性。&#x27;], [&#x27;sched_getscheduler() / sched_setscheduler()&#x27;, &#x27;调度策略。&#x27;], [&#x27;sched_getparam() / sched_setparam()&#x27;, &#x27;实时优先级。&#x27;], [&#x27;sched_yield()&#x27;, &#x27;主动让出 CPU。&#x27;], [&#x27;sched_rr_get_interval()&#x27;, &#x27;RR 时间片查询。&#x27;]]</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-memmgt">
+            <header class="chapter-header">
+                <div class="chapter-num">07</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第六章  内存管理</h2>
+                    <p class="chapter-summary">本章讲物理页框管理、内存管理区、伙伴系统、slab 分配器、非连续内存区，以及进程虚拟地址空间、缺页异常。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-memmgt-s0"><div class="sub-name">· 页框管理</div><div class="sub-desc">[[&#x27;页描述符&#x27;, &#x27;struct page 字段：_count、flags、_mapcount 等。&#x27;], [&#x27;非一致内存访问(NUMA)&#x27;, &#x27;node 字段。&#x27;], [&#x27;内存管理区&#x27;, &#x27;ZONE_DMA / ZONE_NORMAL / ZONE_HIGHMEM。&#x27;], [&#x27;保留的页框池&#x27;, &#x27;用于中断/原子上下文分配。&#x27;], [&#x27;分区页框分配器&#x27;, &#x27;__alloc_pages / __free_pages。&#x27;], [&#x27;请求和释放页框&#x27;, &#x27;alloc_pages 路径。&#x27;]]</div></div><div class="sub" id="ch-memmgt-s1"><div class="sub-name">· 高端内存页框的内核映射</div><div class="sub-desc">[[&#x27;永久内核映射&#x27;, &#x27;kmap()。&#x27;], [&#x27;临时内核映射&#x27;, &#x27;kmap_atomic()。&#x27;]]</div></div><div class="sub" id="ch-memmgt-s2"><div class="sub-name">· 伙伴系统算法</div><div class="sub-desc">[[&#x27;数据结构&#x27;, &#x27;free_area 数组 + 每阶链表。&#x27;], [&#x27;分配块&#x27;, &#x27;__rmqueue → __rmqueue_smallest → expand。&#x27;], [&#x27;释放块&#x27;, &#x27;__free_pages_ok → __free_one_page 合并伙伴。&#x27;]]</div></div><div class="sub" id="ch-memmgt-s3"><div class="sub-name">· 每 CPU 页框高速缓存</div><div class="sub-desc">pcp[NR_CPUS][MAX_ORDER] 单页热缓存。</div></div><div class="sub" id="ch-memmgt-s4"><div class="sub-name">· 管理区分配器</div><div class="sub-desc">get_page_from_freelist / 慢路径 __alloc_pages。</div></div><div class="sub" id="ch-memmgt-s5"><div class="sub-name">· 内存区管理(slab 分配器)</div><div class="sub-desc">[[&#x27;高速缓存描述符&#x27;, &#x27;struct kmem_cache。&#x27;], [&#x27;slab 描述符&#x27;, &#x27;外部/内部两种。&#x27;], [&#x27;普通和专用高速缓存&#x27;, &#x27;通用 kmalloc + 专用 cache。&#x27;], [&#x27;slab 分配器与分区页框分配器的接口&#x27;, &#x27;kmem_getpages/kmem_freepages。&#x27;], [&#x27;给高速缓存分配 slab&#x27;, &#x27;cache_grow。&#x27;], [&#x27;对象描述符&#x27;, &#x27;free 链表在 slab 内部/外部。&#x27;], [&#x27;对齐内存中的对象&#x27;, &#x27;BYTES_PER_WORD 对齐。&#x27;], [&#x27;slab 着色&#x27;, &#x27;color_off 错开不同 slab 起始位置。&#x27;], [&#x27;空闲 slab 对象的本地高速缓存&#x27;, &#x27;每 CPU array_cache。&#x27;], [&#x27;分配/释放 slab 对象&#x27;, &#x27;__cache_alloc / kmem_cache_free。&#x27;], [&#x27;通用对象&#x27;, &#x27;kmalloc/kfree。&#x27;]]</div></div><div class="sub" id="ch-memmgt-s6"><div class="sub-name">· 内存池(mempool)</div><div class="sub-desc">预留对象池，用于不可失败的分配。</div></div><div class="sub" id="ch-memmgt-s7"><div class="sub-name">· 非连续内存区管理</div><div class="sub-desc">[[&#x27;非连续内存区的线性地址&#x27;, &#x27;VMALLOC_START ~ VMALLOC_END。&#x27;], [&#x27;非连续内存区的描述符&#x27;, &#x27;struct vm_struct。&#x27;], [&#x27;分配/释放非连续内存区&#x27;, &#x27;vmalloc/vfree。&#x27;]]</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-addr">
+            <header class="chapter-header">
+                <div class="chapter-num">08</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第七章  进程地址空间</h2>
+                    <p class="chapter-summary">本章讲进程的虚拟地址空间、内存描述符 mm_struct、线性区 VMA、缺页异常处理、堆的管理。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-addr-s0"><div class="sub-name">· 进程的地址空间</div><div class="sub-desc">0~TASK_SIZE 用户区 + 内核区。</div></div><div class="sub" id="ch-addr-s1"><div class="sub-name">· 内存描述符 mm_struct</div><div class="sub-desc">mmap/mmap_cache/mm_users/mm_count 等字段。</div></div><div class="sub" id="ch-addr-s2"><div class="sub-name">· 内核线程的内存描述符</div><div class="sub-desc">借用前一个用户进程的 mm。</div></div><div class="sub" id="ch-addr-s3"><div class="sub-name">· 线性区 VMA</div><div class="sub-desc">[[&#x27;线性区数据结构&#x27;, &#x27;struct vm_area_struct。&#x27;], [&#x27;线性区访问权限&#x27;, &#x27;vm_flags。&#x27;], [&#x27;线性区的处理&#x27;, &#x27;find_vma/find_vma_intersection/get_unmapped_area。&#x27;], [&#x27;分配线性地址区间&#x27;, &#x27;do_mmap。&#x27;], [&#x27;释放线性地址区间&#x27;, &#x27;do_munmap。&#x27;]]</div></div><div class="sub" id="ch-addr-s4"><div class="sub-name">· 缺页异常处理程序</div><div class="sub-desc">[[&#x27;处理地址空间以外的错误地址&#x27;, &#x27;SIGSEGV。&#x27;], [&#x27;请求调页&#x27;, &#x27;do_no_page / do_anonymous_page。&#x27;], [&#x27;写时复制(COW)&#x27;, &#x27;do_wp_page。&#x27;], [&#x27;处理非连续内存区访问&#x27;, &#x27;vmalloc_fault。&#x27;]]</div></div><div class="sub" id="ch-addr-s5"><div class="sub-name">· 创建和删除进程的地址空间</div><div class="sub-desc">mm_init/munmap_all。</div></div><div class="sub" id="ch-addr-s6"><div class="sub-name">· 堆的管理</div><div class="sub-desc">brk 系统调用。</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-syscall">
+            <header class="chapter-header">
+                <div class="chapter-num">09</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第八章  系统调用</h2>
+                    <p class="chapter-summary">本章讲系统调用处理程序、进入和退出系统调用(int $0x80 与 sysenter/sysexit 两套入口)、参数传递与验证、访问进程地址空间。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-syscall-s0"><div class="sub-name">· POSIX API 和系统调用</div><div class="sub-desc">库函数 vs 内核入口。</div></div><div class="sub" id="ch-syscall-s1"><div class="sub-name">· 系统调用处理程序及服务例程</div><div class="sub-desc">system_call → sys_xxx。</div></div><div class="sub" id="ch-syscall-s2"><div class="sub-name">· 进入和退出系统调用</div><div class="sub-desc">[[&#x27;通过 int $0x80 指令发出系统调用&#x27;, &#x27;传统入口。&#x27;], [&#x27;system_call() 函数&#x27;, &#x27;保存现场 → 查表 → 跳转 sys_xxx。&#x27;], [&#x27;从系统调用退出&#x27;, &#x27;iret 前的工作。&#x27;], [&#x27;通过 sysenter 指令发出系统调用&#x27;, &#x27;快速入口。&#x27;], [&#x27;vsyscall 页&#x27;, &#x27;用户态可直接调用。&#x27;], [&#x27;sysexit 指令 / SYSENTER_RETURN 代码&#x27;, &#x27;快速返回。&#x27;]]</div></div><div class="sub" id="ch-syscall-s3"><div class="sub-name">· 参数传递</div><div class="sub-desc">ebx/ecx/edx/esi/edi/ebp 6 个寄存器。</div></div><div class="sub" id="ch-syscall-s4"><div class="sub-name">· 验证参数</div><div class="sub-desc">access_ok + copy_from_user。</div></div><div class="sub" id="ch-syscall-s5"><div class="sub-name">· 访问进程地址空间</div><div class="sub-desc">[[&#x27;动态地址检查：修正代码&#x27;, &#x27;__get_user / copy_to_user 的异常表机制。&#x27;], [&#x27;异常表&#x27;, &#x27;.section __ex_table。&#x27;]]</div></div><div class="sub" id="ch-syscall-s6"><div class="sub-name">· 内核封装例程</div><div class="sub-desc">sys_xxx 的标准包装。</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-signal">
+            <header class="chapter-header">
+                <div class="chapter-num">10</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第九章  信号</h2>
+                    <p class="chapter-summary">本章讲信号的作用、产生与传递、信号数据结构、信号处理程序的执行与终止、信号相关的系统调用。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-signal-s0"><div class="sub-name">· 信号的作用</div><div class="sub-desc">进程间异步通知机制。</div></div><div class="sub" id="ch-signal-s1"><div class="sub-name">· 信号产生</div><div class="sub-desc">硬件异常、终端按键、kill()、资源异常等。</div></div><div class="sub" id="ch-signal-s2"><div class="sub-name">· 信号传递</div><div class="sub-desc">[[&#x27;传递信号之前所执行的操作&#x27;, &#x27;send_signal → 唤醒目标。&#x27;], [&#x27;POSIX 信号和多线程应用&#x27;, &#x27;线程组级信号。&#x27;]]</div></div><div class="sub" id="ch-signal-s3"><div class="sub-name">· 与信号相关的数据结构</div><div class="sub-desc">[[&#x27;信号描述符 sigpending / 信号处理程序描述符 sigaction&#x27;, &#x27;基本结构。&#x27;], [&#x27;挂起信号队列&#x27;, &#x27;struct sigqueue 链表。&#x27;]]</div></div><div class="sub" id="ch-signal-s4"><div class="sub-name">· 在信号数据结构上的操作</div><div class="sub-desc">sigaddset/sigdelset/sigismember 等。</div></div><div class="sub" id="ch-signal-s5"><div class="sub-name">· 产生信号</div><div class="sub-desc">specific_send_sig_info / send_signal / group_send_sig_info。</div></div><div class="sub" id="ch-signal-s6"><div class="sub-name">· 传递信号</div><div class="sub-desc">[[&#x27;执行信号的缺省操作&#x27;, &#x27;Terminate/Ignore/Core/Stop/Cont。&#x27;], [&#x27;捕获信号&#x27;, [[&#x27;建立信号帧&#x27;, &#x27;ucontext + siginfo。&#x27;], [&#x27;开始执行信号处理程序&#x27;, &#x27;sa_handler 进入。&#x27;], [&#x27;终止信号处理程序&#x27;, &#x27;sigreturn 系统调用。&#x27;]]], [&#x27;系统调用的重新执行&#x27;, &#x27;ERESTARTSYS / ERESTARTNOINTR / ERESTARTNOHAND。&#x27;]]</div></div><div class="sub" id="ch-signal-s7"><div class="sub-name">· 与信号处理相关的系统调用</div><div class="sub-desc">[[&#x27;kill() / tkill() / tgkill()&#x27;, &#x27;发信号。&#x27;], [&#x27;改变信号的操作&#x27;, &#x27;sigaction。&#x27;], [&#x27;检查挂起的阻塞信号&#x27;, &#x27;sigpending。&#x27;], [&#x27;修改阻塞信号的集合&#x27;, &#x27;sigprocmask。&#x27;], [&#x27;挂起进程&#x27;, &#x27;sigsuspend。&#x27;], [&#x27;实时信号&#x27;, &#x27;rt_sigqueueinfo / rt_sigtimedwait。&#x27;]]</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-vfs">
+            <header class="chapter-header">
+                <div class="chapter-num">11</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第十章  虚拟文件系统(VFS)</h2>
+                    <p class="chapter-summary">本章讲 VFS 的角色、通用文件模型(超级块/索引节点/文件/目录项)、文件系统注册与安装、路径名查找、VFS 系统调用实现与文件加锁。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-vfs-s0"><div class="sub-name">· 虚拟文件系统(VFS)的作用</div><div class="sub-desc">屏蔽具体文件系统差异，对上提供统一接口。</div></div><div class="sub" id="ch-vfs-s1"><div class="sub-name">· 文件系统类型</div><div class="sub-desc">[[&#x27;磁盘文件系统&#x27;, &#x27;Ext2/Ext3/Reiserfs/XFS/JFS 等。&#x27;], [&#x27;网络文件系统&#x27;, &#x27;NFS/CIFS/AFS 等。&#x27;], [&#x27;特殊文件系统&#x27;, &#x27;proc/sysfs/tmpfs/devpts/pipefs 等。&#x27;]]</div></div><div class="sub" id="ch-vfs-s2"><div class="sub-name">· 通用文件模型</div><div class="sub-desc">[[&#x27;超级块对象 super_block&#x27;, &#x27;文件系统实例。&#x27;], [&#x27;索引节点对象 inode&#x27;, &#x27;具体文件元数据。&#x27;], [&#x27;文件对象 file&#x27;, &#x27;进程级打开实例。&#x27;], [&#x27;目录项对象 dentry&#x27;, &#x27;路径分量缓存。&#x27;]]</div></div><div class="sub" id="ch-vfs-s3"><div class="sub-name">· VFS 所处理的系统调用</div><div class="sub-desc">open/read/write/close/stat/... 全部在 VFS 层分发。</div></div><div class="sub" id="ch-vfs-s4"><div class="sub-name">· VFS 的数据结构</div><div class="sub-desc">struct super_operations/inode_operations/file_operations。</div></div><div class="sub" id="ch-vfs-s5"><div class="sub-name">· 与进程相关的文件</div><div class="sub-desc">struct files_struct / fdtable / fd_array。</div></div><div class="sub" id="ch-vfs-s6"><div class="sub-name">· 文件系统类型注册</div><div class="sub-desc">register_filesystem / unregister_filesystem。</div></div><div class="sub" id="ch-vfs-s7"><div class="sub-name">· 命名空间</div><div class="sub-desc">struct mnt_namespace。</div></div><div class="sub" id="ch-vfs-s8"><div class="sub-name">· 文件系统安装</div><div class="sub-desc">[[&#x27;安装普通文件系统&#x27;, &#x27;do_mount → do_kern_mount。&#x27;], [&#x27;安装根文件系统&#x27;, &#x27;rootfs + 实际根两阶段。&#x27;], [&#x27;卸载文件系统&#x27;, &#x27;do_umount。&#x27;]]</div></div><div class="sub" id="ch-vfs-s9"><div class="sub-name">· 路径名查找</div><div class="sub-desc">[[&#x27;标准路径名查找&#x27;, &#x27;link_path_walk。&#x27;], [&#x27;父路径名查找&#x27;, &#x27;lookup_hash。&#x27;], [&#x27;符号链接的查找&#x27;, &#x27;nd_jump_link / vfs_follow_link。&#x27;]]</div></div><div class="sub" id="ch-vfs-s10"><div class="sub-name">· VFS 系统调用的实现</div><div class="sub-desc">[[&#x27;open() 系统调用&#x27;, &#x27;do_sys_open → do_filp_open。&#x27;], [&#x27;read() 和 write() 系统调用&#x27;, &#x27;vfs_read / vfs_write。&#x27;], [&#x27;close() 系统调用&#x27;, &#x27;filp_close。&#x27;]]</div></div><div class="sub" id="ch-vfs-s11"><div class="sub-name">· 文件加锁</div><div class="sub-desc">[[&#x27;Linux 文件加锁&#x27;, &#x27;flock/posix 锁。&#x27;], [&#x27;FL_FLOCK 锁&#x27;, &#x27;传统的 flock() 锁。&#x27;], [&#x27;FL_POSIX 锁&#x27;, &#x27;fcntl(F_SETLK...) 字节范围锁。&#x27;]]</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-io">
+            <header class="chapter-header">
+                <div class="chapter-num">12</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第十一章  I/O 体系结构和设备驱动程序</h2>
+                    <p class="chapter-summary">本章讲 I/O 端口与 I/O 接口、设备驱动模型(sysfs/kobject/总线/类/设备)、字符与块设备驱动、页高速缓存、文件读写、内存映射、回收页框、交换。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-io-s0"><div class="sub-name">· I/O 体系结构</div><div class="sub-desc">[[&#x27;I/O 端口&#x27;, &#x27;in/out 指令访问。&#x27;], [&#x27;访问 I/O 端口&#x27;, &#x27;inb/outb 等端口操作。&#x27;], [&#x27;I/O 接口&#x27;, [[&#x27;通用 I/O 接口&#x27;, &#x27;PCI/PCMCIA/USB 等总线。&#x27;], [&#x27;专用 I/O 接口&#x27;, &#x27;键盘/图形/磁盘/网络。&#x27;]]], [&#x27;设备控制器&#x27;, &#x27;PCI 设备发现的硬件基础。&#x27;]]</div></div><div class="sub" id="ch-io-s1"><div class="sub-name">· 设备驱动程序模型</div><div class="sub-desc">[[&#x27;sysfs 文件系统&#x27;, &#x27;block/devices/bus/drivers/class/power/firmware。&#x27;], [&#x27;kobject / kset / subsystem&#x27;, &#x27;内核对象模型基础。&#x27;], [&#x27;设备 / 驱动程序 / 总线 / 类&#x27;, &#x27;driver-model 四要素。&#x27;]]</div></div><div class="sub" id="ch-io-s2"><div class="sub-name">· 设备文件</div><div class="sub-desc">[[&#x27;动态分配设备号&#x27;, &#x27;alloc_chrdev_region。&#x27;], [&#x27;动态创建设备文件&#x27;, &#x27;udev/mdev。&#x27;], [&#x27;设备文件的 VFS 处理&#x27;, &#x27;chardev/blockdev file_operations。&#x27;]]</div></div><div class="sub" id="ch-io-s3"><div class="sub-name">· 设备驱动程序</div><div class="sub-desc">[[&#x27;注册设备驱动程序&#x27;, &#x27;register_chrdev/register_blkdev。&#x27;], [&#x27;初始化设备驱动程序&#x27;, &#x27;module_init。&#x27;], [&#x27;监控 I/O 操作&#x27;, &#x27;轮询模式 vs 中断模式。&#x27;], [&#x27;访问 I/O 共享存储器&#x27;, &#x27;ioremap/iounmap。&#x27;]]</div></div><div class="sub" id="ch-io-s4"><div class="sub-name">· 直接内存访问(DMA)</div><div class="sub-desc">[[&#x27;同步 DMA / 异步 DMA&#x27;, &#x27;设备行为差异。&#x27;], [&#x27;DMA 传送的辅助函数&#x27;, &#x27;dma_map_* / dma_unmap_*。&#x27;], [&#x27;总线地址&#x27;, &#x27;dma_addr_t。&#x27;], [&#x27;高速缓存的一致性&#x27;, &#x27;一致性映射 vs 流式映射。&#x27;]]</div></div><div class="sub" id="ch-io-s5"><div class="sub-name">· 字符设备驱动程序</div><div class="sub-desc">[[&#x27;分配设备号&#x27;, &#x27;register_chrdev_region/alloc_chrdev_region。&#x27;], [&#x27;register_chrdev() 函数&#x27;, &#x27;旧式注册。&#x27;], [&#x27;访问字符设备驱动程序&#x27;, &#x27;open/read/write/ioctl。&#x27;], [&#x27;字符设备的缓冲策略&#x27;, &#x27;tty 缓冲、循环缓冲。&#x27;]]</div></div><div class="sub" id="ch-io-s6"><div class="sub-name">· 块设备驱动程序</div><div class="sub-desc">[[&#x27;块设备的处理&#x27;, &#x27;扇区/块/段 三个粒度。&#x27;], [&#x27;通用块层&#x27;, [[&#x27;bio 结构&#x27;, &#x27;一次 I/O 的核心数据结构。&#x27;], [&#x27;磁盘和磁盘分区的表示&#x27;, &#x27;gendisk。&#x27;], [&#x27;提交请求&#x27;, &#x27;submit_bio → 调度器。&#x27;], [&#x27;I/O 调度程序&#x27;, &#x27;请求队列描述符。&#x27;], [&#x27;I/O 调度算法&#x27;, &#x27;Noop/CFQ/Deadline/Anticipatory。&#x27;]]], [&#x27;块设备驱动程序的注册和初始化&#x27;, &#x27;register_blkdev + blk_init_queue。&#x27;], [&#x27;块设备操作表&#x27;, &#x27;block_device_operations。&#x27;], [&#x27;策略例程 / 中断处理程序&#x27;, &#x27;request_fn / irq_handler。&#x27;]]</div></div><div class="sub" id="ch-io-s7"><div class="sub-name">· 页高速缓存</div><div class="sub-desc">[[&#x27;address_space 对象&#x27;, &#x27;文件→页 映射。&#x27;], [&#x27;基树 radix_tree&#x27;, &#x27;高效的页查找。&#x27;], [&#x27;页高速缓存的处理函数&#x27;, &#x27;find_get_page/add_to_page_cache/delete_from_page_cache。&#x27;], [&#x27;把块存放在页高速缓存中&#x27;, &#x27;mpage_readpages / submit_bh。&#x27;], [&#x27;块缓冲区和缓冲区首部 buffer_head&#x27;, &#x27;兼容旧接口。&#x27;], [&#x27;把脏页写入磁盘&#x27;, &#x27;writeback / pdflush。&#x27;]]</div></div><div class="sub" id="ch-io-s8"><div class="sub-name">· 访问文件</div><div class="sub-desc">[[&#x27;规范模式 / 同步模式 / 内存映射 / 直接 I/O / 异步 I/O&#x27;, &#x27;5 种访问模式。&#x27;], [&#x27;读写文件&#x27;, &#x27;read()/write() → file_operations。&#x27;], [&#x27;文件的预读&#x27;, &#x27;page_cache_readahead。&#x27;], [&#x27;内存映射&#x27;, [[&#x27;共享型 / 私有型&#x27;, &#x27;MAP_SHARED / MAP_PRIVATE。&#x27;], [&#x27;创建/撤消内存映射&#x27;, &#x27;mmap/munmap。&#x27;], [&#x27;内存映射的请求调页&#x27;, &#x27;filemap_fault / do_sync_read。&#x27;]]], [&#x27;直接 I/O 传送&#x27;, &#x27;O_DIRECT 绕过页缓存。&#x27;], [&#x27;异步 I/O&#x27;, &#x27;io_submit / io_getevents。&#x27;]]</div></div><div class="sub" id="ch-io-s9"><div class="sub-name">· 回收页框</div><div class="sub-desc">[[&#x27;页框回收算法(PFRA)&#x27;, &#x27;LRU 链表 + 反向映射。&#x27;], [&#x27;反向映射&#x27;, [[&#x27;匿名页的反向映射&#x27;, &#x27;anon_vma + prio_tree。&#x27;], [&#x27;映射页的反向映射&#x27;, &#x27;优先搜索树。&#x27;]]], [&#x27;PFRA 实现&#x27;, [[&#x27;睡眠回收 / 周期回收 / 内存紧缺回收&#x27;, &#x27;三类回收入口。&#x27;], [&#x27;LRU 链表&#x27;, &#x27;active/inactive 链表。&#x27;], [&#x27;mark_page_accessed / page_referenced&#x27;, &#x27;活跃度统计。&#x27;], [&#x27;shrink_cache / shrink_list / pageout&#x27;, &#x27;实际回收。&#x27;], [&#x27;回收可压缩磁盘高速缓存的页&#x27;, &#x27;try_to_release_page。&#x27;]]], [&#x27;kswapd 内核线程&#x27;, &#x27;周期性回收。&#x27;], [&#x27;内存不足删除程序&#x27;, &#x27;OOM killer。&#x27;]]</div></div><div class="sub" id="ch-io-s10"><div class="sub-name">· 交换(swap)</div><div class="sub-desc">[[&#x27;交换区&#x27;, &#x27;磁盘上的后备存储。&#x27;], [&#x27;交换区描述符&#x27;, &#x27;swap_info_struct。&#x27;], [&#x27;换出页标识符&#x27;, &#x27;swap_entry_t 编码。&#x27;], [&#x27;激活/禁用交换区&#x27;, &#x27;swapon/swapoff。&#x27;], [&#x27;分配和释放页槽&#x27;, &#x27;scan_swap_map / get_swap_page。&#x27;], [&#x27;交换高速缓存&#x27;, &#x27;多页换入优化。&#x27;], [&#x27;换出页 / 换入页&#x27;, &#x27;shrink → writepage / do_swap_page。&#x27;]]</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-fs">
+            <header class="chapter-header">
+                <div class="chapter-num">13</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第十二章  Ext2 和 Ext3 文件系统</h2>
+                    <p class="chapter-summary">本章以 Ext2 为代表讲磁盘文件系统的具体实现，再讲 Ext3 引入的日志机制。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-fs-s0"><div class="sub-name">· Ext2 的一般特征</div><div class="sub-desc">[[&#x27;块片(block fragmentation)&#x27;, &#x27;连续块分配。&#x27;], [&#x27;透明地处理压缩和加密文件&#x27;, &#x27;早期设计目标(未实现)。&#x27;], [&#x27;逻辑删除 / 日志&#x27;, &#x27;未实现的扩展点。&#x27;]]</div></div><div class="sub" id="ch-fs-s1"><div class="sub-name">· Ext2 磁盘数据结构</div><div class="sub-desc">[[&#x27;超级块&#x27;, &#x27;魔数、块总数、inode 总数等。&#x27;], [&#x27;组描述符和位图&#x27;, &#x27;块位图、inode 位图、inode 表位置。&#x27;], [&#x27;索引节点表&#x27;, &#x27;每个 inode 描述一个文件。&#x27;], [&#x27;索引节点的增强属性&#x27;, &#x27;ACL、SELinux 上下文等。&#x27;], [&#x27;各种文件类型如何使用磁盘块&#x27;, &#x27;普通文件/目录/符号链接/设备文件。&#x27;]]</div></div><div class="sub" id="ch-fs-s2"><div class="sub-name">· Ext2 的内存数据结构</div><div class="sub-desc">[[&#x27;Ext2 的超级块对象&#x27;, &#x27;ext2_sb_info。&#x27;], [&#x27;Ext2 的索引节点对象&#x27;, &#x27;ext2_inode_info + VFS inode。&#x27;]]</div></div><div class="sub" id="ch-fs-s3"><div class="sub-name">· Ext2 的方法</div><div class="sub-desc">[[&#x27;Ext2 超级块/索引节点/文件操作&#x27;, &#x27;ext2_*_operations 回调。&#x27;]]</div></div><div class="sub" id="ch-fs-s4"><div class="sub-name">· 创建 Ext2 文件系统</div><div class="sub-desc">mke2fs。</div></div><div class="sub" id="ch-fs-s5"><div class="sub-name">· 管理 Ext2 磁盘空间</div><div class="sub-desc">[[&#x27;创建/删除索引节点&#x27;, &#x27;ext2_new_inode / ext2_free_inode。&#x27;], [&#x27;数据块寻址&#x27;, &#x27;直接/一级/二级/三级间接。&#x27;], [&#x27;文件的洞&#x27;, &#x27;稀疏文件。&#x27;], [&#x27;分配/释放数据块&#x27;, &#x27;ext2_get_block。&#x27;]]</div></div><div class="sub" id="ch-fs-s6"><div class="sub-name">· Ext3 文件系统</div><div class="sub-desc">[[&#x27;日志文件系统&#x27;, &#x27;Ext3 在 Ext2 之上加日志层。&#x27;], [&#x27;日志(Journal) / 写回(Writeback) / 顺序(Ordered) 三种模式&#x27;, &#x27;data=journal / data=writeback / data=ordered。&#x27;]]</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-jbd">
+            <header class="chapter-header">
+                <div class="chapter-num">14</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第十三章  日志块设备层(JBD)</h2>
+                    <p class="chapter-summary">本章讲 Ext3 的日志实现：日志记录、原子操作、事务、恢复。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-jbd-s0"><div class="sub-name">· 日志记录</div><div class="sub-desc">记录元数据和数据修改。</div></div><div class="sub" id="ch-jbd-s1"><div class="sub-name">· 原子操作处理</div><div class="sub-desc">handle 概念。</div></div><div class="sub" id="ch-jbd-s2"><div class="sub-name">· 事务</div><div class="sub-desc">transaction 由若干 handle 组成，要么全部应用要么全部丢弃。</div></div><div class="sub" id="ch-jbd-s3"><div class="sub-name">· 未完成的</div><div class="sub-desc">事务状态机：running/committed/flushed。</div></div><div class="sub" id="ch-jbd-s4"><div class="sub-name">· 日志如何工作</div><div class="sub-desc">物理日志 vs 逻辑日志。</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-ipc">
+            <header class="chapter-header">
+                <div class="chapter-num">15</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第十四章  进程通信</h2>
+                    <p class="chapter-summary">本章讲 Linux 的进程间通信：管道/FIFO、System V IPC(信号量/消息队列/共享内存)、POSIX 消息队列。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-ipc-s0"><div class="sub-name">· 管道(pipe)</div><div class="sub-desc">[[&#x27;使用管道&#x27;, &quot;shell &#x27;|&#x27; 底层。&quot;], [&#x27;管道数据结构&#x27;, &#x27;struct pipe_inode_info。&#x27;], [&#x27;创建和撤消管道&#x27;, &#x27;pipe()/pipe_release()。&#x27;], [&#x27;从管道中读取/向管道中写入&#x27;, &#x27;pipe_read/pipe_write。&#x27;]]</div></div><div class="sub" id="ch-ipc-s1"><div class="sub-name">· FIFO</div><div class="sub-desc">命名管道，mkfifo。</div></div><div class="sub" id="ch-ipc-s2"><div class="sub-name">· System V IPC</div><div class="sub-desc">[[&#x27;使用 IPC 资源&#x27;, &#x27;ipc() 系统调用。&#x27;], [&#x27;IPC 信号量&#x27;, &#x27;semget/semop/semctl。&#x27;], [&#x27;IPC 消息&#x27;, &#x27;msgget/msgsnd/msgrcv/msgctl。&#x27;], [&#x27;IPC 共享内存&#x27;, &#x27;shmget/shmat/shmdt/shmctl。&#x27;]]</div></div><div class="sub" id="ch-ipc-s3"><div class="sub-name">· POSIX 消息队列</div><div class="sub-desc">mq_open/mq_send/mq_receive/mq_close。</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-exec">
+            <header class="chapter-header">
+                <div class="chapter-num">16</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第十五章  程序的执行</h2>
+                    <p class="chapter-summary">本章讲可执行文件格式(ELF/a.out)、共享库、进程权能与安全模块、程序段、exec 函数族。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-exec-s0"><div class="sub-name">· 不同的可执行文件格式</div><div class="sub-desc">ELF、a.out、脚本(#!)。</div></div><div class="sub" id="ch-exec-s1"><div class="sub-name">· 共享库</div><div class="sub-desc">动态链接与 ld.so。</div></div><div class="sub" id="ch-exec-s2"><div class="sub-name">· 进程的信任状和权能</div><div class="sub-desc">[[&#x27;进程权能&#x27;, &#x27;POSIX capability。&#x27;], [&#x27;Linux 安全模块(LSM)框架&#x27;, &#x27;SELinux/AppArmor 钩子。&#x27;]]</div></div><div class="sub" id="ch-exec-s3"><div class="sub-name">· 命令行参数和 shell 环境</div><div class="sub-desc">argv/envp 存放在栈底。</div></div><div class="sub" id="ch-exec-s4"><div class="sub-name">· 程序段和进程的线性区</div><div class="sub-desc">[[&#x27;正文段 / 已初始化数据段 / 未初始化数据段(bss) / 堆栈段&#x27;, &#x27;ELF 段映射。&#x27;]]</div></div><div class="sub" id="ch-exec-s5"><div class="sub-name">· 灵活线性区布局</div><div class="sub-desc">随机化加载地址(ASLR)。</div></div><div class="sub" id="ch-exec-s6"><div class="sub-name">· 执行跟踪</div><div class="sub-desc">ptrace。</div></div><div class="sub" id="ch-exec-s7"><div class="sub-name">· 可执行格式</div><div class="sub-desc">linux_binprm + binfmt 链表。</div></div><div class="sub" id="ch-exec-s8"><div class="sub-name">· 执行域</div><div class="sub-desc">struct linux_binprm 字段。</div></div><div class="sub" id="ch-exec-s9"><div class="sub-name">· exec 函数</div><div class="sub-desc">sys_execve → do_execve → search_binary_handler。</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-boot">
+            <header class="chapter-header">
+                <div class="chapter-num">17</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第十六章  系统启动</h2>
+                    <p class="chapter-summary">本章讲 Linux 从 BIOS 到 start_kernel() 的完整启动流程。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-boot-s0"><div class="sub-name">· 史前时代：BIOS</div><div class="sub-desc">上电自检、加载 MBR。</div></div><div class="sub" id="ch-boot-s1"><div class="sub-name">· 远古时代：引导装入程序</div><div class="sub-desc">LILO/GRUB。</div></div><div class="sub" id="ch-boot-s2"><div class="sub-name">· 从磁盘启动 Linux</div><div class="sub-desc">实模式 → 保护模式。</div></div><div class="sub" id="ch-boot-s3"><div class="sub-name">· 中世纪：setup() 函数</div><div class="sub-desc">内核解压缩前的实模式准备。</div></div><div class="sub" id="ch-boot-s4"><div class="sub-name">· 文艺复兴时期：startup_32() 函数</div><div class="sub-desc">进入保护模式、启用分页。</div></div><div class="sub" id="ch-boot-s5"><div class="sub-name">· 现代：start_kernel() 函数</div><div class="sub-desc">C 语言入口，初始化所有子系统。</div></div>
+            </div>
+        </section>
+        
+        <section class="chapter" id="ch-mod">
+            <header class="chapter-header">
+                <div class="chapter-num">18</div>
+                <div class="chapter-title-wrap">
+                    <h2 class="chapter-title">第十七章  模块</h2>
+                    <p class="chapter-summary">本章讲 Linux 内核模块机制：许可证、加载卸载、依赖、导出符号。</p>
+                </div>
+            </header>
+            <div class="sections">
+                <div class="sub" id="ch-mod-s0"><div class="sub-name">· 是否使用模块？</div><div class="sub-desc">灵活性 vs 性能的权衡。</div></div><div class="sub" id="ch-mod-s1"><div class="sub-name">· 模块许可证</div><div class="sub-desc">MODULE_LICENSE(&#x27;GPL&#x27;) 决定可用的 GPL 符号。</div></div><div class="sub" id="ch-mod-s2"><div class="sub-name">· 模块的实现</div><div class="sub-desc">[[&#x27;模块使用计数器&#x27;, &#x27;try_module_get / module_put。&#x27;], [&#x27;导出符号&#x27;, &#x27;EXPORT_SYMBOL / EXPORT_SYMBOL_GPL。&#x27;], [&#x27;模块依赖&#x27;, &#x27;dep 链表。&#x27;]]</div></div><div class="sub" id="ch-mod-s3"><div class="sub-name">· 模块的链接和取消</div><div class="sub-desc">[[&#x27;根据需要链接模块&#x27;, &#x27;request_module() 触发自动加载。&#x27;], [&#x27;modprobe 程序&#x27;, &#x27;用户态加载器。&#x27;]]</div></div>
+            </div>
+        </section>
+        
+        <div class="footer">
+            知识脑图由 Claude 自动整理生成 · 内容基于《深入理解 LINUX 内核》第三版 · 仅供学习参考
+        </div>
+    </main>
+</div>
+<button class="back-to-top" id="btt" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑</button>
+<script>
+function expandAll(){
+    document.querySelectorAll('.sidebar details').forEach(d => d.open = true);
+}
+function collapseAll(){
+    document.querySelectorAll('.sidebar details').forEach(d => d.open = false);
+}
+// Default: collapse all
+document.addEventListener('DOMContentLoaded', () => {
+    collapseAll();
+    const btt = document.getElementById('btt');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) btt.classList.add('show');
+        else btt.classList.remove('show');
+    });
+    // Smooth scroll for nav links
+    document.querySelectorAll('.nav-link').forEach(a => {
+        a.addEventListener('click', e => {
+            const id = a.getAttribute('href').slice(1);
+            const t = document.getElementById(id);
+            if (t) {
+                e.preventDefault();
+                window.scrollTo({ top: t.offsetTop - 20, behavior: 'smooth' });
+                history.pushState(null, '', '#' + id);
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

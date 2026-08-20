@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《Linux 设备驱动程序》（第三版）知识脑图</title>
+<style>
+  :root {
+    --bg: #f7f8fb;
+    --bg-card: #ffffff;
+    --bg-side: #ffffff;
+    --bg-hover: #eef3ff;
+    --bg-active: #e0ebff;
+    --text: #1f2330;
+    --text-soft: #5b6273;
+    --text-mute: #8a91a3;
+    --border: #e3e7ef;
+    --primary: #2f6feb;
+    --primary-soft: #d9e6ff;
+    --accent: #ff6b6b;
+    --shadow: 0 1px 2px rgba(20,30,60,.04), 0 4px 16px rgba(20,30,60,.05);
+    --radius: 10px;
+    --mono: "JetBrains Mono", "Fira Code", "Source Code Pro", ui-monospace, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+                 "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.75;
+    font-size: 15px;
+  }
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ====== Layout ====== */
+  .app {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: 100vh;
+  }
+  /* ====== Sidebar ====== */
+  .sidebar {
+    background: var(--bg-side);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 20px 16px 40px;
+  }
+  .sidebar h1 {
+    font-size: 16px;
+    margin: 0 0 4px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .sidebar .sub {
+    font-size: 12px;
+    color: var(--text-mute);
+    margin-bottom: 14px;
+  }
+  .sidebar .actions {
+    display: flex; gap: 8px; margin-bottom: 14px;
+  }
+  .sidebar .actions button {
+    flex: 1;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-soft);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .sidebar .actions button:hover {
+    background: var(--bg-hover);
+    color: var(--primary);
+  }
+  /* nav tree */
+  .nav { list-style: none; padding: 0; margin: 0; }
+  .nav li { user-select: none; }
+  .nav .node {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-soft);
+    font-size: 13.5px;
+    transition: background .12s, color .12s;
+  }
+  .nav .node:hover { background: var(--bg-hover); color: var(--primary); }
+  .nav .node.active { background: var(--bg-active); color: var(--primary); font-weight: 600; }
+  .nav .toggle {
+    width: 16px; height: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--text-mute);
+    flex-shrink: 0;
+    transition: transform .2s;
+    font-size: 10px;
+  }
+  .nav .toggle::before { content: "▶"; }
+  .nav .open > .node > .toggle { transform: rotate(90deg); }
+  .nav .has-children > .node > .toggle::before { content: "▶"; }
+  /* 默认折叠：未展开节点下的子菜单隐藏 */
+  .nav .has-children > ul { display: none; }
+  .nav .open > ul { display: block; }
+  .nav .label { flex: 1; }
+  .nav .badge {
+    font-size: 10px;
+    color: var(--text-mute);
+    background: #f0f2f6;
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+  .nav ul {
+    list-style: none; padding-left: 18px; margin: 2px 0 4px;
+    border-left: 1px dashed var(--border);
+    display: none;
+  }
+  .nav .open > ul { display: block; }
+  /* chapters in nav */
+  .nav .chapter > .node {
+    font-weight: 600; color: var(--text);
+    font-size: 13.5px;
+  }
+  .nav .chapter.open > .node { color: var(--primary); }
+  .nav .chapter .num {
+    color: var(--primary);
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--primary-soft);
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-right: 2px;
+  }
+
+  /* ====== Main Content ====== */
+  .main {
+    padding: 28px 36px 80px;
+    max-width: 1000px;
+  }
+  .main h2.section-title {
+    font-size: 22px;
+    margin: 36px 0 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+    color: var(--text);
+  }
+  .main h2.section-title:first-of-type { margin-top: 0; }
+  .main h3.chapter-title {
+    font-size: 18px;
+    margin: 30px 0 12px;
+    padding: 8px 14px;
+    background: linear-gradient(90deg, var(--primary-soft), transparent);
+    border-left: 4px solid var(--primary);
+    border-radius: 4px;
+    color: var(--text);
+  }
+  .main h3 .num {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+  }
+  .main h4 {
+    font-size: 15.5px;
+    margin: 20px 0 8px;
+    color: var(--text);
+    padding-left: 10px;
+    border-left: 3px solid var(--primary-soft);
+  }
+  .main p { margin: 6px 0 10px; color: #2a2f3d; }
+  .main ul, .main ol { padding-left: 22px; }
+  .main li { margin: 4px 0; }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin: 10px 0;
+    box-shadow: var(--shadow);
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+    margin: 10px 0 18px;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 11.5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #f0f4ff;
+    color: var(--primary);
+    margin: 0 4px 4px 0;
+    border: 1px solid #d6e2ff;
+  }
+  .tag.warn  { background: #fff4f0; color: #c95a3a; border-color: #ffd9cc; }
+  .tag.ok    { background: #f0fff5; color: #2f9e57; border-color: #cce8d6; }
+  .tag.info  { background: #f4f6fa; color: #5b6273; border-color: #dde2eb; }
+
+  code, kbd {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: #f3f5fa;
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: #b8395b;
+  }
+  pre {
+    background: #1d2230;
+    color: #e6e8ef;
+    padding: 12px 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  pre .c { color: #8a91a3; font-style: italic; }
+  pre .k { color: #ff8fbc; }
+  pre .s { color: #9fd97f; }
+  pre .t { color: #66d4ff; }
+  blockquote {
+    border-left: 3px solid var(--primary);
+    background: #f4f8ff;
+    margin: 10px 0;
+    padding: 10px 14px;
+    color: #34406b;
+    border-radius: 0 6px 6px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 13.5px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #f4f7fd; color: var(--text); }
+  tr:nth-child(even) td { background: #fafbfd; }
+
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin: 6px 0 12px;
+    font-size: 12.5px;
+  }
+  .meta span {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    color: var(--text-soft);
+  }
+
+  /* progress bar (reading) */
+  .progress-wrap {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 3px; background: transparent; z-index: 50;
+  }
+  .progress-bar {
+    height: 100%; width: 0;
+    background: linear-gradient(90deg, var(--primary), #6aa1ff);
+    transition: width .12s;
+  }
+  .back-to-top {
+    position: fixed; right: 24px; bottom: 24px;
+    width: 38px; height: 38px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(47,111,235,.35);
+  }
+  .back-to-top.show { display: flex; }
+  .back-to-top:hover { transform: translateY(-1px); }
+
+  /* scrollbar */
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #d8dde6; border-radius: 3px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: relative; height: auto; max-height: 50vh; }
+  }
+</style>
+</head>
+<body>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="app">
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar">
+    <h1>📘 Linux 设备驱动程序</h1>
+    <div class="sub">第三版 · 知识脑图 · LDD3</div>
+    <div class="actions">
+      <button onclick="expandAll()">全部展开</button>
+      <button onclick="collapseAll()">全部折叠</button>
+    </div>
+    <ul class="nav" id="navTree">
+      <li class="has-children chapter" data-target="preface">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">序</span>前言与导读</span></div>
+        <ul>
+          <li data-target="preface-overview"><div class="node"><span class="toggle"></span><span class="label">本书定位</span></div></li>
+          <li data-target="preface-audience"><div class="node"><span class="toggle"></span><span class="label">读者对象</span></div></li>
+          <li data-target="preface-organization"><div class="node"><span class="toggle"></span><span class="label">全书组织</span></div></li>
+          <li data-target="preface-conventions"><div class="node"><span class="toggle"></span><span class="label">排版约定</span></div></li>
+          <li data-target="preface-source"><div class="node"><span class="toggle"></span><span class="label">源码与在线资源</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch1">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch1</span>设备驱动程序简介</span></div>
+        <ul>
+          <li data-target="ch1-role"><div class="node"><span class="toggle"></span><span class="label">驱动的作用</span></div></li>
+          <li data-target="ch1-classify"><div class="node"><span class="toggle"></span><span class="label">驱动的分类</span></div></li>
+          <li data-target="ch1-kernel"><div class="node"><span class="toggle"></span><span class="label">内核功能划分</span></div></li>
+          <li data-target="ch1-loadable"><div class="node"><span class="toggle"></span><span class="label">可装载模块</span></div></li>
+          <li data-target="ch1-issues"><div class="node"><span class="toggle"></span><span class="label">设备号与设备文件</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch2">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch2</span>构造和运行模块</span></div>
+        <ul>
+          <li data-target="ch2-hello"><div class="node"><span class="toggle"></span><span class="label">Hello World 模块</span></div></li>
+          <li data-target="ch2-makefile"><div class="node"><span class="toggle"></span><span class="label">内核 Makefile</span></div></li>
+          <li data-target="ch2-kbuild"><div class="node"><span class="toggle"></span><span class="label">Kbuild 系统</span></div></li>
+          <li data-target="ch2-load"><div class="node"><span class="toggle"></span><span class="label">装载与卸载</span></div></li>
+          <li data-target="ch2-params"><div class="node"><span class="toggle"></span><span class="label">模块参数</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch3">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch3</span>字符设备驱动程序</span></div>
+        <ul>
+          <li data-target="ch3-skel"><div class="node"><span class="toggle"></span><span class="label">字符设备骨架</span></div></li>
+          <li data-target="ch3-major"><div class="node"><span class="toggle"></span><span class="label">主设备号</span></div></li>
+          <li data-target="ch3-ops"><div class="node"><span class="toggle"></span><span class="label">file_operations</span></div></li>
+          <li data-target="ch3-scull"><div class="node"><span class="toggle"></span><span class="label">scull 设计</span></div></li>
+          <li data-target="ch3-open"><div class="node"><span class="toggle"></span><span class="label">open / release</span></div></li>
+          <li data-target="ch3-rw"><div class="node"><span class="toggle"></span><span class="label">read / write</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch4">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch4</span>调试技术</span></div>
+        <ul>
+          <li data-target="ch4-printk"><div class="node"><span class="toggle"></span><span class="label">printk 与日志</span></div></li>
+          <li data-target="ch4-sysrq"><div class="node"><span class="toggle"></span><span class="label">Magic SysRq</span></div></li>
+          <li data-target="ch4-strace"><div class="node"><span class="toggle"></span><span class="label">strace</span></div></li>
+          <li data-target="ch4-kgdb"><div class="node"><span class="toggle"></span><span class="label">kgdb 调试器</span></div></li>
+          <li data-target="ch4-cpu"><div class="node"><span class="toggle"></span><span class="label">CPU 与锁检测</span></div></li>
+          <li data-target="ch4-oops"><div class="node"><span class="toggle"></span><span class="label">Oops 与故障定位</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch5">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch5</span>并发与竞态</span></div>
+        <ul>
+          <li data-target="ch5-race"><div class="node"><span class="toggle"></span><span class="label">竞态与临界区</span></div></li>
+          <li data-target="ch5-sema"><div class="node"><span class="toggle"></span><span class="label">信号量</span></div></li>
+          <li data-target="ch5-spinlock"><div class="node"><span class="toggle"></span><span class="label">自旋锁</span></div></li>
+          <li data-target="ch5-rcu"><div class="node"><span class="toggle"></span><span class="label">RCU 机制</span></div></li>
+          <li data-target="ch5-atomic"><div class="node"><span class="toggle"></span><span class="label">原子操作</span></div></li>
+          <li data-target="ch5-seq"><div class="node"><span class="toggle"></span><span class="label">seq 锁</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch6">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch6</span>高级字符驱动操作</span></div>
+        <ul>
+          <li data-target="ch6-ioctl"><div class="node"><span class="toggle"></span><span class="label">ioctl 接口</span></div></li>
+          <li data-target="ch6-poll"><div class="node"><span class="toggle"></span><span class="label">poll / select</span></div></li>
+          <li data-target="ch6-llseek"><div class="node"><span class="toggle"></span><span class="label">llseek</span></div></li>
+          <li data-target="ch6-trace"><div class="node"><span class="toggle"></span><span class="label">Trace 与调试</span></div></li>
+          <li data-target="ch6-async"><div class="node"><span class="toggle"></span><span class="label">异步通知</span></div></li>
+          <li data-target="ch6-seek"><div class="node"><span class="toggle"></span><span class="label">定位与访问控制</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch7">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch7</span>时间、延迟与延缓工作</span></div>
+        <ul>
+          <li data-target="ch7-jiffies"><div class="node"><span class="toggle"></span><span class="label">内核时间 jiffies</span></div></li>
+          <li data-target="ch7-delay"><div class="node"><span class="toggle"></span><span class="label">udelay / mdelay</span></div></li>
+          <li data-target="ch7-timer"><div class="node"><span class="toggle"></span><span class="label">内核定时器</span></div></li>
+          <li data-target="ch7-tasklet"><div class="node"><span class="toggle"></span><span class="label">tasklet</span></div></li>
+          <li data-target="ch7-workqueue"><div class="node"><span class="toggle"></span><span class="label">工作队列</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch8">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch8</span>内存分配</span></div>
+        <ul>
+          <li data-target="ch8-kmalloc"><div class="node"><span class="toggle"></span><span class="label">kmalloc / kfree</span></div></li>
+          <li data-target="ch8-getpage"><div class="node"><span class="toggle"></span><span class="label">页分配 get_free_page</span></div></li>
+          <li data-target="ch8-vmalloc"><div class="node"><span class="toggle"></span><span class="label">vmalloc</span></div></li>
+          <li data-target="ch8-percpu"><div class="node"><span class="toggle"></span><span class="label">per-CPU 变量</span></div></li>
+          <li data-target="ch8-pool"><div class="node"><span class="toggle"></span><span class="label">内存池与后备</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch9">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch9</span>与硬件通信</span></div>
+        <ul>
+          <li data-target="ch9-ioport"><div class="node"><span class="toggle"></span><span class="label">I/O 端口与资源</span></div></li>
+          <li data-target="ch9-iomem"><div class="node"><span class="toggle"></span><span class="label">I/O 内存</span></div></li>
+          <li data-target="ch9-portmap"><div class="node"><span class="toggle"></span><span class="label">端口映射</span></div></li>
+          <li data-target="ch9-newbus"><div class="node"><span class="toggle"></span><span class="label">新总线体系</span></div></li>
+          <li data-target="ch9-platform"><div class="node"><span class="toggle"></span><span class="label">platform_device</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch10">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch10</span>中断处理</span></div>
+        <ul>
+          <li data-target="ch10-install"><div class="node"><span class="toggle"></span><span class="label">注册中断处理程序</span></div></li>
+          <li data-target="ch10-handler"><div class="node"><span class="toggle"></span><span class="label">编写中断处理</span></div></li>
+          <li data-target="ch10-context"><div class="node"><span class="toggle"></span><span class="label">中断上下文</span></div></li>
+          <li data-target="ch10-tasklet-wq"><div class="node"><span class="toggle"></span><span class="label">中断下半部</span></div></li>
+          <li data-target="ch10-share"><div class="node"><span class="toggle"></span><span class="label">中断共享</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch11">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch11</span>内核数据类型</span></div>
+        <ul>
+          <li data-target="ch11-std"><div class="node"><span class="toggle"></span><span class="label">标准 C 类型</span></div></li>
+          <li data-target="ch11-fixed"><div class="node"><span class="toggle"></span><span class="label">定宽整数</span></div></li>
+          <li data-target="ch11-portable"><div class="node"><span class="toggle"></span><span class="label">可移植代码</span></div></li>
+          <li data-target="ch11-linked"><div class="node"><span class="toggle"></span><span class="label">链表与散列表</span></div></li>
+          <li data-target="ch11-endian"><div class="node"><span class="toggle"></span><span class="label">字节序</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch12">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch12</span>PCI 驱动程序</span></div>
+        <ul>
+          <li data-target="ch12-pci-arc"><div class="node"><span class="toggle"></span><span class="label">PCI 总线架构</span></div></li>
+          <li data-target="ch12-pci-reg"><div class="node"><span class="toggle"></span><span class="label">PCI 注册与探测</span></div></li>
+          <li data-target="ch12-pci-ids"><div class="node"><span class="toggle"></span><span class="label">访问配置空间</span></div></li>
+          <li data-target="ch12-pci-ioremap"><div class="node"><span class="toggle"></span><span class="label">访问 I/O 与内存</span></div></li>
+          <li data-target="ch12-example"><div class="node"><span class="toggle"></span><span class="label">示例：snull</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch13">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch13</span>USB 驱动程序</span></div>
+        <ul>
+          <li data-target="ch13-usb-arc"><div class="node"><span class="toggle"></span><span class="label">USB 总线与拓扑</span></div></li>
+          <li data-target="ch13-urb"><div class="node"><span class="toggle"></span><span class="label">URB 与传输</span></div></li>
+          <li data-target="ch13-driver"><div class="node"><span class="toggle"></span><span class="label">编写 USB 驱动</span></div></li>
+          <li data-target="ch13-sysfs"><div class="node"><span class="toggle"></span><span class="label">USB sysfs 接口</span></div></li>
+          <li data-target="ch13-gadget"><div class="node"><span class="toggle"></span><span class="label">USB Gadget</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch14">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch14</span>Linux 设备模型</span></div>
+        <ul>
+          <li data-target="ch14-kobject"><div class="node"><span class="toggle"></span><span class="label">kobject 与 kset</span></div></li>
+          <li data-target="ch14-sysfs"><div class="node"><span class="toggle"></span><span class="label">sysfs 文件系统</span></div></li>
+          <li data-target="ch14-bus"><div class="node"><span class="toggle"></span><span class="label">总线与设备</span></div></li>
+          <li data-target="ch14-device"><div class="node"><span class="toggle"></span><span class="label">device / driver</span></div></li>
+          <li data-target="ch14-class"><div class="node"><span class="toggle"></span><span class="label">class 接口</span></div></li>
+          <li data-target="ch14-hotplug"><div class="node"><span class="toggle"></span><span class="label">热插拔事件</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch15">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch15</span>内存映射与 DMA</span></div>
+        <ul>
+          <li data-target="ch15-mmap"><div class="node"><span class="toggle"></span><span class="label">mmap 内存映射</span></div></li>
+          <li data-target="ch15-dma"><div class="node"><span class="toggle"></span><span class="label">DMA 概述</span></div></li>
+          <li data-target="ch15-dma-api"><div class="node"><span class="toggle"></span><span class="label">DMA 映射 API</span></div></li>
+          <li data-target="ch15-dma-scatter"><div class="node"><span class="toggle"></span><span class="label">分散/聚集 DMA</span></div></li>
+          <li data-target="ch15-dma-cache"><div class="node"><span class="toggle"></span><span class="label">Cache 一致性</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch16">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch16</span>块设备驱动程序</span></div>
+        <ul>
+          <li data-target="ch16-register"><div class="node"><span class="toggle"></span><span class="label">注册块设备</span></div></li>
+          <li data-target="ch16-bio"><div class="node"><span class="toggle"></span><span class="label">bio 结构</span></div></li>
+          <li data-target="ch16-request"><div class="node"><span class="toggle"></span><span class="label">请求队列</span></div></li>
+          <li data-target="ch16-elevator"><div class="node"><span class="toggle"></span><span class="label">I/O 调度器</span></div></li>
+          <li data-target="ch16-example"><div class="node"><span class="toggle"></span><span class="label">示例：sbull</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch17">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch17</span>网络驱动程序</span></div>
+        <ul>
+          <li data-target="ch17-skel"><div class="node"><span class="toggle"></span><span class="label">snull 骨架</span></div></li>
+          <li data-target="ch17-netdev"><div class="node"><span class="toggle"></span><span class="label">net_device 结构</span></div></li>
+          <li data-target="ch17-open-stop"><div class="node"><span class="toggle"></span><span class="label">open / stop</span></div></li>
+          <li data-target="ch17-tx"><div class="node"><span class="toggle"></span><span class="label">数据包发送</span></div></li>
+          <li data-target="ch17-rx"><div class="node"><span class="toggle"></span><span class="label">数据包接收</span></div></li>
+          <li data-target="ch17-status"><div class="node"><span class="toggle"></span><span class="label">状态 / MAC / 多播</span></div></li>
+          <li data-target="ch17-ioctl"><div class="node"><span class="toggle"></span><span class="label">ioctl 与配置</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="ch18">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">Ch18</span>TTY 驱动程序</span></div>
+        <ul>
+          <li data-target="ch18-termios"><div class="node"><span class="toggle"></span><span class="label">termios 基础</span></div></li>
+          <li data-target="ch18-driver"><div class="node"><span class="toggle"></span><span class="label">tty_driver 结构</span></div></li>
+          <li data-target="ch18-ops"><div class="node"><span class="toggle"></span><span class="label">tty_operations</span></div></li>
+          <li data-target="ch18-line"><div class="node"><span class="toggle"></span><span class="label">线路规程</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="appA">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">附A</span>杂项 API 与变量</span></div>
+        <ul>
+          <li data-target="appA-printk"><div class="node"><span class="toggle"></span><span class="label">printk 速查</span></div></li>
+          <li data-target="appA-macro"><div class="node"><span class="toggle"></span><span class="label">常用宏</span></div></li>
+          <li data-target="appA-list"><div class="node"><span class="toggle"></span><span class="label">链表 list_head</span></div></li>
+        </ul>
+      </li>
+      <li class="has-children chapter" data-target="appB">
+        <div class="node"><span class="toggle"></span><span class="label"><span class="num">附B</span>参考文献</span></div>
+        <ul>
+          <li data-target="appB-books"><div class="node"><span class="toggle"></span><span class="label">推荐书目</span></div></li>
+          <li data-target="appB-online"><div class="node"><span class="toggle"></span><span class="label">在线资源</span></div></li>
+        </ul>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- ============ Main ============ -->
+  <main class="main">
+    <h2 class="section-title" id="overview">📘 《Linux 设备驱动程序》（第三版）— 知识脑图</h2>
+    <p>本书由 Jonathan Corbet、Alessandro Rubini、Greg Kroah-Hartman 合著，是 Linux 内核驱动开发领域的经典教材。本知识脑图基于全书 19 章内容与 3 个附录整理，结构按照"概念 → 机制 → API → 示例 → 注意点"层层展开，方便系统学习与快速回顾。</p>
+    <div class="meta">
+      <span>📚 19 章正文</span>
+      <span>📎 3 个附录</span>
+      <span>🧪 7 个示例驱动（scull / scullv / short / snull / sbull / usb-skeleton / pci-skeleton）</span>
+      <span>🛠 Linux 2.6 内核</span>
+      <span>📄 O'Reilly 第三版</span>
+    </div>
+    <blockquote>
+      "如果一个系统调用到达一个驱动前被 90% 的代码消耗了，那这个驱动显然是性能瓶颈的焦点之一；反之，驱动写得越简洁，其在内核的职责越清晰。" —— LDD3 引言
+    </blockquote>
+
+    <!-- ========== Preface ========== -->
+    <h3 class="chapter-title" id="preface"><span class="num">序</span>前言与导读</h3>
+    <h4 id="preface-overview">本书定位</h4>
+    <div class="card">
+      <ul>
+        <li>面向<strong>内核与驱动开发者</strong>的实战指南，并非纯理论书。</li>
+        <li>贯穿一个"内存字符设备"示例 <code>scull</code>，以及后续的 <code>short</code>、<code>snull</code>、<code>sbull</code> 等。</li>
+        <li>代码遵循 2.6 内核接口，但思想至今（5.x/6.x）依然适用，是入门驱动开发的第一本书。</li>
+      </ul>
+    </div>
+    <h4 id="preface-audience">读者对象</h4>
+    <div class="card-grid">
+      <div class="card"><strong>需要</strong><p>熟悉 C 语言、了解 Linux 用户态编程、对硬件/操作系统有兴趣。</p></div>
+      <div class="card"><strong>不要求</strong><p>精通内核源码或底层硬件细节；零基础到中级水平皆可阅读。</p></div>
+    </div>
+    <h4 id="preface-organization">全书组织</h4>
+    <table>
+      <tr><th>部分</th><th>章节</th><th>主题</th></tr>
+      <tr><td>基础篇</td><td>第 1 ~ 6 章</td><td>字符设备、调试、并发、ioctl/poll/异步通知</td></tr>
+      <tr><td>进阶篇</td><td>第 7 ~ 11 章</td><td>时间/内存/硬件访问/中断/数据类型</td></tr>
+      <tr><td>专题篇</td><td>第 12 ~ 18 章</td><td>PCI / USB / 设备模型 / mmap-DMA / 块设备 / 网络 / TTY</td></tr>
+      <tr><td>参考篇</td><td>附录 A/B</td><td>速查 API、参考书目</td></tr>
+    </table>
+    <h4 id="preface-conventions">排版约定</h4>
+    <div class="card">
+      <p>斜体：路径名、文件名。</p>
+      <p>等宽：函数名、变量、命令。</p>
+      <p>引用代码统一使用 <code>code</code> 包裹示例片段；调用注意使用 <code class="tag warn">⚠</code> 标记。</p>
+    </div>
+    <h4 id="preface-source">源码与在线资源</h4>
+    <div class="card">
+      <ul>
+        <li>示例源码：<code>drivers/scull.c</code>、<code>misc-modules/</code> 等（书籍附带）。</li>
+        <li>官方勘误：<a>http://www.oreilly.com/catalog/linuxdrive3</a></li>
+        <li>内核头文件：<code>Documentation/Changes</code>（环境要求）。</li>
+      </ul>
+    </div>
+
+    <!-- ========== Chapter 1 ========== -->
+    <h3 class="chapter-title" id="ch1"><span class="num">Ch1</span>设备驱动程序简介</h3>
+    <h4 id="ch1-role">驱动的作用</h4>
+    <div class="card">
+      <p>驱动是内核中<strong>负责与硬件设备交互</strong>的代码，是用户进程与硬件之间的"翻译官"。一个成熟的驱动不仅要让硬件工作，更要做到：</p>
+      <ul>
+        <li>向内核<strong>注册</strong>自身，并对外提供一致的 API；</li>
+        <li>正确处理<strong>并发、错误与电源管理</strong>；</li>
+        <li>在性能、健壮性、可维护性之间取得平衡。</li>
+      </ul>
+    </div>
+    <h4 id="ch1-classify">驱动的分类</h4>
+    <div class="card-grid">
+      <div class="card"><span class="tag">字符设备</span><p>按字节流访问，如 <code>/dev/console</code>、<code>/dev/ttyS0</code>、<code>/dev/lp0</code>。</p></div>
+      <div class="card"><span class="tag">块设备</span><p>按固定大小块访问，如 <code>/dev/hda1</code>、<code>/dev/sdb2</code>。</p></div>
+      <div class="card"><span class="tag">网络设备</span><p>面向数据包的发送与接收，如 <code>eth0</code>、<code>ppp0</code>。</p></div>
+    </div>
+    <h4 id="ch1-kernel">内核功能划分</h4>
+    <div class="card">
+      <p>驱动 ≈ 内核中<strong>与硬件打交道</strong>的代码块。但内核还负责进程调度、内存管理、网络协议栈、文件系统等众多职责，驱动需与这些子系统协作。</p>
+      <blockquote>内核 ≠ 驱动；驱动是内核子集。</blockquote>
+    </div>
+    <h4 id="ch1-loadable">可装载模块</h4>
+    <div class="card">
+      <p>现代内核把驱动编译为可<strong>动态装载</strong>的 <code>.ko</code> 模块，而非直接链入内核镜像。这样可以：</p>
+      <ul>
+        <li>按需加载，减少内核体积；</li>
+        <li>开发期间不用重启即可测试；</li>
+        <li>独立升级驱动而不影响基础内核。</li>
+      </ul>
+    </div>
+    <h4 id="ch1-issues">设备号与设备文件</h4>
+    <div class="card">
+      <p>每个设备由 <strong>主设备号（major）</strong>+<strong>次设备号（minor）</strong> 唯一标识。内核通过 <code>register_chrdev_region</code> / <code>alloc_chrdev_region</code> 申请；用户态通过 <code>mknod</code> 或 udev 创建设备节点。</p>
+      <pre><span class="c"># 创建设备节点示例</span>
+mknod /dev/scull0 c <span class="k">253</span> <span class="k">0</span>   <span class="c"># major=253 minor=0 字符设备</span></pre>
+    </div>
+
+    <!-- ========== Chapter 2 ========== -->
+    <h3 class="chapter-title" id="ch2"><span class="num">Ch2</span>构造和运行模块</h3>
+    <h4 id="ch2-hello">Hello World 模块</h4>
+    <pre><span class="k">#include</span> &lt;linux/init.h&gt;
+<span class="k">#include</span> &lt;linux/module.h&gt;
+
+<span class="t">static int</span> __init hello_init(<span class="t">void</span>)
+{
+    printk(KERN_ALERT <span class="s">"Hello, world\n"</span>);
+    <span class="k">return</span> <span class="k">0</span>;
+}
+<span class="t">static void</span> __exit hello_exit(<span class="t">void</span>)
+{
+    printk(KERN_ALERT <span class="s">"Goodbye, world\n"</span>);
+}
+module_init(hello_init);
+module_exit(hello_exit);
+MODULE_LICENSE(<span class="s">"Dual BSD/GPL"</span>);</pre>
+    <h4 id="ch2-makefile">内核 Makefile</h4>
+    <div class="card">
+      <pre>obj-m := hello.o
+KDIR  := /lib/modules/$(shell uname -r)/build
+PWD   := $(shell pwd)
+
+all:
+<span class="t">\t</span>$(MAKE) -C $(KDIR) M=$(PWD) modules
+clean:
+<span class="t">\t</span>make -C $(KDIR) M=$(PWD) clean</pre>
+      <p>外部模块构建的本质是"借助内核源码的 Makefile 基础设施 + 当前目录的 <code>obj-m</code> 列表"进行编译。</p>
+    </div>
+    <h4 id="ch2-kbuild">Kbuild 系统</h4>
+    <ul>
+      <li><code>obj-y</code>：编译进内核镜像；</li>
+      <li><code>obj-m</code>：编译为可装载模块；</li>
+      <li><code>obj-n</code>：不编译；</li>
+      <li>每个子目录的 <code>Makefile</code> 通过 <code>obj-$(CONFIG_XXX)</code> 决定目标。</li>
+    </ul>
+    <h4 id="ch2-load">装载与卸载</h4>
+    <pre>insmod ./hello.ko      <span class="c"># 加载模块</span>
+lsmod                  <span class="c"># 查看已加载模块</span>
+rmmod hello            <span class="c"># 卸载模块</span>
+modinfo hello.ko       <span class="c"># 查看模块信息</span></pre>
+    <h4 id="ch2-params">模块参数</h4>
+    <div class="card">
+      <p>驱动作者可以暴露<strong>模块参数</strong>，装载时由用户态传入：</p>
+      <pre><span class="t">static int</span> debug = <span class="k">0</span>;
+module_param(debug, <span class="t">int</span>, <span class="k">0644</span>);
+MODULE_PARM_DESC(debug, <span class="s">"Enable debug mode"</span>);</pre>
+      <p>装载时通过 <code>insmod hello.ko debug=1</code> 传入。</p>
+    </div>
+
+    <!-- ========== Chapter 3 ========== -->
+    <h3 class="chapter-title" id="ch3"><span class="num">Ch3</span>字符设备驱动程序</h3>
+    <h4 id="ch3-skel">字符设备骨架</h4>
+    <div class="card">
+      <ol>
+        <li>为设备设计<strong>内部数据结构</strong>（例如 scull 的环形队列）；</li>
+        <li>分配/注册<strong>主次设备号</strong>；</li>
+        <li>实现 <code>file_operations</code> 中的 open/read/write 等方法；</li>
+        <li>用 <code>cdev</code> 结构把设备对象注册到内核；</li>
+        <li>在 <code>module_init</code> 中完成上述工作，<code>module_exit</code> 中做反向清理。</li>
+      </ol>
+    </div>
+    <h4 id="ch3-major">主设备号</h4>
+    <ul>
+      <li>静态申请：<code>register_chrdev_region</code>（已知主设备号）；</li>
+      <li>动态分配：<code>alloc_chrdev_region</code>（内核分配）；</li>
+      <li>查看 <code>/proc/devices</code> 即可看到当前注册的主设备号。</li>
+    </ul>
+    <h4 id="ch3-ops">file_operations</h4>
+    <pre><span class="t">static struct file_operations</span> scull_fops = {
+    .owner   = THIS_MODULE,
+    .llseek  = scull_llseek,
+    .read    = scull_read,
+    .write   = scull_write,
+    .ioctl   = scull_ioctl,
+    .open    = scull_open,
+    .release = scull_release,
+};</pre>
+    <h4 id="ch3-scull">scull 设计</h4>
+    <div class="card">
+      <p>scull（Simple Character Utility for Loading Localities）是一个"虚拟内存区域"字符设备，特点：</p>
+      <ul>
+        <li>每个设备是一段<strong>连续的内存</strong>；</li>
+        <li>提供 <code>scull0..scull3</code>、<code>scullpipe0..1</code> 等变体；</li>
+        <li>面向"驱动教学"，可读可写，并支持多种链表结构。</li>
+      </ul>
+    </div>
+    <h4 id="ch3-open">open / release</h4>
+    <pre><span class="t">int</span> scull_open(<span class="t">struct inode</span> *inode, <span class="t">struct file</span> *filp)
+{
+    <span class="t">struct scull_dev</span> *dev = container_of(inode-&gt;i_cdev, <span class="t">struct scull_dev</span>, cdev);
+    filp-&gt;private_data = dev;
+    <span class="k">if</span> ((filp-&gt;f_flags &amp; O_ACCMODE) == O_WRONLY) {
+        <span class="k">if</span> (down_interruptible(&amp;dev-&gt;sem)) <span class="k">return</span> -ERESTARTSYS;
+        scull_trim(dev);     <span class="c">/* 写时清空 */</span>
+        up(&amp;dev-&gt;sem);
+    }
+    <span class="k">return</span> <span class="k">0</span>;
+}</pre>
+    <h4 id="ch3-rw">read / write</h4>
+    <div class="card">
+      <ul>
+        <li>读：把内核缓冲区的字节拷贝到用户态 <code>buf</code>；</li>
+        <li>写：把用户态 <code>buf</code> 拷贝到内核缓冲区；</li>
+        <li>关键 API：<code>copy_to_user</code> / <code>copy_from_user</code>；</li>
+        <li>返回值：成功传输字节数；<code>0</code> 表示 EOF；负值 <code>-EFAULT</code> / <code>-EINTR</code> 等。</li>
+      </ul>
+      <pre>bytes_not_copied = copy_to_user(user_buf, kern_buf, count);
+<span class="k">if</span> (bytes_not_copied) <span class="k">return</span> -EFAULT;
+<span class="k">*</span>ppos += copied;
+<span class="k">return</span> copied;</pre>
+    </div>
+
+    <!-- ========== Chapter 4 ========== -->
+    <h3 class="chapter-title" id="ch4"><span class="num">Ch4</span>调试技术</h3>
+    <h4 id="ch4-printk">printk 与日志</h4>
+    <div class="card">
+      <p><code>printk</code> 是内核中的 printf 替代品，其日志级别决定了消息是否被打印到控制台：</p>
+      <table>
+        <tr><th>宏</th><th>数值</th><th>含义</th></tr>
+        <tr><td><code>KERN_EMERG</code></td><td>0</td><td>系统不可用</td></tr>
+        <tr><td><code>KERN_ALERT</code></td><td>1</td><td>必须立即处理</td></tr>
+        <tr><td><code>KERN_CRIT</code></td><td>2</td><td>临界条件</td></tr>
+        <tr><td><code>KERN_ERR</code></td><td>3</td><td>错误条件</td></tr>
+        <tr><td><code>KERN_WARNING</code></td><td>4</td><td>警告</td></tr>
+        <tr><td><code>KERN_NOTICE</code></td><td>5</td><td>普通但重要</td></tr>
+        <tr><td><code>KERN_INFO</code></td><td>6</td><td>提示性</td></tr>
+        <tr><td><code>KERN_DEBUG</code></td><td>7</td><td>调试信息</td></tr>
+      </table>
+      <p>用 <code>dmesg -n 8</code> 可临时调整控制台输出级别。</p>
+    </div>
+    <h4 id="ch4-sysrq">Magic SysRq</h4>
+    <p>通过 <code>Alt + SysRq + &lt;key&gt;</code>（或写入 <code>/proc/sysrq-trigger</code>）直接与内核交互，常用于内核崩溃的抢救：</p>
+    <ul>
+      <li><code>e</code>：向 init 之外的所有进程发送 SIGTERM；</li>
+      <li><code>i</code>：发送 SIGKILL；</li>
+      <li><code>s</code>：同步所有挂起的文件系统；</li>
+      <li><code>u</code>：重新挂载为只读；</li>
+      <li><code>b</code>：立即重启（不卸载文件系统！慎用）。</li>
+    </ul>
+    <h4 id="ch4-strace">strace</h4>
+    <p>跟踪用户进程的系统调用，定位驱动相关调用是否符合预期。配合 <code>-f -e trace=read,write,open,ioctl</code> 过滤。</p>
+    <h4 id="ch4-kgdb">kgdb 调试器</h4>
+    <div class="card">
+      <p>通过两台机器（一台开发机、一台目标机）进行源码级内核调试：</p>
+      <ul>
+        <li>目标机：<code>kgdboc=ttyS0,115200 kgdbwait</code>；</li>
+        <li>开发机：<code>gdb vmlinux</code> + <code>target remote /dev/ttyS0</code>；</li>
+        <li>可设断点、查看变量、单步执行。</li>
+      </ul>
+    </div>
+    <h4 id="ch4-cpu">CPU 与锁检测</h4>
+    <ul>
+      <li><code>CONFIG_DEBUG_KERNEL</code>：打开内核调试选项；</li>
+      <li><code>CONFIG_DEBUG_SPINLOCK</code>：自旋锁自检；</li>
+      <li><code>CONFIG_DEBUG_ATOMIC_SLEEP</code>：原子上下文中睡眠检测；</li>
+      <li><code>lockdep</code>：锁依赖检查，能发现潜在死锁。</li>
+    </ul>
+    <h4 id="ch4-oops">Oops 与故障定位</h4>
+    <div class="card">
+      <p>内核 Oops 包含：</p>
+      <ol>
+        <li>错误发生时的<strong>PC 指针</strong>；</li>
+        <li><strong>堆栈回溯</strong>；</li>
+        <li>可能伴随的<strong>寄存器快照</strong>。</li>
+      </ol>
+      <p>用 <code>objdump -d vmlinux</code> + 偏移地址即可定位到具体函数。</p>
+    </div>
+
+    <!-- ========== Chapter 5 ========== -->
+    <h3 class="chapter-title" id="ch5"><span class="num">Ch5</span>并发与竞态</h3>
+    <h4 id="ch5-race">竞态与临界区</h4>
+    <div class="card">
+      <p>多个执行流（进程上下文 / 中断上下文 / 多核）<strong>同时访问同一共享资源</strong>，且访问结果取决于执行时序，就形成了<strong>竞态</strong>。保护竞态的本质是<strong>临界区互斥</strong>。</p>
+      <blockquote>共享资源 + 多执行流 + 非原子访问 = 竞态。</blockquote>
+    </div>
+    <h4 id="ch5-sema">信号量</h4>
+    <pre><span class="k">static DECLARE_MUTEX</span>(my_lock);
+
+down(&amp;my_lock);        <span class="c">/* 获得（可中断） */</span>
+down_interruptible();   <span class="c">/* 可被信号打断 */</span>
+up(&amp;my_lock);          <span class="c">/* 释放 */</span></pre>
+    <p>信号量适合<strong>长时间持有</strong>的临界区（可以睡眠），但<strong>不能用于中断上下文</strong>。</p>
+    <h4 id="ch5-spinlock">自旋锁</h4>
+    <pre>spinlock_t my_lock = SPIN_LOCK_UNLOCKED;
+spin_lock(&amp;my_lock);
+<span class="c">/* 临界区 ... */</span>
+spin_unlock(&amp;my_lock);
+
+<span class="c">/* 带 IRQ 关闭 */</span>
+spin_lock_irqsave(&amp;my_lock, flags);
+...
+spin_unlock_irqrestore(&amp;my_lock, flags);</pre>
+    <p>自旋锁在等待时<strong>不停忙等</strong>，适合短临界区，<strong>可用于中断上下文</strong>。</p>
+    <h4 id="ch5-rcu">RCU 机制</h4>
+    <div class="card">
+      <p>RCU（Read-Copy-Update）是一种<strong>读多写少</strong>场景下的高性能同步机制：</p>
+      <ul>
+        <li>读端无锁，仅 <code>rcu_read_lock</code> / <code>rcu_read_unlock</code> 标记临界区；</li>
+        <li>写端采用"原对象 + 新对象"切换，旧对象等所有读者退出后释放；</li>
+        <li>典型 API：<code>call_rcu</code>、<code>synchronize_rcu</code>、<code>list_for_each_entry_rcu</code>。</li>
+      </ul>
+    </div>
+    <h4 id="ch5-atomic">原子操作</h4>
+    <p>由硬件保证的、<strong>不可被打断</strong>的指令：<code>atomic_t</code>、<code>atomic_set</code>、<code>atomic_inc</code>、<code>atomic_dec_and_test</code> 等。</p>
+    <h4 id="ch5-seq">seq 锁</h4>
+    <p>seqlock 适合"读端远多于写端且写端必须成功"的场景，写端使用自旋锁保护序列号，读端循环重试直到读到完整一致的快照。</p>
+
+    <!-- ========== Chapter 6 ========== -->
+    <h3 class="chapter-title" id="ch6"><span class="num">Ch6</span>高级字符驱动操作</h3>
+    <h4 id="ch6-ioctl">ioctl 接口</h4>
+    <div class="card">
+      <p><code>ioctl</code> 是用户态与驱动通信的<strong>命令通道</strong>。设计良好的 ioctl 应：</p>
+      <ul>
+        <li>使用<strong>全局唯一</strong>的幻数（<code>ioctl-number.txt</code> 查表）；</li>
+        <li>用方向位区分 <code>_IOR / _IOW / _IOWR</code>；</li>
+        <li>实现中用 <code>_IOC_TYPE / _IOC_NR / _IOC_SIZE</code> 校验。</li>
+      </ul>
+      <pre>#define SCULL_IOC_MAGIC  'k'
+#define SCULL_IOC_RESET   _IO(SCULL_IOC_MAGIC, 0)
+#define SCULL_IOC_SETQSET _IOW(SCULL_IOC_MAGIC, 1, int)
+#define SCULL_IOC_GETQSET _IOR(SCULL_IOC_MAGIC, 2, int)
+
+<span class="t">long</span> scull_ioctl(<span class="t">struct file</span> *filp,
+                 <span class="t">unsigned int</span> cmd, <span class="t">unsigned long</span> arg)
+{
+    <span class="k">if</span> (_IOC_TYPE(cmd) != SCULL_IOC_MAGIC) <span class="k">return</span> -ENOTTY;
+    <span class="k">switch</span> (cmd) {
+    <span class="k">case</span> SCULL_IOC_RESET:  qset = SCULL_QSET; <span class="k">break</span>;
+    <span class="k">case</span> SCULL_IOC_SETQSET: ...; <span class="k">break</span>;
+    <span class="k">default</span>: <span class="k">return</span> -ENOTTY;
+    }
+    <span class="k">return</span> <span class="k">0</span>;
+}</pre>
+    </div>
+    <h4 id="ch6-poll">poll / select</h4>
+    <p>驱动实现 <code>poll</code> 方法：当设备可读/可写时返回相应位掩码：</p>
+    <pre><span class="t">static unsigned int</span> scull_poll(<span class="t">struct file</span> *filp, poll_table *wait)
+{
+    <span class="t">struct scull_dev</span> *dev = filp-&gt;private_data;
+    <span class="t">unsigned int</span> mask = <span class="k">0</span>;
+
+    poll_wait(filp, &amp;dev-&gt;inq, wait);
+    poll_wait(filp, &amp;dev-&gt;outq, wait);
+
+    <span class="k">if</span> (dev-&gt;rp != dev-&gt;wp) mask |= POLLIN | POLLRDNORM;
+    <span class="k">if</span> (SPACE_FREE(dev))    mask |= POLLOUT | POLLWRNORM;
+    <span class="k">return</span> mask;
+}</pre>
+    <h4 id="ch6-llseek">llseek</h4>
+    <p>驱动需自己实现 <code>llseek</code>，否则 <code>read/write</code> 位置的更新由通用层代为完成。返回值为新位置或负错误码。</p>
+    <h4 id="ch6-trace">Trace 与调试</h4>
+    <p>第 4 章已介绍 printk/Oops/strace/kgdb；本章还会用到 <code>current-&gt;pid</code>、<code>jiffies</code> 等辅助追踪。</p>
+    <h4 id="ch6-async">异步通知</h4>
+    <div class="card">
+      <p>当数据到达时，驱动主动通知用户进程（避免进程无谓的 <code>poll</code> 轮询）：</p>
+      <ol>
+        <li>用户进程：<code>fcntl(fd, F_SETOWN, getpid())</code> + <code>F_SETFL, O_ASYNC</code>；</li>
+        <li>驱动：<code>kill_fasync(&amp;dev-&gt;async_queue, SIGIO, POLL_IN)</code>。</li>
+      </ol>
+    </div>
+    <h4 id="ch6-seek">定位与访问控制</h4>
+    <p>通过 <code>llseek</code> 实现设备内的"游标"；通过 <code>open</code> 中判断 <code>filp-&gt;f_flags</code> 实现独占访问、设备粒度检查。</p>
+
+    <!-- ========== Chapter 7 ========== -->
+    <h3 class="chapter-title" id="ch7"><span class="num">Ch7</span>时间、延迟与延缓工作</h3>
+    <h4 id="ch7-jiffies">内核时间 jiffies</h4>
+    <pre><span class="t">unsigned long</span> j = jiffies;             <span class="c">/* 当前 tick 数 */</span>
+<span class="t">unsigned long</span> next = j + HZ;            <span class="c">/* 1 秒后 */</span>
+time_before(j, next);                     <span class="c">/* 安全的比较宏 */</span></pre>
+    <p>注意 <code>jiffies</code> 可能溢出；应当用 <code>time_before / time_after_eq</code> 等宏进行比较。</p>
+    <h4 id="ch7-delay">udelay / mdelay</h4>
+    <ul>
+      <li><code>udelay</code>：忙等若干微秒，<strong>可在中断上下文</strong>使用；</li>
+      <li><code>mdelay</code>：忙等若干毫秒，<strong>不可在中断上下文</strong>使用；</li>
+      <li><code>msleep</code>：可睡眠的毫秒级延迟，<strong>不可在原子上下文</strong>使用。</li>
+    </ul>
+    <h4 id="ch7-timer">内核定时器</h4>
+    <pre><span class="k">struct timer_list</span> my_timer;
+init_timer(&amp;my_timer);
+my_timer.function = my_timeout;
+my_timer.data     = (<span class="t">unsigned long</span>)dev;
+my_timer.expires  = jiffies + HZ;
+add_timer(&amp;my_timer);</pre>
+    <h4 id="ch7-tasklet">tasklet</h4>
+    <div class="card">
+      <p>tasklet 是 2.6 时代常用的"软中断"机制，运行在<strong>软中断上下文</strong>：</p>
+      <ul>
+        <li>不可睡眠；</li>
+        <li>可被同种 tasklet 串行化；</li>
+        <li>API：<code>tasklet_init</code>、<code>tasklet_schedule</code>、<code>tasklet_kill</code>。</li>
+      </ul>
+    </div>
+    <h4 id="ch7-workqueue">工作队列</h4>
+    <p>工作队列运行在<strong>进程上下文</strong>，允许睡眠，弥补 tasklet 的不足。2.6 起推荐使用 <code>schedule_work</code> / <code>queue_work</code> 等接口。</p>
+
+    <!-- ========== Chapter 8 ========== -->
+    <h3 class="chapter-title" id="ch8"><span class="num">Ch8</span>内存分配</h3>
+    <h4 id="ch8-kmalloc">kmalloc / kfree</h4>
+    <pre><span class="t">void</span> *p = kmalloc(size, GFP_KERNEL);    <span class="c">/* 进程上下文，可用 GFP_KERNEL */</span>
+kfree(p);</pre>
+    <p><strong>GFP 标志</strong>决定了分配行为：</p>
+    <table>
+      <tr><th>标志</th><th>使用场景</th></tr>
+      <tr><td><code>GFP_ATOMIC</code></td><td>中断上下文 / 持锁</td></tr>
+      <tr><td><code>GFP_KERNEL</code></td><td>进程上下文、可睡眠</td></tr>
+      <tr><td><code>GFP_USER</code></td><td>为用户态分配</td></tr>
+      <tr><td><code>GFP_HIGHUSER</code></td><td>高端内存用户分配</td></tr>
+    </table>
+    <h4 id="ch8-getpage">页分配 get_free_page</h4>
+    <pre><span class="t">unsigned long</span> page = __get_free_page(GFP_KERNEL);
+free_page(page);</pre>
+    <p>整页或页级分配；适合大缓冲或自建 slab。</p>
+    <h4 id="ch8-vmalloc">vmalloc</h4>
+    <p>分配<strong>虚拟地址连续</strong>、物理地址不要求连续的内存；典型用于大块缓存（注意：性能低于 kmalloc，因为 TLB 命中更差）。</p>
+    <h4 id="ch8-percpu">per-CPU 变量</h4>
+    <p>每个 CPU 一个副本，<strong>无锁</strong>访问但要注意抢占。API：<code>DEFINE_PER_CPU</code>、<code>get_cpu_var</code>、<code>put_cpu_var</code>、<code>per_cpu_ptr</code>。</p>
+    <h4 id="ch8-pool">内存池与后备</h4>
+    <p>2.6 时代 <code>mempool</code> 提供"在内存紧张时仍能分配"的保证。Linux 后续版本已逐步淘汰，转而建议使用 <code>reserveless</code> 方案。</p>
+
+    <!-- ========== Chapter 9 ========== -->
+    <h3 class="chapter-title" id="ch9"><span class="num">Ch9</span>与硬件通信</h3>
+    <h4 id="ch9-ioport">I/O 端口与资源</h4>
+    <p>驱动通过 <code>request_region / release_region</code> 申请 I/O 端口：</p>
+    <pre>request_region(0x3f8, 8, <span class="s">"my_serial"</span>);   <span class="c">/* 0x3f8-0x3ff, 8 个端口 */</span>
+inb(port); outb(value, port);</pre>
+    <h4 id="ch9-iomem">I/O 内存</h4>
+    <div class="card">
+      <p>外设寄存器被映射到<strong>物理地址空间</strong>，驱动通过 <code>ioremap</code> 获得内核虚拟地址再访问：</p>
+      <pre><span class="t">void __iomem</span> *base = ioremap(0xF0000000, 0x1000);
+iowrite32(val, base + OFFSET);
+iounmap(base);</pre>
+      <p>注意：<strong>必须使用专门的 I/O 访问函数</strong>（<code>ioread32 / iowrite32</code> 等），不能直接解引用。</p>
+    </div>
+    <h4 id="ch9-portmap">端口映射</h4>
+    <p>若硬件将 I/O 端口映射为内存地址（"memory-mapped I/O"），则用 <code>ioport_map / ioport_unmap</code> 转成可读写虚拟地址，再用 <code>inb/outb</code> 系列访问。</p>
+    <h4 id="ch9-newbus">新总线体系</h4>
+    <p>现代 Linux 推荐"资源由总线枚举、驱动通过 <code>platform_device</code> / <code>pci_driver</code> 等机制获取"的模型，避免直接写死地址。</p>
+    <h4 id="ch9-platform">platform_device</h4>
+    <pre><span class="k">static struct resource</span> my_resources[] = {
+    [<span class="k">0</span>] = { .start = 0x10000000, .end = 0x10000FFF,
+              .flags = IORESOURCE_MEM, .name = <span class="s">"regs"</span> },
+    [<span class="k">1</span>] = { .start = <span class="k">42</span>,          .end = <span class="k">42</span>,
+              .flags = IORESOURCE_IRQ, .name = <span class="s">"irq"</span> },
+};
+<span class="k">static struct platform_device</span> my_device = {
+    .name           = <span class="s">"my_dev"</span>,
+    .id             = -<span class="k">1</span>,
+    .num_resources  = ARRAY_SIZE(my_resources),
+    .resource       = my_resources,
+};</pre>
+
+    <!-- ========== Chapter 10 ========== -->
+    <h3 class="chapter-title" id="ch10"><span class="num">Ch10</span>中断处理</h3>
+    <h4 id="ch10-install">注册中断处理程序</h4>
+    <pre><span class="k">if</span> (request_irq(irq_no, my_handler, IRQF_SHARED,
+                <span class="s">"my_dev"</span>, dev_id)) {
+    printk(KERN_ERR <span class="s">"cannot register IRQ %d\n"</span>, irq_no);
+    <span class="k">return</span> -EBUSY;
+}
+free_irq(irq_no, dev_id);</pre>
+    <h4 id="ch10-handler">编写中断处理</h4>
+    <ul>
+      <li>中断处理程序要<strong>尽可能短</strong>，只做"标记事件 + 唤醒下半部"；</li>
+      <li>返回值：<code>IRQ_NONE</code>（不属于本设备）或 <code>IRQ_HANDLED</code>（已处理）。</li>
+    </ul>
+    <h4 id="ch10-context">中断上下文</h4>
+    <div class="card">
+      <p>中断上下文中<strong>不能睡眠</strong>、不能调用可能阻塞的 API（<code>copy_from_user</code>、<code>kmalloc(GFP_KERNEL)</code> 等）；可以调用 <code>printk</code>、<code>inb/outb</code>、<code>atomic_xxx</code>、<code>tasklet_schedule</code>、<code>queue_work</code>。</p>
+    </div>
+    <h4 id="ch10-tasklet-wq">中断下半部</h4>
+    <table>
+      <tr><th>机制</th><th>上下文</th><th>典型用途</th></tr>
+      <tr><td>softirq</td><td>软中断</td><td>网络、块设备高性能路径</td></tr>
+      <tr><td>tasklet</td><td>软中断</td><td>简单的下半部</td></tr>
+      <tr><td>workqueue</td><td>进程上下文</td><td>需要睡眠的延迟处理</td></tr>
+      <tr><td>threaded IRQ</td><td>线程化中断</td><td>复杂中断处理（推荐）</td></tr>
+    </table>
+    <h4 id="ch10-share">中断共享</h4>
+    <p>多个设备可共享一个中断线，注册时使用 <code>IRQF_SHARED</code>；处理程序必须能判断"本设备是否产生了中断"。</p>
+
+    <!-- ========== Chapter 11 ========== -->
+    <h3 class="chapter-title" id="ch11"><span class="num">Ch11</span>内核数据类型</h3>
+    <h4 id="ch11-std">标准 C 类型</h4>
+    <p>内核禁用标准 C 库的 <code>&lt;stdio.h&gt;</code>、<code>&lt;string.h&gt;</code>，用内核专属头文件代替。</p>
+    <h4 id="ch11-fixed">定宽整数</h4>
+    <pre><span class="t">u8</span>  b;   <span class="t">u16</span> w;   <span class="t">u32</span> l;   <span class="t">u64</span> q;
+<span class="t">s8</span>  sb;  <span class="t">s16</span> sw;  <span class="t">s32</span> sl;  <span class="t">s64</span> sq;</pre>
+    <h4 id="ch11-portable">可移植代码</h4>
+    <p>避免假设字节序与字长，使用 <code>u32</code> / <code>u64</code> 配合 <code>cpu_to_le32 / le32_to_cpu</code> 等宏。</p>
+    <h4 id="ch11-linked">链表与散列表</h4>
+    <pre><span class="k">struct</span> my_item {
+    <span class="t">int</span>  data;
+    <span class="k">struct list_head</span> list;
+};
+list_add(&amp;item-&gt;list, &amp;head);
+list_for_each_entry(p, &amp;head, list) {
+    printk(<span class="s">"%d\n"</span>, p-&gt;data);
+}</pre>
+    <h4 id="ch11-endian">字节序</h4>
+    <ul>
+      <li>小端：x86、x86-64；</li>
+      <li>大端：网络字节序、PowerPC（部分）；</li>
+      <li>转换宏：<code>cpu_to_be16 / be16_to_cpu</code>、<code>cpu_to_le32 / le32_to_cpu</code> 等。</li>
+    </ul>
+
+    <!-- ========== Chapter 12 ========== -->
+    <h3 class="chapter-title" id="ch12"><span class="num">Ch12</span>PCI 驱动程序</h3>
+    <h4 id="ch12-pci-arc">PCI 总线架构</h4>
+    <div class="card">
+      <p>PCI 是 32/64 位共享总线，统一编址（MEM + IO），支持即插即用和中断共享。每个 PCI 设备由 <strong>总线号、设备号、功能号</strong> 唯一寻址（Bus/Device/Function，BDF）。</p>
+    </div>
+    <h4 id="ch12-pci-reg">PCI 注册与探测</h4>
+    <pre><span class="k">static struct pci_device_id</span> my_ids[] = {
+    { PCI_DEVICE(PCI_VENDOR_ID_FOO, PCI_DEVICE_ID_FOO_BAR) },
+    { <span class="k">0</span>, }
+};
+MODULE_DEVICE_TABLE(pci, my_ids);
+
+<span class="k">static struct pci_driver</span> my_driver = {
+    .name     = <span class="s">"my_pci"</span>,
+    .id_table = my_ids,
+    .probe    = my_probe,
+    .remove   = my_remove,
+};</pre>
+    <h4 id="ch12-pci-ids">访问配置空间</h4>
+    <pre><span class="t">u16</span> vendor = pci_resource_start(pdev, <span class="k">0</span>);
+pci_read_config_word(dev, PCI_VENDOR_ID, &amp;vendor);
+pci_write_config_byte(dev, offset, value);</pre>
+    <h4 id="ch12-pci-ioremap">访问 I/O 与内存</h4>
+    <pre>bar0 = pci_resource_start(pdev, <span class="k">0</span>);
+len  = pci_resource_len  (pdev, <span class="k">0</span>);
+flags= pci_resource_flags(pdev, <span class="k">0</span>);
+<span class="k">if</span> (flags &amp; IORESOURCE_IO) {
+    <span class="c">/* 端口 I/O */</span>
+} <span class="k">else if</span> (flags &amp; IORESOURCE_MEM) {
+    base = ioremap(bar0, len);
+}</pre>
+    <h4 id="ch12-example">示例：snull</h4>
+    <p>书中以"伪网络设备" <code>snull</code> 为例，演示了如何把 PCI 设备映射为网络接口层：探测 → 分配 net_device → 注册 → 收发包 → 卸载。</p>
+
+    <!-- ========== Chapter 13 ========== -->
+    <h3 class="chapter-title" id="ch13"><span class="num">Ch13</span>USB 驱动程序</h3>
+    <h4 id="ch13-usb-arc">USB 总线与拓扑</h4>
+    <p>USB 是一种<strong>主从结构</strong>、<strong>分层的总线</strong>：</p>
+    <ul>
+      <li>端点（Endpoint）：设备的最基本通信单元；</li>
+      <li>接口（Interface）：一组端点的集合，对应一种"功能"；</li>
+      <li>配置（Configuration）：一组接口的集合；</li>
+      <li>传输类型：<code>控制 / 中断 / 批量 / 等时</code>。</li>
+    </ul>
+    <h4 id="ch13-urb">URB 与传输</h4>
+    <pre>urb = usb_alloc_urb(<span class="k">0</span>, GFP_KERNEL);
+usb_fill_bulk_urb(urb, dev-&gt;udev,
+                  usb_sndbulkpipe(dev-&gt;udev, ep_out),
+                  buf, len, complete_fn, ctx);
+usb_submit_urb(urb, GFP_KERNEL);</pre>
+    <h4 id="ch13-driver">编写 USB 驱动</h4>
+    <pre><span class="k">static struct usb_device_id</span> my_id_table[] = {
+    { USB_DEVICE(VENDOR_ID, PRODUCT_ID) },
+    { }
+};
+<span class="k">static struct usb_driver</span> my_driver = {
+    .name       = <span class="s">"my_usb"</span>,
+    .probe      = my_probe,
+    .disconnect = my_disconnect,
+    .id_table   = my_id_table,
+};</pre>
+    <h4 id="ch13-sysfs">USB sysfs 接口</h4>
+    <p>通过 <code>/sys/bus/usb/devices/&lt;bus-port&gt;:&lt;config&gt;:&lt;interface&gt;</code> 可看到设备描述符、配置、接口、端点等。</p>
+    <h4 id="ch13-gadget">USB Gadget</h4>
+    <p>USB Gadget 是<strong>反向</strong>的 USB 角色：让 Linux 设备作为 USB 设备端，连接到主机。常见于嵌入式板、OTG 设备。</p>
+
+    <!-- ========== Chapter 14 ========== -->
+    <h3 class="chapter-title" id="ch14"><span class="num">Ch14</span>Linux 设备模型</h3>
+    <h4 id="ch14-kobject">kobject 与 kset</h4>
+    <div class="card">
+      <p><code>kobject</code> 是 Linux 设备模型的核心抽象，提供了：</p>
+      <ul>
+        <li><strong>引用计数</strong>：<code>kref</code>；</li>
+        <li><strong>父子关系</strong>：<code>parent</code>；</li>
+        <li><strong>类型 / 集合</strong>：<code>ktype / kset</code>；</li>
+        <li><strong>sysfs 入口</strong>：每个 kobject 对应一个目录。</li>
+      </ul>
+    </div>
+    <h4 id="ch14-sysfs">sysfs 文件系统</h4>
+    <p>sysfs 是<strong>内核对象到文件系统的映射</strong>，挂载于 <code>/sys</code>：</p>
+    <ul>
+      <li><code>/sys/bus</code>：总线；</li>
+      <li><code>/sys/devices</code>：设备树；</li>
+      <li><code>/sys/class</code>：按功能分类（net、tty、input …）；</li>
+      <li><code>/sys/module</code>：已加载模块；</li>
+      <li><code>/sys/fs</code>：文件系统相关。</li>
+    </ul>
+    <h4 id="ch14-bus">总线与设备</h4>
+    <pre><span class="k">struct bus_type</span> my_bus_type = {
+    .name  = <span class="s">"mybus"</span>,
+    .match = my_bus_match,
+};
+bus_register(&amp;my_bus_type);</pre>
+    <h4 id="ch14-device">device / driver</h4>
+    <p>每个 <code>device</code> 通过 <code>bus_type.match</code> 寻找对应的 <code>device_driver</code>，匹配成功即调用驱动的 <code>probe</code> 方法。</p>
+    <h4 id="ch14-class">class 接口</h4>
+    <p><code>class</code> 是对设备的"按功能分类"，例如 <code>class_create</code> + <code>device_create</code> 自动在 <code>/dev</code> 下创建设备节点。</p>
+    <h4 id="ch14-hotplug">热插拔事件</h4>
+    <p>内核通过 <code>kobject_uevent</code> 向用户态发送热插拔事件，udev/mdev 等守护进程据此做设备节点的创建/删除。</p>
+
+    <!-- ========== Chapter 15 ========== -->
+    <h3 class="chapter-title" id="ch15"><span class="num">Ch15</span>内存映射与 DMA</h3>
+    <h4 id="ch15-mmap">mmap 内存映射</h4>
+    <div class="card">
+      <p>驱动可以实现 <code>mmap</code>，把内核缓冲区映射到<strong>用户态虚拟地址</strong>，省去 <code>read/write</code> 时的数据拷贝：</p>
+      <pre><span class="t">int</span> my_mmap(<span class="t">struct file</span> *filp, <span class="t">struct vm_area_struct</span> *vma)
+{
+    <span class="k">if</span> (remap_pfn_range(vma, vma-&gt;vm_start,
+                        vm_pfn, size, vma-&gt;vm_page_prot))
+        <span class="k">return</span> -EAGAIN;
+    <span class="k">return</span> <span class="k">0</span>;
+}</pre>
+    </div>
+    <h4 id="ch15-dma">DMA 概述</h4>
+    <p>DMA 让外设<strong>不经过 CPU</strong>直接读写主存，是高性能 I/O 的关键。驱动要做两件事：</p>
+    <ol>
+      <li>申请 DMA 通道或申请一块 DMA 缓冲区；</li>
+      <li>通知设备"缓冲区物理地址"并启动传输。</li>
+    </ol>
+    <h4 id="ch15-dma-api">DMA 映射 API</h4>
+    <pre>dma_addr_t dma;
+<span class="t">void</span> *buf = dma_alloc_coherent(dev, size, &amp;dma, GFP_KERNEL);
+<span class="c">/* 通知设备：DMA 地址 = dma */</span>
+writel(<span class="t">lower_32_bits</span>(dma), dev-&gt;regs + DMA_ADDR);
+dma_free_coherent(dev, size, buf, dma);</pre>
+    <h4 id="ch15-dma-scatter">分散/聚集 DMA</h4>
+    <p>当缓冲区不连续时，用 <code>dma_map_sg</code> 把"分散的页"映射为"连续的 DMA 地址表"（sg list）。</p>
+    <h4 id="ch15-dma-cache">Cache 一致性</h4>
+    <p>设备与 CPU 看同一内存可能因 cache 出现"数据不一致"问题。解决：</p>
+    <ul>
+      <li>使用 <code>dma_alloc_coherent</code>（一致性 DMA 缓冲）；</li>
+      <li>或在每次传输前后主动 <code>dma_sync_single_for_cpu / dma_sync_single_for_device</code>。</li>
+    </ul>
+
+    <!-- ========== Chapter 16 ========== -->
+    <h3 class="chapter-title" id="ch16"><span class="num">Ch16</span>块设备驱动程序</h3>
+    <h4 id="ch16-register">注册块设备</h4>
+    <pre><span class="t">int</span> register_blkdev(<span class="t">unsigned int</span> major, <span class="k">const char</span> *name);
+<span class="t">void</span> unregister_blkdev(<span class="t">unsigned int</span> major, <span class="k">const char</span> *name);</pre>
+    <h4 id="ch16-bio">bio 结构</h4>
+    <p>bio 是块设备 I/O 的<strong>最小单位</strong>，由多个 <code>bio_vec</code> 组成，描述"哪些磁盘扇区需要做什么操作"。</p>
+    <h4 id="ch16-request">请求队列</h4>
+    <pre>q = blk_init_queue(my_request, &amp;my_lock);
+blk_queue_logical_block_size(q, <span class="k">512</span>);
+blk_queue_max_hw_sectors(q, <span class="k">1024</span>);
+add_disk(my_disk);</pre>
+    <h4 id="ch16-elevator">I/O 调度器</h4>
+    <p>调度器决定 bio 的提交顺序以提升吞吐量：</p>
+    <ul>
+      <li>CFQ（完全公平队列）；</li>
+      <li>Deadline（基于截止时间）；</li>
+      <li>NOOP（简单 FIFO）；</li>
+      <li>BFQ / Kyber（更新版本）。</li>
+    </ul>
+    <h4 id="ch16-example">示例：sbull</h4>
+    <p>sbull（Sample Block device Using Linked Lists）演示如何用 RAM 模拟一个块设备，覆盖注册 → bio 处理 → 请求合并 → 卸载的完整流程。</p>
+
+    <!-- ========== Chapter 17 ========== -->
+    <h3 class="chapter-title" id="ch17"><span class="num">Ch17</span>网络驱动程序</h3>
+    <h4 id="ch17-skel">snull 骨架</h4>
+    <p>snull 演示了一个最简的"伪网络设备"，所有包"环回"在内部。非常适合学习网络设备驱动。</p>
+    <h4 id="ch17-netdev">net_device 结构</h4>
+    <pre>dev = alloc_netdev(<span class="k">sizeof</span>(*priv), <span class="s">"sn%d"</span>, NET_NAME_UNKNOWN, snull_init);
+dev-&gt;netdev_ops = &amp;snull_netdev_ops;
+register_netdev(dev);</pre>
+    <h4 id="ch17-open-stop">open / stop</h4>
+    <p><code>ndo_open</code> 启动设备、申请资源；<code>ndo_stop</code> 反向清理。</p>
+    <h4 id="ch17-tx">数据包发送</h4>
+    <pre><span class="t">netdev_tx_t</span> snull_start_xmit(<span class="t">struct sk_buff</span> *skb,
+                              <span class="t">struct net_device</span> *dev)
+{
+    <span class="t">struct snull_priv</span> *priv = netdev_priv(dev);
+    <span class="c">/* 统计：长度、字节数 */</span>
+    priv-&gt;stats.tx_packets++;
+    priv-&gt;stats.tx_bytes += skb-&gt;len;
+    <span class="c">/* 直接把 skb 放进接收队列，模拟回环 */</span>
+    snull_rx(skb, dev, priv);
+    <span class="k">return</span> NETDEV_TX_OK;
+}</pre>
+    <h4 id="ch17-rx">数据包接收</h4>
+    <div class="card">
+      <p>真实设备的接收流程：</p>
+      <ol>
+        <li>设备触发中断；</li>
+        <li>驱动 <code>skb = dev_alloc_skb</code> 分配缓冲；</li>
+        <li>从硬件读入包到 <code>skb</code>；</li>
+        <li><code>netif_rx(skb)</code>（2.6）或 <code>napi_gro_receive</code>（新版）提交给协议栈。</li>
+      </ol>
+    </div>
+    <h4 id="ch17-status">状态 / MAC / 多播</h4>
+    <ul>
+      <li><code>netdev-&gt;state</code> 包含 link、running、up 等位；</li>
+      <li>MAC 地址存储在 <code>dev-&gt;dev_addr</code>；</li>
+      <li>多播表用 <code>dev_mc_add / dev_mc_del</code> 维护。</li>
+    </ul>
+    <h4 id="ch17-ioctl">ioctl 与配置</h4>
+    <p><code>ndo_do_ioctl</code> 处理来自用户态（如 <code>ifconfig</code>、<code>ethtool</code>）的命令；现代驱动推荐通过 <code>ethtool_ops</code> 提供更丰富的统计/协商能力。</p>
+
+    <!-- ========== Chapter 18 ========== -->
+    <h3 class="chapter-title" id="ch18"><span class="num">Ch18</span>TTY 驱动程序</h3>
+    <h4 id="ch18-termios">termios 基础</h4>
+    <p>termios 是 tty 设备的<strong>行规程属性集合</strong>，包括波特率、数据位、停止位、奇偶校验、流控等。</p>
+    <h4 id="ch18-driver">tty_driver 结构</h4>
+    <pre>drv = alloc_tty_driver(NR_PORTS);
+drv-&gt;owner             = THIS_MODULE;
+drv-&gt;driver_name       = <span class="s">"sntty"</span>;
+drv-&gt;name              = <span class="s">"sntty"</span>;
+drv-&gt;major             = SNTTY_MAJOR;
+drv-&gt;type              = TTY_DRIVER_TYPE_SYSTEM;
+drv-&gt;subtype           = SYSTEM_TYPE_SYSCONS;
+drv-&gt;init_termios      = tty_std_termios;
+drv-&gt;init_termios.c_cflag = B9600 | CS8 | CREAD | HUPCL | CLOCAL;
+tty_set_operations(drv, &amp;sntty_ops);
+tty_register_driver(drv);</pre>
+    <h4 id="ch18-ops">tty_operations</h4>
+    <p>必填项：<code>open / close / write / put_char / flush_chars / write_room / chars_in_buffer</code> 等；可选填 <code>ioctl / set_termios / throttle / unthrottle</code> 等。</p>
+    <h4 id="ch18-line">线路规程</h4>
+    <p>线路规程（line discipline）位于驱动和 tty 核心之间，负责<strong>行编辑、缓冲、回显</strong>等用户级特性。常用的是 N_TTY。</p>
+
+    <!-- ========== Appendix A ========== -->
+    <h3 class="chapter-title" id="appA"><span class="num">附A</span>杂项 API 与变量</h3>
+    <h4 id="appA-printk">printk 速查</h4>
+    <pre>printk(KERN_DEBUG <span class="s">"module: var=%d\n"</span>, var);
+printk_once(...);                 <span class="c">/* 只打印一次 */</span>
+pr_debug(<span class="s">"fmt"</span>, args...);      <span class="c">/* 调试用 */</span></pre>
+    <h4 id="appA-macro">常用宏</h4>
+    <div class="card-grid">
+      <div class="card"><span class="tag">container_of</span><p>由结构体成员指针反推结构体首地址。</p></div>
+      <div class="card"><span class="tag">likely / unlikely</span><p>分支预测提示，提升关键路径性能。</p></div>
+      <div class="card"><span class="tag">ARRAY_SIZE</span><p>编译期求数组元素个数。</p></div>
+      <div class="card"><span class="tag">min / max / clamp</span><p>取极值/夹紧的安全版本。</p></div>
+    </div>
+    <h4 id="appA-list">链表 list_head</h4>
+    <pre>list_add_tail(new, head);
+list_del(entry);
+list_for_each(pos, head)
+    container_of(pos, <span class="t">struct item</span>, list);
+list_empty(head);</pre>
+
+    <!-- ========== Appendix B ========== -->
+    <h3 class="chapter-title" id="appB"><span class="num">附B</span>参考文献</h3>
+    <h4 id="appB-books">推荐书目</h4>
+    <ul>
+      <li><em>Understanding the Linux Kernel</em>（Bovet &amp; Cesati）—— 内核原理；</li>
+      <li><em>Linux Kernel Development</em>（Robert Love）—— 通用内核开发；</li>
+      <li><em>UNIX Systems for Modern Architectures</em>（Schimmel）—— 体系结构与并发；</li>
+      <li><em>The Design of the UNIX Operating System</em>（Bach）—— 经典 Unix 思想；</li>
+      <li><em>Linux Device Drivers, 2nd Edition</em>（前作，对照 2.4 内核）</li>
+    </ul>
+    <h4 id="appB-online">在线资源</h4>
+    <ul>
+      <li>内核源码：<code>https://www.kernel.org</code></li>
+      <li>内核文档：<code>Documentation/</code> 目录；</li>
+      <li>LWN.net：<code>https://lwn.net</code>，内核新闻与深度文章；</li>
+      <li>Linux 内核邮件列表（LKML）：<code>https://lore.kernel.org/lkml/</code></li>
+    </ul>
+
+    <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border);">
+    <p style="color: var(--text-mute); font-size: 13px; text-align: center;">
+      © 整理自《Linux 设备驱动程序》第三版 · Jonathan Corbet / Alessandro Rubini / Greg Kroah-Hartman 著<br>
+      魏永明 / 耿岳 / 钟书毅 译 · O'Reilly Media, Inc. · 2005 简体中文版
+    </p>
+  </main>
+</div>
+
+<button class="back-to-top" id="backToTop" title="返回顶部">↑</button>
+
+<script>
+  // ----- Sidebar toggle (default collapsed) -----
+  document.querySelectorAll('#navTree li.has-children > .node').forEach(node => {
+    node.addEventListener('click', e => {
+      e.stopPropagation();
+      const li = node.parentElement;
+      li.classList.toggle('open');
+    });
+  });
+  // leaf click: smooth scroll
+  document.querySelectorAll('#navTree li[data-target]').forEach(li => {
+    const node = li.querySelector(':scope > .node');
+    if (!node) return;
+    node.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = li.getAttribute('data-target');
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.querySelectorAll('#navTree .node').forEach(n => n.classList.remove('active'));
+        node.classList.add('active');
+      }
+    });
+  });
+
+  // ----- Expand/Collapse all -----
+  function expandAll() {
+    document.querySelectorAll('#navTree li.has-children').forEach(li => li.classList.add('open'));
+  }
+  function collapseAll() {
+    document.querySelectorAll('#navTree li.has-children').forEach(li => li.classList.remove('open'));
+    document.querySelectorAll('#navTree .node').forEach(n => n.classList.remove('active'));
+  }
+  // 页面初始加载：强制全部折叠
+  collapseAll();
+
+  // ----- Scroll spy -----
+  const sections = document.querySelectorAll('main h3.chapter-title, main h4');
+  const navMap = new Map();
+  document.querySelectorAll('#navTree li[data-target]').forEach(li => {
+    navMap.set(li.getAttribute('data-target'), li.querySelector(':scope > .node'));
+  });
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        const id = en.target.id;
+        const navNode = navMap.get(id);
+        if (navNode) {
+          document.querySelectorAll('#navTree .node').forEach(n => n.classList.remove('active'));
+          navNode.classList.add('active');
+          // ensure chapter is open
+          const chapterLi = navNode.closest('li.chapter');
+          if (chapterLi) chapterLi.classList.add('open');
+        }
+      }
+    });
+  }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
+  sections.forEach(s => obs.observe(s));
+
+  // ----- Progress bar -----
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight);
+    document.getElementById('progressBar').style.width = (scrolled * 100) + '%';
+
+    const btn = document.getElementById('backToTop');
+    if (h.scrollTop > 400) btn.classList.add('show');
+    else btn.classList.remove('show');
+  });
+  document.getElementById('backToTop').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>

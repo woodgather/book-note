@@ -1,0 +1,2119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《深入理解Android卷III》知识脑图</title>
+<style>
+:root {
+  --color-bg: #f6f7fb;
+  --color-card: #ffffff;
+  --color-text: #1f2937;
+  --color-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-primary: #2563eb;
+  --color-primary-light: #dbeafe;
+  --color-accent: #7c3aed;
+  --color-accent-light: #ede9fe;
+  --color-success: #059669;
+  --color-warning: #ea580c;
+  --color-info-bg: #f0f9ff;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ========== 侧边导航 ========== */
+.sidebar {
+  width: 320px;
+  background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+}
+
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+
+.sidebar-header {
+  padding: 22px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.sidebar-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-subtitle {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 4px;
+}
+
+.sidebar-actions {
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  gap: 8px;
+}
+
+.sidebar-btn {
+  flex: 1;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.sidebar-btn:hover {
+  background: rgba(255,255,255,0.22);
+}
+
+.nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0 30px;
+}
+
+.nav-item {
+  position: relative;
+}
+
+.nav-section {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.nav-section:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.nav-section .toggle {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  text-align: center;
+  line-height: 16px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.7);
+  transition: transform 0.2s;
+}
+
+.nav-section.collapsed .toggle {
+  transform: rotate(-90deg);
+}
+
+.nav-section .icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.18);
+  margin-right: 8px;
+  text-align: center;
+  line-height: 24px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.nav-children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 5000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.nav-children.collapsed {
+  max-height: 0;
+}
+
+.nav-subitem {
+  padding: 8px 20px 8px 52px;
+  cursor: pointer;
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  border-left: 2px solid transparent;
+  transition: all 0.2s;
+  display: block;
+  text-decoration: none;
+}
+
+.nav-subitem:hover {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  border-left-color: #60a5fa;
+}
+
+.nav-subitem.active {
+  background: rgba(96, 165, 250, 0.2);
+  border-left-color: #60a5fa;
+  color: #fff;
+}
+
+/* ========== 主内容区 ========== */
+.main {
+  margin-left: 320px;
+  flex: 1;
+  padding: 30px 40px 60px;
+  max-width: 1100px;
+}
+
+.page-header {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  color: #fff;
+  padding: 36px 36px;
+  border-radius: var(--radius);
+  margin-bottom: 30px;
+  box-shadow: var(--shadow-md);
+}
+
+.page-header h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.page-header p {
+  margin: 0;
+  opacity: 0.92;
+  font-size: 15px;
+}
+
+.book-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.meta-item {
+  background: rgba(255,255,255,0.16);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.meta-label {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.meta-value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ========== 章节区块 ========== */
+.chapter {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  padding: 30px 32px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  scroll-margin-top: 20px;
+}
+
+.chapter-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+  border-bottom: 2px solid var(--color-primary-light);
+}
+
+.chapter-num {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.chapter-title {
+  flex: 1;
+}
+
+.chapter-title h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  color: #1e3a8a;
+}
+
+.chapter-subtitle {
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.chapter-tag {
+  display: inline-block;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 6px;
+  margin-top: 6px;
+}
+
+.chapter-overview {
+  background: var(--color-info-bg);
+  border-left: 4px solid var(--color-primary);
+  padding: 14px 18px;
+  border-radius: 6px;
+  margin-bottom: 22px;
+  color: #1e40af;
+  font-size: 14px;
+}
+
+.chapter-overview strong {
+  color: #1e3a8a;
+}
+
+/* ========== 节标题 ========== */
+.section {
+  margin-top: 24px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 22px 0 12px;
+  padding-left: 10px;
+  border-left: 4px solid var(--color-primary);
+}
+
+.section-title::before {
+  content: "▍";
+  color: var(--color-primary);
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.subsection-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #4b5563;
+  margin: 16px 0 8px;
+  padding-left: 14px;
+  border-left: 3px solid var(--color-accent);
+}
+
+/* ========== 知识节点卡片 ========== */
+.knowledge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 12px 0 8px;
+}
+
+.knowledge-card {
+  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.knowledge-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.knowledge-card .kc-title {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 6px;
+}
+
+.knowledge-card .kc-icon {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  margin-right: 8px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.knowledge-card .kc-desc {
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.65;
+}
+
+.knowledge-card .kc-tag {
+  display: inline-block;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: 8px;
+  margin: 4px 4px 0 0;
+}
+
+/* ========== 列表样式 ========== */
+.bullet-list {
+  margin: 10px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.bullet-list li {
+  position: relative;
+  padding: 6px 0 6px 24px;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.7;
+}
+
+.bullet-list li::before {
+  content: "●";
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  color: var(--color-primary);
+  font-size: 10px;
+}
+
+.bullet-list li strong {
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+.number-list {
+  margin: 10px 0;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: item;
+}
+
+.number-list li {
+  position: relative;
+  padding: 6px 0 6px 32px;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.7;
+  counter-increment: item;
+}
+
+.number-list li::before {
+  content: counter(item);
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 22px;
+  height: 22px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 22px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.number-list li strong {
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+/* ========== 信息框 ========== */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  font-size: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.callout-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  color: #fff;
+  margin-top: 1px;
+}
+
+.callout-info {
+  background: var(--color-info-bg);
+  border-left: 4px solid var(--color-primary);
+  color: #1e3a8a;
+}
+
+.callout-info .callout-icon { background: var(--color-primary); }
+
+.callout-tip {
+  background: #f0fdf4;
+  border-left: 4px solid var(--color-success);
+  color: #14532d;
+}
+
+.callout-tip .callout-icon { background: var(--color-success); }
+
+.callout-warning {
+  background: #fff7ed;
+  border-left: 4px solid var(--color-warning);
+  color: #7c2d12;
+}
+
+.callout-warning .callout-icon { background: var(--color-warning); }
+
+/* ========== 表格 ========== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.data-table thead {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: #fff;
+}
+
+.data-table th {
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border);
+  color: #374151;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+.data-table tbody tr:hover {
+  background: #eff6ff;
+}
+
+/* ========== 流程步骤 ========== */
+.flow-steps {
+  counter-reset: step;
+  margin: 14px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow-steps li {
+  position: relative;
+  padding: 12px 16px 12px 50px;
+  background: linear-gradient(90deg, #f0f9ff 0%, #ffffff 100%);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  font-size: 14px;
+  counter-increment: step;
+}
+
+.flow-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  width: 26px;
+  height: 26px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 26px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.flow-steps li strong {
+  color: #1e3a8a;
+}
+
+/* ========== 文件列表 ========== */
+.file-list {
+  list-style: none;
+  margin: 10px 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+
+.file-list li {
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: #4b5563;
+}
+
+/* ========== 章节总结框 ========== */
+.chapter-summary {
+  background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%);
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-top: 22px;
+}
+
+.chapter-summary h4 {
+  margin: 0 0 8px;
+  color: #4338ca;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.chapter-summary h4::before {
+  content: "📌";
+  margin-right: 6px;
+}
+
+.chapter-summary p {
+  margin: 0;
+  font-size: 14px;
+  color: #4338ca;
+  line-height: 1.75;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .menu-toggle { display: block !important; }
+}
+
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 200;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+/* ========== 回到顶部 ========== */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 50;
+}
+
+.back-to-top.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<div class="layout">
+  <!-- 侧边栏导航 -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">📚 知识脑图导航</h2>
+      <div class="sidebar-subtitle">《深入理解Android 卷III》</div>
+    </div>
+    <div class="sidebar-actions">
+      <button class="sidebar-btn" onclick="expandAll()">全部展开</button>
+      <button class="sidebar-btn" onclick="collapseAll()">全部折叠</button>
+    </div>
+    <ul class="nav-list" id="navList">
+      <li class="nav-item">
+        <div class="nav-section collapsed" onclick="toggleSection(this)">
+          <span class="toggle">▼</span>
+          <span class="icon">序</span>
+          推荐序
+        </div>
+        <ul class="nav-children collapsed">
+          <li><a class="nav-subitem" href="#preface-1">回顾与展望</a></li>
+          <li><a class="nav-subitem" href="#preface-2">系列丛书规划</a></li>
+          <li><a class="nav-subitem" href="#preface-3">作者轶事</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" onclick="toggleSection(this)">
+          <span class="toggle">▼</span>
+          <span class="icon">1</span>
+          第1章 开发环境部署
+        </div>
+        <ul class="nav-children collapsed">
+          <li><a class="nav-subitem" href="#ch1-1">搭建开发环境</a></li>
+          <li><a class="nav-subitem" href="#ch1-2">下载源码</a></li>
+          <li><a class="nav-subitem" href="#ch1-3">编译源码</a></li>
+          <li><a class="nav-subitem" href="#ch1-4">Eclipse调试SystemServer</a></li>
+          <li><a class="nav-subitem" href="#ch1-5">本章小结</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" onclick="toggleSection(this)">
+          <span class="toggle">▼</span>
+          <span class="icon">2</span>
+          第2章 Java Binder与MessageQueue
+        </div>
+        <ul class="nav-children collapsed">
+          <li><a class="nav-subitem" href="#ch2-1">Java层Binder架构</a></li>
+          <li><a class="nav-subitem" href="#ch2-2">Binder框架初始化</a></li>
+          <li><a class="nav-subitem" href="#ch2-3">ServiceManager注册流程</a></li>
+          <li><a class="nav-subitem" href="#ch2-4">MessageQueue工作原理</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" onclick="toggleSection(this)">
+          <span class="toggle">▼</span>
+          <span class="icon">3</span>
+          第3章 AudioService
+        </div>
+        <ul class="nav-children collapsed">
+          <li><a class="nav-subitem" href="#ch3-1">AudioService概述</a></li>
+          <li><a class="nav-subitem" href="#ch3-2">音量管理</a></li>
+          <li><a class="nav-subitem" href="#ch3-3">音量调节通知框</a></li>
+          <li><a class="nav-subitem" href="#ch3-4">静音控制</a></li>
+          <li><a class="nav-subitem" href="#ch3-5">音频外设管理</a></li>
+          <li><a class="nav-subitem" href="#ch3-6">AudioFocus机制</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" onclick="toggleSection(this)">
+          <span class="toggle">▼</span>
+          <span class="icon">4</span>
+          第4章 WindowManagerService
+        </div>
+        <ul class="nav-children collapsed">
+          <li><a class="nav-subitem" href="#ch4-1">初识WMS</a></li>
+          <li><a class="nav-subitem" href="#ch4-2">窗口管理结构</a></li>
+          <li><a class="nav-subitem" href="#ch4-3">窗口显示次序</a></li>
+          <li><a class="nav-subitem" href="#ch4-4">布局系统</a></li>
+          <li><a class="nav-subitem" href="#ch4-5">动画系统</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" onclick="toggleSection(this)">
+          <span class="toggle">▼</span>
+          <span class="icon">5</span>
+          第5章 Android输入系统
+        </div>
+        <ul class="nav-children collapsed">
+          <li><a class="nav-subitem" href="#ch5-1">初识输入系统</a></li>
+          <li><a class="nav-subitem" href="#ch5-2">原始事件读取与加工</a></li>
+          <li><a class="nav-subitem" href="#ch5-3">InputReader工作原理</a></li>
+          <li><a class="nav-subitem" href="#ch5-4">事件派发机制</a></li>
+          <li><a class="nav-subitem" href="#ch5-5">焦点窗口与ANR</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" onclick="toggleSection(this)">
+          <span class="toggle">▼</span>
+          <span class="icon">6</span>
+          第6章 控件（ViewRoot）系统
+        </div>
+        <ul class="nav-children collapsed">
+          <li><a class="nav-subitem" href="#ch6-1">初识控件系统</a></li>
+          <li><a class="nav-subitem" href="#ch6-2">WindowManager</a></li>
+          <li><a class="nav-subitem" href="#ch6-3">ViewRootImpl</a></li>
+          <li><a class="nav-subitem" href="#ch6-4">控件树测量布局绘制</a></li>
+          <li><a class="nav-subitem" href="#ch6-5">输入事件派发</a></li>
+          <li><a class="nav-subitem" href="#ch6-6">PhoneWindow与Activity窗口</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" onclick="toggleSection(this)">
+          <span class="toggle">▼</span>
+          <span class="icon">7</span>
+          第7章 SystemUI
+        </div>
+        <ul class="nav-children collapsed">
+          <li><a class="nav-subitem" href="#ch7-1">初识SystemUI</a></li>
+          <li><a class="nav-subitem" href="#ch7-2">状态栏与导航栏创建</a></li>
+          <li><a class="nav-subitem" href="#ch7-3">通知信息管理</a></li>
+          <li><a class="nav-subitem" href="#ch7-4">虚拟按键与SearchPanel</a></li>
+          <li><a class="nav-subitem" href="#ch7-5">SystemUIVisibility</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" onclick="toggleSection(this)">
+          <span class="toggle">▼</span>
+          <span class="icon">8</span>
+          第8章 Android壁纸
+        </div>
+        <ul class="nav-children collapsed">
+          <li><a class="nav-subitem" href="#ch8-1">初识Android壁纸</a></li>
+          <li><a class="nav-subitem" href="#ch8-2">动态壁纸实现</a></li>
+          <li><a class="nav-subitem" href="#ch8-3">静态壁纸</a></li>
+          <li><a class="nav-subitem" href="#ch8-4">WMS对壁纸的特殊处理</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" onclick="toggleSection(this)">
+          <span class="toggle">▼</span>
+          <span class="icon">📖</span>
+          全书总结
+        </div>
+        <ul class="nav-children collapsed">
+          <li><a class="nav-subitem" href="#summary-1">核心知识体系</a></li>
+          <li><a class="nav-subitem" href="#summary-2">关键技术要点</a></li>
+        </ul>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- 主内容区 -->
+  <main class="main">
+    <div class="page-header">
+      <h1>《深入理解Android 卷III》知识脑图</h1>
+      <p>基于张大伟著作、邓凡平作序的Android UI系统深度解析</p>
+      <div class="book-meta">
+        <div class="meta-item">
+          <div class="meta-label">书名</div>
+          <div class="meta-value">深入理解Android 卷III</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">作者</div>
+          <div class="meta-value">张大伟</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">序言</div>
+          <div class="meta-value">邓凡平</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">基于版本</div>
+          <div class="meta-value">Android 4.2</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">核心主题</div>
+          <div class="meta-value">UI相关Framework</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">章节数</div>
+          <div class="meta-value">8章 + 推荐序</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 推荐序 -->
+    <section class="chapter" id="preface">
+      <div class="chapter-header">
+        <div class="chapter-num" style="background:linear-gradient(135deg,#6b7280,#374151)">序</div>
+        <div class="chapter-title">
+          <h2>推荐序</h2>
+          <div class="chapter-subtitle">邓凡平 · 2015年7月</div>
+        </div>
+      </div>
+
+      <div class="section" id="preface-1">
+        <h3 class="section-title">回顾与展望</h3>
+        <div class="callout callout-info">
+          <span class="callout-icon">i</span>
+          <div><strong>系列定位：</strong>本卷填补了"深入理解Android Framework"系列中和UI相关的空白，分析了Android 4.2中WMS、ViewRoot、Input、StatusBar、Wallpaper等模块。</div>
+        </div>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">1</span>系列历程</div>
+            <div class="kc-desc">
+              <span class="kc-tag">卷I 2011.9</span>
+              <span class="kc-tag">卷II 2012.8</span>
+              <span class="kc-tag">Telephony 2013.1</span>
+              <span class="kc-tag">Wi-Fi/NFC/GPS 2014.4</span>
+              <span class="kc-tag">卷III 2015</span>
+            </div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">2</span>Framework部分</div>
+            <div class="kc-desc">包含三本书：卷I（Native层）、卷II和卷III（Java层UI相关服务）</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="preface-2">
+        <h3 class="section-title">系列丛书规划</h3>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">应</span>应用部分</div>
+            <div class="kc-desc">分析Contacts、Gallery2、Mms、Browser等Android自带应用，展示商业级应用开发精髓</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">框</span>Framework部分</div>
+            <div class="kc-desc">覆盖Native层和Java层Framework模块，构建完整的Android系统知识结构</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">专</span>专题部分</div>
+            <div class="kc-desc">Telephony、多媒体、WebKit、Dalvik/ART虚拟机、Android安全、UI/UE设计</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">内</span>内核部分</div>
+            <div class="kc-desc">以Linux内核为核心，难度适中、知识面广、深度适宜的解析</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="preface-3">
+        <h3 class="section-title">作者轶事</h3>
+        <p>作者张大伟在中科创达工作期间与邓凡平相识，凭借清晰的思路和较强的技术能力赢得了信任。两人于2012年夏天被派遣到上海高通公司OnSite，期间开始共同撰写本书。张大伟凭借自己的天分和努力，从跟随者转变为本书的主导者和唯一作者。</p>
+      </div>
+    </section>
+
+    <!-- 第1章 -->
+    <section class="chapter" id="ch1">
+      <div class="chapter-header">
+        <div class="chapter-num">1</div>
+        <div class="chapter-title">
+          <h2>第1章 开发环境部署</h2>
+          <div class="chapter-subtitle">基础准备 · 源码下载与调试</div>
+        </div>
+      </div>
+
+      <div class="chapter-overview">
+        <strong>本章目标：</strong>介绍编译环境的搭建以及如何利用Eclipse调试SystemServer进程。
+      </div>
+
+      <div class="section" id="ch1-1">
+        <h3 class="section-title">1.1 搭建开发环境</h3>
+        <p>本节讨论Android源码下载、Eclipse开发环境，以及如何调试SystemServer进程等相关知识。</p>
+      </div>
+
+      <div class="section" id="ch1-2">
+        <h3 class="section-title">1.2.1 下载源码</h3>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">OS</span>操作系统</div>
+            <div class="kc-desc">推荐使用64位Ubuntu 10.04 X86-64版。Android 2.3以后Google官方推荐使用64位操作系统编译源码</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">源</span>源码下载</div>
+            <div class="kc-desc">通过source.android.com/source/downloading.html获取详细代码下载步骤，选择Android 4.0.1版本</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">版</span>版本选择</div>
+            <div class="kc-desc">选择下载Android 4.0.1的代码。虽然4.0.3版本号变化小，但实际代码差异较大</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="ch1-3">
+        <h3 class="section-title">1.2.2 编译源码</h3>
+        <h4 class="subsection-title">1. 部署JDK</h4>
+        <ul class="bullet-list">
+          <li>Android 2.3及以后版本需要使用<strong>JDK1.6</strong></li>
+          <li>下载文件：jdk-6u27-linux-x64.bin</li>
+          <li>解压后配置~/.bashrc文件设置Java环境</li>
+        </ul>
+        <h4 class="subsection-title">2. 编译源码步骤</h4>
+        <ol class="flow-steps">
+          <li><strong>source build/envsetup.sh</strong> - 导入Android编译环境</li>
+          <li><strong>choosecombo</strong> - 分别选择release、generic、eng</li>
+          <li><strong>make</strong> - 编译整个系统（4核4GB机器约2小时）</li>
+        </ol>
+      </div>
+
+      <div class="section" id="ch1-4">
+        <h3 class="section-title">1.2.3 利用Eclipse调试SystemServer</h3>
+        <h4 class="subsection-title">关键配置步骤</h4>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">1</span>配置Eclipse</div>
+            <div class="kc-desc">下载Android SDK，安装ADT插件，配置SDK Location和Android SDK Manager</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">2</span>Coffee Bytes Java插件</div>
+            <div class="kc-desc">强大的代码折叠插件，可折叠所有分支，帮助开发人员集中精力关注关键代码</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">3</span>导入Android源码</div>
+            <div class="kc-desc">复制.classpath到源码根目录，使用Eclipse Java Project导入。注意：必须先编译整个源码</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">4</span>创建运行模拟器</div>
+            <div class="kc-desc">通过Eclipse的AVD Manager创建并启动模拟器</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">5</span>调试SystemServer</div>
+            <div class="kc-desc">使用Remote Java Application，端口8600，通过JDWP协议调试SystemServer进程</div>
+          </div>
+        </div>
+        <div class="callout callout-warning">
+          <span class="callout-icon">!</span>
+          <div><strong>注意：</strong>导入源码前要取消Eclipse的自动编译选项；导入后不要清理工程，否则会删除已编译文件导致需要重新编译。</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch1-5">
+        <h3 class="section-title">1.3 本章小结</h3>
+        <p>本章对Android系统和源码搭建，以及如何利用Eclipse调试SystemServer等做了相关介绍，为后续源码分析之旅奠定基础。</p>
+      </div>
+
+      <div class="chapter-summary">
+        <h4>本章核心收获</h4>
+        <p>掌握Android Framework研究的基本环境配置，理解SystemServer作为Java Framework核心进程的调试方法，为深入分析WMS、IMS等系统服务提供调试基础。</p>
+      </div>
+    </section>
+
+    <!-- 第2章 -->
+    <section class="chapter" id="ch2">
+      <div class="chapter-header">
+        <div class="chapter-num">2</div>
+        <div class="chapter-title">
+          <h2>第2章 深入理解Java Binder和MessageQueue</h2>
+          <div class="chapter-subtitle">通信基石 · 任务调度</div>
+        </div>
+      </div>
+
+      <div class="chapter-overview">
+        <strong>本章核心：</strong>介绍Binder系统的Java层框架以及MessageQueue的工作原理。这两个工具是后续章节分析的基础。
+      </div>
+
+      <div class="section" id="ch2-1">
+        <h3 class="section-title">2.2.1 Java层Binder架构总览</h3>
+        <p>Java层Binder是Native层Binder的镜像，采用C/S架构，类命名尽量保持一致。</p>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">I</span>IBinder接口类</div>
+            <div class="kc-desc">定义Binder通信基础接口，包含FLAG_ONEWAY重要常量</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">D</span>DeathRecipient接口</div>
+            <div class="kc-desc">用于监听Binder对象所在的进程死亡事件</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">B</span>Binder类（Bn端）</div>
+            <div class="kc-desc">继承自IBinder，作为服务端的Bn代表</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">B</span>BinderProxy类（Bp端）</div>
+            <div class="kc-desc">继承自IBinder，作为客户端的Bp代表</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">B</span>BinderInternal类</div>
+            <div class="kc-desc">内部使用的Binder辅助类，含GcWatcher处理垃圾回收</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">P</span>Parcel类</div>
+            <div class="kc-desc">用于承载通信数据</div>
+          </div>
+        </div>
+        <div class="callout callout-tip">
+          <span class="callout-icon">★</span>
+          <div><strong>FLAG_ONEWAY：</strong>客户端只发送请求到Binder驱动即可返回，不必等待服务端结果。客户端通常向服务端注册回调（也是跨进程Binder调用）以获取处理结果。</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch2-2">
+        <h3 class="section-title">2.2.2 初始化Java层Binder框架</h3>
+        <p>Java初创时期，系统提前注册register_android_os_Binder JNI函数，建立Java Binder和Native Binder的交互关系。</p>
+        <ul class="bullet-list">
+          <li><strong>int_register_android_os_Binder：</strong>初始化Binder类，保存gBinderOffsets（含execTransact和mObject）</li>
+          <li><strong>int_register_android_os_BinderInternal：</strong>初始化BinderInternal类，获取forceBinderGc的methodID</li>
+          <li><strong>int_register_android_os_BinderProxy：</strong>初始化BinderProxy类，管理WeakReference、Error等</li>
+        </ul>
+        <div class="callout callout-info">
+          <span class="callout-icon">i</span>
+          <div><strong>框架初始化原理：</strong>提前获取JNI层使用信息（methodID、fieldID），节省每次调用时间；当Binder调用频繁时累积效果明显。同时打通Java层访问JNI层的道路。</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch2-3">
+        <h3 class="section-title">2.2.3 窥一斑可见全豹 - ServiceManager注册流程</h3>
+        <p>以ActivityManagerService（AMS）注册到ServiceManager为例，揭示Java层Binder工作原理。</p>
+        <ol class="flow-steps">
+          <li><strong>创建ServiceManagerProxy：</strong>getIServiceManager()调用ServiceManagerNative.asInterface(BinderInternal.getContextObject())</li>
+          <li><strong>Native层获取BpProxy：</strong>通过ProcessState::self()-&gt;getContextObject(NULL)获取指向SM的BpProxy</li>
+          <li><strong>封装为Java对象：</strong>通过javaObjectForIBinder()创建封装BpProxy的Java对象BinderProxy</li>
+          <li><strong>建立关联：</strong>将BpProxy指针保存到BinderProxy.mObject字段，建立两者联系</li>
+          <li><strong>注册到ObjectManager：</strong>attachObject注册到BpBinder的ObjectManager，含回收函数proxy_cleanup</li>
+        </ol>
+      </div>
+
+      <div class="section" id="ch2-4">
+        <h3 class="section-title">2.3 MessageQueue工作原理</h3>
+        <p>Android中重要的任务调度工具，使用广泛。MessageQueue的"新职责"是其关键扩展点。</p>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">N</span>Native层Looper</div>
+            <div class="kc-desc">frameworks/base/native/android/Looper.cpp，MessageQueue底层实现</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">J</span>JNI桥接</div>
+            <div class="kc-desc">android_os_MessageQueue.cpp连接Java层与Native层</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">N</span>NativeActivity支持</div>
+            <div class="kc-desc">android_app_NativeActivity.cpp实现Native Activity的Looper集成</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter-summary">
+        <h4>本章核心收获</h4>
+        <p>理解Java层Binder与Native层Binder的镜像关系，掌握Binder框架的JNI初始化流程；了解ServiceManager注册机制和MessageQueue在新职责下的工作原理。这些是后续分析WMS、IMS等系统服务的通信基础。</p>
+      </div>
+    </section>
+
+    <!-- 第3章 -->
+    <section class="chapter" id="ch3">
+      <div class="chapter-header">
+        <div class="chapter-num">3</div>
+        <div class="chapter-title">
+          <h2>第3章 深入理解AudioService</h2>
+          <div class="chapter-subtitle">音频系统 · Java层核心</div>
+        </div>
+      </div>
+
+      <div class="chapter-overview">
+        <strong>本章核心：</strong>探讨AudioService的音量管理、外设管理、AudioFocus工作机制，以及Android 4.1下的新特性。
+      </div>
+
+      <div class="section" id="ch3-1">
+        <h3 class="section-title">3.1 AudioService概述</h3>
+        <p>音频系统分为<strong>数据流</strong>（AudioTrack、AudioRecord、AudioFlinger）和<strong>策略</strong>（AudioPolicy）。AudioService作为Java层音频系统的大本营，几乎包含所有音频相关内容。</p>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">A</span>AudioService</div>
+            <div class="kc-desc">继承自IAudioService.Stub，位于Bn端，是音频系统的核心服务</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">A</span>AudioManager</div>
+            <div class="kc-desc">拥有AudioService的Bp端，是客户端代理</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">A</span>AudioSystem</div>
+            <div class="kc-desc">Java层到Native层的代理，与AudioPolicyService和AudioFlinger交互</div>
+          </div>
+        </div>
+        <h4 class="subsection-title">四大核心功能</h4>
+        <ul class="bullet-list">
+          <li>音量控制</li>
+          <li>音量调节通知框与静音功能</li>
+          <li>音频IO设备管理（耳机插入处理）</li>
+          <li>AudioFocus机制（解决多音频应用混乱交互）</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch3-2">
+        <h3 class="section-title">3.2 音量管理</h3>
+        <p>三种改变系统音量的方式：音量键、设置界面、应用静音。全部通过AudioService进行。</p>
+        <h4 class="subsection-title">3.2.1 音量键处理流程</h4>
+        <ol class="flow-steps">
+          <li><strong>触发音量键</strong> - PhoneWindow.onKeyDown()/onKeyUp()处理</li>
+          <li><strong>AudioManager代理</strong> - 调用AudioManager.handleKeyDown()，传入mVolumeControlStreamType</li>
+          <li><strong>AudioService.adjustSuggestedStreamVolume()</strong> - 三件事：确定流类型、屏蔽FLAG_PLAY_SOUND（部分场景）、调用adjustStreamVolume()</li>
+          <li><strong>adjustStreamVolume()</strong> - 调用VolumeStreamState.adjustIndex()更改音量值</li>
+          <li><strong>MSG_SET_DEVICE_VOLUME消息</strong> - 发送到mAudioHandler，setDeviceVolume()将音量设置到AudioFlinger</li>
+          <li><strong>sendVolumeUpdate()</strong> - 通知外界音量变化，mVolumePanel.postVolumeChanged()显示提示框</li>
+        </ol>
+        <h4 class="subsection-title">核心类解析</h4>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">V</span>VolumeStreamState</div>
+            <div class="kc-desc">保存一个流类型所有音量信息的关键类，每个流类型人手一份，通过mStreamStates数组管理</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">m</span>mStreamVolumeAlias</div>
+            <div class="kc-desc">整形数组描述流类型映射关系（例如将铃声音量用作通知音量），通过A→B映射实现</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">A</span>AudioManager代理</div>
+            <div class="kc-desc">客户端对AudioManager的请求几乎都会交由AudioService实现</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">广</span>广播通知</div>
+            <div class="kc-desc">VOLUME_CHANGED_ACTION广播通知音量变化，含(x+5)/10实现四舍五入</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="ch3-3">
+        <h3 class="section-title">3.2.1 音量调节通知框 - VolumePanel</h3>
+        <p>位于android.view包下，仅供AudioService使用，谷歌开发人员也对其位置表达不满（"What A Mass!"）。</p>
+        <h4 class="subsection-title">核心组件</h4>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">S</span>StreamResources枚举</div>
+            <div class="kc-desc">每个元素保存流类型的通知框所需资源（图标、提示文字等），共8种流类型</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">S</span>StreamControl类</div>
+            <div class="kc-desc">保存通知框所需显示控件，每个流类型一份，与StreamResources一一对应</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">m</span>mDialog</div>
+            <div class="kc-desc">承载通知框内容的Dialog实例，按需加载StreamControl</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">f</span>forceVolumeControlStream</div>
+            <div class="kc-desc">对话框显示时强制后续音量键操作固定为指定流类型，关闭时取消强制</div>
+          </div>
+        </div>
+        <div class="callout callout-tip">
+          <span class="callout-icon">★</span>
+          <div><strong>设计经验：</strong>postVolumeChanged()通过Handler消息转移到指定线程处理UI，因为Android要求只能在创建控件的线程中对控件进行操作。这种方式对设计UI Controller类有很好参考价值。</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch3-4">
+        <h3 class="section-title">3.2.3 静音控制</h3>
+        <p>静音控制涉及<strong>引用计数</strong>和<strong>客户端进程的死亡监控</strong>，复杂度高于音量调节。</p>
+        <h4 class="subsection-title">VolumeDeathHandler工作机制</h4>
+        <ul class="bullet-list">
+          <li><strong>每个客户端一个实例：</strong>保存mICallBack和mMuteCount</li>
+          <li><strong>继承DeathRecipient：</strong>拥有监听客户端生命状态能力</li>
+          <li><strong>静音时linkToDeath：</strong>避免非静音状态下的Binder资源占用</li>
+          <li><strong>进程死亡时清理：</strong>将mMuteCount=1后调用mute(false)完成遗愿</li>
+        </ul>
+        <h4 class="subsection-title">关键技术点</h4>
+        <div class="callout callout-info">
+          <span class="callout-icon">i</span>
+          <div><strong>客户端唯一标识：</strong>服务端把客户端传入的Binder对象（mICallBack）作为唯一标识，可执行DeathRecipient机制或创建Hashtable保存客户端信息。这是Android系统服务中常见且重要的技术。</div>
+        </div>
+        <h4 class="subsection-title">setStreamMute()流程</h4>
+        <ol class="flow-steps">
+          <li><strong>AudioManager.setStreamMute()</strong> - 传入state和mICallBack</li>
+          <li><strong>AudioService.setStreamMute()</strong> - 调用流类型对应的mStreamStates.mute()</li>
+          <li><strong>VolumeStreamState.mute()</strong> - 获取或创建VolumeDeathHandler</li>
+          <li><strong>VolumeDeathHandler.mute(state)</strong> - 静音：linkToDeath+计数加1；取消：unlinkToDeath+计数减1</li>
+        </ol>
+      </div>
+
+      <div class="section" id="ch3-5">
+        <h3 class="section-title">3.3 音频外设管理</h3>
+        <p>从插入耳机到声音经由耳机发出的过程中，AudioService的工作内容。</p>
+        <ul class="bullet-list">
+          <li><strong>WiredAccessoryObserver：</strong>Framework/base/services/java/com/android/server/WiredAccessoryObserver.java监控耳机插拔</li>
+          <li><strong>设备路由：</strong>AudioSystem与AudioPolicyService协同实现音频设备切换</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch3-6">
+        <h3 class="section-title">3.4 AudioFocus机制</h3>
+        <p>2.3及以后版本提供AudioFocus机制，解决多音频应用混乱的交互现状。</p>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">申</span>申请与释放</div>
+            <div class="kc-desc">音频应用播放过程中合理申请与释放AudioFocus，根据所有权变化调整播放行为</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">回</span>回调机制</div>
+            <div class="kc-desc">AudioFocus所有权变化时通过回调通知应用，多采用FLAG_ONEWAY方式</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">4.1</span>新特性</div>
+            <div class="kc-desc">Android 4.1对AudioService进行了增强</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter-summary">
+        <h4>本章核心收获</h4>
+        <p>深入理解AudioService的四大核心：音量管理、音量调节通知框、静音控制、音频外设管理、AudioFocus。掌握VolumeStreamState作为音量管理核心、VolumeDeathHandler作为静音控制核心的设计思想，以及通过引用计数+死亡通知解决客户端异常退出的精巧设计。</p>
+      </div>
+    </section>
+
+    <!-- 第4章 -->
+    <section class="chapter" id="ch4">
+      <div class="chapter-header">
+        <div class="chapter-num">4</div>
+        <div class="chapter-title">
+          <h2>第4章 深入理解WindowManagerService（节选）</h2>
+          <div class="chapter-subtitle">窗口管理 · 布局与动画</div>
+        </div>
+      </div>
+
+      <div class="chapter-overview">
+        <strong>本章核心：</strong>示例最原始最简单的窗口创建方法、研究WMS的窗口管理结构、布局系统工作原理、动画系统工作原理。
+      </div>
+
+      <div class="section" id="ch4-1">
+        <h3 class="section-title">4.1 初识WindowManagerService</h3>
+        <p>WMS是继AMS与PMS之后又一个复杂却十分重要的系统服务。</p>
+        <h4 class="subsection-title">窗口的定义</h4>
+        <ul class="bullet-list">
+          <li><strong>窗口本质：</strong>屏幕上的一块用于绘制各种UI元素并可响应用户输入的矩形区域</li>
+          <li><strong>底层支撑：</strong>每个窗口独自占有一个Surface实例的显示区域</li>
+          <li><strong>典型窗口：</strong>Dialog、Activity界面、壁纸、状态栏、Toast等</li>
+          <li><strong>WMS职责：</strong>分配Surface、掌管Z-order和位置尺寸、控制窗口动画、输入系统中转站</li>
+        </ul>
+        <h4 class="subsection-title">4.1.1 从命令行启动动画窗口 - SampleWindow</h4>
+        <p>用最简单Java程序，仅使用WMS的接口创建并渲染动画窗口。</p>
+        <ol class="flow-steps">
+          <li>获取IWindowSession和WMS实例</li>
+          <li>创建并初始化WindowManager.LayoutParams（type属性最重要）</li>
+          <li>向WMS添加WindowToken</li>
+          <li>向WMS添加窗口</li>
+          <li>向WMS申请relayout（分配Surface）</li>
+          <li>Surface.lock()获取Canvas作画</li>
+          <li>Surface.unlockCanvasAndPost()提交绘制结果</li>
+        </ol>
+        <div class="callout callout-tip">
+          <span class="callout-icon">★</span>
+          <div><strong>窗口的本质：</strong>是进行绘制所使用的画布Surface，而非IWindow。IWindow继承自Binder，Bn端位于应用程序一侧，在WMS一侧仅作为回调和窗口ID作用。</div>
+        </div>
+        <h4 class="subsection-title">Android显示系统的三个层次</h4>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">U</span>UI框架层</div>
+            <div class="kc-desc">在Surface上绘制UI元素以及响应输入事件</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">W</span>WMS层</div>
+            <div class="kc-desc">管理Surface的分配、层级顺序等</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">S</span>SurfaceFlinger层</div>
+            <div class="kc-desc">负责将多个Surface混合并输出</div>
+          </div>
+        </div>
+        <h4 class="subsection-title">4.1.2 WMS的构成</h4>
+        <p>WMS的启动分为三个阶段：创建实例 → 初始化显示信息（displayReady）→ 处理systemReady通知</p>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">m</span>mInputManager</div>
+            <div class="kc-desc">InputManagerService实例，管理输入事件通道</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">m</span>mChoreographer</div>
+            <div class="kc-desc">编舞指导，VSYNC同步，驱动所有窗口动画</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">m</span>mAnimator</div>
+            <div class="kc-desc">WindowAnimator实例，所有窗口动画的总管</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">m</span>mPolicy</div>
+            <div class="kc-desc">WindowPolicyManager实现，WMS首席顾问，目前只有PhoneWindowManager一个实现</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">m</span>mTokenMap</div>
+            <div class="kc-desc">HashMap保存所有WindowToken，键为IBinder</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">m</span>mWindowMap</div>
+            <div class="kc-desc">HashMap保存所有WindowState，键为IWindow的Bp端</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">m</span>mSessions</div>
+            <div class="kc-desc">List保存所有Session，IWindowSession的Bn端</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">m</span>mRotation</div>
+            <div class="kc-desc">int型，保存当前手机的旋转状态</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="ch4-2">
+        <h3 class="section-title">4.2 WMS的窗口管理结构</h3>
+        <h4 class="subsection-title">4.2.1 WindowToken</h4>
+        <ul class="bullet-list">
+          <li><strong>组织作用：</strong>将属于同一个应用组件的窗口组织在一起</li>
+          <li><strong>令牌作用：</strong>对应用组件行为进行规范管理</li>
+          <li><strong>声明方式：</strong>addWindowToken()和addAppToken()两种</li>
+          <li><strong>显式/隐式：</strong>隐式创建的WindowToken在最后一个窗口移除时一并移除</li>
+        </ul>
+        <h4 class="subsection-title">不同组件的Token</h4>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">W</span>Wallpaper Token</div>
+            <div class="kc-desc">由WallpaperManagerService声明，类型为TYPE_WALLPAPER，仅当前Wallpaper能创建窗口</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">I</span>InputMethod Token</div>
+            <div class="kc-desc">由InputMethodManagerService声明，控制InputMethod生命周期</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">A</span>Activity Token</div>
+            <div class="kc-desc">类型为IApplicationToken.Stub，提供windowsDrawn等回调，专为Activity实现AppWindowToken子类</div>
+          </div>
+        </div>
+        <h4 class="subsection-title">4.2.2 WindowState</h4>
+        <p>表示一个窗口的所有属性，是WMS中事实上的窗口。保存到mWindowMap中，键值为IWindow的Bp端。</p>
+        <h4 class="subsection-title">4.2.3 DisplayContent</h4>
+        <p>Android 4.2为支持多屏幕输出引入的概念，一个DisplayContent指代一块屏幕（手机屏幕或Wi-Fi Display虚拟屏幕）。</p>
+        <div class="callout callout-info">
+          <span class="callout-icon">i</span>
+          <div><strong>DisplayContent的隔离性：</strong>处于不同DisplayContent的两个窗口在布局、显示顺序以及动画处理上不会产生任何耦合。这些操作变成了DisplayContent内部的操作。</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch4-3">
+        <h3 class="section-title">4.3 理解窗口的显示次序</h3>
+        <h4 class="subsection-title">4.3.1 主序、子序和窗口类型</h4>
+        <p>显示次序由两个成员字段描述：</p>
+        <ul class="bullet-list">
+          <li><strong>主序mBaseLayer：</strong>描述窗口及其子窗口在所有窗口中的显示位置</li>
+          <li><strong>子序mSubLayer：</strong>描述子窗口在其兄弟窗口中的显示位置</li>
+        </ul>
+        <h4 class="subsection-title">窗口类型主序对照</h4>
+        <table class="data-table">
+          <thead>
+            <tr><th>窗口类型</th><th>主序</th><th>窗口类型</th><th>主序</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>TYPE_UNIVERSE_BACKGROUND</td><td>11000</td><td>TYPE_WALLPAPER</td><td>21000</td></tr>
+            <tr><td>TYPE_PHONE</td><td>31000</td><td>TYPE_SEARCH_BAR</td><td>41000</td></tr>
+            <tr><td>TYPE_RECENTS_OVERLAY</td><td>51000</td><td>TYPE_SYSTEM_DIALOG</td><td>51000</td></tr>
+            <tr><td>TYPE_TOAST</td><td>61000</td><td>TYPE_PRIORITY_PHONE</td><td>71000</td></tr>
+            <tr><td>TYPE_DREAM</td><td>81000</td><td>TYPE_SYSTEM_ALERT</td><td>91000</td></tr>
+            <tr><td>TYPE_INPUT_METHOD</td><td>101000</td><td>TYPE_INPUT_METHOD_DIALOG</td><td>111000</td></tr>
+            <tr><td>TYPE_KEYGUARD</td><td>121000</td><td>TYPE_KEYGUARD_DIALOG</td><td>131000</td></tr>
+            <tr><td>TYPE_STATUS_BAR_SUB_PANEL</td><td>141000</td><td>应用窗口与未知类型</td><td>21000</td></tr>
+          </tbody>
+        </table>
+        <h4 class="subsection-title">子窗口类型子序</h4>
+        <table class="data-table">
+          <thead>
+            <tr><th>子窗口类型</th><th>子序</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>TYPE_APPLICATION_PANEL</td><td>1</td></tr>
+            <tr><td>TYPE_APPLICATION_ATTACHED_DIALOG</td><td>1</td></tr>
+            <tr><td>TYPE_APPLICATION_MEDIA</td><td>-2</td></tr>
+            <tr><td>TYPE_APPLICATION_MEDIA_OVERLAY</td><td>-1</td></tr>
+            <tr><td>TYPE_APPLICATION_SUB_PANEL</td><td>2</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-info">
+          <span class="callout-icon">i</span>
+          <div><strong>MEDIA子窗口：</strong>MEDIA和MEDIA_OVERLAY的子序为负值，表明它们位于父窗口之后。这是SurfaceView创建的子窗口，用于视频回放、相机预览或游戏绘制，避免覆盖父窗口中的其他控件（如拍照按钮）。</div>
+        </div>
+        <h4 class="subsection-title">4.3.2 排序规则</h4>
+        <ul class="bullet-list">
+          <li><strong>子窗口：</strong>依据子序相对于父窗口排序。相同子序的窗体，正子序越新越靠前，负子序越新越靠后</li>
+          <li><strong>应用窗口：</strong>参照本应用其他窗口或相邻应用的窗口排序。STARTING_WINDOW永远最前，BASE_APPLICATION永远最后</li>
+          <li><strong>非应用窗口：</strong>根据主序排序，主序高者排在前面</li>
+        </ul>
+        <h4 class="subsection-title">最终显示次序计算</h4>
+        <p>assignLayersLocked()为具有相同主序的窗口在curLayer上增加WINDOW_LAYER_MULTIPLIER偏移，计算最终的mLayer和mAnimLayer。mAnimLayer是Surface的实际显示次序。</p>
+      </div>
+
+      <div class="section" id="ch4-4">
+        <h3 class="section-title">4.4 WMS布局系统</h3>
+        <p>布局系统计算与管理窗口的位置、层次。</p>
+        <h4 class="subsection-title">关键过程</h4>
+        <ul class="bullet-list">
+          <li>addWindowToListInOrderLocked()将新建的WindowState按显示次序插入到DisplayContent的mWindows列表</li>
+          <li>assignLayersLocked()根据mWindows的存储顺序对所有WindowState的主序和子序进行调整</li>
+          <li>通过Surface.setLayer()将最终显示次序设置到SurfaceFlinger</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch4-5">
+        <h3 class="section-title">4.5 WMS动画系统</h3>
+        <p>动画系统根据布局系统计算的窗口位置与层次渲染窗口动画。</p>
+        <ul class="bullet-list">
+          <li><strong>WindowAnimator：</strong>所有窗口动画的总管</li>
+          <li><strong>WindowStateAnimator：</strong>单个窗口的动画渲染</li>
+          <li><strong>Choreographer：</strong>VSYNC同步驱动，避免画面撕裂</li>
+          <li><strong>Animation Z调整：</strong>ZORDER_TOP时animLayerAdjustment=+1000，ZORDER_BOTTOM时=-1000</li>
+        </ul>
+        <div class="callout callout-warning">
+          <span class="callout-icon">!</span>
+          <div><strong>潜在Bug：</strong>矫正值1000为常数，当同主序的窗口数量大于200时，APPLICATION窗口的mLayer值可能超过22000，动画过程中可能无法保证动画窗口位于同主序窗口之上。</div>
+        </div>
+      </div>
+
+      <div class="chapter-summary">
+        <h4>本章核心收获</h4>
+        <p>理解Android窗口的三个核心概念：WindowToken（按逻辑分组）、WindowState（窗口属性管理）、DisplayContent（按显示位置分组）。掌握主序/子序的计算规则和Z-order排序算法，理解布局系统与动画系统的协同工作机制。WMS堪称Android最复杂的系统服务之一。</p>
+      </div>
+    </section>
+
+    <!-- 第5章 -->
+    <section class="chapter" id="ch5">
+      <div class="chapter-header">
+        <div class="chapter-num">5</div>
+        <div class="chapter-title">
+          <h2>第5章 深入理解Android输入系统（节选）</h2>
+          <div class="chapter-subtitle">事件派发 · 焦点管理</div>
+        </div>
+      </div>
+
+      <div class="chapter-overview">
+        <strong>本章核心：</strong>研究输入事件从设备节点到窗口处理函数的流程，介绍原始输入事件的读取与加工原理，研究事件派发机制、焦点窗口选择、ANR产生、模拟用户操作。
+      </div>
+
+      <div class="section" id="ch5-1">
+        <h3 class="section-title">5.1 初识Android输入系统</h3>
+        <h4 class="subsection-title">5.1.1 getevent与sendevent工具</h4>
+        <p>Android提供的输入设备节点读写工具。原始事件包含四项基本元素：<strong>时间戳、类型、代码、值</strong>。</p>
+        <h4 class="subsection-title">5.1.2 Android输入系统简介</h4>
+        <p>输入系统主要参与者：</p>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">I</span>IMS</div>
+            <div class="kc-desc">InputManagerService，分Java和Native层。Java层负责与WMS通信</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">E</span>EventHub</div>
+            <div class="kc-desc">直接访问设备节点，通过getEvents()返回底层事件</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">R</span>InputReader</div>
+            <div class="kc-desc">独立线程运行，翻译、组装、封装输入事件交给InputDispatcher</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">D</span>InputDispatcher</div>
+            <div class="kc-desc">独立线程运行，根据WMS窗口信息将事件派发给合适窗口</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">P</span>InputReaderPolicy</div>
+            <div class="kc-desc">为InputReader提供策略配置，如键盘布局</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">P</span>InputDispatcherPolicy</div>
+            <div class="kc-desc">为InputDispatcher提供策略控制，如截取HOME键</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">V</span>ViewRootImpl</div>
+            <div class="kc-desc">将窗口所接收的输入事件沿着控件树派发给感兴趣的控件</div>
+          </div>
+        </div>
+        <h4 class="subsection-title">5.1.3 IMS的构成</h4>
+        <p>IMS诞生分两阶段：创建IMS对象 + 调用start()启动。NativeInputManager是Java层与Native层通信桥梁，实现了InputReaderPolicyInterface与InputDispatcherPolicyInterface两个接口。</p>
+        <p>InputManager创建了四个关键对象：</p>
+        <ul class="bullet-list">
+          <li><strong>InputDispatcher：</strong>事件派发核心</li>
+          <li><strong>InputReader：</strong>事件加工核心</li>
+          <li><strong>InputReaderThread：</strong>InputReader的运行线程</li>
+          <li><strong>InputDispatcherThread：</strong>InputDispatcher的运行线程</li>
+        </ul>
+        <div class="callout callout-info">
+          <span class="callout-icon">i</span>
+          <div><strong>三个线程三台水泵：</strong>InputReader线程抽取设备节点事件 → InputDispatcher线程查找窗口并写入事件接收管道 → 窗口Looper线程从管道取出事件交给处理函数。整个过程首尾相接，源源不断。</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch5-2">
+        <h3 class="section-title">5.2 原始事件的读取与加工</h3>
+        <h4 class="subsection-title">5.2.1 基础知识：INotify与Epoll</h4>
+        <p>两个Linux内核机制解决设备节点变化的监控问题：</p>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">I</span>INotify</div>
+            <div class="kc-desc">文件系统变化通知机制，含inotify对象与watch对象，通过inotify_init()创建，inotify_add_watch添加监听，read()读取事件</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">E</span>Epoll</div>
+            <div class="kc-desc">高效I/O多路复用机制，三个函数epoll_create/epoll_ctl/epoll_wait，可一次等待监听多个描述符</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="ch5-3">
+        <h3 class="section-title">5.3 InputReader工作原理</h3>
+        <p>InputReader是IMS的关键组件，运行于独立线程。它通过线程循环不断通过getEvents()从EventHub抽取事件进行处理：</p>
+        <ul class="bullet-list">
+          <li>设备节点增删事件 → 更新输入设备列表与配置</li>
+          <li>原始输入事件 → 翻译、组装、封装为更具可读性的输入事件</li>
+          <li>加工后的事件 → 放入InputDispatcher的派发队列</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch5-4">
+        <h3 class="section-title">5.4 事件派发机制</h3>
+        <p>InputDispatcher运行于独立线程，保管WMS所有窗口信息。收到InputReader输入事件后寻找合适窗口并派发。</p>
+        <h4 class="subsection-title">派发流程</h4>
+        <ol class="flow-steps">
+          <li>InputDispatcher从派发队列取出事件</li>
+          <li>查找合适的窗口（焦点窗口、触摸目标等）</li>
+          <li>将事件写入到目标窗口的事件接收管道（InputChannel）</li>
+          <li>窗口事件接收线程的Looper从管道将事件取出</li>
+          <li>交由事件处理函数进行事件响应</li>
+        </ol>
+        <h4 class="subsection-title">WMS的关键作用</h4>
+        <ul class="bullet-list">
+          <li>新建窗口时为新窗口和IMS创建事件传递管道</li>
+          <li>实时更新所有窗口信息到InputDispatcher</li>
+          <li>包括窗口的可点击区域、焦点窗口等信息</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch5-5">
+        <h3 class="section-title">5.5 焦点窗口、ANR与模拟操作</h3>
+        <h4 class="subsection-title">焦点窗口的选择</h4>
+        <p>焦点窗口由WMS管理，InputDispatcher根据焦点窗口派发按键事件。触摸事件则根据触摸位置查找目标窗口。</p>
+        <h4 class="subsection-title">ANR的产生</h4>
+        <p>窗口没能按时完成输入事件的处理时，会触发keyDispatchingTimeout()回调，导致ANR（Application Not Responding）。</p>
+        <h4 class="subsection-title">模拟用户操作</h4>
+        <p>通过sendevent工具或InputManager.injectInputEvent()方法，可实现软件方式模拟用户操作（自动化测试的重要基础）。</p>
+      </div>
+
+      <div class="chapter-summary">
+        <h4>本章核心收获</h4>
+        <p>深入理解Android输入系统的完整流程：设备节点 → EventHub → InputReader加工 → InputDispatcher派发 → 窗口InputChannel → ViewRootImpl控件树派发。掌握INotify和Epoll两个Linux机制在Reader子系统中的应用，理解"三台水泵"的多线程协作模型。</p>
+      </div>
+    </section>
+
+    <!-- 第6章 -->
+    <section class="chapter" id="ch6">
+      <div class="chapter-header">
+        <div class="chapter-num">6</div>
+        <div class="chapter-title">
+          <h2>第6章 深入理解控件（ViewRoot）系统（节选）</h2>
+          <div class="chapter-subtitle">View树管理 · UI渲染</div>
+        </div>
+      </div>
+
+      <div class="chapter-overview">
+        <strong>本章核心：</strong>介绍创建窗口的新方法以及WindowManager的实现原理，探讨ViewRootImpl工作方式，讨论控件树的测量、布局与绘制、输入事件派发，以及PhoneWindow和Activity窗口的创建方式。
+      </div>
+
+      <div class="section" id="ch6-1">
+        <h3 class="section-title">6.1 初识Android的控件系统</h3>
+        <p>控件系统解决了直接使用Canvas绘制UI和处理InputEventReceiver事件的繁琐工作：测量UI元素、布局计算与绘制、高效重绘、事件分析、WMS回调处理等。</p>
+        <div class="callout callout-info">
+          <span class="callout-icon">i</span>
+          <div><strong>View vs 控件：</strong>Android中UI元素称为View，但作者认为"控件"才是更贴切的名字，因为UI元素不仅显示内容，更重要的是响应用户输入。本书后续以"控件"称呼View。</div>
+        </div>
+        <h4 class="subsection-title">6.1.1 浮动按钮窗口示例</h4>
+        <p>通过WindowManager.addView()将Button作为窗口添加到WMS中。对比SampleWindow，使用控件系统的实现更优：脱离Android源码编译、API公开、代码更简洁。</p>
+        <h4 class="subsection-title">6.1.2 控件系统的组成</h4>
+        <ul class="bullet-list">
+          <li><strong>View类：</strong>所有控件的基类</li>
+          <li><strong>WindowManager：</strong>ViewManager的扩展接口，WMS在客户端的代理类</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch6-2">
+        <h3 class="section-title">6.2 深入理解WindowManager</h3>
+        <h4 class="subsection-title">6.2.1 WindowManager的创建与体系结构</h4>
+        <p>WindowManager是ViewManager接口的扩展。其体系结构：</p>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">V</span>ViewManager接口</div>
+            <div class="kc-desc">最基础接口，定义addView/removeView/updateViewLayout三个方法</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">W</span>WindowManager接口</div>
+            <div class="kc-desc">继承自ViewManager，新增getDefaultDisplay()和removeViewImmediate()方法</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">W</span>WindowManagerImpl</div>
+            <div class="kc-desc">WindowManager实现者，自身无实际逻辑，委托给WindowManagerGlobal。保存mDisplay和mParentWindow</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">W</span>WindowManagerGlobal</div>
+            <div class="kc-desc">单例模式，进程唯一，WindowManager的最终实现者，维护mViews/mRoots/mParams三个数组</div>
+          </div>
+        </div>
+        <h4 class="subsection-title">6.2.2 通过WindowManagerGlobal添加窗口</h4>
+        <ol class="flow-steps">
+          <li><strong>父窗口调整LayoutParams</strong> - 修改LayoutParams.token和mTitle</li>
+          <li><strong>创建ViewRootImpl对象</strong> - 作为控件树的根</li>
+          <li><strong>保存到三个数组</strong> - mViews、mRoots、mParams同索引保存</li>
+          <li><strong>root.setView()</strong> - ViewRootImpl向WMS添加窗口、申请Surface、托管控件重绘</li>
+        </ol>
+        <div class="callout callout-info">
+          <span class="callout-icon">i</span>
+          <div><strong>LayoutParams.token机制：</strong>子窗口时token为父窗口ID（IWindow.asBinder()），非子窗口时为父窗口所属Activity的ID（AppToken）。对话框虽不是子窗口但需要AppToken，parentWindow将自己的AppToken赋予新窗口的LayoutParams.token。</div>
+        </div>
+        <h4 class="subsection-title">6.2.3 更新与删除窗口</h4>
+        <ul class="bullet-list">
+          <li><strong>更新布局：</strong>updateViewLayout()保存新参数后调用ViewRootImpl.setLayoutParams()</li>
+          <li><strong>删除窗口：</strong>从三个数组中删除对应元素</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch6-3">
+        <h3 class="section-title">6.3 深入理解ViewRootImpl</h3>
+        <p>ViewRootImpl实现了控件树的根，是整个控件系统正常运转的动力所在：</p>
+        <ul class="bullet-list">
+          <li>负责与WMS直接通讯</li>
+          <li>负责管理Surface</li>
+          <li>负责触发控件的测量与布局</li>
+          <li>负责触发控件的绘制</li>
+          <li>同时是输入事件的中转站</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch6-4">
+        <h3 class="section-title">6.4 控件树的测量、布局与绘制</h3>
+        <p>Android控件树的标准渲染流程：</p>
+        <ol class="flow-steps">
+          <li><strong>测量（Measure）</strong> - 测量各个UI元素（文字、图片）的显示尺寸与位置</li>
+          <li><strong>布局（Layout）</strong> - 对各UI元素进行布局计算</li>
+          <li><strong>绘制（Draw）</strong> - 控件树进行实际绘制</li>
+        </ol>
+        <p>由ViewRootImpl触发整个流程，从根View开始递归遍历整棵控件树。</p>
+      </div>
+
+      <div class="section" id="ch6-5">
+        <h3 class="section-title">6.5 输入事件在控件树中的派发</h3>
+        <p>ViewRootImpl将窗口所接收的输入事件沿着控件树将事件派发给感兴趣的控件：</p>
+        <ul class="bullet-list">
+          <li>从根View开始向下派发</li>
+          <li>每个View/ViewGroup的dispatchTouchEvent/onTouchEvent方法</li>
+          <li>FocusFinder辅助查找焦点</li>
+          <li>HardwareRenderer负责硬件加速渲染</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch6-6">
+        <h3 class="section-title">6.6 PhoneWindow与Activity窗口创建</h3>
+        <h4 class="subsection-title">PhoneWindow</h4>
+        <ul class="bullet-list">
+          <li>预先准备了Activity窗口装饰（标题栏、菜单按钮等）</li>
+          <li>保存了窗口相关的重要信息：窗口ID（IWindow.asBinder返回值）、所属Activity的ID（AppToken）</li>
+          <li>每个Activity都关联一个PhoneWindow</li>
+        </ul>
+        <h4 class="subsection-title">Activity窗口创建流程</h4>
+        <ol class="flow-steps">
+          <li>ActivityThread启动Activity</li>
+          <li>创建PhoneWindow实例</li>
+          <li>通过WindowManager添加Activity的根View（DecorView）</li>
+          <li>ViewRootImpl接管，与WMS交互完成窗口的添加</li>
+          <li>PhoneWindow负责处理Activity特定的窗口行为</li>
+        </ol>
+      </div>
+
+      <div class="chapter-summary">
+        <h4>本章核心收获</h4>
+        <p>理解Android控件系统的整体架构：WindowManager → WindowManagerImpl → WindowManagerGlobal → ViewRootImpl → View树。掌握"控件、布局参数、ViewRootImpl"三元组的设计思想，以及PhoneWindow如何为Activity提供窗口装饰。控件系统是Android UI的基石。</p>
+      </div>
+    </section>
+
+    <!-- 第7章 -->
+    <section class="chapter" id="ch7">
+      <div class="chapter-header">
+        <div class="chapter-num">7</div>
+        <div class="chapter-title">
+          <h2>第7章 深入理解SystemUI（节选）</h2>
+          <div class="chapter-subtitle">系统UI · 状态栏导航栏</div>
+        </div>
+      </div>
+
+      <div class="chapter-overview">
+        <strong>本章核心：</strong>探讨状态栏与导航栏的启动过程、通知信息管理、虚拟按键与SearchPanel、SystemUIVisibility。
+      </div>
+
+      <div class="section" id="ch7-1">
+        <h3 class="section-title">7.1 初识SystemUI</h3>
+        <p>SystemUI是提供系统级别信息显示与交互的UI组件，包罗万象：状态栏、导航栏、RecentPanel、TakeScreenshotService、PowerUI、RingtonePlayer等。本章重点介绍状态栏和导航栏。</p>
+        <h4 class="subsection-title">7.1.1 SystemUIService的启动</h4>
+        <p>SystemUI虽然功能丰富，但本质是一个APK，与普通Android应用无区别。状态栏和导航栏等组件运行于SystemUIService中。</p>
+        <h4 class="subsection-title">启动时机</h4>
+        <ol class="flow-steps">
+          <li>ServerThread完成核心系统服务启动</li>
+          <li>调用ActivityManagerService.systemReady()</li>
+          <li>回调goingCallback的run()方法</li>
+          <li>调用startSystemUi(contextF)启动SystemUIService</li>
+        </ol>
+        <h4 class="subsection-title">7.1.2 布局方案选择</h4>
+        <p>Android根据屏幕尺寸选择不同布局方案：</p>
+        <ul class="bullet-list">
+          <li><strong>分离布局（手机）：</strong>状态栏与导航栏分离，由PhoneStatusBar实现</li>
+          <li><strong>集成布局（平板）：</strong>状态栏与导航栏集成，由TabletStatusBar实现</li>
+        </ul>
+        <p>选择策略由PhoneWindowManager.setInitialDisplaySize()决定：屏幕短边DP宽度小于600时使用分离布局，600-720之间也是分离但导航栏不可移动。</p>
+      </div>
+
+      <div class="section" id="ch7-2">
+        <h3 class="section-title">7.2 状态栏与导航栏的创建</h3>
+        <p>PhoneStatusBar.start()执行的关键操作：</p>
+        <ol class="flow-steps">
+          <li>调用父类BaseStatusBar的start()方法进行初始化</li>
+          <li>addNavigationBar()创建导航栏的窗口</li>
+          <li>创建PhoneStatusBarPolicy，定义系统通知图标的设置策略</li>
+        </ol>
+        <h4 class="subsection-title">BaseStatusBar - 共同父类</h4>
+        <p>PhoneStatusBar和TabletStatusBar都继承自BaseStatusBar，本质功能一致（虚拟按键、显示通知信息），区别仅在于布局不同及衍生的定制行为。</p>
+      </div>
+
+      <div class="section" id="ch7-3">
+        <h3 class="section-title">7.3 通知信息管理</h3>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">N</span>NotificationManager</div>
+            <div class="kc-desc">框架/客户端API，提供通知的发送、取消等操作</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">N</span>NotificationManagerService</div>
+            <div class="kc-desc">服务端系统服务，接收并管理所有通知</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">S</span>StatusBarManager</div>
+            <div class="kc-desc">应用层与状态栏交互的API</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">S</span>StatusBarManagerService</div>
+            <div class="kc-desc">状态栏管理的服务端，控制状态栏的展开、收起等</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">B</span>BaseStatusBar</div>
+            <div class="kc-desc">实现通知的显示、点击、滑动删除等UI交互</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="ch7-4">
+        <h3 class="section-title">7.4 虚拟按键与SearchPanel</h3>
+        <h4 class="subsection-title">虚拟按键</h4>
+        <p>由KeyButtonView和NavigationBarView实现，定义BACK、HOME、RECENTS等虚拟按钮。</p>
+        <h4 class="subsection-title">SearchPanel</h4>
+        <ul class="bullet-list">
+          <li><strong>SearchPanelView：</strong>搜索面板UI实现</li>
+          <li><strong>DelegateViewHelper：</strong>委托视图助手，处理视图委托逻辑</li>
+          <li><strong>触发方式：</strong>HOME键长按或搜索虚拟键</li>
+        </ul>
+      </div>
+
+      <div class="section" id="ch7-5">
+        <h3 class="section-title">7.5 SystemUIVisibility</h3>
+        <p>SystemUIVisibility是View提供的一组标志位，用于控制系统UI的可见性，例如：</p>
+        <ul class="bullet-list">
+          <li><strong>SYSTEM_UI_FLAG_FULLSCREEN：</strong>隐藏状态栏</li>
+          <li><strong>SYSTEM_UI_FLAG_HIDE_NAVIGATION：</strong>隐藏导航栏</li>
+          <li><strong>SYSTEM_UI_FLAG_IMMERSIVE：</strong>沉浸式模式</li>
+          <li><strong>SYSTEM_UI_FLAG_LOW_PROFILE：</strong>低调模式（淡化状态栏图标）</li>
+        </ul>
+        <p>应用通过View.setSystemUiVisibility()或WindowInsetsController控制这些标志位。</p>
+      </div>
+
+      <div class="chapter-summary">
+        <h4>本章核心收获</h4>
+        <p>理解SystemUI作为系统级UI的整体架构：SystemUIService作为容器启动各类子服务。掌握状态栏（PhoneStatusBar/TabletStatusBar）的创建流程和BaseStatusBar共同父类的设计。理解通知信息管理和SystemUIVisibility标志位的使用场景。</p>
+      </div>
+    </section>
+
+    <!-- 第8章 -->
+    <section class="chapter" id="ch8">
+      <div class="chapter-header">
+        <div class="chapter-num">8</div>
+        <div class="chapter-title">
+          <h2>第8章 深入理解Android壁纸（节选）</h2>
+          <div class="chapter-subtitle">WallpaperService · Engine</div>
+        </div>
+      </div>
+
+      <div class="chapter-overview">
+        <strong>本章核心：</strong>讨论动态壁纸和静态壁纸的实现，以及WMS对壁纸窗口的特殊处理。
+      </div>
+
+      <div class="section" id="ch8-1">
+        <h3 class="section-title">8.1 初识Android壁纸</h3>
+        <p>Android壁纸分<strong>静态壁纸</strong>（图片）和<strong>动态壁纸</strong>（动画或响应用户操作），二者本质统一：都以Service形式运行，在TYPE_WALLPAPER窗口上绘制内容。</p>
+        <h4 class="subsection-title">三个层次架构</h4>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">1</span>WallpaperService与Engine</div>
+            <div class="kc-desc">壁纸实现层。继承WallpaperService是开发者第一步；Engine是内部类，实现窗口创建和Surface维护</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">2</span>WallpaperManagerService</div>
+            <div class="kc-desc">壁纸管理层。管理壁纸的运行与切换，通过WallpaperManager提供操作接口</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">3</span>WindowManagerService</div>
+            <div class="kc-desc">窗口管理层。计算壁纸窗口Z序、可见性并应用窗口动画</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="ch8-2">
+        <h3 class="section-title">8.2 深入理解动态壁纸</h3>
+        <h4 class="subsection-title">8.2.1 启动动态壁纸</h4>
+        <p>通过WallpaperManager.getIWallpaperManager().setWallpaperComponent()启动，接受ComponentName参数。</p>
+        <h4 class="subsection-title">8.2.2 壁纸服务的启动原理</h4>
+        <p>bindWallpaperComponentLocked()对ComponentName所描述的Service进行验证，作为壁纸服务必须满足三个条件：</p>
+        <ol class="number-list">
+          <li><strong>BIND_WALLPAPER权限：</strong>该服务必须以android.permission.BIND_WALLPAPER作为其访问权限</li>
+          <li><strong>WallpaperService Action：</strong>必须被声明为可处理android.service.wallpaper.WallpaperService Action</li>
+          <li><strong>meta-data信息：</strong>必须提供名为android.service.wallpaper的meta-data，含开发者、缩略图、描述</li>
+        </ol>
+        <h4 class="subsection-title">启动流程</h4>
+        <ol class="flow-steps">
+          <li>创建WallpaperConnection（实现ServiceConnection + IWallpaperConnection.Stub）</li>
+          <li>通过bindServiceAsUser绑定壁纸服务</li>
+          <li>服务连接成功后WallpaperConnection.onServiceConnected()被调用</li>
+          <li>WallpaperService.Engine被创建并attach壁纸窗口</li>
+          <li>Engine的回调方法（onCreate/SurfaceChanged/VisibilityChanged等）通知壁纸开发者</li>
+        </ol>
+        <div class="callout callout-info">
+          <span class="callout-icon">i</span>
+          <div><strong>Engine类核心作用：</strong>Engine是WallpaperService的内部类，实现了壁纸窗口的创建以及Surface的维护工作。提供可供子类重写的一系列回调，通知壁纸开发者关于壁纸的生命周期、Surface状态变化以及对用户输入事件的响应。</div>
+        </div>
+      </div>
+
+      <div class="section" id="ch8-3">
+        <h3 class="section-title">8.3 静态壁纸</h3>
+        <p>静态壁纸（ImageWallpaper）是一种特殊的动态壁纸，仅在窗口上渲染一张图片，不响应用户操作。</p>
+        <h4 class="subsection-title">ImageWallpaper实现</h4>
+        <ul class="bullet-list">
+          <li>继承WallpaperService</li>
+          <li>在Engine中处理onSurfaceChanged，加载并绘制图片</li>
+          <li>系统默认壁纸通常为ImageWallpaper</li>
+        </ul>
+        <h4 class="subsection-title">默认壁纸</h4>
+        <p>在res/values/config.xml中可通过default_wallpaper_component指定默认壁纸；若未指定则使用ImageWallpaper代替。</p>
+      </div>
+
+      <div class="section" id="ch8-4">
+        <h3 class="section-title">8.4 WMS对壁纸窗口的特殊处理</h3>
+        <p>壁纸窗口（TYPE_WALLPAPER）的Z序计算与其他类型窗口不同。WMS需根据FLAG_SHOW_WALLPAPER标记在其它窗口的LayoutParams.flags中的存在情况不断调整壁纸窗口的Z序。</p>
+        <h4 class="subsection-title">特殊之处</h4>
+        <ul class="bullet-list">
+          <li><strong>Z序动态调整：</strong>壁纸窗口的Z序会根据是否需要显示壁纸而变化</li>
+          <li><strong>FLAG_SHOW_WALLPAPER：</strong>Activity可设置此flag声明需要壁纸作为其背景</li>
+          <li><strong>WMS实现：</strong>通过WindowAnimator和WindowStateAnimator协调</li>
+        </ul>
+      </div>
+
+      <div class="chapter-summary">
+        <h4>本章核心收获</h4>
+        <p>理解Android壁纸的三层架构：壁纸实现层（WallpaperService + Engine）、管理层（WallpaperManagerService）、窗口层（WMS）。掌握动态壁纸的三大验证条件和启动流程，理解静态壁纸作为特殊动态壁纸的设计思想。壁纸窗口的Z序动态调整是WMS的特殊处理。</p>
+      </div>
+    </section>
+
+    <!-- 全书总结 -->
+    <section class="chapter" id="summary">
+      <div class="chapter-header">
+        <div class="chapter-num" style="background:linear-gradient(135deg,#059669,#047857)">总</div>
+        <div class="chapter-title">
+          <h2>全书知识体系总结</h2>
+          <div class="chapter-subtitle">《深入理解Android卷III》核心要点回顾</div>
+        </div>
+      </div>
+
+      <div class="section" id="summary-1">
+        <h3 class="section-title">核心知识体系</h3>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">基</span>基础通信</span></div>
+            <div class="kc-desc">Java层Binder与MessageQueue - 跨进程通信和任务调度的基石（第2章）</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">服</span>服务实现</div>
+            <div class="kc-desc">AudioService - 音频系统在Java层的核心服务（第3章）</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">窗</span>窗口管理</div>
+            <div class="kc-desc">WindowManagerService - 复杂的窗口管理服务，含布局和动画系统（第4章）</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">输</span>输入处理</div>
+            <div class="kc-desc">Android输入系统 - IMS为核心，三线程"水泵"模型（第5章）</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">视</span>视图系统</div>
+            <div class="kc-desc">控件（ViewRoot）系统 - WindowManager + ViewRootImpl + 控件树（第6章）</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">U</span>系统UI</div>
+            <div class="kc-desc">SystemUI - 状态栏导航栏等系统级UI组件（第7章）</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">壁</span>壁纸系统</div>
+            <div class="kc-desc">Android壁纸 - WallpaperService + Engine三层架构（第8章）</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="summary-2">
+        <h3 class="section-title">关键技术要点</h3>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">C</span>C/S架构</div>
+            <div class="kc-desc">Android Framework大量采用C/S架构，Java层Binder是Native层Binder的镜像</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">引</span>引用计数</div>
+            <div class="kc-desc">静音控制使用引用计数+DeathRecipient处理客户端异常退出</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">线</span>多线程</div>
+            <div class="kc-desc">IMS采用Reader/Dispatcher/Looper三线程协作</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">回</span>回调机制</div>
+            <div class="kc-desc">AppToken的IApplicationToken提供windowsDrawn等丰富的窗口回调</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">动</span>异步消息</div>
+            <div class="kc-desc">Handler消息机制是AudioService等服务的核心调度方式</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">单</span>单例模式</div>
+            <div class="kc-desc">WindowManagerGlobal采用单例模式，进程唯一</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">J</span>JNI桥接</div>
+            <div class="kc-desc">Java层与Native层通过JNI建立双向通信桥梁</div>
+          </div>
+          <div class="knowledge-card">
+            <div class="kc-title"><span class="kc-icon">容</span>容器思想</div>
+            <div class="kc-desc">SystemUIService作为容器，托管多个子服务实例</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-tip" style="background:linear-gradient(135deg,#eef2ff,#ede9fe);border-left-color:#7c3aed">
+        <span class="callout-icon" style="background:#7c3aed">★</span>
+        <div><strong>学习建议：</strong>本卷虽基于Android 4.2，但UI相关的核心设计（WindowManager、InputManager、控件系统、壁纸）历经多代演进其设计思想仍延续至今。掌握这些"神"比掌握"面"更重要。建议结合源码阅读，动手实践SampleWindow示例加深理解。</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// 侧边栏章节折叠/展开
+function toggleSection(el) {
+  el.classList.toggle('collapsed');
+  const children = el.nextElementSibling;
+  if (children && children.classList.contains('nav-children')) {
+    children.classList.toggle('collapsed');
+  }
+}
+
+// 全部展开
+function expandAll() {
+  document.querySelectorAll('.nav-section').forEach(el => el.classList.remove('collapsed'));
+  document.querySelectorAll('.nav-children').forEach(el => el.classList.remove('collapsed'));
+}
+
+// 全部折叠
+function collapseAll() {
+  document.querySelectorAll('.nav-section').forEach(el => el.classList.add('collapsed'));
+  document.querySelectorAll('.nav-children').forEach(el => el.classList.add('collapsed'));
+}
+
+// 导航点击高亮
+document.querySelectorAll('.nav-subitem').forEach(item => {
+  item.addEventListener('click', function(e) {
+    document.querySelectorAll('.nav-subitem').forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+    // 展开父级
+    const parentSection = this.closest('.nav-item').querySelector('.nav-section');
+    if (parentSection && parentSection.classList.contains('collapsed')) {
+      toggleSection(parentSection);
+    }
+  });
+});
+
+// 回到顶部按钮
+const backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 400) {
+    backToTop.classList.add('show');
+  } else {
+    backToTop.classList.remove('show');
+  }
+});
+
+// 平滑滚动
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    const targetId = this.getAttribute('href');
+    if (targetId === '#') return;
+    const target = document.querySelector(targetId);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>

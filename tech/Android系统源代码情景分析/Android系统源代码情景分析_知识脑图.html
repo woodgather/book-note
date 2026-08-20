@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Android系统源代码情景分析（第三版）- 知识脑图</title>
+<style>
+:root {
+  color-scheme: light;
+  --primary: #3D5AFE;
+  --primary-dark: #1A237E;
+  --primary-light: #E8EAF6;
+  --accent: #FF6E40;
+  --accent-light: #FFE0B2;
+  --success: #00C853;
+  --warning: #FFB300;
+  --danger: #D50000;
+  --bg: #F5F7FA;
+  --bg-card: #FFFFFF;
+  --text: #212121;
+  --text-secondary: #5F6368;
+  --text-muted: #9E9E9E;
+  --border: #E0E0E0;
+  --border-dark: #BDBDBD;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-lg: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 14px;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ============ 顶部 ============ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  padding: 14px 24px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.18);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+.brand-text { line-height: 1.2; }
+.brand-title { font-size: 18px; font-weight: 700; }
+.brand-subtitle { font-size: 12px; opacity: 0.85; }
+
+.topbar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.btn {
+  border: 0; cursor: pointer; padding: 8px 14px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500; transition: all 0.2s ease;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-ghost { background: rgba(255,255,255,0.15); color: #fff; }
+.btn-ghost:hover { background: rgba(255,255,255,0.28); }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.search-input {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  width: 220px;
+  outline: none;
+}
+.search-input::placeholder { color: rgba(255,255,255,0.65); }
+.search-input:focus { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.5); }
+
+/* ============ 布局 ============ */
+.layout {
+  display: flex;
+  height: calc(100vh - 64px);
+  overflow: hidden;
+}
+
+/* ============ 侧边栏 ============ */
+.sidebar {
+  width: 320px;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 16px 0;
+  flex-shrink: 0;
+  transition: width 0.25s ease;
+}
+.sidebar.collapsed { width: 48px; }
+.sidebar.collapsed .nav-content,
+.sidebar.collapsed .nav-title,
+.sidebar.collapsed .search-wrap { display: none; }
+.sidebar.collapsed .sidebar-header { justify-content: center; padding: 12px 4px; }
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.sidebar-title { font-size: 13px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.5px; text-transform: uppercase; }
+.toggle-btn {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 18px;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+.toggle-btn:hover { background: var(--primary-light); color: var(--primary); }
+
+.search-wrap { padding: 0 16px 12px; }
+.search-wrap .search-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.search-wrap .search-input::placeholder { color: var(--text-muted); }
+.search-wrap .search-input:focus { background: #fff; border-color: var(--primary); }
+
+/* ============ 导航树 ============ */
+.nav-tree { list-style: none; padding: 0 8px; }
+.nav-list { list-style: none; padding-left: 0; }
+.nav-item { margin: 2px 0; }
+
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+  font-size: 13px;
+  color: var(--text);
+}
+.nav-row:hover { background: var(--primary-light); }
+
+.nav-row.active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+.nav-row.active .toggle-icon { color: #fff; }
+
+.caret {
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+.caret.has-children { cursor: pointer; }
+.nav-item.open > .nav-row .caret { transform: rotate(90deg); }
+.caret.placeholder { visibility: hidden; }
+
+.toggle-icon { font-size: 10px; color: var(--text-muted); transition: transform 0.2s ease; }
+.nav-item.open > .nav-row .toggle-icon { transform: rotate(90deg); color: var(--primary); }
+
+.nav-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-row .badge {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.nav-row.active .badge { background: rgba(255,255,255,0.25); color: #fff; }
+
+.nav-children {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  list-style: none;
+  margin-left: 14px;
+  border-left: 1px dashed var(--border);
+  padding-left: 4px;
+}
+.nav-item.open > .nav-children { max-height: 4000px; }
+
+.nav-children .nav-row {
+  font-size: 12.5px;
+  padding: 5px 8px;
+  color: var(--text-secondary);
+}
+.nav-children .nav-row .badge { font-size: 9px; }
+
+/* Part 分组颜色 */
+.part-1 > .nav-row .nav-label { font-weight: 700; color: var(--primary); }
+.part-2 > .nav-row .nav-label { font-weight: 700; color: var(--success); }
+.part-3 > .nav-row .nav-label { font-weight: 700; color: var(--accent); }
+
+/* ============ 主内容 ============ */
+.content {
+  flex: 1;
+  padding: 24px 40px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* 自定义滚动条 */
+.sidebar::-webkit-scrollbar,
+.content::-webkit-scrollbar {
+  width: 8px;
+}
+.sidebar::-webkit-scrollbar-track,
+.content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb,
+.content::-webkit-scrollbar-thumb {
+  background: var(--border-dark);
+  border-radius: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover,
+.content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+.breadcrumb {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.breadcrumb span { color: var(--primary); font-weight: 500; }
+
+.part-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  padding: 28px 32px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.part-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 300px;
+  height: 300px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+.part-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  position: relative;
+}
+.part-header p {
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 0.9;
+  position: relative;
+}
+.part-header .part-tag {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.chapter-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.chapter-card:hover { box-shadow: var(--shadow); }
+
+.chapter-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--primary-light);
+}
+.chapter-num {
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.chapter-title { font-size: 19px; font-weight: 700; color: var(--text); }
+
+.section-block { margin: 16px 0; }
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 8px;
+  border-left: 3px solid var(--primary);
+}
+.section-title .sec-num {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.subsection-block { margin: 14px 0 14px 20px; }
+.subsection-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.subsection-title::before {
+  content: '▸';
+  color: var(--accent);
+  font-size: 12px;
+}
+.subsection-title .sub-num {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.knowledge-list { list-style: none; padding: 0; }
+.knowledge-list li {
+  position: relative;
+  padding: 5px 0 5px 20px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+.knowledge-list li::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 13px;
+  width: 5px;
+  height: 5px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+.knowledge-list li strong { color: var(--text); font-weight: 600; }
+
+.knowledge-list li code, .code-inline {
+  background: #F1F3F4;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-family: "SF Mono", "JetBrains Mono", Consolas, Monaco, monospace;
+  font-size: 12.5px;
+  color: #C7254E;
+}
+
+.key-point {
+  background: linear-gradient(90deg, #FFF8E1 0%, transparent 100%);
+  border-left: 3px solid var(--warning);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  margin: 10px 0;
+  font-size: 13px;
+  color: var(--text);
+}
+.key-point strong { color: #E65100; }
+
+.tech-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tech-tag {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 11.5px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.toc-mini {
+  background: #FAFAFA;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.toc-mini ol { margin-left: 20px; }
+.toc-mini li { padding: 2px 0; }
+
+/* ============ 滚动到顶部 ============ */
+.scroll-top {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  border: 0;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  z-index: 99;
+}
+.scroll-top.show { display: flex; }
+.scroll-top:hover { background: var(--primary-dark); }
+
+/* ============ 响应式 ============ */
+@media (max-width: 900px) {
+  .layout { flex-direction: column; height: calc(100vh - 64px); }
+  .sidebar { width: 100%; height: auto; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--border); }
+  .sidebar.collapsed { width: 100%; max-height: 48px; }
+  .content { padding: 20px; height: auto; flex: 1; }
+}
+
+/* 章节锚点定位 */
+.anchor-offset { scroll-margin-top: 80px; }
+</style>
+</head>
+<body>
+
+<!-- ============ 顶部栏 ============ -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-icon">A</div>
+    <div class="brand-text">
+      <div class="brand-title">Android系统源代码情景分析（第三版）</div>
+      <div class="brand-subtitle">罗升阳 著 · 电子工业出版社 · 知识脑图</div>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <input type="text" id="searchInput" class="search-input" placeholder="搜索章节、关键词...">
+    <button class="btn btn-ghost" id="expandAllBtn" title="展开所有">全部展开</button>
+    <button class="btn btn-ghost" id="collapseAllBtn" title="折叠所有">全部折叠</button>
+  </div>
+</div>
+
+<!-- ============ 布局 ============ -->
+<div class="layout">
+
+  <!-- 侧边导航 -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="nav-title">📑 目录导航</span>
+      <button class="toggle-btn" id="toggleSidebar" title="折叠/展开侧边栏">◀</button>
+    </div>
+    <div class="search-wrap">
+      <input type="text" id="navSearch" class="search-input" placeholder="过滤导航...">
+    </div>
+    <ul class="nav-tree" id="navTree">
+      <!-- 由 JS 动态生成 -->
+    </ul>
+  </aside>
+
+  <!-- 主内容 -->
+  <main class="content" id="content">
+    <!-- 由 JS 动态生成 -->
+  </main>
+</div>
+
+<button class="scroll-top" id="scrollTop" title="回到顶部">↑</button>
+
+<script>
+/* ===========================================================
+   知识脑图数据：按 3 大篇 → 16 章 → 节 → 子节 完整组织
+   每节给出关键知识点列表，便于读者快速理解
+=========================================================== */
+
+const DATA = [
+  {
+    id: 'part1',
+    part: '第一篇',
+    title: '初识Android系统',
+    desc: '介绍参考书籍、基础知识及实验环境搭建，从零开始认识 Android 系统架构',
+    chapters: [
+      {
+        id: 'ch1',
+        num: '第1章',
+        title: '准备知识',
+        sections: [
+          {
+            id: '1.1', num: '1.1', title: 'Linux内核参考书籍',
+            knowledge: [
+              { k: '《Linux Kernel Development》', v: '作者 Robert Love，第3版 — Linux 内核概要设计文档' },
+              { k: '《Understanding the Linux Kernel》', v: 'Daniel P. Bovet、Marco Cesati 著 — 内核详细设计文档' },
+              { k: '《Linux Device Drivers》', v: 'Corbet、Rubini、Kroah-Hartman 著 — 设备驱动实现原理' },
+              { k: '《Linux内核源代码情景分析》', v: '毛德操、胡希明著 — 从使用情景出发分析内核' }
+            ]
+          },
+          {
+            id: '1.2', num: '1.2', title: 'Android应用程序参考书籍',
+            knowledge: [
+              { k: '《Professional Android 2 Application Development》', v: '英文 Android 开发教程' },
+              { k: '《Google Android SDK开发范例大全》', v: '中文 SDK 范例教程' },
+              { k: '官方API文档', v: 'developer.android.com' }
+            ]
+          },
+          {
+            id: '1.3', num: '1.3', title: '下载、编译和运行Android源代码',
+            knowledge: [
+              { k: '编译主机', v: '推荐 Ubuntu 12.04（针对 Android 2.3.x）' },
+              { k: 'JDK版本', v: 'Android 2.3.x 需要 Java JDK 6' },
+              { k: '其他依赖', v: 'Git 工具 + 系统依赖包' },
+              { k: 'repo工具', v: 'Google 封装的 git 脚本，用于下载 AOSP 源码' }
+            ],
+            children: [
+              { num: '1.3.1', title: '下载Android源代码', knowledge: [
+                { k: 'repo init', v: '初始化仓库，指定分支' },
+                { k: 'repo sync', v: '同步下载源码' }
+              ]},
+              { num: '1.3.2', title: '编译Android源代码', knowledge: [
+                { k: 'make', v: '在源码根目录执行完整编译' }
+              ]},
+              { num: '1.3.3', title: '运行Android模拟器', knowledge: [
+                { k: 'emulator', v: '运行编译产物，启动模拟器' }
+              ]}
+            ]
+          },
+          {
+            id: '1.4', num: '1.4', title: '下载、编译和运行Android内核源代码',
+            knowledge: [
+              { k: 'Android内核', v: '基于 Linux Kernel 增加了 Logger、Binder、Ashmem 等专用驱动' }
+            ],
+            children: [
+              { num: '1.4.1', title: '下载Android内核源代码' },
+              { num: '1.4.2', title: '编译Android内核源代码' },
+              { num: '1.4.3', title: '运行Android模拟器' }
+            ]
+          },
+          {
+            id: '1.5', num: '1.5', title: '开发第一个Android应用程序',
+            knowledge: [
+              { k: '四大组件', v: 'Activity、Service、Broadcast Receiver、Content Provider' },
+              { k: 'SDK使用', v: '通过 SDK 创建、编译、打包、运行应用' }
+            ]
+          },
+          {
+            id: '1.6', num: '1.6', title: '单独编译和打包Android应用程序模块',
+            knowledge: [
+              { k: 'mmm命令', v: 'Android 提供的单模块编译工具' }
+            ],
+            children: [
+              { num: '1.6.1', title: '导入单独编译模块的mmm命令' },
+              { num: '1.6.2', title: '单独编译Android应用程序模块' },
+              { num: '1.6.3', title: '重新打包Android系统镜像文件' }
+            ]
+          },
+          {
+            id: '1.7', num: '1.7', title: '为真机编译ROM',
+            knowledge: [
+              { k: 'LineageOS', v: '第三方开源 ROM 项目' },
+              { k: 'TWRP', v: '第三方 Recovery，用于刷入 ROM' }
+            ],
+            children: [
+              { num: '1.7.1', title: '下载LineageOS' },
+              { num: '1.7.2', title: '下载设备开源代码' },
+              { num: '1.7.3', title: '下载设备私有文件' },
+              { num: '1.7.4', title: '编译ROM' },
+              { num: '1.7.5', title: '刷入TWRP' },
+              { num: '1.7.6', title: '刷入ROM' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch2',
+        num: '第2章',
+        title: '硬件抽象层（HAL）',
+        desc: '通过"虚拟寄存器 freg"实例，从下到上走通 Android 系统体系结构',
+        sections: [
+          {
+            id: '2.1', num: '2.1', title: '开发Android硬件驱动程序',
+            knowledge: [
+              { k: '虚拟设备freg', v: '含一个4字节可读写寄存器的字符设备' },
+              { k: '三种访问接口', v: 'proc 文件系统、传统设备文件系统、devfs 文件系统' },
+              { k: 'freg.h/freg.c', v: '驱动程序源代码' },
+              { k: 'Kconfig', v: '编译选项配置（tristate 三态：Y/M/N）' },
+              { k: 'Makefile', v: '编译脚本' }
+            ],
+            children: [
+              { num: '2.1.1', title: '实现内核驱动程序模块' },
+              { num: '2.1.2', title: '修改内核Kconfig文件' },
+              { num: '2.1.3', title: '修改内核Makefile文件' },
+              { num: '2.1.4', title: '编译内核驱动程序模块' },
+              { num: '2.1.5', title: '验证内核驱动程序模块' }
+            ]
+          },
+          {
+            id: '2.2', num: '2.2', title: '开发C可执行程序验证Android硬件驱动程序',
+            knowledge: [
+              { k: '直接通过文件IO', v: '在用户空间访问 /dev/freg 验证驱动' }
+            ]
+          },
+          {
+            id: '2.3', num: '2.3', title: '开发Android硬件抽象层模块',
+            knowledge: [
+              { k: 'HAL定位', v: '运行在用户空间，向上提供硬件访问服务，向下屏蔽驱动细节' },
+              { k: '模块编写规范', v: '结构体 hw_module_t、hw_device_t 固定格式' },
+              { k: '加载过程', v: '通过 hw_get_module() 按 ID 动态加载 .so' }
+            ],
+            children: [
+              { num: '2.3.1', title: '硬件抽象层模块编写规范' },
+              { num: '2.3.2', title: '编写硬件抽象层模块接口' },
+              { num: '2.3.3', title: '硬件抽象层模块的加载过程' },
+              { num: '2.3.4', title: '处理硬件设备访问权限问题' }
+            ]
+          },
+          {
+            id: '2.4', num: '2.4', title: '开发Android硬件访问服务',
+            knowledge: [
+              { k: 'JNI', v: 'Java 访问 C/C++ 的桥梁' },
+              { k: '系统服务', v: '通过 ServiceManager 注册到系统中' }
+            ],
+            children: [
+              { num: '2.4.1', title: '定义硬件访问服务接口' },
+              { num: '2.4.2', title: '实现硬件访问服务' },
+              { num: '2.4.3', title: '实现硬件访问服务的JNI方法' },
+              { num: '2.4.4', title: '启动硬件访问服务' }
+            ]
+          },
+          {
+            id: '2.5', num: '2.5', title: '开发Android应用程序来使用硬件访问服务',
+            knowledge: [
+              { k: '应用通过ServiceManager', v: '获取硬件访问服务的代理对象，进而访问硬件' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch3',
+        num: '第3章',
+        title: '智能指针',
+        desc: '分析 Android C++ 层中轻量级指针、强指针、弱指针的实现原理',
+        sections: [
+          {
+            id: '3.1', num: '3.1', title: '轻量级指针',
+            knowledge: [
+              { k: 'LightRefBase', v: '提供简单引用计数 mCount，继承它才可被 sp<> 引用' },
+              { k: 'sp', v: '智能指针模板，构造时 incStrong，析构时 decStrong' },
+              { k: '缺陷', v: '无法解决循环引用导致的对象无法释放问题' }
+            ],
+            children: [
+              { num: '3.1.1', title: '实现原理分析' },
+              { num: '3.1.2', title: '应用实例分析' }
+            ]
+          },
+          {
+            id: '3.2', num: '3.2', title: '强指针和弱指针',
+            knowledge: [
+              { k: '强引用计数 vs 弱引用计数', v: '对象生命周期只受强引用计数控制，弱引用不影响销毁' },
+              { k: '父-子 / 子-父 关系', v: '父用强引用子，子用弱引用父，避免循环' },
+              { k: 'RefBase', v: '所有支持强弱引用的对象必须继承自它' },
+              { k: 'wp', v: '弱指针模板；调用 promote() 升级为 sp' },
+              { k: '升级机制', v: '弱引用计数原子地尝试升级为强引用，避免对象被释放' }
+            ],
+            children: [
+              { num: '3.2.1', title: '强指针的实现原理分析' },
+              { num: '3.2.2', title: '弱指针的实现原理分析' },
+              { num: '3.2.3', title: '应用实例分析' }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'part2',
+    part: '第二篇',
+    title: 'Android专用驱动系统',
+    desc: '分析 Logger 日志、Binder 进程间通信、Ashmem 匿名共享内存三大专用驱动',
+    chapters: [
+      {
+        id: 'ch4',
+        num: '第4章',
+        title: 'Logger日志系统',
+        desc: '基于内核环形缓冲区的日志系统，覆盖驱动、库、Java/C++接口、Logcat工具',
+        sections: [
+          {
+            id: '4.1', num: '4.1', title: 'Logger日志格式',
+            knowledge: [
+              { k: '四种日志类型', v: 'main、system、radio、events' },
+              { k: '设备文件', v: '/dev/log/main、/dev/log/system、/dev/log/radio、/dev/log/events' },
+              { k: '日志优先级', v: 'VERBOSE / DEBUG / INFO / WARN / ERROR / FATAL' },
+              { k: 'events日志', v: '标签为整数，值类型支持 int/long/string/list' }
+            ]
+          },
+          {
+            id: '4.2', num: '4.2', title: 'Logger日志驱动程序',
+            knowledge: [
+              { k: '环形缓冲区', v: '内核中循环使用，避免内存无限增长' },
+              { k: 'logger_entry', v: '单条日志记录描述结构体' },
+              { k: 'logger_log', v: '日志缓冲区描述' },
+              { k: 'logger_reader', v: '日志读取者描述' }
+            ],
+            children: [
+              { num: '4.2.1', title: '基础数据结构' },
+              { num: '4.2.2', title: '日志设备的初始化过程' },
+              { num: '4.2.3', title: '日志设备文件的打开过程' },
+              { num: '4.2.4', title: '日志记录的读取过程' },
+              { num: '4.2.5', title: '日志记录的写入过程' }
+            ]
+          },
+          {
+            id: '4.3', num: '4.3', title: '运行时库层日志库',
+            knowledge: [
+              { k: 'liblog', v: '运行时库层日志库，封装对 /dev/log/* 的访问' }
+            ]
+          },
+          {
+            id: '4.4', num: '4.4', title: 'C/C++日志写入接口',
+            knowledge: [
+              { k: 'main宏', v: 'LOGV/LOGD/LOGI/LOGW/LOGE' },
+              { k: 'system宏', v: 'SLOGV/SLOGD/SLOGI/SLOGW/SLOGE' },
+              { k: 'events宏', v: 'LOG_EVENT_INT / LONG / STRING' }
+            ]
+          },
+          {
+            id: '4.5', num: '4.5', title: 'Java日志写入接口',
+            knowledge: [
+              { k: 'android.util.Log', v: '写 main 类型' },
+              { k: 'android.util.Slog', v: '写 system 类型' },
+              { k: 'android.util.EventLog', v: '写 events 类型' },
+              { k: 'radio转换', v: '标签以 RIL 开头或匹配特定关键字自动转为 radio' }
+            ]
+          },
+          {
+            id: '4.6', num: '4.6', title: 'Logcat工具分析',
+            knowledge: [
+              { k: '功能', v: '从 /dev/log/main 读取日志并格式化输出' }
+            ],
+            children: [
+              { num: '4.6.1', title: '基础数据结构' },
+              { num: '4.6.2', title: '初始化过程' },
+              { num: '4.6.3', title: '日志记录的读取过程' },
+              { num: '4.6.4', title: '日志记录的输出过程' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch5',
+        num: '第5章',
+        title: 'Binder进程间通信系统',
+        desc: 'Android 最核心的 IPC 机制，深入分析驱动、库、Service Manager 与 Service',
+        sections: [
+          {
+            id: '5.1', num: '5.1', title: 'Binder驱动程序',
+            knowledge: [
+              { k: '/dev/binder', v: 'Binder 驱动暴露的设备文件' },
+              { k: '一次数据拷贝', v: '相比传统 IPC（两次拷贝）效率更高' },
+              { k: 'CS架构', v: 'Client、Service、Service Manager、Binder驱动' },
+              { k: 'Binder线程池', v: 'Server/Client 进程并发处理请求' }
+            ],
+            children: [
+              { num: '5.1.1', title: '基础数据结构（binder_work/binder_node/binder_proc等）' },
+              { num: '5.1.2', title: 'Binder设备的初始化过程' },
+              { num: '5.1.3', title: 'Binder设备文件的打开过程' },
+              { num: '5.1.4', title: 'Binder设备文件的内存映射过程' },
+              { num: '5.1.5', title: '内核缓冲区管理' }
+            ]
+          },
+          {
+            id: '5.2', num: '5.2', title: 'Binder进程间通信库',
+            knowledge: [
+              { k: 'libbinder', v: '用户空间封装，隐藏 ioctl 细节' }
+            ]
+          },
+          {
+            id: '5.3', num: '5.3', title: 'Binder进程间通信应用实例',
+            knowledge: [
+              { k: '实例', v: '完整演示 Client 如何通过 Binder 调用 Service' }
+            ]
+          },
+          {
+            id: '5.4', num: '5.4', title: 'Binder对象引用计数技术',
+            knowledge: [
+              { k: '本地对象', v: 'Service 进程内实体' },
+              { k: '实体对象', v: 'Binder 驱动为 Service 创建的 binder_node' },
+              { k: '引用对象', v: 'Client 进程内的 binder_ref' },
+              { k: '代理对象', v: 'Client 端通过 BpInterface 访问 Service 的句柄' }
+            ],
+            children: [
+              { num: '5.4.1', title: 'Binder本地对象的生命周期' },
+              { num: '5.4.2', title: 'Binder实体对象的生命周期' },
+              { num: '5.4.3', title: 'Binder引用对象的生命周期' },
+              { num: '5.4.4', title: 'Binder代理对象的生命周期' }
+            ]
+          },
+          {
+            id: '5.5', num: '5.5', title: 'Binder对象死亡通知机制',
+            knowledge: [
+              { k: 'linkToDeath', v: '注册死亡接收通知' }
+            ],
+            children: [
+              { num: '5.5.1', title: '注册死亡接收通知' },
+              { num: '5.5.2', title: '发送死亡接收通知' },
+              { num: '5.5.3', title: '注销死亡接收通知' }
+            ]
+          },
+          {
+            id: '5.6', num: '5.6', title: 'Service Manager的启动过程',
+            knowledge: [
+              { k: '上下文管理者', v: 'Service Manager 统一管理所有 Service' }
+            ],
+            children: [
+              { num: '5.6.1', title: '打开和映射Binder设备文件' },
+              { num: '5.6.2', title: '注册为Binder上下文管理者' },
+              { num: '5.6.3', title: '循环等待Client进程请求' }
+            ]
+          },
+          {
+            id: '5.7', num: '5.7', title: 'Service Manager代理对象的获取过程',
+            knowledge: [
+              { k: '句柄0', v: 'Service Manager 在所有进程中的固定句柄' }
+            ]
+          },
+          {
+            id: '5.8', num: '5.8', title: 'Service组件的启动过程',
+            knowledge: [
+              { k: 'addService', v: 'Service 启动时向 Service Manager 注册' }
+            ],
+            children: [
+              { num: '5.8.1', title: '注册Service组件' },
+              { num: '5.8.2', title: '启动Binder线程池' }
+            ]
+          },
+          {
+            id: '5.9', num: '5.9', title: 'Service代理对象的获取过程',
+            knowledge: [
+              { k: 'getService', v: 'Client 通过 Service Manager 查询并获得代理' }
+            ]
+          },
+          {
+            id: '5.10', num: '5.10', title: 'Binder进程间通信机制的Java接口',
+            knowledge: [
+              { k: 'AIDL', v: 'Android Interface Definition Language，自动生成 Java 端 Stub/Proxy' }
+            ],
+            children: [
+              { num: '5.10.1', title: 'Service Manager的Java代理对象的获取过程' },
+              { num: '5.10.2', title: 'Java服务接口的定义和解析' },
+              { num: '5.10.3', title: 'Java服务的启动过程' },
+              { num: '5.10.4', title: 'Java服务代理对象的获取过程' },
+              { num: '5.10.5', title: 'Java服务的调用过程' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch6',
+        num: '第6章',
+        title: 'Ashmem匿名共享内存系统',
+        desc: '基于 tmpfs 的高效进程间大数据共享机制',
+        sections: [
+          {
+            id: '6.1', num: '6.1', title: 'Ashmem驱动程序',
+            knowledge: [
+              { k: 'ashmem_area', v: '描述一块匿名共享内存' },
+              { k: 'ashmem_range', v: '描述已解锁的内存小块' },
+              { k: 'ashmem_pin', v: '小块的锁定状态' },
+              { k: 'LRU回收', v: '当内存紧张时按 LRU 原则回收已解锁的内存块' },
+              { k: 'pin/unpin', v: 'lock/unlock 内存块，控制回收' }
+            ],
+            children: [
+              { num: '6.1.1', title: '基础数据结构' },
+              { num: '6.1.2', title: '匿名共享内存设备的初始化过程' },
+              { num: '6.1.3', title: '匿名共享内存设备文件的打开过程' },
+              { num: '6.1.4', title: '匿名共享内存设备文件的内存映射过程' },
+              { num: '6.1.5', title: '匿名共享内存块的锁定和解锁过程' },
+              { num: '6.1.6', title: '匿名共享内存块的回收过程' }
+            ]
+          },
+          {
+            id: '6.2', num: '6.2', title: '运行时库cutils的匿名共享内存访问接口',
+            knowledge: [
+              { k: 'ashmem_create_region', v: '创建一块匿名共享内存' },
+              { k: 'ashmem_pin_region', v: '锁定内存（防止被回收）' },
+              { k: 'ashmem_unpin_region', v: '解锁内存（允许回收）' }
+            ]
+          },
+          {
+            id: '6.3', num: '6.3', title: '匿名共享内存的C++访问接口',
+            knowledge: [
+              { k: 'MemoryHeapBase', v: '封装一块匿名共享内存的基类' },
+              { k: 'MemoryBase', v: '在 MemoryHeapBase 之上提供偏移和访问接口' }
+            ],
+            children: [
+              { num: '6.3.1', title: 'MemoryHeapBase' },
+              { num: '6.3.2', title: 'MemoryBase' },
+              { num: '6.3.3', title: '应用实例' }
+            ]
+          },
+          {
+            id: '6.4', num: '6.4', title: '匿名共享内存的Java访问接口',
+            knowledge: [
+              { k: 'MemoryFile', v: 'Java 端包装匿名共享内存' }
+            ],
+            children: [
+              { num: '6.4.1', title: 'MemoryFile' },
+              { num: '6.4.2', title: '应用实例' }
+            ]
+          },
+          {
+            id: '6.5', num: '6.5', title: '匿名共享内存的共享原理',
+            knowledge: [
+              { k: 'BINDER_TYPE_FD', v: 'Binder 驱动传输文件描述符，接收进程得到同一物理页' }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'part3',
+    part: '第三篇',
+    title: 'Android应用程序框架',
+    desc: '从组件、进程、消息、安装四个维度深入分析 Android 应用程序框架层',
+    chapters: [
+      {
+        id: 'ch7',
+        num: '第7章',
+        title: 'Activity组件的启动过程',
+        desc: '从根 Activity 启动到子 Activity 启动的完整流程',
+        sections: [
+          {
+            id: '7.1', num: '7.1', title: 'Activity组件应用实例',
+            knowledge: [
+              { k: 'MainActivity', v: '根 Activity' },
+              { k: 'SubActivityInProcess', v: '同进程子 Activity' },
+              { k: 'SubActivityInNewProcess', v: '新进程子 Activity' }
+            ]
+          },
+          {
+            id: '7.2', num: '7.2', title: '根Activity组件的启动过程',
+            knowledge: [
+              { k: 'Launcher -> AMS', v: '点击图标触发 Launcher 请求 ActivityManagerService 启动根 Activity' },
+              { k: 'AMS -> Zygote', v: '如进程未启动，AMS 请求 Zygote 孵化新进程' }
+            ]
+          },
+          {
+            id: '7.3', num: '7.3', title: '子Activity组件在进程内的启动过程',
+            knowledge: [
+              { k: 'ActivityStack', v: '同进程栈内复用，复用 Task 和进程' }
+            ]
+          },
+          {
+            id: '7.4', num: '7.4', title: '子Activity组件在新进程中的启动过程',
+            knowledge: [
+              { k: 'android:process', v: '新进程的依据' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch8',
+        num: '第8章',
+        title: 'Service组件的启动过程',
+        desc: '无界面后台服务的启动与绑定机制',
+        sections: [
+          {
+            id: '8.1', num: '8.1', title: 'Service组件应用实例',
+            knowledge: [
+              { k: 'CounterService', v: '通过 AsyncTask 实现计数器' },
+              { k: 'ICounterService', v: '计数器服务接口' },
+              { k: 'ICounterCallback', v: '计数器回调接口' }
+            ]
+          },
+          {
+            id: '8.2', num: '8.2', title: 'Service组件在新进程中的启动过程',
+            knowledge: [
+              { k: 'startService', v: '启动一个新进程中的 Service' }
+            ]
+          },
+          {
+            id: '8.3', num: '8.3', title: 'Service组件在进程内的绑定过程',
+            knowledge: [
+              { k: 'bindService', v: '客户端绑定 Service 获取 Binder 接口' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch9',
+        num: '第9章',
+        title: 'Android系统广播机制',
+        desc: '基于 Binder 的发布/订阅事件驱动模型',
+        sections: [
+          {
+            id: '9.1', num: '9.1', title: '广播机制应用实例',
+            knowledge: [
+              { k: 'Broadcounter', v: '通过广播代替回调，避免组件耦合' }
+            ]
+          },
+          {
+            id: '9.2', num: '9.2', title: '广播接收者的注册过程',
+            knowledge: [
+              { k: '静态注册', v: '在 AndroidManifest.xml 中声明' },
+              { k: '动态注册', v: '代码中调用 registerReceiver()' },
+              { k: 'ActivityManagerService', v: '广播注册中心' }
+            ]
+          },
+          {
+            id: '9.3', num: '9.3', title: '广播的发送过程',
+            knowledge: [
+              { k: 'sendBroadcast', v: '无序广播，并行分发' },
+              { k: 'sendOrderedBroadcast', v: '有序广播，按优先级串行处理' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch10',
+        num: '第10章',
+        title: 'Content Provider组件的实现原理',
+        desc: '跨进程数据共享，结合 Binder + Ashmem 高效传输',
+        sections: [
+          {
+            id: '10.1', num: '10.1', title: 'Content Provider组件应用实例',
+            knowledge: [
+              { k: 'ArticlesProvider', v: '示例 Provider，基于 SQLite' },
+              { k: 'Article', v: '示例消费者，含浏览/增删改' }
+            ],
+            children: [
+              { num: '10.1.1', title: 'ArticlesProvider' },
+              { num: '10.1.2', title: 'Article' }
+            ]
+          },
+          {
+            id: '10.2', num: '10.2', title: 'Content Provider组件的启动过程',
+            knowledge: [
+              { k: 'AndroidManifest中authority', v: '进程启动时由 AMS 安装并发布到系统' }
+            ]
+          },
+          {
+            id: '10.3', num: '10.3', title: 'Content Provider组件的数据共享原理',
+            knowledge: [
+              { k: 'URI', v: 'content://authority/path/id 四段式结构' },
+              { k: 'Cursor', v: 'Binder 传递 CursorWindow（基于 Ashmem）' }
+            ],
+            children: [
+              { num: '10.3.1', title: '数据共享模型' },
+              { num: '10.3.2', title: '数据传输过程' }
+            ]
+          },
+          {
+            id: '10.4', num: '10.4', title: 'Content Provider组件的数据更新通知机制',
+            knowledge: [
+              { k: 'ContentObserver', v: '客户端注册观察者' }
+            ],
+            children: [
+              { num: '10.4.1', title: '注册内容观察者' },
+              { num: '10.4.2', title: '发送数据更新通知' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch11',
+        num: '第11章',
+        title: 'Zygote和System进程的启动过程',
+        desc: 'Android 进程世界的孵化器与系统服务容器',
+        sections: [
+          {
+            id: '11.1', num: '11.1', title: 'Zygote进程的启动脚本',
+            knowledge: [
+              { k: 'init.rc', v: 'init 进程读取的启动脚本' },
+              { k: 'service zygote /system/bin/app_process', v: 'Zygote 以服务形式启动' },
+              { k: 'ANDROID_SOCKET_DIR', v: '/dev/socket 目录，zygote Socket 文件所在' }
+            ]
+          },
+          {
+            id: '11.2', num: '11.2', title: 'Zygote进程的启动过程',
+            knowledge: [
+              { k: 'fork自身', v: '通过 fork 快速创建子进程' },
+              { k: '预加载', v: '预加载类与资源，加快应用启动' },
+              { k: 'Server端Socket', v: '监听 /dev/socket/zygote 等待 AMS 请求' }
+            ]
+          },
+          {
+            id: '11.3', num: '11.3', title: 'System进程的启动过程',
+            knowledge: [
+              { k: 'ActivityManagerService', v: 'AMS 启动' },
+              { k: 'WindowManagerService', v: 'WMS 启动' },
+              { k: 'PackageManagerService', v: 'PKMS 启动' },
+              { k: 'ContentService', v: '内容服务启动' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch12',
+        num: '第12章',
+        title: 'Android应用程序进程的启动过程',
+        desc: 'Zygote 孵化应用进程并初始化运行时环境',
+        sections: [
+          {
+            id: '12.1', num: '12.1', title: '应用程序进程的创建过程',
+            knowledge: [
+              { k: 'ActivityManagerService.startProcessLocked', v: 'AMS 发起创建请求' },
+              { k: 'Process.start', v: '通过 Zygote 孵化进程' },
+              { k: '入口ActivityThread.main', v: '新进程主线程入口' }
+            ]
+          },
+          {
+            id: '12.2', num: '12.2', title: 'Binder线程池的启动过程',
+            knowledge: [
+              { k: 'ProcessState::startThreadPool', v: '打开 /dev/binder 并启动线程池' }
+            ]
+          },
+          {
+            id: '12.3', num: '12.3', title: '消息循环的创建过程',
+            knowledge: [
+              { k: 'Looper.prepareMainLooper', v: '主线程消息队列初始化' },
+              { k: 'Looper.loop', v: '进入主线程消息循环' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch13',
+        num: '第13章',
+        title: 'Android应用程序的消息处理机制',
+        desc: 'MessageQueue、Looper、Handler 三大核心类',
+        sections: [
+          {
+            id: '13.1', num: '13.1', title: '创建线程消息队列',
+            knowledge: [
+              { k: 'MessageQueue', v: '消息队列，Java 与 C++ 两层' },
+              { k: 'epoll机制', v: '底层基于 epoll + 唤醒管道' },
+              { k: 'prepare / prepareMainLooper', v: '创建 Looper 入口' }
+            ]
+          },
+          {
+            id: '13.2', num: '13.2', title: '线程消息循环过程',
+            knowledge: [
+              { k: 'Looper.loop', v: '循环取消息并分发' },
+              { k: 'nativePollOnce', v: 'C++ 层等待新消息' }
+            ]
+          },
+          {
+            id: '13.3', num: '13.3', title: '线程消息发送过程',
+            knowledge: [
+              { k: 'Handler.sendMessage', v: '将 Message 加入 MessageQueue' },
+              { k: 'nativeWake', v: '通过写管道唤醒目标线程' }
+            ]
+          },
+          {
+            id: '13.4', num: '13.4', title: '线程消息处理过程',
+            knowledge: [
+              { k: 'Handler.dispatchMessage', v: '回调 handleMessage' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch14',
+        num: '第14章',
+        title: 'Android应用程序的键盘消息处理机制',
+        desc: '从硬件中断到应用窗口的完整事件链路',
+        sections: [
+          {
+            id: '14.1', num: '14.1', title: '键盘消息处理模型',
+            knowledge: [
+              { k: 'WindowManagerService', v: 'WMS 持有 InputManager' },
+              { k: 'InputManager', v: '包含 InputReader + InputDispatcher' },
+              { k: 'InputChannel', v: '应用窗口与 InputDispatcher 之间的 Socket pair' }
+            ]
+          },
+          {
+            id: '14.2', num: '14.2', title: 'InputManager的启动过程',
+            knowledge: [
+              { k: 'NativeInputManager', v: 'Java 层到 C++ 层的桥接' }
+            ],
+            children: [
+              { num: '14.2.1', title: '创建InputManager' },
+              { num: '14.2.2', title: '启动InputManager' },
+              { num: '14.2.3', title: '启动InputDispatcher' },
+              { num: '14.2.4', title: '启动InputReader' }
+            ]
+          },
+          {
+            id: '14.3', num: '14.3', title: 'InputChannel的注册过程',
+            knowledge: [
+              { k: 'Server端', v: '由 InputDispatcher 持有' },
+              { k: 'Client端', v: '由应用主线程持有' }
+            ],
+            children: [
+              { num: '14.3.1', title: '创建InputChannel' },
+              { num: '14.3.2', title: '注册Server端InputChannel' },
+              { num: '14.3.3', title: '注册系统当前激活的应用程序窗口' },
+              { num: '14.3.4', title: '注册Client端InputChannel' }
+            ]
+          },
+          {
+            id: '14.4', num: '14.4', title: '键盘消息的分发过程',
+            knowledge: [
+              { k: 'InputReader -> InputDispatcher -> 应用窗口', v: '完整事件链' }
+            ],
+            children: [
+              { num: '14.4.1', title: 'InputReader获得键盘事件' },
+              { num: '14.4.2', title: 'InputDispatcher分发键盘事件' },
+              { num: '14.4.3', title: '系统当前激活的应用程序窗口获得键盘消息' },
+              { num: '14.4.4', title: 'InputDispatcher获得键盘事件处理完成通知' }
+            ]
+          },
+          {
+            id: '14.5', num: '14.5', title: 'InputChannel的注销过程',
+            children: [
+              { num: '14.5.1', title: '销毁应用程序窗口' },
+              { num: '14.5.2', title: '注销Client端InputChannel' },
+              { num: '14.5.3', title: '注销Server端InputChannel' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch15',
+        num: '第15章',
+        title: 'Android应用程序线程的消息循环模型',
+        desc: '主线程、子线程、AsyncTask 三种消息循环模型',
+        sections: [
+          {
+            id: '15.1', num: '15.1', title: '应用程序主线程消息循环模型',
+            knowledge: [
+              { k: 'ActivityThread', v: '主线程消息循环的载体' },
+              { k: 'getMainLooper', v: '子线程可获取主线程 Looper' }
+            ]
+          },
+          {
+            id: '15.2', num: '15.2', title: '与界面无关的应用程序子线程消息循环模型',
+            knowledge: [
+              { k: 'HandlerThread', v: '自带 Looper 的线程模板' }
+            ]
+          },
+          {
+            id: '15.3', num: '15.3', title: '与界面相关的应用程序子线程消息循环模型',
+            knowledge: [
+              { k: 'AsyncTask', v: '后台任务 + 主线程回调封装' },
+              { k: 'doInBackground / onProgressUpdate / onPostExecute', v: '三段式回调' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch16',
+        num: '第16章',
+        title: 'Android应用程序的安装和显示过程',
+        desc: 'PKMS 安装、Launcher 展示应用的完整流程',
+        sections: [
+          {
+            id: '16.1', num: '16.1', title: '应用程序的安装过程',
+            knowledge: [
+              { k: 'PackageManagerService', v: 'PKMS 负责扫描、安装、解析 APK' },
+              { k: 'AndroidManifest.xml', v: '解析组件、权限、进程名等信息' },
+              { k: 'Linux用户ID', v: '每个 App 独立 UID，保证沙箱' },
+              { k: 'Linux用户组ID', v: '按权限分配功能组' }
+            ]
+          },
+          {
+            id: '16.2', num: '16.2', title: '应用程序的显示过程',
+            knowledge: [
+              { k: 'Launcher', v: '系统默认 Home 应用，展示所有 App 快捷图标' },
+              { k: 'PackageInfo / ApplicationInfo', v: 'PKMS 提供给 Launcher 的元数据' }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+];
+
+/* ===========================================================
+   渲染导航与内容
+=========================================================== */
+const navTree = document.getElementById('navTree');
+const content = document.getElementById('content');
+
+// 渲染导航
+function renderNav() {
+  let html = '';
+  DATA.forEach((part, pi) => {
+    html += `<li class="nav-item part-${pi+1}" data-id="${part.id}">
+      <div class="nav-row part-row" data-target="${part.id}">
+        <span class="caret has-children"><span class="toggle-icon">▶</span></span>
+        <span class="nav-label">${part.part} ${part.title}</span>
+        <span class="badge">${part.chapters.length}章</span>
+      </div>
+      <ul class="nav-children">`;
+    part.chapters.forEach(ch => {
+      html += `<li class="nav-item" data-id="${ch.id}">
+        <div class="nav-row chapter-row" data-target="${ch.id}">
+          <span class="caret has-children"><span class="toggle-icon">▶</span></span>
+          <span class="nav-label">${ch.num} ${ch.title}</span>
+          <span class="badge">${ch.sections.length}</span>
+        </div>
+        <ul class="nav-children">`;
+      ch.sections.forEach(sec => {
+        html += `<li class="nav-item" data-id="${ch.id}-${sec.id}">
+          <div class="nav-row section-row" data-target="${ch.id}-${sec.id}">
+            <span class="caret placeholder"></span>
+            <span class="nav-label">${sec.num} ${sec.title}</span>
+          </div>
+        </li>`;
+      });
+      html += `</ul></li>`;
+    });
+    html += `</ul></li>`;
+  });
+  navTree.innerHTML = html;
+  bindNavEvents();
+}
+
+// 渲染主内容
+function renderContent() {
+  let html = '';
+  DATA.forEach((part, pi) => {
+    html += `<section id="${part.id}" class="anchor-offset">
+      <div class="part-header" style="background: linear-gradient(135deg, ${partColors[pi]} 0%, ${partColors[pi+3]} 100%);">
+        <div class="part-tag">${part.part}</div>
+        <h1>${part.title}</h1>
+        <p>${part.desc}</p>
+      </div>`;
+
+    part.chapters.forEach(ch => {
+      html += `<div class="chapter-card anchor-offset" id="${ch.id}">
+        <div class="chapter-header">
+          <span class="chapter-num">${ch.num}</span>
+          <span class="chapter-title">${ch.title}</span>
+        </div>`;
+      if (ch.desc) {
+        html += `<div class="key-point">${ch.desc}</div>`;
+      }
+
+      ch.sections.forEach(sec => {
+        html += `<div class="section-block anchor-offset" id="${ch.id}-${sec.id}">
+          <div class="section-title">
+            <span class="sec-num">${sec.num}</span>
+            <span>${sec.title}</span>
+          </div>`;
+        if (sec.knowledge && sec.knowledge.length) {
+          html += `<ul class="knowledge-list">`;
+          sec.knowledge.forEach(item => {
+            const v = item.v ? ` — <span>${item.v}</span>` : '';
+            html += `<li><code>${item.k}</code>${v}</li>`;
+          });
+          html += `</ul>`;
+        }
+        if (sec.children && sec.children.length) {
+          sec.children.forEach(sub => {
+            html += `<div class="subsection-block">
+              <div class="subsection-title">
+                <span class="sub-num">${sub.num}</span>
+                <span>${sub.title}</span>
+              </div>`;
+            if (sub.knowledge && sub.knowledge.length) {
+              html += `<ul class="knowledge-list">`;
+              sub.knowledge.forEach(item => {
+                const v = item.v ? ` — <span>${item.v}</span>` : '';
+                html += `<li><code>${item.k}</code>${v}</li>`;
+              });
+              html += `</ul>`;
+            }
+            html += `</div>`;
+          });
+        }
+        html += `</div>`;
+      });
+      html += `</div>`;
+    });
+    html += `</section>`;
+  });
+  content.innerHTML = html;
+}
+
+const partColors = [
+  '#3D5AFE', '#00C853', '#FF6E40',  // 浅色
+  '#1A237E', '#1B5E20', '#BF360C'   // 深色
+];
+
+/* ===========================================================
+   导航交互
+=========================================================== */
+function bindNavEvents() {
+  // 展开/折叠
+  document.querySelectorAll('.nav-row').forEach(row => {
+    row.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const item = row.parentElement;
+      if (row.querySelector('.caret.has-children')) {
+        item.classList.toggle('open');
+      }
+    });
+  });
+  // 滚动到锚点
+  document.querySelectorAll('.section-row, .chapter-row, .part-row').forEach(row => {
+    row.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = row.getAttribute('data-target');
+      const target = document.getElementById(id);
+      if (target) {
+        // 计算目标相对于 content 容器的位置并滚动
+        const contentRect = contentEl.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const offset = targetRect.top - contentRect.top + contentEl.scrollTop - 16;
+        contentEl.scrollTo({ top: offset, behavior: 'smooth' });
+        // 高亮
+        document.querySelectorAll('.nav-row').forEach(r => r.classList.remove('active'));
+        row.classList.add('active');
+      }
+    });
+  });
+}
+
+/* ===========================================================
+   全部展开 / 全部折叠
+=========================================================== */
+document.getElementById('expandAllBtn').addEventListener('click', () => {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.add('open'));
+});
+document.getElementById('collapseAllBtn').addEventListener('click', () => {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('open'));
+  document.querySelectorAll('.nav-row').forEach(r => r.classList.remove('active'));
+});
+
+/* ===========================================================
+   侧边栏折叠
+=========================================================== */
+const sidebar = document.getElementById('sidebar');
+document.getElementById('toggleSidebar').addEventListener('click', () => {
+  sidebar.classList.toggle('collapsed');
+  document.getElementById('toggleSidebar').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+});
+
+/* ===========================================================
+   搜索过滤导航
+=========================================================== */
+document.getElementById('navSearch').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('#navTree .nav-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = (!q || text.includes(q)) ? '' : 'none';
+  });
+  // 自动展开匹配项的父项
+  if (q) {
+    document.querySelectorAll('#navTree .nav-item').forEach(item => {
+      if (item.style.display !== 'none') {
+        let p = item.parentElement;
+        while (p && p.id !== 'navTree') {
+          if (p.classList && p.classList.contains('nav-item')) p.classList.add('open');
+          p = p.parentElement;
+        }
+      }
+    });
+  }
+});
+
+/* ===========================================================
+   顶部搜索 - 滚动到第一个匹配章节
+=========================================================== */
+document.getElementById('searchInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const q = e.target.value.trim().toLowerCase();
+    if (!q) return;
+    // 简单查找第一个含 q 的 section
+    const sections = document.querySelectorAll('.section-block, .chapter-card, .part-header');
+    for (const s of sections) {
+      if (s.textContent.toLowerCase().includes(q)) {
+        const contentRect = contentEl.getBoundingClientRect();
+        const targetRect = s.getBoundingClientRect();
+        const offset = targetRect.top - contentRect.top + contentEl.scrollTop - 16;
+        contentEl.scrollTo({ top: offset, behavior: 'smooth' });
+        s.style.transition = 'box-shadow 0.3s';
+        s.style.boxShadow = '0 0 0 4px rgba(61,90,254,0.4)';
+        setTimeout(() => s.style.boxShadow = '', 1500);
+        break;
+      }
+    }
+  }
+});
+
+/* ===========================================================
+   滚动到顶部
+=========================================================== */
+const scrollTopBtn = document.getElementById('scrollTop');
+const contentEl = document.getElementById('content');
+contentEl.addEventListener('scroll', () => {
+  scrollTopBtn.classList.toggle('show', contentEl.scrollTop > 400);
+});
+scrollTopBtn.addEventListener('click', () => contentEl.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ===========================================================
+   默认折叠：仅展开第 1 篇作为引导
+=========================================================== */
+renderNav();
+renderContent();
+// 默认全部折叠
+// document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('open'));
+// 默认展开一个简短的"内容索引"
+document.querySelector('[data-id="part1"]').classList.add('open');
+</script>
+</body>
+</html>

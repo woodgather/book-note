@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>操作系统导论 (OSTEP) 知识脑图 - 知识脑图</title>
+<style>
+:root {
+  color-scheme: light;
+  --color-bg: #fafbfc;
+  --color-surface: #ffffff;
+  --color-surface-2: #f4f6f8;
+  --color-border: #e1e4e8;
+  --color-text: #1f2328;
+  --color-text-muted: #57606a;
+  --color-accent: #0969da;
+  --color-accent-soft: #ddf4ff;
+  --color-accent-deep: #0550ae;
+  --color-warning: #bf8700;
+  --color-p1: #8250df;
+  --color-p2: #1f883d;
+  --color-p3: #cf222e;
+  --color-p4: #fb8500;
+  --color-p5: #6e40c9;
+  --shadow-sm: 0 1px 2px rgba(31,35,40,0.06);
+  --shadow-md: 0 4px 14px rgba(31,35,40,0.08);
+  --radius: 8px;
+  --radius-sm: 6px;
+  --transition: 200ms ease;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+               "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue",
+               Helvetica, Arial, sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.7;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Layout ===== */
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+  padding: 0 0 40px;
+  transition: transform var(--transition);
+  z-index: 50;
+}
+.sidebar-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  background: var(--color-surface);
+  z-index: 2;
+}
+.sidebar-header h2 {
+  font-size: 16px;
+  margin: 0 0 4px;
+  color: var(--color-text);
+}
+.sidebar-header p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.sidebar-search {
+  margin: 12px 0 0;
+  position: relative;
+}
+.sidebar-search input {
+  width: 100%;
+  padding: 7px 10px 7px 30px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color var(--transition), background var(--transition);
+}
+.sidebar-search input:focus {
+  border-color: var(--color-accent);
+  background: #fff;
+}
+.sidebar-search::before {
+  content: "🔍";
+  position: absolute;
+  left: 9px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  opacity: 0.6;
+}
+.sidebar-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.btn:hover { background: var(--color-surface-2); border-color: var(--color-accent); color: var(--color-accent); }
+
+.nav {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+.nav-item { list-style: none; margin: 0; padding: 0; }
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  margin: 0 8px;
+  transition: background var(--transition);
+}
+.nav-row:hover { background: var(--color-surface-2); }
+.nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 26px;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  transition: transform var(--transition);
+}
+.nav-toggle.no-children { cursor: default; opacity: 0.4; }
+.nav-toggle[aria-expanded="true"] { transform: rotate(90deg); color: var(--color-accent); }
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  font-size: 13px;
+  color: var(--color-text);
+  text-decoration: none;
+  flex: 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.nav-link:hover { color: var(--color-accent); }
+.nav-link.active { color: var(--color-accent); font-weight: 600; background: var(--color-accent-soft); }
+.nav-icon { font-size: 14px; flex-shrink: 0; }
+.nav-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-sub {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 14px;
+  border-left: 1px dashed var(--color-border);
+  margin-left: 16px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 350ms ease;
+}
+.nav-sub.expanded { max-height: 5000px; }
+
+/* Level styling for sidebar */
+.nav-level-0 > .nav-row > .nav-link { font-weight: 600; font-size: 13.5px; }
+.nav-level-1 > .nav-row > .nav-link { font-weight: 500; }
+.nav-level-2 > .nav-row > .nav-link { font-weight: 400; font-size: 12.5px; }
+.nav-level-3 > .nav-row > .nav-link { font-size: 12.5px; color: var(--color-text-muted); }
+.nav-level-4 > .nav-row > .nav-link { font-size: 12px; color: var(--color-text-muted); }
+
+/* Color tags for top-level parts */
+.nav-level-0[data-tag="preface"] .nav-link { color: #57606a; }
+.nav-level-0[data-tag="part1"] .nav-link { color: var(--color-p1); }
+.nav-level-0[data-tag="part2"] .nav-link { color: var(--color-p2); }
+.nav-level-0[data-tag="part3"] .nav-link { color: var(--color-p3); }
+.nav-level-0[data-tag="appendix"] .nav-link { color: var(--color-p4); }
+
+/* ===== Main content ===== */
+.main {
+  margin-left: 320px;
+  flex: 1;
+  min-width: 0;
+  padding: 32px 48px 80px;
+  max-width: 1100px;
+}
+.main-header {
+  background: linear-gradient(135deg, #0969da 0%, #8250df 50%, #cf222e 100%);
+  color: white;
+  padding: 36px 32px;
+  border-radius: 14px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-md);
+}
+.main-header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.main-header .subtitle {
+  font-size: 14px;
+  opacity: 0.92;
+  margin: 0;
+}
+
+/* Mind node styles */
+.mind-node {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  scroll-margin-top: 24px;
+}
+.node-title {
+  margin: 0 0 10px;
+  font-weight: 600;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 8px;
+}
+.node-icon { font-size: 22px; }
+.node-summary {
+  margin: 8px 0 12px;
+  color: var(--color-text-muted);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+.highlights {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+.highlights li {
+  position: relative;
+  padding: 4px 0 4px 22px;
+  font-size: 14px;
+  color: var(--color-text);
+}
+.highlights li::before {
+  content: "▸";
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  color: var(--color-accent);
+  font-size: 11px;
+}
+
+/* Level visual hierarchy */
+.level-0 {
+  border-left: 4px solid var(--color-accent);
+  background: linear-gradient(to right, #f6f8fa 0%, #ffffff 30%);
+}
+.level-0 > .node-title {
+  font-size: 22px;
+  color: var(--color-accent-deep);
+}
+.level-1 {
+  border-left: 3px solid var(--color-p1);
+}
+.level-1 > .node-title { font-size: 19px; color: var(--color-p1); }
+.level-2 {
+  border-left: 3px solid var(--color-p2);
+  background: #fbfdfb;
+}
+.level-2 > .node-title { font-size: 17px; color: var(--color-p2); }
+.level-3 {
+  border-left: 2px solid var(--color-p4);
+  background: #fffaf3;
+  padding: 16px 20px;
+}
+.level-3 > .node-title { font-size: 15.5px; color: #8a5a00; border-bottom: 1px dashed #e0c98a; padding-bottom: 6px; }
+.level-4 {
+  border-left: 2px solid var(--color-text-muted);
+  padding: 12px 18px;
+  background: var(--color-surface-2);
+}
+.level-4 > .node-title { font-size: 14.5px; color: var(--color-text-muted); border: none; padding: 0; margin-bottom: 6px; }
+
+/* Color top-level parts */
+#node-preface.level-0 { border-left-color: #57606a; }
+#node-preface.level-0 > .node-title { color: #57606a; }
+#node-part1.level-0 { border-left-color: var(--color-p1); }
+#node-part1.level-0 > .node-title { color: var(--color-p1); }
+#node-part2.level-0 { border-left-color: var(--color-p2); }
+#node-part2.level-0 > .node-title { color: var(--color-p2); }
+#node-part3.level-0 { border-left-color: var(--color-p3); }
+#node-part3.level-0 > .node-title { color: var(--color-p3); }
+#node-appendix.level-0 { border-left-color: var(--color-p4); }
+#node-appendix.level-0 > .node-title { color: #8a5a00; }
+
+.node-children {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+/* Mobile toggle */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  background: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+}
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 40;
+}
+.overlay.active { display: block; }
+
+/* Scrollbar */
+.sidebar::-webkit-scrollbar { width: 8px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: #d0d7de; border-radius: 4px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background: #afb8c1; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .menu-toggle { display: block; }
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 24px 18px 60px; }
+  .main-header { padding: 24px 18px; }
+  .main-header h1 { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+<button class="menu-toggle" id="menuToggle" aria-label="切换导航">☰</button>
+<div class="overlay" id="overlay"></div>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>📚 知识脑图导航</h2>
+      <p>操作系统导论 (OSTEP)</p>
+      <div class="sidebar-search">
+        <input type="text" id="searchInput" placeholder="搜索节点..." />
+      </div>
+      <div class="sidebar-actions">
+        <button class="btn" id="expandAll">全部展开</button>
+        <button class="btn" id="collapseAll">全部折叠</button>
+      </div>
+    </div>
+    <ul class="nav" id="nav">
+<li class="nav-item nav-level-0 has-children" data-tag="preface">
+<div class="nav-row">
+  <span class="nav-toggle" data-target="node-preface-sub" aria-expanded="false">▸</span>
+  <a href="#node-preface" class="nav-link"><span class="nav-icon">📖</span><span class="nav-text">前言部分</span></a>
+</div>
+<ul class="nav-sub" id="node-preface-sub">
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch1" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">关于本书的对话 (第1章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch2" class="nav-link"><span class="nav-icon">🖥️</span><span class="nav-text">操作系统介绍 (第2章)</span></a>
+</div>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-level-0 has-children" data-tag="part1">
+<div class="nav-row">
+  <span class="nav-toggle" data-target="node-part1-sub" aria-expanded="false">▸</span>
+  <a href="#node-part1" class="nav-link"><span class="nav-icon">🧠</span><span class="nav-text">第1部分 虚拟化</span></a>
+</div>
+<ul class="nav-sub" id="node-part1-sub">
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch3" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">关于虚拟化的对话 (第3章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1 has-children">
+<div class="nav-row">
+  <span class="nav-toggle" data-target="node-cpu-virt-sub" aria-expanded="false">▸</span>
+  <a href="#node-cpu-virt" class="nav-link"><span class="nav-icon">⚙️</span><span class="nav-text">CPU 虚拟化 (第4-11章)</span></a>
+</div>
+<ul class="nav-sub" id="node-cpu-virt-sub">
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch4" class="nav-link"><span class="nav-icon">🔷</span><span class="nav-text">抽象：进程 (第4章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch5" class="nav-link"><span class="nav-icon">🛠️</span><span class="nav-text">插叙：进程 API (第5章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch6" class="nav-link"><span class="nav-icon">🚧</span><span class="nav-text">机制：受限直接执行 (第6章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch7" class="nav-link"><span class="nav-icon">📊</span><span class="nav-text">进程调度：介绍 (第7章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch8" class="nav-link"><span class="nav-icon">📚</span><span class="nav-text">调度：多级反馈队列 (第8章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch9" class="nav-link"><span class="nav-icon">🎟️</span><span class="nav-text">调度：比例份额 (第9章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch10" class="nav-link"><span class="nav-icon">🔱</span><span class="nav-text">多处理器调度 (高级) (第10章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch11" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">CPU 虚拟化总结对话 (第11章)</span></a>
+</div>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-level-1 has-children">
+<div class="nav-row">
+  <span class="nav-toggle" data-target="node-mem-virt-sub" aria-expanded="false">▸</span>
+  <a href="#node-mem-virt" class="nav-link"><span class="nav-icon">💾</span><span class="nav-text">内存虚拟化 (第12-24章)</span></a>
+</div>
+<ul class="nav-sub" id="node-mem-virt-sub">
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch12" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">关于内存虚拟化的对话 (第12章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch13" class="nav-link"><span class="nav-icon">🌐</span><span class="nav-text">抽象：地址空间 (第13章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch14" class="nav-link"><span class="nav-icon">🛠️</span><span class="nav-text">插叙：内存操作 API (第14章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch15" class="nav-link"><span class="nav-icon">🔄</span><span class="nav-text">机制：地址转换 (第15章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch16" class="nav-link"><span class="nav-icon">🧩</span><span class="nav-text">分段 (第16章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch17" class="nav-link"><span class="nav-icon">📦</span><span class="nav-text">空闲空间管理 (第17章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch18" class="nav-link"><span class="nav-icon">📄</span><span class="nav-text">分页：介绍 (第18章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch19" class="nav-link"><span class="nav-icon">⚡</span><span class="nav-text">分页：快速地址转换 (TLB) (第19章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch20" class="nav-link"><span class="nav-icon">📏</span><span class="nav-text">分页：较小的表 (第20章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch21" class="nav-link"><span class="nav-icon">🪄</span><span class="nav-text">超越物理内存：机制 (第21章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch22" class="nav-link"><span class="nav-icon">🎯</span><span class="nav-text">超越物理内存：策略 (第22章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch23" class="nav-link"><span class="nav-icon">🏛️</span><span class="nav-text">VAX/VMS 虚拟内存系统 (第23章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch24" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">内存虚拟化总结对话 (第24章)</span></a>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-level-0 has-children" data-tag="part2">
+<div class="nav-row">
+  <span class="nav-toggle" data-target="node-part2-sub" aria-expanded="false">▸</span>
+  <a href="#node-part2" class="nav-link"><span class="nav-icon">🔀</span><span class="nav-text">第2部分 并发</span></a>
+</div>
+<ul class="nav-sub" id="node-part2-sub">
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch25" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">关于并发的对话 (第25章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch26" class="nav-link"><span class="nav-icon">🧵</span><span class="nav-text">并发：介绍 (第26章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch27" class="nav-link"><span class="nav-icon">🛠️</span><span class="nav-text">插叙：线程 API (第27章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch28" class="nav-link"><span class="nav-icon">🔒</span><span class="nav-text">锁 (第28章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch29" class="nav-link"><span class="nav-icon">🗂️</span><span class="nav-text">基于锁的并发数据结构 (第29章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch30" class="nav-link"><span class="nav-icon">🚦</span><span class="nav-text">条件变量 (第30章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch31" class="nav-link"><span class="nav-icon">🚥</span><span class="nav-text">信号量 (第31章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch32" class="nav-link"><span class="nav-icon">⚠️</span><span class="nav-text">常见并发问题 (第32章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch33" class="nav-link"><span class="nav-icon">📨</span><span class="nav-text">基于事件的并发 (进阶) (第33章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch34" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">并发的总结对话 (第34章)</span></a>
+</div>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-level-0 has-children" data-tag="part3">
+<div class="nav-row">
+  <span class="nav-toggle" data-target="node-part3-sub" aria-expanded="false">▸</span>
+  <a href="#node-part3" class="nav-link"><span class="nav-icon">💽</span><span class="nav-text">第3部分 持久性</span></a>
+</div>
+<ul class="nav-sub" id="node-part3-sub">
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch35" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">关于持久性的对话 (第35章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1 has-children">
+<div class="nav-row">
+  <span class="nav-toggle" data-target="node-io-disk-sub" aria-expanded="false">▸</span>
+  <a href="#node-io-disk" class="nav-link"><span class="nav-icon">🛢️</span><span class="nav-text">I/O 与磁盘 (第36-38章)</span></a>
+</div>
+<ul class="nav-sub" id="node-io-disk-sub">
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch36" class="nav-link"><span class="nav-icon">🔌</span><span class="nav-text">I/O 设备 (第36章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch37" class="nav-link"><span class="nav-icon">🥏</span><span class="nav-text">磁盘驱动器 (第37章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch38" class="nav-link"><span class="nav-icon">🛡️</span><span class="nav-text">廉价冗余磁盘阵列 (RAID) (第38章)</span></a>
+</div>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-level-1 has-children">
+<div class="nav-row">
+  <span class="nav-toggle" data-target="node-fs-sub" aria-expanded="false">▸</span>
+  <a href="#node-fs" class="nav-link"><span class="nav-icon">📁</span><span class="nav-text">文件系统 (第39-45章)</span></a>
+</div>
+<ul class="nav-sub" id="node-fs-sub">
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch39" class="nav-link"><span class="nav-icon">🛠️</span><span class="nav-text">插叙：文件和目录 (第39章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch40" class="nav-link"><span class="nav-icon">🏗️</span><span class="nav-text">文件系统实现 (第40章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch41" class="nav-link"><span class="nav-icon">🌀</span><span class="nav-text">局部性和快速文件系统 (第41章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch42" class="nav-link"><span class="nav-icon">🔧</span><span class="nav-text">崩溃一致性：FSCK 和日志 (第42章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch43" class="nav-link"><span class="nav-icon">📜</span><span class="nav-text">日志结构文件系统 (第43章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch44" class="nav-link"><span class="nav-icon">🛡️</span><span class="nav-text">数据完整性和保护 (第44章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch45" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">关于持久的总结对话 (第45章)</span></a>
+</div>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-level-1 has-children">
+<div class="nav-row">
+  <span class="nav-toggle" data-target="node-dist-sub" aria-expanded="false">▸</span>
+  <a href="#node-dist" class="nav-link"><span class="nav-icon">🌐</span><span class="nav-text">分布式系统 (第46-50章)</span></a>
+</div>
+<ul class="nav-sub" id="node-dist-sub">
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch46" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">关于分布式的对话 (第46章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch47" class="nav-link"><span class="nav-icon">🛰️</span><span class="nav-text">分布式系统 (第47章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch48" class="nav-link"><span class="nav-icon">🗄️</span><span class="nav-text">Sun 的网络文件系统 (NFS) (第48章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch49" class="nav-link"><span class="nav-icon">📡</span><span class="nav-text">Andrew 文件系统 (AFS) (第49章)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-2">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-ch50" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">关于分布式的总结对话 (第50章)</span></a>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-level-0 has-children" data-tag="appendix">
+<div class="nav-row">
+  <span class="nav-toggle" data-target="node-appendix-sub" aria-expanded="false">▸</span>
+  <a href="#node-appendix" class="nav-link"><span class="nav-icon">📎</span><span class="nav-text">附录</span></a>
+</div>
+<ul class="nav-sub" id="node-appendix-sub">
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-appA" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">关于虚拟机监视器的对话 (附录A)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-appB" class="nav-link"><span class="nav-icon">🖳</span><span class="nav-text">虚拟机监视器 (附录B)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-appC" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">关于监视器的对话 (附录C)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-appD" class="nav-link"><span class="nav-icon">💬</span><span class="nav-text">关于实验室的对话 (附录D)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-appE" class="nav-link"><span class="nav-icon">📝</span><span class="nav-text">实验室：指南 (附录E)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-appF" class="nav-link"><span class="nav-icon">🔨</span><span class="nav-text">实验室：系统项目 (附录F)</span></a>
+</div>
+</li>
+<li class="nav-item nav-level-1">
+<div class="nav-row">
+  <span class="nav-toggle no-children">·</span>
+  <a href="#node-appG" class="nav-link"><span class="nav-icon">🧪</span><span class="nav-text">实验室：xv6 项目 (附录G)</span></a>
+</div>
+</li>
+</ul>
+</li>
+    </ul>
+  </aside>
+  <main class="main">
+    <header class="main-header">
+      <h1><span class="node-icon">💻</span> 操作系统导论 (OSTEP) 知识脑图</h1>
+      <p class="subtitle">雷姆兹·H.阿帕希杜塞尔 &amp; 安德莉亚·C.阿帕希杜塞尔 著</p>
+    </header>
+    <div id="content">
+<section class="mind-node level-0" id="node-preface">
+<h2 class="node-title"><span class="node-icon">📖</span>前言部分</h2>
+<div class="node-children">
+<section class="mind-node level-1" id="node-ch1">
+<h3 class="node-title"><span class="node-icon">💬</span>关于本书的对话 (第1章)</h3>
+<p class="node-summary">介绍本书的三部分：虚拟化、并发、持久性；本书的定位——以对话形式展开的操作系统教材。</p>
+<ul class="highlights">
+<li>本书结构：虚拟化、并发、持久性</li>
+<li>以对话/关键问题驱动的方式组织</li>
+<li>强调动手实验与 xv6 系统项目</li>
+</ul>
+</section>
+<section class="mind-node level-1" id="node-ch2">
+<h3 class="node-title"><span class="node-icon">🖥️</span>操作系统介绍 (第2章)</h3>
+<p class="node-summary">从冯·诺依曼模型出发，介绍 OS 的核心职责：把资源虚拟化，让用户能方便地运行程序。</p>
+<ul class="highlights">
+<li>2.1 虚拟化 CPU：时分共享制造多 CPU 假象</li>
+<li>2.2 虚拟化内存：进程拥有独立地址空间</li>
+<li>2.3 并发：多线程同时访问共享资源</li>
+<li>2.4 持久性：将数据可靠保存到磁盘</li>
+<li>2.5 设计目标：抽象、隔离、性能/公平</li>
+<li>2.6 简单历史：早期 OS 到现代 OS</li>
+</ul>
+</section>
+</div>
+</section>
+<section class="mind-node level-0" id="node-part1">
+<h2 class="node-title"><span class="node-icon">🧠</span>第1部分 虚拟化</h2>
+<p class="node-summary">OS 通过时分/空分共享，将一个物理 CPU 虚拟为多个虚拟 CPU，将一个物理内存虚拟为多个独立地址空间。本部分 22 章，先讲 CPU 虚拟化（第 3-11 章），再讲内存虚拟化（第 12-24 章）。</p>
+<ul class="highlights">
+<li>CPU 虚拟化关键问题：受限直接执行 + 调度</li>
+<li>内存虚拟化关键问题：高效地址转换 + 替换策略</li>
+<li>机制与策略分离是 OS 设计的核心范式</li>
+</ul>
+<div class="node-children">
+<section class="mind-node level-1" id="node-ch3">
+<h3 class="node-title"><span class="node-icon">💬</span>关于虚拟化的对话 (第3章)</h3>
+<p class="node-summary">用对话引出：为什么需要虚拟化？CPU 和内存如何被虚拟化？</p>
+</section>
+<section class="mind-node level-1" id="node-cpu-virt">
+<h3 class="node-title"><span class="node-icon">⚙️</span>CPU 虚拟化 (第4-11章)</h3>
+<p class="node-summary">把一个 CPU 变成无限多个 CPU 的假象，包含进程抽象、API、机制、调度策略。</p>
+<div class="node-children">
+<section class="mind-node level-2" id="node-ch4">
+<h4 class="node-title"><span class="node-icon">🔷</span>抽象：进程 (第4章)</h4>
+<p class="node-summary">进程=运行中的程序。机器状态=内存+寄存器(PC/SP/FP)+打开的文件。</p>
+<ul class="highlights">
+<li>4.1 进程概念：地址空间、寄存器、I/O 信息</li>
+<li>4.2 进程 API：创建、销毁、等待、控制、状态</li>
+<li>4.3 进程创建：加载代码与静态数据 → 分配栈/堆 → 启动执行</li>
+<li>4.4 进程状态：运行、就绪、阻塞</li>
+<li>4.5 数据结构：PCB/进程列表等</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch5">
+<h4 class="node-title"><span class="node-icon">🛠️</span>插叙：进程 API (第5章)</h4>
+<p class="node-summary">UNIX 进程 API：fork() 复制自身，exec() 替换映像，wait() 等待子进程结束。</p>
+<ul class="highlights">
+<li>5.1 fork()：调用一次返回两次（父子进程）</li>
+<li>5.2 wait()/waitpid()：父等待子结束并回收</li>
+<li>5.3 exec()族：在当前进程加载运行新程序</li>
+<li>5.4 为什么要这样设计 API：分离创建与执行</li>
+<li>5.5 其他 API：kill、nice、getpid 等</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch6">
+<h4 class="node-title"><span class="node-icon">🚧</span>机制：受限直接执行 (第6章)</h4>
+<p class="node-summary">CPU 虚拟化的底层机制：用户态高效执行+受控切换到内核，需要硬件特权级+陷入/系统调用+中断。</p>
+<ul class="highlights">
+<li>6.1 基本技巧：直接执行 + 用户/内核模式</li>
+<li>6.2 受限操作：通过 syscall/trap 陷入内核</li>
+<li>6.3 进程间切换：协作(系统调用 yield) vs 非协作(时钟中断)</li>
+<li>6.4 担心并发：中断与锁保护 OS 数据结构</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch7">
+<h4 class="node-title"><span class="node-icon">📊</span>进程调度：介绍 (第7章)</h4>
+<p class="node-summary">调度基本问题：周转时间、响应时间、吞吐量。基础算法：FIFO、SJF、STCF、RR。</p>
+<ul class="highlights">
+<li>7.1 工作负载假设：相同时间/同时到达/只 CPU/已知时长</li>
+<li>7.2 调度指标：周转时间、响应时间</li>
+<li>7.3 FIFO（先来先服务）：护航效应</li>
+<li>7.4 SJF（最短任务优先）</li>
+<li>7.5 STCF（最短完成时间优先）：抢占式 SJF</li>
+<li>7.6 响应时间：交互系统需要</li>
+<li>7.7 RR（轮转）：时间片轮转</li>
+<li>7.8 结合 I/O：将 I/O 期间作为阻塞让出 CPU</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch8">
+<h4 class="node-title"><span class="node-icon">📚</span>调度：多级反馈队列 (第8章)</h4>
+<p class="node-summary">MLFQ 通过观察进程行为动态调整优先级；学习短任务、惩罚长任务。</p>
+<ul class="highlights">
+<li>8.1 MLFQ 基本规则：多队列+优先级+时间片</li>
+<li>8.2 尝试1：工作进入高优先级，用完时间片降级</li>
+<li>8.3 尝试2：周期性地提升全部任务的优先级（避免饥饿）</li>
+<li>8.4 尝试3：记录本队列总用时，跨队列按比例分配</li>
+<li>8.5 MLFQ 调优：参数众多，行为不易预测</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch9">
+<h4 class="node-title"><span class="node-icon">🎟️</span>调度：比例份额 (第9章)</h4>
+<p class="node-summary">比例份额调度：给每个进程一定份额，用彩票/步长算法分配 CPU。</p>
+<ul class="highlights">
+<li>9.1 彩票数表示份额</li>
+<li>9.2 彩票机制：随机选一张彩票</li>
+<li>9.3 实现：彩票总数、随机数</li>
+<li>9.5 如何分配彩票：用户/管理员按重要性</li>
+<li>9.6 步长调度：确定性比例份额</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch10">
+<h4 class="node-title"><span class="node-icon">🔱</span>多处理器调度 (高级) (第10章)</h4>
+<p class="node-summary">多 CPU 下需要解决：负载均衡、缓存亲和度、任务跨 CPU 迁移开销。</p>
+<ul class="highlights">
+<li>10.1 多处理器架构：SMP、缓存一致性、NUMA</li>
+<li>10.2 同步问题：队列本身需加锁</li>
+<li>10.3 缓存亲和度：尽量把任务留在同一 CPU</li>
+<li>10.4 单队列调度：简单但可扩展性差</li>
+<li>10.5 多队列调度：可扩展但需负载均衡</li>
+<li>10.6 Linux 多处理器调度：BFS/O(1)/CFS</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch11">
+<h4 class="node-title"><span class="node-icon">💬</span>CPU 虚拟化总结对话 (第11章)</h4>
+<p class="node-summary">回顾 CPU 虚拟化的机制（受限直接执行）与策略（FIFO/SJF/RR/MLFQ/比例份额）。</p>
+</section>
+</div>
+</section>
+<section class="mind-node level-1" id="node-mem-virt">
+<h3 class="node-title"><span class="node-icon">💾</span>内存虚拟化 (第12-24章)</h3>
+<p class="node-summary">让每个进程看到自己独立的、私有的巨大地址空间。机制：分段/分页；策略：LRU/近似 LRU。</p>
+<div class="node-children">
+<section class="mind-node level-2" id="node-ch12">
+<h4 class="node-title"><span class="node-icon">💬</span>关于内存虚拟化的对话 (第12章)</h4>
+<p class="node-summary">为什么需要内存虚拟化？每个进程需要自己的地址空间，OS 实现隔离。</p>
+</section>
+<section class="mind-node level-2" id="node-ch13">
+<h4 class="node-title"><span class="node-icon">🌐</span>抽象：地址空间 (第13章)</h4>
+<p class="node-summary">地址空间=程序看到的内存视图。早期系统无抽象 → 多道程序/时分共享 → 现代地址空间。</p>
+<ul class="highlights">
+<li>13.1 早期系统：物理地址直接使用</li>
+<li>13.2 多道程序与时分共享：交换(swap)</li>
+<li>13.3 地址空间：代码/堆/栈三段</li>
+<li>13.4 目标：透明、高效、保护</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch14">
+<h4 class="node-title"><span class="node-icon">🛠️</span>插叙：内存操作 API (第14章)</h4>
+<p class="node-summary">malloc()/free() 常见错误：忘记分配、未初始化、忘记释放、多次释放、错误释放。</p>
+<ul class="highlights">
+<li>14.1 内存类型：栈/堆</li>
+<li>14.2 malloc()：分配字节数，返回 void*</li>
+<li>14.3 free()：归还内存</li>
+<li>14.4 常见错误：内存泄漏、悬挂指针、双重释放</li>
+<li>14.5 底层支持：brk/sbrk、mmap/munmap</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch15">
+<h4 class="node-title"><span class="node-icon">🔄</span>机制：地址转换 (第15章)</h4>
+<p class="node-summary">基于硬件的动态重定位：基址(base)+界限(bounds)寄存器实现地址转换；OS 负责设置与异常处理。</p>
+<ul class="highlights">
+<li>15.1 假设：地址空间连续、地址空间小</li>
+<li>15.2 例子：物理内存 16KB，每个进程 4KB</li>
+<li>15.3 动态重定位 = 基址+界限</li>
+<li>15.4 硬件支持：特权指令、异常</li>
+<li>15.5 OS 职责：上下文切换时保存/恢复基址界限</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch16">
+<h4 class="node-title"><span class="node-icon">🧩</span>分段 (第16章)</h4>
+<p class="node-summary">把地址空间分成代码/堆/栈等段，每段独立基址/界限；解决内部碎片、栈独立、共享。</p>
+<ul class="highlights">
+<li>16.1 段=基址+界限，逻辑地址=(段号,偏移)</li>
+<li>16.2 引用哪个段：显式/隐式</li>
+<li>16.3 共享：只读代码段可共享</li>
+<li>16.4 细粒度 vs 粗粒度分段</li>
+<li>16.5 操作系统支持：段表、共享、空洞</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch17">
+<h4 class="node-title"><span class="node-icon">📦</span>空闲空间管理 (第17章)</h4>
+<p class="node-summary">物理内存的空闲空间管理：分割/合并/空闲链表。最长/最先/最佳适配等策略。</p>
+<ul class="highlights">
+<li>17.1 假设：变长请求</li>
+<li>17.2 底层机制：分割与合并</li>
+<li>17.3 基本策略：最先适配、最佳适配、最差适配、下次适配</li>
+<li>17.4 其他方式：伙伴系统、slab</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch18">
+<h4 class="node-title"><span class="node-icon">📄</span>分页：介绍 (第18章)</h4>
+<p class="node-summary">分页把地址空间切成固定大小页，把物理内存切成等大页帧。页表记录虚拟→物理映射。</p>
+<ul class="highlights">
+<li>18.1 简单例子：64 字节地址空间/16 字节页</li>
+<li>18.2 页表位置：进程独享，存在物理内存中</li>
+<li>18.3 页表内容：VPN → PFN 映射 + 有效位/保护位/存在位/脏位/访问位</li>
+<li>18.4 分页开销：每次访存两次（页表+数据）</li>
+<li>18.5 内存追踪：实际使用页面分析</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch19">
+<h4 class="node-title"><span class="node-icon">⚡</span>分页：快速地址转换 (TLB) (第19章)</h4>
+<p class="node-summary">TLB(快表)硬件缓存页表项，加速地址转换；上下文切换需冲刷 TLB 或加 ASID。</p>
+<ul class="highlights">
+<li>19.1 TLB 基本算法：未命中→查页表→更新 TLB</li>
+<li>19.2 数组访问：时间/空间局部性</li>
+<li>19.3 谁处理 TLB 未命中：硬件(传统 CISC) vs 软件(RISC)</li>
+<li>19.5 上下文切换：冲刷或 ASID 区分</li>
+<li>19.6 替换策略：LRU/随机</li>
+<li>19.7 实际系统的 TLB 项：MIPS/Intel 等</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch20">
+<h4 class="node-title"><span class="node-icon">📏</span>分页：较小的表 (第20章)</h4>
+<p class="node-summary">解决页表过大的问题：更大的页、混合分段+分页、多级页表、反向页表。</p>
+<ul class="highlights">
+<li>20.1 简单方案：更大页 → 内部碎片</li>
+<li>20.2 混合：分段+分页，每段一张页表</li>
+<li>20.3 多级页表：按需分配页表页，时间换空间</li>
+<li>20.4 反向页表：物理帧反查虚拟页，大地址空间友好</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch21">
+<h4 class="node-title"><span class="node-icon">🪄</span>超越物理内存：机制 (第21章)</h4>
+<p class="node-summary">把部分不活跃页换出到交换磁盘，必要时再换入。存在位、页错误、交换流程。</p>
+<ul class="highlights">
+<li>21.1 交换空间：磁盘上为换页保留的区域</li>
+<li>21.2 存在位(P 位)：标记页是否在内存</li>
+<li>21.3 页错误：非法访问 vs 合法但未驻留</li>
+<li>21.4 内存满时：换出页选择</li>
+<li>21.5 页错误处理流程：陷入内核→查页表→I/O→更新页表→重试</li>
+<li>21.6 何时真正换出：高/低水位线机制</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch22">
+<h4 class="node-title"><span class="node-icon">🎯</span>超越物理内存：策略 (第22章)</h4>
+<p class="node-summary">缓存管理：内存作为磁盘页的高速缓存。替换策略：最优、FIFO、随机、LRU、近似 LRU(时钟)。</p>
+<ul class="highlights">
+<li>22.1 缓存管理：90/10 规则、时间/空间局部性</li>
+<li>22.2 最优替换(MIN)：理论基线</li>
+<li>22.3 FIFO：实现简单，命中率低</li>
+<li>22.4 随机：出乎意料的好</li>
+<li>22.5 LRU：性能好但实现难</li>
+<li>22.8 近似 LRU：使用位/时钟算法</li>
+<li>22.9 脏页：优先写回</li>
+<li>22.10 其他策略：LFU/MFU/工作集</li>
+<li>22.11 抖动(thrashing)：内存不足时性能崩溃</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch23">
+<h4 class="node-title"><span class="node-icon">🏛️</span>VAX/VMS 虚拟内存系统 (第23章)</h4>
+<p class="node-summary">案例研究：VAX/VMS 的段页式、用户/内核两段、驻留集管理、混合页替换策略。</p>
+<ul class="highlights">
+<li>23.1 背景：VAX 架构</li>
+<li>23.2 内存管理硬件：两层页表(P0/P1)</li>
+<li>23.3 真实地址空间：用户/系统两段</li>
+<li>23.4 页替换：驻留集上限+全局替换+按进程公平</li>
+<li>23.5 其它技巧：写时复制 COW、需求零页、需求调页</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch24">
+<h4 class="node-title"><span class="node-icon">💬</span>内存虚拟化总结对话 (第24章)</h4>
+<p class="node-summary">回顾：分段/分页/页表/交换/替换策略。关键点：机制+策略；硬件/OS 协作。</p>
+</section>
+</div>
+</section>
+</div>
+</section>
+<section class="mind-node level-0" id="node-part2">
+<h2 class="node-title"><span class="node-icon">🔀</span>第2部分 并发</h2>
+<p class="node-summary">线程让程序同时做多件事，但共享地址空间带来竞态。本部分 10 章从基础原语到常见并发缺陷。</p>
+<ul class="highlights">
+<li>核心问题：原子性 + 顺序</li>
+<li>解决方案：锁 + 条件变量 + 信号量</li>
+<li>关键教训：避免睡眠持锁</li>
+</ul>
+<div class="node-children">
+<section class="mind-node level-1" id="node-ch25">
+<h3 class="node-title"><span class="node-icon">💬</span>关于并发的对话 (第25章)</h3>
+<p class="node-summary">为什么需要并发？线程 vs 进程；共享地址空间带来什么问题？</p>
+</section>
+<section class="mind-node level-1" id="node-ch26">
+<h3 class="node-title"><span class="node-icon">🧵</span>并发：介绍 (第26章)</h3>
+<p class="node-summary">线程=共享地址空间的执行流；共享数据 → 不确定性 → 竞态条件。</p>
+<ul class="highlights">
+<li>26.1 线程创建示例</li>
+<li>26.2 共享数据导致不确定结果</li>
+<li>26.3 核心问题：不可控的调度</li>
+<li>26.4 原子性愿望：单步完成</li>
+<li>26.5 等待另一个线程</li>
+</ul>
+</section>
+<section class="mind-node level-1" id="node-ch27">
+<h3 class="node-title"><span class="node-icon">🛠️</span>插叙：线程 API (第27章)</h3>
+<p class="node-summary">POSIX 线程 API：pthread_create、pthread_join、互斥量、条件变量。</p>
+<ul class="highlights">
+<li>27.1 pthread_create：创建线程</li>
+<li>27.2 pthread_join：等待线程结束</li>
+<li>27.3 互斥量：lock/unlock</li>
+<li>27.4 条件变量：wait/signal</li>
+</ul>
+</section>
+<section class="mind-node level-1" id="node-ch28">
+<h3 class="node-title"><span class="node-icon">🔒</span>锁 (第28章)</h3>
+<p class="node-summary">锁提供互斥访问。需要硬件原子指令(test-and-set, CAS, fetch-and-add)和避免自旋浪费(排队)。</p>
+<ul class="highlights">
+<li>28.1 锁的基本思想</li>
+<li>28.2 Pthread 互斥量</li>
+<li>28.3 评价锁：互斥、公平、性能</li>
+<li>28.5 控制中断：单 CPU 简单但不可靠</li>
+<li>28.6 测试并设置(test-and-set)</li>
+<li>28.7 自旋锁实现与评价</li>
+<li>28.9 比较并交换(CAS)：构建无锁结构</li>
+<li>28.10 链接加载/条件存储(LL/SC)：MIPS/ARM</li>
+<li>28.11 获取并增加(fetch-and-add)：票号锁</li>
+<li>28.13 自旋过多：让出(yield)</li>
+<li>28.14 使用队列：避免自旋与饥饿</li>
+<li>28.16 两阶段锁：先自旋再睡眠</li>
+</ul>
+</section>
+<section class="mind-node level-1" id="node-ch29">
+<h3 class="node-title"><span class="node-icon">🗂️</span>基于锁的并发数据结构 (第29章)</h3>
+<p class="node-summary">加锁让链表、队列、哈希表、计数器支持并发访问。</p>
+<ul class="highlights">
+<li>29.1 并发计数器：懒惰扩展、惰性同步</li>
+<li>29.2 并发链表：逐节点加锁或全局锁</li>
+<li>29.3 并发队列：入队/出队加锁</li>
+<li>29.4 并发散列表：每桶一把锁</li>
+</ul>
+</section>
+<section class="mind-node level-1" id="node-ch30">
+<h3 class="node-title"><span class="node-icon">🚦</span>条件变量 (第30章)</h3>
+<p class="node-summary">条件变量让线程等待某条件成立；必须与互斥量配合使用，且 wait() 是原子地释放锁并睡眠。</p>
+<ul class="highlights">
+<li>30.1 定义与 wait/signal 语义</li>
+<li>30.2 生产者/消费者(有界缓冲区)</li>
+<li>30.3 覆盖条件：信号丢失问题</li>
+</ul>
+</section>
+<section class="mind-node level-1" id="node-ch31">
+<h3 class="node-title"><span class="node-icon">🚥</span>信号量 (第31章)</h3>
+<p class="node-summary">信号量=带计数器的同步原语；二值信号量当锁用，计数信号量当资源计数用。</p>
+<ul class="highlights">
+<li>31.1 定义：P()/wait() 减，V()/post() 加</li>
+<li>31.2 二值信号量(锁)</li>
+<li>31.3 用作条件变量</li>
+<li>31.4 生产者/消费者</li>
+<li>31.5 读者—写者锁</li>
+<li>31.6 哲学家就餐问题：死锁经典案例</li>
+</ul>
+</section>
+<section class="mind-node level-1" id="node-ch32">
+<h3 class="node-title"><span class="node-icon">⚠️</span>常见并发问题 (第32章)</h3>
+<p class="node-summary">非死锁缺陷(违反原子性/顺序)和死锁缺陷(互斥/占有并等待/不可抢占/循环等待)。</p>
+<ul class="highlights">
+<li>32.1 缺陷类型：非死锁 vs 死锁</li>
+<li>32.2 非死锁：原子性违反、顺序违反</li>
+<li>32.3 死锁：四大条件、检测/避免/预防</li>
+<li>Dijkstra 银行家算法(避免)</li>
+</ul>
+</section>
+<section class="mind-node level-1" id="node-ch33">
+<h3 class="node-title"><span class="node-icon">📨</span>基于事件的并发 (进阶) (第33章)</h3>
+<p class="node-summary">用事件循环+select/poll/epoll 实现单线程并发，避免锁，但阻塞调用和状态管理麻烦。</p>
+<ul class="highlights">
+<li>33.1 事件循环</li>
+<li>33.2 select()/poll()/epoll</li>
+<li>33.4 无须锁</li>
+<li>33.5 阻塞调用问题</li>
+<li>33.6 异步 I/O 解决方案</li>
+<li>33.7 状态管理复杂</li>
+</ul>
+</section>
+<section class="mind-node level-1" id="node-ch34">
+<h3 class="node-title"><span class="node-icon">💬</span>并发的总结对话 (第34章)</h3>
+<p class="node-summary">回顾：原子性/顺序、锁/CV/信号量、避免睡眠持锁。</p>
+</section>
+</div>
+</section>
+<section class="mind-node level-0" id="node-part3">
+<h2 class="node-title"><span class="node-icon">💽</span>第3部分 持久性</h2>
+<p class="node-summary">数据如何在断电后依然存在？本部分 16 章讲 I/O、磁盘、RAID、文件系统、崩溃一致性与分布式文件系统。</p>
+<ul class="highlights">
+<li>硬件：磁盘/SSD 提供块设备接口</li>
+<li>软件：文件系统组织数据为文件/目录</li>
+<li>挑战：崩溃一致性与可扩展性</li>
+</ul>
+<div class="node-children">
+<section class="mind-node level-1" id="node-ch35">
+<h3 class="node-title"><span class="node-icon">💬</span>关于持久性的对话 (第35章)</h3>
+<p class="node-summary">为什么要持久性？内存易失，需要硬盘/SSD 永久保存。</p>
+</section>
+<section class="mind-node level-1" id="node-io-disk">
+<h3 class="node-title"><span class="node-icon">🛢️</span>I/O 与磁盘 (第36-38章)</h3>
+<p class="node-summary">I/O 设备、磁盘驱动器、RAID。理解硬件特性是设计 FS 的前提。</p>
+<div class="node-children">
+<section class="mind-node level-2" id="node-ch36">
+<h4 class="node-title"><span class="node-icon">🔌</span>I/O 设备 (第36章)</h4>
+<p class="node-summary">系统架构、总线、设备控制器、轮询/中断、DMA、设备驱动。</p>
+<ul class="highlights">
+<li>36.1 系统架构：CPU-内存-总线-设备</li>
+<li>36.2 标准设备：寄存器接口</li>
+<li>36.3 标准协议：状态/命令/数据</li>
+<li>36.4 中断减少 CPU 开销</li>
+<li>36.5 DMA 提升传输效率</li>
+<li>36.6 设备交互方法：轮询 vs 中断</li>
+<li>36.7 设备驱动程序：抽象设备 API</li>
+<li>36.8 案例：简单 IDE 磁盘驱动</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch37">
+<h4 class="node-title"><span class="node-icon">🥏</span>磁盘驱动器 (第37章)</h4>
+<p class="node-summary">磁盘几何结构、I/O 时间(寻道+旋转+传输)、磁盘调度算法。</p>
+<ul class="highlights">
+<li>37.1 接口：块设备</li>
+<li>37.2 几何：盘片/磁道/扇区/柱面</li>
+<li>37.3 简单磁盘驱动器</li>
+<li>37.4 I/O 时间：Tseek + Trotation + Ttransfer</li>
+<li>37.5 磁盘调度：SSTF/电梯(SCAN)/FSCAN/C-SCAN</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch38">
+<h4 class="node-title"><span class="node-icon">🛡️</span>廉价冗余磁盘阵列 (RAID) (第38章)</h4>
+<p class="node-summary">用多块廉价磁盘组合实现大容量、高性能、高可靠。</p>
+<ul class="highlights">
+<li>38.1 接口与内部：透明可替换多块盘</li>
+<li>38.2 故障模型</li>
+<li>38.3 评估指标：容量、可靠性、性能</li>
+<li>38.4 RAID 0：条带化，无冗余</li>
+<li>38.5 RAID 1：镜像，高可靠</li>
+<li>38.6 RAID 4：专用奇偶校验盘</li>
+<li>38.7 RAID 5：旋转奇偶校验</li>
+<li>38.8 各级 RAID 比较</li>
+<li>38.9 其他：RAID 6/DP/热备份</li>
+</ul>
+</section>
+</div>
+</section>
+<section class="mind-node level-1" id="node-fs">
+<h3 class="node-title"><span class="node-icon">📁</span>文件系统 (第39-45章)</h3>
+<p class="node-summary">文件系统把块设备组织成文件/目录/元数据；应对崩溃一致性与性能挑战。</p>
+<div class="node-children">
+<section class="mind-node level-2" id="node-ch39">
+<h4 class="node-title"><span class="node-icon">🛠️</span>插叙：文件和目录 (第39章)</h4>
+<p class="node-summary">文件系统用户 API：open/close/read/write/seek/fsync、stat、link、unlink、rename、mkdir、rmdir、readdir。</p>
+<ul class="highlights">
+<li>39.2 文件系统接口：文件描述符、低级系统调用</li>
+<li>39.3 创建文件 creat()</li>
+<li>39.4 读写 read/write</li>
+<li>39.5 非顺序读写 lseek</li>
+<li>39.6 fsync() 强制刷盘</li>
+<li>39.7 重命名 rename()</li>
+<li>39.8 获取信息 stat/fstat</li>
+<li>39.9 删除 unlink</li>
+<li>39.10 创建目录 mkdir</li>
+<li>39.11 读取目录 opendir/readdir</li>
+<li>39.12 删除目录 rmdir</li>
+<li>39.13 硬链接 link：多个目录项指向同一 inode</li>
+<li>39.14 符号链接 symlink：路径名引用</li>
+<li>39.15 创建并挂载文件系统</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch40">
+<h4 class="node-title"><span class="node-icon">🏗️</span>文件系统实现 (第40章)</h4>
+<p class="node-summary">VSFS 简单文件系统：超级块/位图/inode/数据区；多级索引；目录实现。</p>
+<ul class="highlights">
+<li>40.1 整体组织：超级块+多个区域</li>
+<li>40.3 inode：元数据(类型/大小/块号/权限/时间戳)</li>
+<li>40.4 目录：文件名→inode 映射</li>
+<li>40.5 空闲空间管理：位图</li>
+<li>40.6 读/写访问路径</li>
+<li>40.7 缓存与缓冲：延迟写</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch41">
+<h4 class="node-title"><span class="node-icon">🌀</span>局部性和快速文件系统 (第41章)</h4>
+<p class="node-summary">FFS：基于磁盘物理布局，将相关数据放在同一柱面组，大文件分片、目录预分配。</p>
+<ul class="highlights">
+<li>41.1 老 FS 性能差：随机 I/O</li>
+<li>41.2 FFS 思路：磁盘感知</li>
+<li>41.3 柱面组：减少寻道</li>
+<li>41.4 文件/目录分配策略</li>
+<li>41.5 测量文件局部性</li>
+<li>41.6 大文件例外</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch42">
+<h4 class="node-title"><span class="node-icon">🔧</span>崩溃一致性：FSCK 和日志 (第42章)</h4>
+<p class="node-summary">崩溃导致文件系统不一致。两种思路：FSCK 事后检查/修复；日志(预写日志) 事前保证一致。</p>
+<ul class="highlights">
+<li>42.1 详细崩溃场景示例</li>
+<li>42.2 FSCK：扫描元数据并修复</li>
+<li>42.3 日志(预写日志/WAL)：先写日志再写数据</li>
+<li>42.4 其他方法：写时复制 COW(影子分页)、soft updates</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch43">
+<h4 class="node-title"><span class="node-icon">📜</span>日志结构文件系统 (第43章)</h4>
+<p class="node-summary">LFS 把所有更新作为段顺序写入磁盘；用 inode-map 找 inode；后台压缩与垃圾回收。</p>
+<ul class="highlights">
+<li>43.1 按顺序写入</li>
+<li>43.2 段(segment)写入：缓冲+顺序写</li>
+<li>43.4 问题：inode 位置不固定</li>
+<li>43.5 inode-map：解决查找</li>
+<li>43.6 检查点(checkpoint)</li>
+<li>43.9 垃圾回收：标记-清理</li>
+<li>43.12 崩溃恢复：重放日志</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch44">
+<h4 class="node-title"><span class="node-icon">🛡️</span>数据完整性和保护 (第44章)</h4>
+<p class="node-summary">校验和(checksum)检测讹误；处理潜在扇区错误、错误写入、丢失写入；定期擦净(scrubbing)。</p>
+<ul class="highlights">
+<li>44.1 磁盘故障模式</li>
+<li>44.2 潜在扇区错误：重映射</li>
+<li>44.3 校验和：检测讹误</li>
+<li>44.4 校验和位置/使用方法</li>
+<li>44.5 错误写入：写后读验证</li>
+<li>44.6 丢失写入：版本号/写前读</li>
+<li>44.7 擦净：周期性扫描</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch45">
+<h4 class="node-title"><span class="node-icon">💬</span>关于持久的总结对话 (第45章)</h4>
+<p class="node-summary">回顾：硬件/文件系统/崩溃一致性/数据完整性。</p>
+</section>
+</div>
+</section>
+<section class="mind-node level-1" id="node-dist">
+<h3 class="node-title"><span class="node-icon">🌐</span>分布式系统 (第46-50章)</h3>
+<p class="node-summary">把多台机器连起来，提供单一系统映像；典型代表：NFS、AFS 等分布式文件系统。</p>
+<div class="node-children">
+<section class="mind-node level-2" id="node-ch46">
+<h4 class="node-title"><span class="node-icon">💬</span>关于分布式的对话 (第46章)</h4>
+<p class="node-summary">为什么要分布式？多机协同、容错、扩展。</p>
+</section>
+<section class="mind-node level-2" id="node-ch47">
+<h4 class="node-title"><span class="node-icon">🛰️</span>分布式系统 (第47章)</h4>
+<p class="node-summary">通信基础、不可靠层、可靠层(TCP)、通信抽象、远程过程调用(RPC)。</p>
+<ul class="highlights">
+<li>47.1 通信基础：消息/字节流</li>
+<li>47.2 不可靠层：UDP/丢包重排序</li>
+<li>47.3 可靠的通信层：TCP</li>
+<li>47.4 通信抽象：链接、消息、远程过程调用</li>
+<li>47.5 RPC：stub/marshalling/绑定/失败语义(至少一次/最多一次/正好一次)</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch48">
+<h4 class="node-title"><span class="node-icon">🗄️</span>Sun 的网络文件系统 (NFS) (第48章)</h4>
+<p class="node-summary">NFS 经典分布式文件系统：无状态服务器、幂等操作、客户端缓存与一致性。</p>
+<ul class="highlights">
+<li>48.1 基本分布式文件系统</li>
+<li>48.2 NFS 概览：客户端 VFS 重定向</li>
+<li>48.4 快速恢复：无状态服务器</li>
+<li>48.5 NFSv2 协议：文件句柄+操作</li>
+<li>48.7 幂等操作处理服务器故障</li>
+<li>48.8 客户端缓存</li>
+<li>48.9 缓存一致性问题</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch49">
+<h4 class="node-title"><span class="node-icon">📡</span>Andrew 文件系统 (AFS) (第49章)</h4>
+<p class="node-summary">AFS 改进 NFS 的可扩展性：整个文件缓存到本地、回调机制保证一致性。</p>
+<ul class="highlights">
+<li>49.1 AFSv1：全文件缓存</li>
+<li>49.2 v1 问题：路径名查找负载重</li>
+<li>49.3 改进协议：回调(callback)</li>
+<li>49.4 AFSv2：文件标识符 fid+会话</li>
+<li>49.5 缓存一致性：回调失效</li>
+<li>49.6 崩溃恢复：基于版本号的状态恢复</li>
+<li>49.7 扩展性：可承受上万客户端</li>
+</ul>
+</section>
+<section class="mind-node level-2" id="node-ch50">
+<h4 class="node-title"><span class="node-icon">💬</span>关于分布式的总结对话 (第50章)</h4>
+<p class="node-summary">回顾：RPC、NFS 无状态 vs AFS 有状态(回调)、一致性、性能权衡。</p>
+</section>
+</div>
+</section>
+</div>
+</section>
+<section class="mind-node level-0" id="node-appendix">
+<h2 class="node-title"><span class="node-icon">📎</span>附录</h2>
+<p class="node-summary">虚拟机监视器、监视器、实验指导与 xv6 项目。</p>
+<div class="node-children">
+<section class="mind-node level-1" id="node-appA">
+<h3 class="node-title"><span class="node-icon">💬</span>关于虚拟机监视器的对话 (附录A)</h3>
+<p class="node-summary">VMM 与 OS 的关系，硬件支持/软件支持两种实现方式。</p>
+</section>
+<section class="mind-node level-1" id="node-appB">
+<h3 class="node-title"><span class="node-icon">🖳</span>虚拟机监视器 (附录B)</h3>
+<p class="node-summary">VMM 类型：Type-1 裸金属、Type-2 宿主内；提供 CPU/内存/设备虚拟化。</p>
+<ul class="highlights">
+<li>B.1 VMM 概述</li>
+<li>B.2 关键技术：影子页表/嵌套分页、设备透传/半虚拟化</li>
+<li>B.3 与容器/进程虚拟化的区别</li>
+</ul>
+</section>
+<section class="mind-node level-1" id="node-appC">
+<h3 class="node-title"><span class="node-icon">💬</span>关于监视器的对话 (附录C)</h3>
+<p class="node-summary">monitor 同步原语：高级条件同步，比 CV+锁更易用。</p>
+</section>
+<section class="mind-node level-1" id="node-appD">
+<h3 class="node-title"><span class="node-icon">💬</span>关于实验室的对话 (附录D)</h3>
+<p class="node-summary">实验：课程项目思路、难度递进。</p>
+</section>
+<section class="mind-node level-1" id="node-appE">
+<h3 class="node-title"><span class="node-icon">📝</span>实验室：指南 (附录E)</h3>
+<p class="node-summary">如何开始实验项目：Linux 系统调用、xv6 等。</p>
+</section>
+<section class="mind-node level-1" id="node-appF">
+<h3 class="node-title"><span class="node-icon">🔨</span>实验室：系统项目 (附录F)</h3>
+<p class="node-summary">基于 Linux 的系统级项目：系统调用、内核模块、文件系统、调度器等。</p>
+</section>
+<section class="mind-node level-1" id="node-appG">
+<h3 class="node-title"><span class="node-icon">🧪</span>实验室：xv6 项目 (附录G)</h3>
+<p class="node-summary">基于 MIT xv6 的项目：修改/扩展 OS 各子系统。</p>
+</section>
+</div>
+</section>
+    </div>
+    <footer style="margin-top:40px; padding-top:20px; border-top:1px solid var(--color-border); color:var(--color-text-muted); font-size:13px; text-align:center;">
+      <p>本书结构按目录整理 · 50 章 + 7 个附录 · 涵盖虚拟化 / 并发 / 持久性三大主题</p>
+    </footer>
+  </main>
+</div>
+<script>
+(function() {
+  // Toggle on click
+  const toggles = document.querySelectorAll('.nav-toggle:not(.no-children)');
+  toggles.forEach(t => {
+    t.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const targetId = t.getAttribute('data-target');
+      const sub = document.getElementById(targetId);
+      if (!sub) return;
+      const isOpen = t.getAttribute('aria-expanded') === 'true';
+      t.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+      sub.classList.toggle('expanded');
+    });
+  });
+
+  // Click on row to toggle (except the link itself)
+  document.querySelectorAll('.nav-row').forEach(row => {
+    row.addEventListener('click', e => {
+      if (e.target.closest('a')) return;
+      const toggle = row.querySelector('.nav-toggle:not(.no-children)');
+      if (toggle) toggle.click();
+    });
+  });
+
+  // Expand all
+  document.getElementById('expandAll').addEventListener('click', () => {
+    document.querySelectorAll('.nav-sub').forEach(s => s.classList.add('expanded'));
+    document.querySelectorAll('.nav-toggle:not(.no-children)').forEach(t => t.setAttribute('aria-expanded', 'true'));
+  });
+  document.getElementById('collapseAll').addEventListener('click', () => {
+    document.querySelectorAll('.nav-sub').forEach(s => s.classList.remove('expanded'));
+    document.querySelectorAll('.nav-toggle:not(.no-children)').forEach(t => t.setAttribute('aria-expanded', 'false'));
+  });
+
+  // Active link highlight
+  const navLinks = document.querySelectorAll('.nav-link');
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      // close mobile sidebar
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('active');
+    });
+  });
+
+  // Scroll spy
+  const sections = document.querySelectorAll('section.mind-node');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        document.querySelectorAll('.nav-link').forEach(l => {
+          l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+        });
+        // Expand parent chain
+        let el = entry.target.parentElement;
+        while (el && el.id) {
+          if (el.classList.contains('nav-sub')) {
+            el.classList.add('expanded');
+            const toggle = document.querySelector(`.nav-toggle[data-target="${el.id}"]`);
+            if (toggle) toggle.setAttribute('aria-expanded', 'true');
+          }
+          el = el.parentElement;
+        }
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0.1 });
+  sections.forEach(s => observer.observe(s));
+
+  // Search
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    document.querySelectorAll('.nav-item').forEach(item => {
+      const link = item.querySelector('.nav-link');
+      if (!link) return;
+      const text = link.textContent.toLowerCase();
+      const show = !q || text.includes(q);
+      item.style.display = show ? '' : 'none';
+    });
+    // If searching, expand all
+    if (q) {
+      document.querySelectorAll('.nav-sub').forEach(s => s.classList.add('expanded'));
+      document.querySelectorAll('.nav-toggle:not(.no-children)').forEach(t => t.setAttribute('aria-expanded', 'true'));
+    }
+  });
+
+  // Mobile toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  menuToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+  });
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+  });
+})();
+</script>
+</body>
+</html>

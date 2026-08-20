@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>深入理解计算机系统 - 知识脑图</title>
+<style>
+:root {
+    color-scheme: light;
+    --color-bg: #f8fafc;
+    --color-bg-card: #ffffff;
+    --color-text: #1e293b;
+    --color-text-muted: #64748b;
+    --color-text-light: #94a3b8;
+    --color-border: #e2e8f0;
+    --color-border-strong: #cbd5e1;
+    --color-primary: #3b82f6;
+    --color-accent: #f59e0b;
+    --color-code-bg: #f1f5f9;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.04);
+    --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+    --radius: 8px;
+    --radius-lg: 12px;
+    --transition: 0.2s ease;
+    --sidebar-width: 320px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--color-text);
+    background: var(--color-bg);
+}
+
+/* Layout */
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-right: 1px solid var(--color-border);
+    overflow-y: auto;
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+    transition: transform var(--transition);
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 3px;
+}
+
+.nav-header {
+    padding: 20px 18px 14px;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    color: white;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.nav-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.nav-subtitle {
+    font-size: 12px;
+    opacity: 0.85;
+    margin-top: 4px;
+}
+
+.nav-search {
+    padding: 12px 14px;
+    background: var(--color-bg-card);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 13px;
+    background: var(--color-bg);
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.nav-list {
+    list-style: none;
+    padding: 8px 0;
+}
+
+.nav-part {
+    margin-bottom: 2px;
+}
+
+.nav-part-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    border-left: 3px solid transparent;
+    transition: background var(--transition), border-color var(--transition);
+}
+
+.nav-part-header:hover {
+    background: rgba(0,0,0,0.025);
+    border-left-color: var(--part-color);
+}
+
+.nav-toggle {
+    display: inline-block;
+    width: 14px;
+    margin-right: 8px;
+    font-size: 9px;
+    transition: transform var(--transition);
+    color: var(--color-text-muted);
+}
+
+.nav-part-header.expanded .nav-toggle {
+    transform: rotate(90deg);
+}
+
+.nav-part-name {
+    flex: 1;
+    color: var(--part-color);
+}
+
+.nav-chapter-count {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    font-weight: 400;
+    background: rgba(0,0,0,0.04);
+    padding: 2px 7px;
+    border-radius: 10px;
+}
+
+.nav-chapters {
+    list-style: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: rgba(0,0,0,0.015);
+}
+
+.nav-chapters.expanded {
+    max-height: 1000px;
+}
+
+.nav-chapter {
+    margin: 0;
+}
+
+.nav-chapter-link {
+    display: flex;
+    align-items: baseline;
+    padding: 8px 14px 8px 32px;
+    text-decoration: none;
+    color: var(--color-text);
+    font-size: 12.5px;
+    border-left: 3px solid transparent;
+    transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.nav-chapter-link:hover {
+    background: rgba(0,0,0,0.04);
+    border-left-color: var(--part-color);
+    color: var(--color-primary);
+}
+
+.nav-chapter-link.active {
+    background: rgba(59, 130, 246, 0.08);
+    border-left-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.nav-chapter-num {
+    color: var(--color-text-muted);
+    margin-right: 8px;
+    font-size: 11px;
+    min-width: 50px;
+    display: inline-block;
+}
+
+.nav-chapter-title {
+    flex: 1;
+}
+
+/* Main content */
+.main {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    padding: 32px 48px 60px;
+    max-width: 1100px;
+}
+
+/* Hero */
+.hero {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
+    color: white;
+    padding: 48px 40px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.hero h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+.hero-sub {
+    font-size: 16px;
+    opacity: 0.9;
+    margin-bottom: 4px;
+}
+
+.hero-author {
+    font-size: 13px;
+    opacity: 0.75;
+    margin-bottom: 28px;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    padding: 14px 22px;
+    border-radius: var(--radius);
+    text-align: center;
+    min-width: 80px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.stat-num {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.stat-label {
+    font-size: 12px;
+    opacity: 0.85;
+    margin-top: 2px;
+    display: block;
+}
+
+.hero-intro {
+    background: rgba(255,255,255,0.1);
+    padding: 16px 20px;
+    border-radius: var(--radius);
+    border-left: 3px solid rgba(255,255,255,0.5);
+}
+
+.hero-intro p {
+    font-size: 13.5px;
+    line-height: 1.65;
+    opacity: 0.95;
+    margin-bottom: 6px;
+}
+
+.hero-intro p:last-child {
+    margin-bottom: 0;
+}
+
+/* Mindmap Overview */
+.mindmap-overview {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+}
+
+.mindmap-overview h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.mindmap-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.mm-part {
+    border-left: 4px solid var(--node-color);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--node-color) 5%, transparent) 0%, transparent 100%);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 14px 18px;
+}
+
+.mm-part-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.mm-part-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--node-color);
+    margin-right: 10px;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--node-color) 25%, transparent);
+}
+
+.mm-part-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--node-color);
+}
+
+.mm-part-chapters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+    padding-left: 22px;
+}
+
+.mm-chapter-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+
+.mm-chapter-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--node-color);
+}
+
+.mm-chapter-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 14px 16px;
+}
+
+.mm-chapter-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--node-color);
+    margin-bottom: 6px;
+}
+
+.mm-chapter-summary {
+    font-size: 12.5px;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.mm-chapter-stats {
+    display: flex;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--color-text-light);
+}
+
+.mm-chapter-stats span {
+    background: color-mix(in srgb, var(--node-color) 8%, transparent);
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: var(--node-color);
+    font-weight: 500;
+}
+
+/* Part Divider */
+.part-divider {
+    display: flex;
+    align-items: center;
+    margin: 48px 0 24px;
+    gap: 16px;
+}
+
+.part-divider-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--node-color) 50%, transparent 100%);
+    opacity: 0.5;
+}
+
+.part-divider-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--node-color);
+    padding: 8px 18px;
+    background: var(--color-bg-card);
+    border: 2px solid var(--node-color);
+    border-radius: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Chapter */
+.chapter {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-lg);
+    padding: 32px 36px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+    border-top: 4px solid var(--node-color);
+    scroll-margin-top: 20px;
+}
+
+.chapter-header {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.chapter-tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    background: var(--node-color);
+    padding: 4px 12px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+.chapter-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 12px;
+    line-height: 1.3;
+}
+
+.chapter-summary {
+    font-size: 14px;
+    color: var(--color-text-muted);
+    line-height: 1.65;
+    background: color-mix(in srgb, var(--node-color) 4%, transparent);
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    border-left: 3px solid var(--node-color);
+}
+
+.chapter-section {
+    margin-bottom: 28px;
+}
+
+.chapter-section:last-child {
+    margin-bottom: 0;
+}
+
+.chapter-section h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Concept List */
+.concept-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+}
+
+.concept-item {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--node-color) 6%, white) 0%, white 100%);
+    border: 1px solid color-mix(in srgb, var(--node-color) 20%, transparent);
+    border-left: 3px solid var(--node-color);
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: var(--color-text);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.concept-item:hover {
+    transform: translateX(3px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Section */
+.section {
+    padding: 16px 0;
+    border-bottom: 1px dashed var(--color-border);
+    scroll-margin-top: 20px;
+}
+
+.section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.section-num {
+    font-size: 12px;
+    color: white;
+    background: var(--node-color);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    min-width: 44px;
+    text-align: center;
+}
+
+.section-content {
+    font-size: 14px;
+    color: var(--color-text);
+    line-height: 1.75;
+    padding-left: 14px;
+    border-left: 2px solid var(--color-border);
+    margin-left: 20px;
+}
+
+/* Back to top */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition), transform var(--transition);
+    z-index: 50;
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.back-to-top:hover {
+    transform: translateY(-3px);
+    background: #2563eb;
+}
+
+/* Mobile menu toggle */
+.mobile-toggle {
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    cursor: pointer;
+    font-size: 18px;
+    z-index: 200;
+    display: none;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .main {
+        margin-left: 0;
+        padding: 20px;
+    }
+    .mobile-toggle {
+        display: block;
+    }
+    .hero {
+        padding: 30px 24px;
+    }
+    .hero h1 {
+        font-size: 24px;
+    }
+    .chapter {
+        padding: 22px 20px;
+    }
+    .chapter-title {
+        font-size: 20px;
+    }
+    .mm-part-chapters {
+        grid-template-columns: 1fr;
+    }
+    .concept-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Print friendly */
+@media print {
+    .sidebar, .mobile-toggle, .back-to-top {
+        display: none;
+    }
+    .main {
+        margin-left: 0;
+        max-width: 100%;
+    }
+    .chapter {
+        page-break-inside: avoid;
+    }
+}
+</style>
+</head>
+<body>
+<div class="app">
+    <button class="mobile-toggle" id="mobileToggle" title="打开/关闭导航">☰</button>
+    <aside class="sidebar" id="sidebar">
+        <div class="nav-header">
+  <div class="nav-title">📚 深入理解计算机系统</div>
+  <div class="nav-subtitle">CSAPP 知识脑图</div>
+</div>
+<div class="nav-search">
+  <input type="text" id="searchInput" placeholder="🔍 搜索章节、概念..." />
+</div>
+<ul class="nav-list" id="navList">
+  <li class="nav-part">
+    <div class="nav-part-header" data-target="part-32552" style="--part-color: #3b82f6;">
+      <span class="nav-toggle">▶</span>
+      <span class="nav-part-name">第一部分 程序结构和执行</span>
+      <span class="nav-chapter-count">6章</span>
+    </div>
+    <ul class="nav-chapters" id="part-32552">
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch1">
+          <span class="nav-chapter-num">第1章</span>
+          <span class="nav-chapter-title">计算机系统漫游</span>
+        </a>
+      </li>
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch2">
+          <span class="nav-chapter-num">第2章</span>
+          <span class="nav-chapter-title">信息的表示和处理</span>
+        </a>
+      </li>
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch3">
+          <span class="nav-chapter-num">第3章</span>
+          <span class="nav-chapter-title">程序的机器级表示</span>
+        </a>
+      </li>
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch4">
+          <span class="nav-chapter-num">第4章</span>
+          <span class="nav-chapter-title">处理器体系结构</span>
+        </a>
+      </li>
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch5">
+          <span class="nav-chapter-num">第5章</span>
+          <span class="nav-chapter-title">优化程序性能</span>
+        </a>
+      </li>
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch6">
+          <span class="nav-chapter-num">第6章</span>
+          <span class="nav-chapter-title">存储器层次结构</span>
+        </a>
+      </li>
+    </ul>
+  </li>
+  <li class="nav-part">
+    <div class="nav-part-header" data-target="part-34569" style="--part-color: #10b981;">
+      <span class="nav-toggle">▶</span>
+      <span class="nav-part-name">第二部分 在系统上运行程序</span>
+      <span class="nav-chapter-count">3章</span>
+    </div>
+    <ul class="nav-chapters" id="part-34569">
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch7">
+          <span class="nav-chapter-num">第7章</span>
+          <span class="nav-chapter-title">链接</span>
+        </a>
+      </li>
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch8">
+          <span class="nav-chapter-num">第8章</span>
+          <span class="nav-chapter-title">异常控制流</span>
+        </a>
+      </li>
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch9">
+          <span class="nav-chapter-num">第9章</span>
+          <span class="nav-chapter-title">虚拟存储器</span>
+        </a>
+      </li>
+    </ul>
+  </li>
+  <li class="nav-part">
+    <div class="nav-part-header" data-target="part-309" style="--part-color: #f59e0b;">
+      <span class="nav-toggle">▶</span>
+      <span class="nav-part-name">第三部分 程序间的交互和通信</span>
+      <span class="nav-chapter-count">3章</span>
+    </div>
+    <ul class="nav-chapters" id="part-309">
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch10">
+          <span class="nav-chapter-num">第10章</span>
+          <span class="nav-chapter-title">系统级I/O</span>
+        </a>
+      </li>
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch11">
+          <span class="nav-chapter-num">第11章</span>
+          <span class="nav-chapter-title">网络编程</span>
+        </a>
+      </li>
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#ch12">
+          <span class="nav-chapter-num">第12章</span>
+          <span class="nav-chapter-title">并发编程</span>
+        </a>
+      </li>
+    </ul>
+  </li>
+  <li class="nav-part">
+    <div class="nav-part-header" data-target="part-35220" style="--part-color: #8b5cf6;">
+      <span class="nav-toggle">▶</span>
+      <span class="nav-part-name">附录</span>
+      <span class="nav-chapter-count">1章</span>
+    </div>
+    <ul class="nav-chapters" id="part-35220">
+      <li class="nav-chapter">
+        <a class="nav-chapter-link" href="#appA">
+          <span class="nav-chapter-num">附录A</span>
+          <span class="nav-chapter-title">错误处理</span>
+        </a>
+      </li>
+    </ul>
+  </li>
+</ul>
+    </aside>
+    <main class="main">
+        <div class="hero">
+  <h1>深入理解计算机系统</h1>
+  <p class="hero-sub">Computer Systems: A Programmer's Perspective（原书第2版）</p>
+  <p class="hero-author">（美）Randal E. Bryant & David O'Hallaron 著</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">4</span><span class="stat-label">部分</span></div>
+    <div class="stat"><span class="stat-num">13</span><span class="stat-label">章</span></div>
+    <div class="stat"><span class="stat-num">108</span><span class="stat-label">小节</span></div>
+  </div>
+  <div class="hero-intro">
+    <p>本书从程序员的视角详细阐述计算机系统的本质概念，并展示这些概念如何实实在在地影响应用程序的正确性、性能和实用性。</p>
+    <p>全书共12章，按照"程序结构和执行 → 在系统上运行程序 → 程序间的交互和通信"三个层次递进展开。</p>
+  </div>
+</div>
+<section class="mindmap-overview">
+  <h2>🧠 知识全景图</h2>
+  <div class="mindmap-canvas">
+  <div class="mindmap-tree">
+    <div class="mm-part" style="--node-color: #3b82f6;">
+      <div class="mm-part-header">
+        <span class="mm-part-dot"></span>
+        <span class="mm-part-title">第一部分 程序结构和执行</span>
+      </div>
+      <div class="mm-part-chapters">
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch1">
+            <div class="mm-chapter-title">第1章 计算机系统漫游</div>
+            <div class="mm-chapter-summary">通过hello程序的生命周期，介绍计算机系统的整体构成：硬件、操作系统、网络，让读者建立对系统全貌的认识。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 10节</span>
+              <span>💡 10核心概念</span>
+            </div>
+          </a>
+        </div>
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch2">
+            <div class="mm-chapter-title">第2章 信息的表示和处理</div>
+            <div class="mm-chapter-summary">研究三种最重要的数字编码：无符号编码、补码编码、IEEE浮点编码，并讨论整数与浮点运算的属性。理解溢出等异常行为。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 4节</span>
+              <span>💡 10核心概念</span>
+            </div>
+          </a>
+        </div>
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch3">
+            <div class="mm-chapter-title">第3章 程序的机器级表示</div>
+            <div class="mm-chapter-summary">学习C语言编译后产生的x86汇编代码，理解寄存器、内存访问、算术逻辑操作、控制流、过程调用、数组结构等机器级机制，识别缓冲区溢出等安全漏洞。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 14节</span>
+              <span>💡 15核心概念</span>
+            </div>
+          </a>
+        </div>
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch4">
+            <div class="mm-chapter-title">第4章 处理器体系结构</div>
+            <div class="mm-chapter-summary">研究Y86指令集和流水线实现，理解处理器如何通过取指、译码、执行、访存、写回、更新PC六个阶段实现指令处理，掌握数据冒险和控制冒险的处理方法。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 5节</span>
+              <span>💡 13核心概念</span>
+            </div>
+          </a>
+        </div>
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch5">
+            <div class="mm-chapter-title">第5章 优化程序性能</div>
+            <div class="mm-chapter-summary">学习如何编写高效的C代码，通过消除循环低效率、减少过程调用、消除不必要的存储器引用、循环展开、提高并行性等技术，利用现代处理器的超标量和流水线特性。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 14节</span>
+              <span>💡 12核心概念</span>
+            </div>
+          </a>
+        </div>
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch6">
+            <div class="mm-chapter-title">第6章 存储器层次结构</div>
+            <div class="mm-chapter-summary">研究存储技术（RAM、磁盘、SSD）、局部性原理、存储器层次结构、高速缓存存储器（直接映射/组相联/全相联），以及如何编写高速缓存友好的代码。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 6节</span>
+              <span>💡 10核心概念</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="mm-part" style="--node-color: #10b981;">
+      <div class="mm-part-header">
+        <span class="mm-part-dot"></span>
+        <span class="mm-part-title">第二部分 在系统上运行程序</span>
+      </div>
+      <div class="mm-part-chapters">
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch7">
+            <div class="mm-chapter-title">第7章 链接</div>
+            <div class="mm-chapter-summary">理解链接器的角色和静态/动态链接机制，包括目标文件格式、符号解析、重定位、共享库以及与位置无关的代码（PIC）。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 13节</span>
+              <span>💡 10核心概念</span>
+            </div>
+          </a>
+        </div>
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch8">
+            <div class="mm-chapter-title">第8章 异常控制流</div>
+            <div class="mm-chapter-summary">学习异常控制流（ECF）的各种形式：异常、进程、信号、非本地跳转。理解操作系统的进程管理和信号处理机制，是系统编程的基础。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 7节</span>
+              <span>💡 10核心概念</span>
+            </div>
+          </a>
+        </div>
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch9">
+            <div class="mm-chapter-title">第9章 虚拟存储器</div>
+            <div class="mm-chapter-summary">深入理解虚拟存储器系统：作为缓存工具、存储器管理工具和保护工具；学习地址翻译、TLB、多级页表；掌握动态存储器分配（malloc）和垃圾收集；识别常见存储器错误。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 11节</span>
+              <span>💡 11核心概念</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="mm-part" style="--node-color: #f59e0b;">
+      <div class="mm-part-header">
+        <span class="mm-part-dot"></span>
+        <span class="mm-part-title">第三部分 程序间的交互和通信</span>
+      </div>
+      <div class="mm-part-chapters">
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch10">
+            <div class="mm-chapter-title">第10章 系统级I/O</div>
+            <div class="mm-chapter-summary">学习Unix I/O模型：打开/关闭文件、读写文件、RIO健壮包、文件元数据、共享文件、I/O重定向、标准I/O以及如何选择正确的I/O函数。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 9节</span>
+              <span>💡 9核心概念</span>
+            </div>
+          </a>
+        </div>
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch11">
+            <div class="mm-chapter-title">第11章 网络编程</div>
+            <div class="mm-chapter-summary">学习客户端-服务器编程模型、TCP/IP协议、套接字接口编程；构建Web服务器，理解HTTP协议、动态内容生成。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 6节</span>
+              <span>💡 10核心概念</span>
+            </div>
+          </a>
+        </div>
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#ch12">
+            <div class="mm-chapter-title">第12章 并发编程</div>
+            <div class="mm-chapter-summary">学习三种并发编程方法：基于进程、基于I/O多路复用、基于线程；掌握线程同步（信号量/P/V操作）；理解线程安全、可重入性、竞争、死锁等并发问题。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 7节</span>
+              <span>💡 12核心概念</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="mm-part" style="--node-color: #8b5cf6;">
+      <div class="mm-part-header">
+        <span class="mm-part-dot"></span>
+        <span class="mm-part-title">附录</span>
+      </div>
+      <div class="mm-part-chapters">
+        <div class="mm-chapter-card">
+          <a class="mm-chapter-link" href="#appA">
+            <div class="mm-chapter-title">附录A 错误处理</div>
+            <div class="mm-chapter-summary">Unix系统中错误处理的模式和CSAPP错误处理包装函数。</div>
+            <div class="mm-chapter-stats">
+              <span>📑 2节</span>
+              <span>💡 2核心概念</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+<div class="part-divider" style="--node-color: #3b82f6;">
+  <div class="part-divider-line"></div>
+  <div class="part-divider-text">第一部分 程序结构和执行</div>
+  <div class="part-divider-line"></div>
+</div>
+<section class="chapter" id="ch1" style="--node-color: #3b82f6;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第1章</div>
+    <h2 class="chapter-title">计算机系统漫游</h2>
+    <div class="chapter-summary">通过hello程序的生命周期，介绍计算机系统的整体构成：硬件、操作系统、网络，让读者建立对系统全貌的认识。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">信息是位+上下文</li>
+      <li class="concept-item">程序的翻译过程（预处理→编译→汇编→链接）</li>
+      <li class="concept-item">了解编译系统的益处（性能优化、链接错误、安全漏洞）</li>
+      <li class="concept-item">系统硬件组成：总线、I/O设备、主存、处理器</li>
+      <li class="concept-item">高速缓存的重要性</li>
+      <li class="concept-item">存储设备层次结构</li>
+      <li class="concept-item">操作系统管理硬件：进程、线程、虚拟存储器、文件抽象</li>
+      <li class="concept-item">网络通信</li>
+      <li class="concept-item">并发与并行：线程级、指令级、SIMD</li>
+      <li class="concept-item">抽象的重要性</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-1.1">
+      <h4 class="section-title">
+        <span class="section-num">1.1</span>
+        信息就是位+上下文
+      </h4>
+      <p class="section-content">源程序hello.c本质是一个由值0和1组成的位序列，8个位为一字节。系统所有信息——磁盘文件、存储器中的程序、用户数据、网络传输——都由一串位表示。区分不同数据对象的方法是上下文，同样的字节序列在不同上下文可表示整数、浮点数、字符串或机器指令。</p>
+    </div>
+    <div class="section" id="sec-1.2">
+      <h4 class="section-title">
+        <span class="section-num">1.2</span>
+        程序被其他程序翻译成不同的格式
+      </h4>
+      <p class="section-content">在Unix系统上，GCC编译器驱动程序完成从源文件到目标文件的转化，分为四个阶段：预处理（cpp）→编译（cc1）→汇编（as）→链接（ld），最终得到可执行目标文件。</p>
+    </div>
+    <div class="section" id="sec-1.3">
+      <h4 class="section-title">
+        <span class="section-num">1.3</span>
+        了解编译系统如何工作是大有益处的
+      </h4>
+      <p class="section-content">三个主要原因：优化程序性能、理解链接时出现的错误、避免安全漏洞（如缓冲区溢出）。</p>
+    </div>
+    <div class="section" id="sec-1.4">
+      <h4 class="section-title">
+        <span class="section-num">1.4</span>
+        处理器读并解释存储在存储器中的指令
+      </h4>
+      <p class="section-content">1.4.1 系统的硬件组成：总线（传送定长字块）、I/O设备（键盘/鼠标/显示器/磁盘）、主存（DRAM芯片组成的线性字节数组）、处理器（PC+寄存器文件+ALU）。1.4.2 运行hello程序的步骤：从键盘读取→加载到主存→CPU执行→输出到显示器。</p>
+    </div>
+    <div class="section" id="sec-1.5">
+      <h4 class="section-title">
+        <span class="section-num">1.5</span>
+        高速缓存至关重要
+      </h4>
+      <p class="section-content">系统花费大量时间在存储器、I/O设备和CPU寄存器之间复制数据。高速缓存作为暂时的集结区域，利用局部性原理，使大多数存储器操作在快速的高速缓存中完成。L1/L2/L3高速缓存采用SRAM技术实现。</p>
+    </div>
+    <div class="section" id="sec-1.6">
+      <h4 class="section-title">
+        <span class="section-num">1.6</span>
+        存储设备形成层次结构
+      </h4>
+      <p class="section-content">从L0寄存器到磁盘，存储设备形成层次结构：速度越快、容量越小、造价越贵。每一层存储器作为低一层的高速缓存。</p>
+    </div>
+    <div class="section" id="sec-1.7">
+      <h4 class="section-title">
+        <span class="section-num">1.7</span>
+        操作系统管理硬件
+      </h4>
+      <p class="section-content">操作系统提供三个基本抽象：文件（对I/O设备的抽象）、虚拟存储器（对主存和磁盘I/O设备的抽象）、进程（对处理器、主存和I/O设备的抽象）。1.7.1 进程：通过上下文切换实现并发。1.7.2 线程：进程内的执行单元，共享代码和全局数据。1.7.3 虚拟存储器：每个进程独享一致的地址空间。1.7.4 文件：字节序列的统一抽象。</p>
+    </div>
+    <div class="section" id="sec-1.8">
+      <h4 class="section-title">
+        <span class="section-num">1.8</span>
+        系统之间利用网络通信
+      </h4>
+      <p class="section-content">网络可视为I/O设备。现代系统通过网络连接，telnet示例演示了客户端-服务器通过网络复制信息的过程。</p>
+    </div>
+    <div class="section" id="sec-1.9">
+      <h4 class="section-title">
+        <span class="section-num">1.9</span>
+        重要主题
+      </h4>
+      <p class="section-content">1.9.1 并发和并行：线程级并发（多核、超线程）、指令级并行（流水线、超标量）、单指令多数据并行（SIMD）。1.9.2 计算机系统中抽象的重要性：指令集结构、文件、虚拟存储器、进程、虚拟机。</p>
+    </div>
+    <div class="section" id="sec-1.10">
+      <h4 class="section-title">
+        <span class="section-num">1.10</span>
+        小结
+      </h4>
+      <p class="section-content">计算机系统由硬件和系统软件组成，协作运行应用程序。内部信息用位表示，依据上下文解释。存储层次结构（寄存器→高速缓存→主存→磁盘）是性能关键。操作系统提供文件、虚拟存储器、进程三大抽象。网络实现系统间通信。</p>
+    </div>
+  </div>
+</section>
+<section class="chapter" id="ch2" style="--node-color: #3b82f6;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第2章</div>
+    <h2 class="chapter-title">信息的表示和处理</h2>
+    <div class="chapter-summary">研究三种最重要的数字编码：无符号编码、补码编码、IEEE浮点编码，并讨论整数与浮点运算的属性。理解溢出等异常行为。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">十六进制表示法</li>
+      <li class="concept-item">字与数据大小</li>
+      <li class="concept-item">寻址和字节顺序（大端/小端）</li>
+      <li class="concept-item">布尔代数与位级运算</li>
+      <li class="concept-item">无符号数编码</li>
+      <li class="concept-item">补码编码</li>
+      <li class="concept-item">有符号与无符号的转换</li>
+      <li class="concept-item">整数运算（加/乘/除以2的幂）</li>
+      <li class="concept-item">IEEE浮点表示</li>
+      <li class="concept-item">舍入与浮点运算</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-2.1">
+      <h4 class="section-title">
+        <span class="section-num">2.1</span>
+        信息存储
+      </h4>
+      <p class="section-content">2.1.1 十六进制表示法。2.1.2 字：字长是基本系统参数（32位/64位）。2.1.3 数据大小：C数据类型在不同字长机器上的字节数。2.1.4 寻址和字节顺序：大端法（最高有效字节在前）和小端法（最低有效字节在前）。2.1.5 表示字符串：以null结尾的字符数组。2.1.6 表示代码：不同机器类型使用不同指令和编码。2.1.7 布尔代数：与、或、非、异或运算。2.1.8 C语言中的位级运算：&、|、~、^。2.1.9 逻辑运算：&&、||、!。2.1.10 移位运算：左移<<、右移>>（逻辑右移与算术右移）。</p>
+    </div>
+    <div class="section" id="sec-2.2">
+      <h4 class="section-title">
+        <span class="section-num">2.2</span>
+        整数表示
+      </h4>
+      <p class="section-content">2.2.1 整型数据类型。2.2.2 无符号数编码：B2U(X)=∑xi·2^i。2.2.3 补码编码：B2T(X)=-x_{w-1}·2^{w-1}+∑xi·2^i，最高有效位是符号位。2.2.4 有符号数与无符号数之间的转换：位级表示不变，解释方式改变。2.2.5 C语言中的有符号与无符号：默认有符号；创建无符号常量加后缀'U'或'u'。2.2.6 扩展数字的位表示：零扩展（无符号）、符号扩展（补码）。2.2.7 截断数字：丢弃高位。2.2.8 关于有符号数与无符号数的建议：避免使用无符号数表示数量，可能导致意外错误。</p>
+    </div>
+    <div class="section" id="sec-2.3">
+      <h4 class="section-title">
+        <span class="section-num">2.3</span>
+        整数运算
+      </h4>
+      <p class="section-content">2.3.1 无符号加法：模2^w运算，可能溢出。2.3.2 补码加法：正溢出和负溢出会回绕。2.3.3 补码的非：~x+1或-x。2.3.4 无符号乘法：模2^w。2.3.5 补码乘法：模2^w，结果按位与2^w-1截断。2.3.6 乘以常数：编译器用移位和加法组合优化。2.3.7 除以2的幂：逻辑右移（无符号）或算术右移（补码）。2.3.8 关于整数运算的最后思考：理解无符号与补码运算的属性。</p>
+    </div>
+    <div class="section" id="sec-2.4">
+      <h4 class="section-title">
+        <span class="section-num">2.4</span>
+        浮点数
+      </h4>
+      <p class="section-content">2.4.1 二进制小数：b=∑b_i·2^i（i为负）。2.4.2 IEEE浮点表示：符号s、阶码exp、尾数frac。单精度32位（s=1, exp=8, frac=23）、双精度64位（s=1, exp=11, frac=52）。规格化值、非规格化值、无穷大、NaN。2.4.3 数字示例。2.4.4 舍入：向偶数舍入（默认）、向零舍入、向下舍入、向上舍入。2.4.5 浮点运算：不满足结合性，满足单调性。2.4.6 C语言中的浮点数：float（单精度）、double（双精度）。</p>
+    </div>
+  </div>
+</section>
+<section class="chapter" id="ch3" style="--node-color: #3b82f6;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第3章</div>
+    <h2 class="chapter-title">程序的机器级表示</h2>
+    <div class="chapter-summary">学习C语言编译后产生的x86汇编代码，理解寄存器、内存访问、算术逻辑操作、控制流、过程调用、数组结构等机器级机制，识别缓冲区溢出等安全漏洞。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">IA32与x86-64指令集</li>
+      <li class="concept-item">程序编码（机器级代码）</li>
+      <li class="concept-item">数据格式（字节/字/双字）</li>
+      <li class="concept-item">访问信息（操作数指示符）</li>
+      <li class="concept-item">数据传送指令（mov/movs/movz）</li>
+      <li class="concept-item">算术与逻辑操作</li>
+      <li class="concept-item">控制（条件码/跳转/循环）</li>
+      <li class="concept-item">过程（栈帧/转移控制/寄存器惯例）</li>
+      <li class="concept-item">数组分配与访问</li>
+      <li class="concept-item">结构/联合/数据对齐</li>
+      <li class="concept-item">指针理解</li>
+      <li class="concept-item">GDB调试器</li>
+      <li class="concept-item">缓冲区溢出攻击</li>
+      <li class="concept-item">x86-64扩展（64位）</li>
+      <li class="concept-item">浮点程序机器级表示</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-3.1">
+      <h4 class="section-title">
+        <span class="section-num">3.1</span>
+        历史观点
+      </h4>
+      <p class="section-content">Intel处理器系列演化：8086→IA32→x86-64。C语言与Unix系统关系密切，编译产生的汇编代码提供了理解机器级编程的基础。</p>
+    </div>
+    <div class="section" id="sec-3.2">
+      <h4 class="section-title">
+        <span class="section-num">3.2</span>
+        程序编码
+      </h4>
+      <p class="section-content">3.2.1 机器级代码：虚拟地址、程序计数器、寄存器文件、条件码、内存等抽象。3.2.2 代码示例：gcc -O1 -S产生的汇编代码。3.2.3 关于格式的注解：AT&T格式（操作数顺序）与Intel格式。</p>
+    </div>
+    <div class="section" id="sec-3.3">
+      <h4 class="section-title">
+        <span class="section-num">3.3</span>
+        数据格式
+      </h4>
+      <p class="section-content">IA32中：字节(byte)=8位、字(word)=16位、双字(double words)=32位。x86-64中增加四字(quad words)=64位，对应C类型char/short/int/long/指针。</p>
+    </div>
+    <div class="section" id="sec-3.4">
+      <h4 class="section-title">
+        <span class="section-num">3.4</span>
+        访问信息
+      </h4>
+      <p class="section-content">3.4.1 操作数指示符：立即数、寄存器、存储器三种类型。3.4.2 数据传送指令：mov类（movb/movw/movl/movq）、movs符号扩展、movz零扩展。3.4.3 数据传送示例。</p>
+    </div>
+    <div class="section" id="sec-3.5">
+      <h4 class="section-title">
+        <span class="section-num">3.5</span>
+        算术和逻辑操作
+      </h4>
+      <p class="section-content">3.5.1 加载有效地址leal。3.5.2 一元操作（inc/dec/neg/not）和二元操作（add/sub/imul/and/or/xor）。3.5.3 移位操作：sal/shl（左移）、sar（算术右移）、shr（逻辑右移）。3.5.4 讨论：编译器优化考虑。3.5.5 特殊的算术操作：imul（有符号乘）、mul（无符号乘）、idiv（有符号除）、div（无符号除）。</p>
+    </div>
+    <div class="section" id="sec-3.6">
+      <h4 class="section-title">
+        <span class="section-num">3.6</span>
+        控制
+      </h4>
+      <p class="section-content">3.6.1 条件码：CF（进位）、ZF（零）、SF（符号）、OF（溢出）。3.6.2 访问条件码：set指令。3.6.3 跳转指令：jmp/jle/jge等条件跳转及其编码。3.6.4 翻译条件分支：if-then-else的汇编实现。3.6.5 循环：do-while、while、for循环的翻译。3.6.6 条件传送指令cmov：避免分支预测错误处罚。3.6.7 switch语句：跳转表优化多路分支。</p>
+    </div>
+    <div class="section" id="sec-3.7">
+      <h4 class="section-title">
+        <span class="section-num">3.7</span>
+        过程
+      </h4>
+      <p class="section-content">3.7.1 栈帧结构：栈帧是过程使用的栈区域。3.7.2 转移控制：call指令压返回地址，ret指令弹出。3.7.3 寄存器使用惯例：%eax返回值，%ebx/%esi/%edi被调者保存，%eax/%edx/%ecx调用者保存。3.7.4 过程示例。3.7.5 递归过程。</p>
+    </div>
+    <div class="section" id="sec-3.8">
+      <h4 class="section-title">
+        <span class="section-num">3.8</span>
+        数组分配和访问
+      </h4>
+      <p class="section-content">3.8.1 基本原则。3.8.2 指针运算。3.8.3 嵌套的数组。3.8.4 定长数组。3.8.5 变长数组（VLA，C99特性）。</p>
+    </div>
+    <div class="section" id="sec-3.9">
+      <h4 class="section-title">
+        <span class="section-num">3.9</span>
+        异质的数据结构
+      </h4>
+      <p class="section-content">3.9.1 结构struct：不同类型字段的集合。3.9.2 联合union：同一时刻只能保存一个成员。3.9.3 数据对齐：编译器按特定对齐规则分配结构体字段位置。</p>
+    </div>
+    <div class="section" id="sec-3.10">
+      <h4 class="section-title">
+        <span class="section-num">3.10</span>
+        综合：理解指针
+      </h4>
+      <p class="section-content">指针是某个数据对象的地址。&取地址，*间接引用。指针运算、强制类型转换、函数指针是C的强大特性。</p>
+    </div>
+    <div class="section" id="sec-3.11">
+      <h4 class="section-title">
+        <span class="section-num">3.11</span>
+        应用：使用GDB调试器
+      </h4>
+      <p class="section-content">GDB基本命令：run、break、step、next、continue、print、display、x/检查内存。</p>
+    </div>
+    <div class="section" id="sec-3.12">
+      <h4 class="section-title">
+        <span class="section-num">3.12</span>
+        存储器的越界引用和缓冲区溢出
+      </h4>
+      <p class="section-content">缓冲区溢出是C程序最常见的安全漏洞。攻击者通过溢出覆盖栈上的返回地址，控制程序执行。防御措施：栈随机化、栈破坏检测（金丝雀）、限制可执行代码区域。</p>
+    </div>
+    <div class="section" id="sec-3.13">
+      <h4 class="section-title">
+        <span class="section-num">3.13</span>
+        x86-64：将IA32扩展到64位
+      </h4>
+      <p class="section-content">3.13.1 x86-64的历史和动因。3.13.2 x86-64简介：16个64位通用寄存器，%rsp栈指针。3.13.3 访问信息：movq指令、操作数扩展。3.13.4 控制：64位条件分支。3.13.5 数据结构：long double仍为80位扩展精度。3.13.6 关于x86-64的总结性评论：更少的指令、更高的性能。</p>
+    </div>
+    <div class="section" id="sec-3.14">
+      <h4 class="section-title">
+        <span class="section-num">3.14</span>
+        浮点程序的机器级表示
+      </h4>
+      <p class="section-content">x86浮点体系：SSE浮点寄存器（XMM0-XMM7）使用128位SIMD寄存器支持标量单精度/双精度浮点运算。</p>
+    </div>
+  </div>
+</section>
+<section class="chapter" id="ch4" style="--node-color: #3b82f6;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第4章</div>
+    <h2 class="chapter-title">处理器体系结构</h2>
+    <div class="chapter-summary">研究Y86指令集和流水线实现，理解处理器如何通过取指、译码、执行、访存、写回、更新PC六个阶段实现指令处理，掌握数据冒险和控制冒险的处理方法。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">Y86指令集体系结构</li>
+      <li class="concept-item">指令编码</li>
+      <li class="concept-item">Y86异常</li>
+      <li class="concept-item">逻辑门与组合电路</li>
+      <li class="concept-item">HCL硬件控制语言</li>
+      <li class="concept-item">存储器和时钟</li>
+      <li class="concept-item">顺序实现SEQ</li>
+      <li class="concept-item">计算流水线</li>
+      <li class="concept-item">流水线冒险（数据/控制）</li>
+      <li class="concept-item">转发(forwarding)</li>
+      <li class="concept-item">加载/使用冒险</li>
+      <li class="concept-item">异常处理</li>
+      <li class="concept-item">性能分析</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-4.1">
+      <h4 class="section-title">
+        <span class="section-num">4.1</span>
+        Y86指令集体系结构
+      </h4>
+      <p class="section-content">4.1.1 程序员可见的状态：8个程序寄存器、3个一位条件码、程序计数器、存储器。4.1.2 Y86指令：movl/movr/pushl/popl/opl/jXX/cmovXX/call/ret/halt等。4.1.3 指令编码：每个指令1-6字节。4.1.4 Y86异常。4.1.5 Y86程序示例。4.1.6 一些Y86指令的详情。</p>
+    </div>
+    <div class="section" id="sec-4.2">
+      <h4 class="section-title">
+        <span class="section-num">4.2</span>
+        逻辑设计和硬件控制语言HCL
+      </h4>
+      <p class="section-content">4.2.1 逻辑门：AND/OR/NOT。4.2.2 组合电路和HCL布尔表达式。4.2.3 字级的组合电路和HCL整数表达式：多路复用器。4.2.4 集合关系。4.2.5 存储器和时钟：时钟寄存器（寄存器文件、程序计数器、条件码、内存）。</p>
+    </div>
+    <div class="section" id="sec-4.3">
+      <h4 class="section-title">
+        <span class="section-num">4.3</span>
+        Y86的顺序实现
+      </h4>
+      <p class="section-content">4.3.1 将处理组织成阶段：取指→译码→执行→访存→写回→更新PC。4.3.2 SEQ硬件结构。4.3.3 SEQ的时序：时钟上升沿加载寄存器。4.3.4 SEQ阶段的实现。</p>
+    </div>
+    <div class="section" id="sec-4.4">
+      <h4 class="section-title">
+        <span class="section-num">4.4</span>
+        流水线的通用原理
+      </h4>
+      <p class="section-content">4.4.1 计算流水线：洗衣店示例说明流水线工作方式。4.4.2 流水线操作的详细说明：吞吐率提高、延迟不变。4.4.3 流水线的局限性：不一致的划分、流水线过深收益递减。4.4.4 带反馈的流水线系统：顺序相关使流水线变复杂。</p>
+    </div>
+    <div class="section" id="sec-4.5">
+      <h4 class="section-title">
+        <span class="section-num">4.5</span>
+        Y86的流水线实现
+      </h4>
+      <p class="section-content">4.5.1 SEQ+：重新安排计算阶段以减少寄存器延迟。4.5.2 插入流水线寄存器F/D/E/M/W。4.5.3 对信号进行重新排列和标号。4.5.4 预测下一个PC：分支预测。4.5.5 流水线冒险：数据冒险、控制冒险。4.5.6 用暂停来避免数据冒险。4.5.7 用转发来避免数据冒险：直接将结果转发到需要它的阶段。4.5.8 加载/使用数据冒险：需要暂停一个周期。4.5.9 异常处理。4.5.10 PIPE各阶段的实现。4.5.11 流水线控制逻辑。4.5.12 性能分析：CPI和吞吐率。4.5.13 未完成的工作：多发射、乱序执行、深流水线等。</p>
+    </div>
+  </div>
+</section>
+<section class="chapter" id="ch5" style="--node-color: #3b82f6;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第5章</div>
+    <h2 class="chapter-title">优化程序性能</h2>
+    <div class="chapter-summary">学习如何编写高效的C代码，通过消除循环低效率、减少过程调用、消除不必要的存储器引用、循环展开、提高并行性等技术，利用现代处理器的超标量和流水线特性。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">优化编译器的能力和局限</li>
+      <li class="concept-item">程序性能表示（CPE）</li>
+      <li class="concept-item">消除循环低效率（代码移动）</li>
+      <li class="concept-item">减少过程调用</li>
+      <li class="concept-item">消除不必要的存储器引用</li>
+      <li class="concept-item">现代处理器操作模型</li>
+      <li class="concept-item">循环展开</li>
+      <li class="concept-item">提高并行性（多个累积变量/重新结合）</li>
+      <li class="concept-item">寄存器溢出</li>
+      <li class="concept-item">分支预测和预测错误处罚</li>
+      <li class="concept-item">存储器性能（加载/存储）</li>
+      <li class="concept-item">程序剖析与Amdahl定律</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-5.1">
+      <h4 class="section-title">
+        <span class="section-num">5.1</span>
+        优化编译器的能力和局限性
+      </h4>
+      <p class="section-content">编译器在寄存器分配、代码调度、死代码消除等方面很强，但受限于内存别名（必须假设不同指针可能指向同一位置）和过程调用（无法跨过程优化）。</p>
+    </div>
+    <div class="section" id="sec-5.2">
+      <h4 class="section-title">
+        <span class="section-num">5.2</span>
+        表示程序性能
+      </h4>
+      <p class="section-content">用每元素的周期数（CPE, Cycles Per Element）度量程序性能。CPE越小性能越好。</p>
+    </div>
+    <div class="section" id="sec-5.3">
+      <h4 class="section-title">
+        <span class="section-num">5.3</span>
+        程序示例
+      </h4>
+      <p class="section-content">以向量合并函数为例，分析其CPE。</p>
+    </div>
+    <div class="section" id="sec-5.4">
+      <h4 class="section-title">
+        <span class="section-num">5.4</span>
+        消除循环的低效率
+      </h4>
+      <p class="section-content">代码移动：将循环中不变的计算（如strlen）移到循环外。</p>
+    </div>
+    <div class="section" id="sec-5.5">
+      <h4 class="section-title">
+        <span class="section-num">5.5</span>
+        减少过程调用
+      </h4>
+      <p class="section-content">识别可被替换为内联代码的过程调用。</p>
+    </div>
+    <div class="section" id="sec-5.6">
+      <h4 class="section-title">
+        <span class="section-num">5.6</span>
+        消除不必要的存储器引用
+      </h4>
+      <p class="section-content">引入临时变量保存中间结果，避免每次都从内存读。</p>
+    </div>
+    <div class="section" id="sec-5.7">
+      <h4 class="section-title">
+        <span class="section-num">5.7</span>
+        理解现代处理器
+      </h4>
+      <p class="section-content">5.7.1 整体操作：超标量、乱序执行。5.7.2 功能单元的性能：延迟(latency)、发射时间(issue time)、容量(capacity)。5.7.3 处理器操作的抽象模型：循环展开可视化数据流图。</p>
+    </div>
+    <div class="section" id="sec-5.8">
+      <h4 class="section-title">
+        <span class="section-num">5.8</span>
+        循环展开
+      </h4>
+      <p class="section-content">通过增加每次迭代计算的元素数量减少循环开销。n×1循环展开。</p>
+    </div>
+    <div class="section" id="sec-5.9">
+      <h4 class="section-title">
+        <span class="section-num">5.9</span>
+        提高并行性
+      </h4>
+      <p class="section-content">5.9.1 多个累积变量：使用独立变量并行计算。5.9.2 重新结合变换：改变结合顺序打破数据相关链。</p>
+    </div>
+    <div class="section" id="sec-5.10">
+      <h4 class="section-title">
+        <span class="section-num">5.10</span>
+        优化合并代码的结果小结
+      </h4>
+      <p class="section-content">将所有优化技术结合后的CPE改进。</p>
+    </div>
+    <div class="section" id="sec-5.11">
+      <h4 class="section-title">
+        <span class="section-num">5.11</span>
+        一些限制因素
+      </h4>
+      <p class="section-content">5.11.1 寄存器溢出：并行度受限于可用寄存器。5.11.2 分支预测和预测错误处罚：现代处理器有复杂预测器，但错误仍有处罚。</p>
+    </div>
+    <div class="section" id="sec-5.12">
+      <h4 class="section-title">
+        <span class="section-num">5.12</span>
+        理解存储器性能
+      </h4>
+      <p class="section-content">5.12.1 加载的性能：加载的延迟影响CPE。5.12.2 存储的性能：存储通常不影响关键路径（写缓冲），但存储加载相关会引入额外延迟。</p>
+    </div>
+    <div class="section" id="sec-5.13">
+      <h4 class="section-title">
+        <span class="section-num">5.13</span>
+        应用：性能提高技术
+      </h4>
+      <p class="section-content">高级设计：选择算法、数据结构、循环结构、并行化等。</p>
+    </div>
+    <div class="section" id="sec-5.14">
+      <h4 class="section-title">
+        <span class="section-num">5.14</span>
+        确认和消除性能瓶颈
+      </h4>
+      <p class="section-content">5.14.1 程序剖析：使用gprof等工具识别热点。5.14.2 使用剖析程序来指导优化。5.14.3 Amdahl定律：T_new = T_old · (1-α) + T_old · α / k，整体加速受限于未优化部分。</p>
+    </div>
+  </div>
+</section>
+<section class="chapter" id="ch6" style="--node-color: #3b82f6;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第6章</div>
+    <h2 class="chapter-title">存储器层次结构</h2>
+    <div class="chapter-summary">研究存储技术（RAM、磁盘、SSD）、局部性原理、存储器层次结构、高速缓存存储器（直接映射/组相联/全相联），以及如何编写高速缓存友好的代码。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">随机访问存储器RAM（SRAM/DRAM）</li>
+      <li class="concept-item">磁盘存储（机械结构/访问时间）</li>
+      <li class="concept-item">固态硬盘SSD</li>
+      <li class="concept-item">局部性原理（时间/空间）</li>
+      <li class="concept-item">存储器层次结构</li>
+      <li class="concept-item">高速缓存（直接映射/组相联/全相联）</li>
+      <li class="concept-item">写策略（直写/写回）</li>
+      <li class="concept-item">编写高速缓存友好代码</li>
+      <li class="concept-item">存储器山</li>
+      <li class="concept-item">重新排列循环提高空间局部性</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-6.1">
+      <h4 class="section-title">
+        <span class="section-num">6.1</span>
+        存储技术
+      </h4>
+      <p class="section-content">6.1.1 随机访问存储器：SRAM（高速缓存，6晶体管/位）、DRAM（主存，1晶体管+电容）。6.1.2 磁盘存储：盘片、磁道、扇区、柱面；访问时间=寻道时间+旋转时间+传送时间。6.1.3 固态硬盘：基于闪存，无机械部件，随机读快但写前需擦除。6.1.4 存储技术趋势：DRAM密度增大、磁盘密度增大、SSD发展。</p>
+    </div>
+    <div class="section" id="sec-6.2">
+      <h4 class="section-title">
+        <span class="section-num">6.2</span>
+        局部性
+      </h4>
+      <p class="section-content">6.2.1 对程序数据引用的局部性：时间局部性（重复访问相同位置）、空间局部性（访问连续位置）。6.2.2 取指令的局部性：指令是顺序执行的，有良好空间局部性。6.2.3 局部性小结：步长为1的引用模式有好的空间局部性；循环体小有好的时间局部性。</p>
+    </div>
+    <div class="section" id="sec-6.3">
+      <h4 class="section-title">
+        <span class="section-num">6.3</span>
+        存储器层次结构
+      </h4>
+      <p class="section-content">6.3.1 存储器层次结构中的缓存：第k层作为第k+1层的缓存。6.3.2 存储器层次结构概念小结：缓存命中、不命中、命中种类、不命中处罚等概念。</p>
+    </div>
+    <div class="section" id="sec-6.4">
+      <h4 class="section-title">
+        <span class="section-num">6.4</span>
+        高速缓存存储器
+      </h4>
+      <p class="section-content">6.4.1 通用的高速缓存存储器结构：S组、E路、B字节。6.4.2 直接映射高速缓存：每组只有1路，索引选择组，标记比较+有效位判断命中。6.4.3 组相联高速缓存：每组多路，需要标记比较。6.4.4 全相联高速缓存：只有一组。6.4.5 有关写的问题：直写（同时写缓存和内存）、写回（只写缓存，等替换时再写回）。6.4.6 一个真实的高速缓存层次结构的解剖：Intel Core i7。6.4.7 高速缓存参数的性能影响。</p>
+    </div>
+    <div class="section" id="sec-6.5">
+      <h4 class="section-title">
+        <span class="section-num">6.5</span>
+        编写高速缓存友好的代码
+      </h4>
+      <p class="section-content">原则：让常见情况命中率高；使用步长为1的访问模式；将多个对象放在同一缓存行。</p>
+    </div>
+    <div class="section" id="sec-6.6">
+      <h4 class="section-title">
+        <span class="section-num">6.6</span>
+        综合：高速缓存对程序性能的影响
+      </h4>
+      <p class="section-content">6.6.1 存储器山：读吞吐量随空间局部性和时间局部性变化。6.6.2 重新排列循环以提高空间局部性：矩阵转置、分块。6.6.3 在程序中利用局部性。</p>
+    </div>
+  </div>
+</section>
+<div class="part-divider" style="--node-color: #10b981;">
+  <div class="part-divider-line"></div>
+  <div class="part-divider-text">第二部分 在系统上运行程序</div>
+  <div class="part-divider-line"></div>
+</div>
+<section class="chapter" id="ch7" style="--node-color: #10b981;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第7章</div>
+    <h2 class="chapter-title">链接</h2>
+    <div class="chapter-summary">理解链接器的角色和静态/动态链接机制，包括目标文件格式、符号解析、重定位、共享库以及与位置无关的代码（PIC）。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">编译器驱动程序</li>
+      <li class="concept-item">静态链接</li>
+      <li class="concept-item">目标文件（可重定位/可执行/共享）</li>
+      <li class="concept-item">符号和符号表</li>
+      <li class="concept-item">符号解析（多重定义/静态库）</li>
+      <li class="concept-item">重定位（绝对/相对）</li>
+      <li class="concept-item">可执行目标文件</li>
+      <li class="concept-item">动态链接共享库</li>
+      <li class="concept-item">从应用程序加载共享库（dlopen）</li>
+      <li class="concept-item">与位置无关的代码PIC</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-7.1">
+      <h4 class="section-title">
+        <span class="section-num">7.1</span>
+        编译器驱动程序
+      </h4>
+      <p class="section-content">GCC驱动程序按需调用语言预处理器、编译器、汇编器和链接器。</p>
+    </div>
+    <div class="section" id="sec-7.2">
+      <h4 class="section-title">
+        <span class="section-num">7.2</span>
+        静态链接
+      </h4>
+      <p class="section-content">链接器将多个可重定位目标文件合并为可执行目标文件，主要任务：符号解析和重定位。</p>
+    </div>
+    <div class="section" id="sec-7.3">
+      <h4 class="section-title">
+        <span class="section-num">7.3</span>
+        目标文件
+      </h4>
+      <p class="section-content">三种形式：可重定位目标文件（.o）、可执行目标文件（a.out）、共享目标文件（.so）。</p>
+    </div>
+    <div class="section" id="sec-7.4">
+      <h4 class="section-title">
+        <span class="section-num">7.4</span>
+        可重定位目标文件
+      </h4>
+      <p class="section-content">ELF格式：ELF头、节（.text/.rodata/.data/.bss/.symtab/.rel.text等）、节头部表。</p>
+    </div>
+    <div class="section" id="sec-7.5">
+      <h4 class="section-title">
+        <span class="section-num">7.5</span>
+        符号和符号表
+      </h4>
+      <p class="section-content">每个可重定位目标文件都有符号表，描述函数和全局变量。符号分本地和全局，本地链接器符号不对其他文件可见。</p>
+    </div>
+    <div class="section" id="sec-7.6">
+      <h4 class="section-title">
+        <span class="section-num">7.6</span>
+        符号解析
+      </h4>
+      <p class="section-content">7.6.1 链接器如何解析多重定义的全局符号：强符号/弱符号规则。7.6.2 与静态库链接：归档文件（.a）是一组连接的可重定位目标文件。7.6.3 链接器如何使用静态库来解析引用：顺序扫描，从左到右，依赖满足即停止。</p>
+    </div>
+    <div class="section" id="sec-7.7">
+      <h4 class="section-title">
+        <span class="section-num">7.7</span>
+        重定位
+      </h4>
+      <p class="section-content">7.7.1 重定位条目：汇编器为每个引用生成重定位条目。7.7.2 重定位符号引用：合并输入模块，调整节地址和符号定义，修改代码节和数据节中的符号引用。</p>
+    </div>
+    <div class="section" id="sec-7.8">
+      <h4 class="section-title">
+        <span class="section-num">7.8</span>
+        可执行目标文件
+      </h4>
+      <p class="section-content">类似可重定位文件，但包含加载到内存的入口点。</p>
+    </div>
+    <div class="section" id="sec-7.9">
+      <h4 class="section-title">
+        <span class="section-num">7.9</span>
+        加载可执行目标文件
+      </h4>
+      <p class="section-content">通过加载器（loader）将可执行文件的代码和数据从磁盘复制到内存，然后跳转到入口点开始执行。</p>
+    </div>
+    <div class="section" id="sec-7.10">
+      <h4 class="section-title">
+        <span class="section-num">7.10</span>
+        动态链接共享库
+      </h4>
+      <p class="section-content">共享库是致力于解决静态库缺陷而提出的产物，加载时或运行时由动态链接器加载。</p>
+    </div>
+    <div class="section" id="sec-7.11">
+      <h4 class="section-title">
+        <span class="section-num">7.11</span>
+        从应用程序中加载和链接共享库
+      </h4>
+      <p class="section-content">Linux系统提供dlopen/dlsym/dlclose接口在运行时加载和链接共享库。</p>
+    </div>
+    <div class="section" id="sec-7.12">
+      <h4 class="section-title">
+        <span class="section-num">7.12</span>
+        与位置无关的代码（PIC）
+      </h4>
+      <p class="section-content">PIC共享库代码可被加载到内存任何位置而无需链接器修改。使用全局偏移表GOT和过程链接表PLT实现。</p>
+    </div>
+    <div class="section" id="sec-7.13">
+      <h4 class="section-title">
+        <span class="section-num">7.13</span>
+        处理目标文件的工具
+      </h4>
+      <p class="section-content">GNU binutils：ar、strings、nm、size、readelf、objdump、ldd等。</p>
+    </div>
+  </div>
+</section>
+<section class="chapter" id="ch8" style="--node-color: #10b981;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第8章</div>
+    <h2 class="chapter-title">异常控制流</h2>
+    <div class="chapter-summary">学习异常控制流（ECF）的各种形式：异常、进程、信号、非本地跳转。理解操作系统的进程管理和信号处理机制，是系统编程的基础。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">异常（中断/故障/中止/陷阱）</li>
+      <li class="concept-item">进程的逻辑控制流</li>
+      <li class="concept-item">私有地址空间</li>
+      <li class="concept-item">用户模式与内核模式</li>
+      <li class="concept-item">上下文切换</li>
+      <li class="concept-item">进程控制（fork/execve/wait）</li>
+      <li class="concept-item">信号（发送/接收/处理）</li>
+      <li class="concept-item">信号处理问题</li>
+      <li class="concept-item">可移植信号处理</li>
+      <li class="concept-item">非本地跳转（setjmp/longjmp）</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-8.1">
+      <h4 class="section-title">
+        <span class="section-num">8.1</span>
+        异常
+      </h4>
+      <p class="section-content">8.1.1 异常处理：异常表保存异常处理程序地址。8.1.2 异常的类别：中断（异步，来自I/O设备）、陷阱（同步，系统调用）、故障（可恢复错误，如缺页）、中止（不可恢复错误）。8.1.3 Linux/IA32系统中的异常：除法错误、一般保护故障、缺页、机器检查等。</p>
+    </div>
+    <div class="section" id="sec-8.2">
+      <h4 class="section-title">
+        <span class="section-num">8.2</span>
+        进程
+      </h4>
+      <p class="section-content">8.2.1 逻辑控制流：每个进程独占CPU的假象。8.2.2 并发流：多个逻辑流并发执行。8.2.3 私有地址空间：每个进程地址空间独立。8.2.4 用户模式和内核模式：Mode位区分。8.2.5 上下文切换：保存当前进程上下文、加载新进程上下文。</p>
+    </div>
+    <div class="section" id="sec-8.3">
+      <h4 class="section-title">
+        <span class="section-num">8.3</span>
+        系统调用错误处理
+      </h4>
+      <p class="section-content">系统调用返回错误时设置errno。使用错误处理包装函数简化代码。</p>
+    </div>
+    <div class="section" id="sec-8.4">
+      <h4 class="section-title">
+        <span class="section-num">8.4</span>
+        进程控制
+      </h4>
+      <p class="section-content">8.4.1 获取进程ID：getpid/getppid。8.4.2 创建和终止进程：fork创建子进程，exit终止进程。8.4.3 回收子进程：wait/waitpid。8.4.4 让进程休眠：sleep/pause。8.4.5 加载并运行程序：execve。8.4.6 利用fork和execve运行程序：外壳程序实现原理。</p>
+    </div>
+    <div class="section" id="sec-8.5">
+      <h4 class="section-title">
+        <span class="section-num">8.5</span>
+        信号
+      </h4>
+      <p class="section-content">8.5.1 信号术语：发送、接收、待处理信号、阻塞信号。8.5.2 发送信号：/bin/kill、键盘（Ctrl+C）、kill函数、alarm。8.5.3 接收信号：signal函数注册处理程序，内核返回用户态前处理待处理信号。8.5.4 信号处理问题：待处理信号不排队、信号可能中断慢系统调用。8.5.5 可移植的信号处理：使用sigaction而非signal。8.5.6 显式地阻塞和取消阻塞信号：sigprocmask。8.5.7 同步流以避免讨厌的并发错误。</p>
+    </div>
+    <div class="section" id="sec-8.6">
+      <h4 class="section-title">
+        <span class="section-num">8.6</span>
+        非本地跳转
+      </h4>
+      <p class="section-content">setjmp/longjmp提供类似异常处理的机制，允许从一个函数跳转到另一个预先指定的函数。</p>
+    </div>
+    <div class="section" id="sec-8.7">
+      <h4 class="section-title">
+        <span class="section-num">8.7</span>
+        操作进程的工具
+      </h4>
+      <p class="section-content">STRACE、PS、TOP、PMAP等。</p>
+    </div>
+  </div>
+</section>
+<section class="chapter" id="ch9" style="--node-color: #10b981;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第9章</div>
+    <h2 class="chapter-title">虚拟存储器</h2>
+    <div class="chapter-summary">深入理解虚拟存储器系统：作为缓存工具、存储器管理工具和保护工具；学习地址翻译、TLB、多级页表；掌握动态存储器分配（malloc）和垃圾收集；识别常见存储器错误。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">物理和虚拟寻址</li>
+      <li class="concept-item">地址空间</li>
+      <li class="concept-item">虚拟存储器作为缓存（DRAM缓存/页表/缺页）</li>
+      <li class="concept-item">虚拟存储器作为存储器管理</li>
+      <li class="concept-item">虚拟存储器作为保护</li>
+      <li class="concept-item">地址翻译（TLB/多级页表）</li>
+      <li class="concept-item">Intel Core i7/Linux案例</li>
+      <li class="concept-item">存储器映射（mmap）</li>
+      <li class="concept-item">动态存储器分配（malloc/free）</li>
+      <li class="concept-item">垃圾收集（Mark&Sweep）</li>
+      <li class="concept-item">C程序常见存储器错误</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-9.1">
+      <h4 class="section-title">
+        <span class="section-num">9.1</span>
+        物理和虚拟寻址
+      </h4>
+      <p class="section-content">物理寻址：CPU使用物理地址访问内存。虚拟寻址：CPU使用虚拟地址，经MMU翻译为物理地址。</p>
+    </div>
+    <div class="section" id="sec-9.2">
+      <h4 class="section-title">
+        <span class="section-num">9.2</span>
+        地址空间
+      </h4>
+      <p class="section-content">非负整数地址的有序集合。线性地址空间。</p>
+    </div>
+    <div class="section" id="sec-9.3">
+      <h4 class="section-title">
+        <span class="section-num">9.3</span>
+        虚拟存储器作为缓存的工具
+      </h4>
+      <p class="section-content">9.3.1 DRAM缓存的组织结构。9.3.2 页表：每个进程一个，映射虚拟页到物理页或磁盘位置。9.3.3 页命中。9.3.4 缺页：触发缺页异常，加载页面。9.3.5 分配页面。9.3.6 又是局部性救了我们：工作集通常适合主存。</p>
+    </div>
+    <div class="section" id="sec-9.4">
+      <h4 class="section-title">
+        <span class="section-num">9.4</span>
+        虚拟存储器作为存储器管理的工具
+      </h4>
+      <p class="section-content">简化存储器管理：每个进程独立的虚拟地址空间，按需分配页。</p>
+    </div>
+    <div class="section" id="sec-9.5">
+      <h4 class="section-title">
+        <span class="section-num">9.5</span>
+        虚拟存储器作为存储器保护的工具
+      </h4>
+      <p class="section-content">在PTE上增加许可位（SUP、READ、WRITE），硬件检查访问合法性。</p>
+    </div>
+    <div class="section" id="sec-9.6">
+      <h4 class="section-title">
+        <span class="section-num">9.6</span>
+        地址翻译
+      </h4>
+      <p class="section-content">9.6.1 结合高速缓存和虚拟存储器。9.6.2 利用TLB加速地址翻译：MMU中的翻译后备缓冲器缓存PTE。9.6.3 多级页表：节省页表空间。9.6.4 综合：端到端的地址翻译：TLB→页表→高速缓存→内存。</p>
+    </div>
+    <div class="section" id="sec-9.7">
+      <h4 class="section-title">
+        <span class="section-num">9.7</span>
+        案例研究：Intel Core i7/Linux存储器系统
+      </h4>
+      <p class="section-content">9.7.1 Core i7地址翻译：四級页表。9.7.2 Linux虚拟存储器系统：内核维护任务结构、mm_struct、区域结构。</p>
+    </div>
+    <div class="section" id="sec-9.8">
+      <h4 class="section-title">
+        <span class="section-num">9.8</span>
+        存储器映射
+      </h4>
+      <p class="section-content">9.8.1 再看共享对象：写时复制。9.8.2 再看fork函数：子进程获得父进程地址空间副本。9.8.3 再看execve函数。9.8.4 使用mmap函数的用户级存储器映射。</p>
+    </div>
+    <div class="section" id="sec-9.9">
+      <h4 class="section-title">
+        <span class="section-num">9.9</span>
+        动态存储器分配
+      </h4>
+      <p class="section-content">9.9.1 malloc和free函数：malloc返回块首字节指针，free释放。9.9.2 为什么要使用动态存储器分配。9.9.3 分配器的要求和目标。9.9.4 碎片：内部碎片、外部碎片。9.9.5 实现问题。9.9.6 隐式空闲链表。9.9.7 放置已分配的块：首次适配、下一次适配、最佳适配。9.9.8 分割空闲块。9.9.9 获取额外的堆存储器。9.9.10 合并空闲块。9.9.11 带边界标记的合并。9.9.12 综合：实现一个简单的分配器。9.9.13 显式空闲链表。9.9.14 分离的空闲链表：按大小类组织。</p>
+    </div>
+    <div class="section" id="sec-9.10">
+      <h4 class="section-title">
+        <span class="section-num">9.10</span>
+        垃圾收集
+      </h4>
+      <p class="section-content">9.10.1 垃圾收集器的基本知识。9.10.2 Mark&Sweep垃圾收集器。9.10.3 C程序的保守Mark&Sweep：把所有看起来像指针的字当作指针。</p>
+    </div>
+    <div class="section" id="sec-9.11">
+      <h4 class="section-title">
+        <span class="section-num">9.11</span>
+        C程序中常见的与存储器有关的错误
+      </h4>
+      <p class="section-content">9.11.1 间接引用坏指针。9.11.2 读未初始化的存储器。9.11.3 允许栈缓冲区溢出。9.11.4 假设指针和它们指向的对象是相同大小的。9.11.5 造成错位错误。9.11.6 引用指针，而不是它所指向的对象。9.11.7 误解指针运算。9.11.8 引用不存在的变量。9.11.9 引用空闲堆块中的数据。9.11.10 引起存储器泄漏。</p>
+    </div>
+  </div>
+</section>
+<div class="part-divider" style="--node-color: #f59e0b;">
+  <div class="part-divider-line"></div>
+  <div class="part-divider-text">第三部分 程序间的交互和通信</div>
+  <div class="part-divider-line"></div>
+</div>
+<section class="chapter" id="ch10" style="--node-color: #f59e0b;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第10章</div>
+    <h2 class="chapter-title">系统级I/O</h2>
+    <div class="chapter-summary">学习Unix I/O模型：打开/关闭文件、读写文件、RIO健壮包、文件元数据、共享文件、I/O重定向、标准I/O以及如何选择正确的I/O函数。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">Unix I/O模型</li>
+      <li class="concept-item">open/close打开关闭文件</li>
+      <li class="concept-item">read/write读写文件</li>
+      <li class="concept-item">RIO健壮包（无缓冲/带缓冲）</li>
+      <li class="concept-item">文件元数据（stat）</li>
+      <li class="concept-item">共享文件</li>
+      <li class="concept-item">I/O重定向（dup2）</li>
+      <li class="concept-item">标准I/O</li>
+      <li class="concept-item">I/O函数选择</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-10.1">
+      <h4 class="section-title">
+        <span class="section-num">10.1</span>
+        Unix I/O
+      </h4>
+      <p class="section-content">所有I/O设备（网络、磁盘、终端）都模型化为文件。所有输入输出以统一方式执行：open/read/write/close。</p>
+    </div>
+    <div class="section" id="sec-10.2">
+      <h4 class="section-title">
+        <span class="section-num">10.2</span>
+        打开和关闭文件
+      </h4>
+      <p class="section-content">open函数打开文件返回描述符；close函数关闭文件释放资源。</p>
+    </div>
+    <div class="section" id="sec-10.3">
+      <h4 class="section-title">
+        <span class="section-num">10.3</span>
+        读和写文件
+      </h4>
+      <p class="section-content">read/write系统调用。遇到EOF、错误或指定字节数时返回。短期计数(short count)问题。</p>
+    </div>
+    <div class="section" id="sec-10.4">
+      <h4 class="section-title">
+        <span class="section-num">10.4</span>
+        用RIO包健壮地读写
+      </h4>
+      <p class="section-content">10.4.1 RIO的无缓冲的输入输出函数：rio_readn/rio_writen。10.4.2 RIO的带缓冲的输入函数：rio_readlineb/rio_readnb，提供线程安全的缓冲I/O。</p>
+    </div>
+    <div class="section" id="sec-10.5">
+      <h4 class="section-title">
+        <span class="section-num">10.5</span>
+        读取文件元数据
+      </h4>
+      <p class="section-content">stat/fstat函数获取文件大小、类型、权限、时间戳等信息。</p>
+    </div>
+    <div class="section" id="sec-10.6">
+      <h4 class="section-title">
+        <span class="section-num">10.6</span>
+        共享文件
+      </h4>
+      <p class="section-content">内核用三个数据结构表示打开的文件：描述符表、文件表、v-node表。多个描述符可以引用同一文件。</p>
+    </div>
+    <div class="section" id="sec-10.7">
+      <h4 class="section-title">
+        <span class="section-num">10.7</span>
+        I/O重定向
+      </h4>
+      <p class="section-content">dup2函数复制描述符表项实现重定向，是外壳实现>、<、|等操作的基础。</p>
+    </div>
+    <div class="section" id="sec-10.8">
+      <h4 class="section-title">
+        <span class="section-num">10.8</span>
+        标准I/O
+      </h4>
+      <p class="section-content">C标准库提供带缓冲的I/O抽象：fopen/fclose/fread/fwrite/fgets/fputs等。封装了Unix I/O。</p>
+    </div>
+    <div class="section" id="sec-10.9">
+      <h4 class="section-title">
+        <span class="section-num">10.9</span>
+        综合：我该使用哪些I/O函数
+      </h4>
+      <p class="section-content">建议：使用RIO包读取、检查短计数、避免标准I/O用于网络、避免在信号处理程序中使用标准I/O。</p>
+    </div>
+  </div>
+</section>
+<section class="chapter" id="ch11" style="--node-color: #f59e0b;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第11章</div>
+    <h2 class="chapter-title">网络编程</h2>
+    <div class="chapter-summary">学习客户端-服务器编程模型、TCP/IP协议、套接字接口编程；构建Web服务器，理解HTTP协议、动态内容生成。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">客户端-服务器模型</li>
+      <li class="concept-item">网络协议（TCP/IP）</li>
+      <li class="concept-item">IP地址（IPv4/IPv6）</li>
+      <li class="concept-item">因特网域名（DNS）</li>
+      <li class="concept-item">因特网连接</li>
+      <li class="concept-item">套接字接口（socket/bind/listen/accept/connect）</li>
+      <li class="concept-item">Web基础（HTTP/HTML）</li>
+      <li class="concept-item">Web服务器</li>
+      <li class="concept-item">动态内容（CGI）</li>
+      <li class="concept-item">TINY Web服务器</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-11.1">
+      <h4 class="section-title">
+        <span class="section-num">11.1</span>
+        客户端-服务器编程模型
+      </h4>
+      <p class="section-content">一个应用是由一个服务器进程和一个或多个客户端进程组成的。服务器管理资源，客户端请求服务。</p>
+    </div>
+    <div class="section" id="sec-11.2">
+      <h4 class="section-title">
+        <span class="section-num">11.2</span>
+        网络
+      </h4>
+      <p class="section-content">对主机而言，网络是I/O设备。从网络适配器收发数据，遵循TCP/IP协议族。</p>
+    </div>
+    <div class="section" id="sec-11.3">
+      <h4 class="section-title">
+        <span class="section-num">11.3</span>
+        全球IP因特网
+      </h4>
+      <p class="section-content">11.3.1 IP地址：32位IPv4、128位IPv6。11.3.2 因特网域名：层次化命名，DNS解析为IP地址。11.3.3 因特网连接：客户端/服务器通过套接字接口和TCP/IP协议通信。</p>
+    </div>
+    <div class="section" id="sec-11.4">
+      <h4 class="section-title">
+        <span class="section-num">11.4</span>
+        套接字接口
+      </h4>
+      <p class="section-content">11.4.1 套接字地址结构：sockaddr/sockaddr_in。11.4.2 socket函数。11.4.3 connect函数。11.4.4 open_clientfd函数（CSAPP提供的辅助函数）。11.4.5 bind函数。11.4.6 listen函数。11.4.7 open_listenfd函数。11.4.8 accept函数。11.4.9 echo客户端和服务器的示例。</p>
+    </div>
+    <div class="section" id="sec-11.5">
+      <h4 class="section-title">
+        <span class="section-num">11.5</span>
+        Web服务器
+      </h4>
+      <p class="section-content">11.5.1 Web基础：浏览器与Web服务器使用HTTP协议通信。11.5.2 Web内容：静态内容（磁盘文件）、动态内容（运行时生成）。11.5.3 HTTP事务：请求/响应格式、URI、方法、状态码。11.5.4 服务动态内容：服务器通过CGI、子进程或预线程化执行CGI程序。</p>
+    </div>
+    <div class="section" id="sec-11.6">
+      <h4 class="section-title">
+        <span class="section-num">11.6</span>
+        综合：TINY Web服务器
+      </h4>
+      <p class="section-content">CSAPP提供的简单Web服务器实现示例，支持静态和动态内容服务。</p>
+    </div>
+  </div>
+</section>
+<section class="chapter" id="ch12" style="--node-color: #f59e0b;">
+  <header class="chapter-header">
+    <div class="chapter-tag">第12章</div>
+    <h2 class="chapter-title">并发编程</h2>
+    <div class="chapter-summary">学习三种并发编程方法：基于进程、基于I/O多路复用、基于线程；掌握线程同步（信号量/P/V操作）；理解线程安全、可重入性、竞争、死锁等并发问题。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">基于进程的并发编程</li>
+      <li class="concept-item">基于I/O多路复用的并发（select/epoll）</li>
+      <li class="concept-item">基于线程的并发（pthread）</li>
+      <li class="concept-item">线程存储器模型</li>
+      <li class="concept-item">共享变量</li>
+      <li class="concept-item">信号量同步（P/V操作）</li>
+      <li class="concept-item">进度图</li>
+      <li class="concept-item">线程安全</li>
+      <li class="concept-item">可重入性</li>
+      <li class="concept-item">竞争（race）</li>
+      <li class="concept-item">死锁（deadlock）</li>
+      <li class="concept-item">使用线程提高并行性</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-12.1">
+      <h4 class="section-title">
+        <span class="section-num">12.1</span>
+        基于进程的并发编程
+      </h4>
+      <p class="section-content">12.1.1 基于进程的并发服务器：每个客户端一个子进程，父进程accept、子进程服务。12.1.2 关于进程的优劣：进程有独立地址空间，不会共享文件描述符；缺点是进程间共享状态困难，开销大。</p>
+    </div>
+    <div class="section" id="sec-12.2">
+      <h4 class="section-title">
+        <span class="section-num">12.2</span>
+        基于I/O多路复用的并发编程
+      </h4>
+      <p class="section-content">12.2.1 基于I/O多路复用的并发事件驱动服务器：单线程使用select/epoll监控多个描述符。12.2.2 I/O多路复用技术的优劣：优点是更精细控制、便于共享状态、上下文切换少；缺点是编码复杂、粒度粗。</p>
+    </div>
+    <div class="section" id="sec-12.3">
+      <h4 class="section-title">
+        <span class="section-num">12.3</span>
+        基于线程的并发编程
+      </h4>
+      <p class="section-content">12.3.1 线程执行模型：每个线程有自己的线程上下文（PC、寄存器）和线程栈，共享进程代码、数据和堆。12.3.2 Posix线程（Pthreads）：pthread_create/pthread_exit/pthread_join/pthread_detach。12.3.3 创建线程pthread_create。12.3.4 终止线程pthread_exit。12.3.5 回收已终止线程的资源pthread_join。12.3.6 分离线程pthread_detach。12.3.7 初始化线程。12.3.8 一个基于线程的并发服务器。</p>
+    </div>
+    <div class="section" id="sec-12.4">
+      <h4 class="section-title">
+        <span class="section-num">12.4</span>
+        多线程程序中的共享变量
+      </h4>
+      <p class="section-content">12.4.1 线程存储器模型。12.4.2 将变量映射到存储器：全局变量、局部变量、动态变量。12.4.3 共享变量：多个线程引用同一存储位置。</p>
+    </div>
+    <div class="section" id="sec-12.5">
+      <h4 class="section-title">
+        <span class="section-num">12.5</span>
+        用信号量同步线程
+      </h4>
+      <p class="section-content">12.5.1 进度图：将线程执行轨迹表示为二维空间中的轨迹点。12.5.2 信号量：非负整数计数器，sem_init/sem_wait(P)/sem_post(V)。12.5.3 使用信号量来实现互斥（二元信号量即互斥锁）。12.5.4 利用信号量来调度共享资源：生产者-消费者、读者-写者问题。12.5.5 综合：基于预线程化的并发服务器。</p>
+    </div>
+    <div class="section" id="sec-12.6">
+      <h4 class="section-title">
+        <span class="section-num">12.6</span>
+        使用线程提高并行性
+      </h4>
+      <p class="section-content">将顺序程序并行化，分成k个独立任务在k个线程上执行。注意并行化的开销和负载均衡。</p>
+    </div>
+    <div class="section" id="sec-12.7">
+      <h4 class="section-title">
+        <span class="section-num">12.7</span>
+        其他并发问题
+      </h4>
+      <p class="section-content">12.7.1 线程安全：四个不安全函数类（不保护共享变量、跨多个调用保持状态、返回指向静态变量的指针、调用线程不安全函数）。12.7.2 可重入性：可重入函数被多个线程同时调用时保证正确。12.7.3 在线程化的程序中使用已存在的库函数。12.7.4 竞争：同步错误导致结果取决于线程执行顺序。12.7.5 死锁：一组线程互相等待对方持有的资源。</p>
+    </div>
+  </div>
+</section>
+<div class="part-divider" style="--node-color: #8b5cf6;">
+  <div class="part-divider-line"></div>
+  <div class="part-divider-text">附录</div>
+  <div class="part-divider-line"></div>
+</div>
+<section class="chapter" id="appA" style="--node-color: #8b5cf6;">
+  <header class="chapter-header">
+    <div class="chapter-tag">附录A</div>
+    <h2 class="chapter-title">错误处理</h2>
+    <div class="chapter-summary">Unix系统中错误处理的模式和CSAPP错误处理包装函数。</div>
+  </header>
+  <div class="chapter-section">
+    <h3>🎯 核心概念</h3>
+    <ul class="concept-list">
+      <li class="concept-item">Unix系统中的错误处理</li>
+      <li class="concept-item">错误处理包装函数</li>
+    </ul>
+  </div>
+  <div class="chapter-section">
+    <h3>📖 章节内容</h3>
+    <div class="section" id="sec-A.1">
+      <h4 class="section-title">
+        <span class="section-num">A.1</span>
+        Unix系统中的错误处理
+      </h4>
+      <p class="section-content">系统调用失败时返回-1并设置全局变量errno。常用错误处理函数：strerror、perror。</p>
+    </div>
+    <div class="section" id="sec-A.2">
+      <h4 class="section-title">
+        <span class="section-num">A.2</span>
+        错误处理包装函数
+      </h4>
+      <p class="section-content">CSAPP提供包装Unix系统调用的函数：Fork、Execve、Waitpid等，自动检查错误并终止程序。</p>
+    </div>
+  </div>
+</section>
+    </main>
+    <button class="back-to-top" id="backToTop" title="回到顶部">↑</button>
+</div>
+<script>
+// Sidebar toggle
+document.querySelectorAll('.nav-part-header').forEach(function(header) {
+    header.addEventListener('click', function() {
+        var targetId = this.getAttribute('data-target');
+        var target = document.getElementById(targetId);
+        var isExpanded = this.classList.contains('expanded');
+        if (isExpanded) {
+            this.classList.remove('expanded');
+            target.classList.remove('expanded');
+        } else {
+            this.classList.add('expanded');
+            target.classList.add('expanded');
+        }
+    });
+});
+
+// Search filter
+var searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', function() {
+    var query = this.value.trim().toLowerCase();
+    var parts = document.querySelectorAll('.nav-part');
+    parts.forEach(function(part) {
+        var chapters = part.querySelectorAll('.nav-chapter');
+        var anyMatch = false;
+        chapters.forEach(function(chapter) {
+            var text = chapter.textContent.toLowerCase();
+            if (query === '' || text.indexOf(query) !== -1) {
+                chapter.style.display = '';
+                anyMatch = true;
+            } else {
+                chapter.style.display = 'none';
+            }
+        });
+        if (query !== '' && anyMatch) {
+            part.style.display = '';
+            part.querySelector('.nav-part-header').classList.add('expanded');
+            part.querySelector('.nav-chapters').classList.add('expanded');
+        } else if (query === '') {
+            part.style.display = '';
+        } else {
+            part.style.display = 'none';
+        }
+    });
+});
+
+// Highlight active section on scroll
+var chapterLinks = document.querySelectorAll('.nav-chapter-link');
+chapterLinks.forEach(function(link) {
+    link.addEventListener('click', function() {
+        chapterLinks.forEach(function(l) { l.classList.remove('active'); });
+        this.classList.add('active');
+    });
+});
+
+// Track scroll to update active link
+var chapters = document.querySelectorAll('.chapter');
+var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+            var id = entry.target.id;
+            chapterLinks.forEach(function(l) {
+                if (l.getAttribute('href') === '#' + id) {
+                    l.classList.add('active');
+                } else {
+                    l.classList.remove('active');
+                }
+            });
+        }
+    });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+chapters.forEach(function(chapter) {
+    observer.observe(chapter);
+});
+
+// Back to top
+var backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll', function() {
+    if (window.pageYOffset > 300) {
+        backToTop.classList.add('visible');
+    } else {
+        backToTop.classList.remove('visible');
+    }
+});
+backToTop.addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Mobile toggle
+var mobileToggle = document.getElementById('mobileToggle');
+var sidebar = document.getElementById('sidebar');
+mobileToggle.addEventListener('click', function() {
+    sidebar.classList.toggle('open');
+});
+
+// Close sidebar on link click (mobile)
+chapterLinks.forEach(function(link) {
+    link.addEventListener('click', function() {
+        if (window.innerWidth <= 900) {
+            sidebar.classList.remove('open');
+        }
+    });
+});
+</script>
+</body>
+</html>
