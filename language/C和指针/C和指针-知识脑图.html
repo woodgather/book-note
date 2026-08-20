@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《C和指针》知识脑图</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  color: #2c3e50;
+  background: #f5f7fa;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+/* ===== 顶部 Header ===== */
+header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 64px;
+  background: linear-gradient(135deg, #2c3e50 0%, #4a6580 100%);
+  color: #fff;
+  display: flex; align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+header h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
+header .subtitle { margin-left: 16px; opacity: 0.85; font-size: 13px; }
+
+/* ===== 整体布局 ===== */
+.layout {
+  display: flex;
+  margin-top: 64px;
+  min-height: calc(100vh - 64px);
+}
+
+/* ===== 侧边导航 ===== */
+aside {
+  width: 300px;
+  background: #ffffff;
+  border-right: 1px solid #e1e6ed;
+  position: fixed;
+  top: 64px; bottom: 0;
+  overflow-y: auto;
+  padding: 16px 0;
+  z-index: 50;
+}
+aside::-webkit-scrollbar { width: 6px; }
+aside::-webkit-scrollbar-thumb { background: #c5cdd8; border-radius: 3px; }
+aside::-webkit-scrollbar-track { background: #f5f7fa; }
+
+.aside-title {
+  padding: 8px 20px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7a8a;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #ecf0f4;
+}
+.nav-list { list-style: none; }
+.nav-group { border-bottom: 1px solid #ecf0f4; }
+.nav-group-header {
+  display: flex; align-items: center;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #34495e;
+  font-size: 14px;
+  transition: background 0.15s;
+  user-select: none;
+}
+.nav-group-header:hover { background: #f5f7fa; }
+.nav-group-header .arrow {
+  display: inline-block;
+  width: 14px;
+  margin-right: 8px;
+  transition: transform 0.2s;
+  color: #95a5a6;
+  font-size: 12px;
+}
+.nav-group.collapsed .arrow { transform: rotate(-90deg); }
+.nav-group.collapsed .nav-sub { display: none; }
+.nav-sub { list-style: none; padding: 4px 0 8px 0; }
+.nav-sub li a {
+  display: block;
+  padding: 6px 20px 6px 42px;
+  color: #5a6c7d;
+  text-decoration: none;
+  font-size: 13px;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+.nav-sub li a:hover {
+  color: #2c3e50;
+  background: #f5f7fa;
+  border-left-color: #4a6580;
+}
+
+/* ===== 主内容区 ===== */
+main {
+  margin-left: 300px;
+  flex: 1;
+  padding: 32px 40px 60px;
+  max-width: 1100px;
+}
+.chapter {
+  background: #fff;
+  border-radius: 8px;
+  margin-bottom: 32px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  overflow: hidden;
+  border: 1px solid #e8edf3;
+}
+.chapter-header {
+  background: linear-gradient(135deg, #34495e 0%, #4a6580 100%);
+  color: #fff;
+  padding: 20px 28px;
+}
+.chapter-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.chapter-header .chapter-num {
+  display: inline-block;
+  background: rgba(255,255,255,0.18);
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+.chapter-header .chapter-intro {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: 0.9;
+  font-weight: normal;
+}
+.chapter-body { padding: 24px 28px 32px; }
+
+.section { margin-bottom: 26px; }
+.section:last-child { margin-bottom: 0; }
+.section h3 {
+  color: #2c3e50;
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #4a6580;
+  display: inline-block;
+}
+.section h4 {
+  color: #34495e;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 14px 0 8px;
+  padding-left: 10px;
+  border-left: 3px solid #4a6580;
+}
+.section p { color: #4a5568; margin-bottom: 10px; }
+.section ul, .section ol { margin: 8px 0 8px 22px; color: #4a5568; }
+.section li { margin-bottom: 4px; }
+
+.kbox {
+  background: #f0f4f8;
+  border-left: 4px solid #4a6580;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin: 12px 0;
+  color: #34495e;
+}
+.kbox strong { color: #2c3e50; }
+.tip {
+  background: #fff8e1;
+  border-left: 4px solid #f39c12;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin: 12px 0;
+  font-size: 14px;
+  color: #5a4a2a;
+}
+.tip strong { color: #8a6a1a; }
+.warn {
+  background: #fdecea;
+  border-left: 4px solid #e74c3c;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin: 12px 0;
+  font-size: 14px;
+  color: #6b2a25;
+}
+.warn strong { color: #a92a1f; }
+.code {
+  background: #2c3e50;
+  color: #e8eef3;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-family: "SF Mono", Consolas, Monaco, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 10px 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 14px;
+}
+.table th {
+  background: #4a6580;
+  color: #fff;
+  padding: 8px 12px;
+  text-align: left;
+}
+.table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e1e6ed;
+  color: #4a5568;
+}
+.table tr:nth-child(even) td { background: #f5f7fa; }
+.tag {
+  display: inline-block;
+  background: #e1eaf2;
+  color: #2c3e50;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: "SF Mono", Consolas, monospace;
+  margin: 0 2px;
+}
+.mindmap-graphic {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+}
+.mindmap-graphic svg { max-width: 100%; height: auto; }
+.summary-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.summary-item {
+  background: #f0f4f8;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #34495e;
+  border-left: 3px solid #4a6580;
+}
+
+/* ===== Footer ===== */
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #95a5a6;
+  font-size: 12px;
+  border-top: 1px solid #ecf0f4;
+  margin-top: 40px;
+}
+
+/* ===== 移动端适配 ===== */
+@media (max-width: 900px) {
+  aside { width: 240px; }
+  main { margin-left: 240px; padding: 20px; }
+}
+@media (max-width: 700px) {
+  aside { display: none; }
+  main { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📘 《C和指针》知识脑图</h1>
+  <span class="subtitle">Kenneth A. Reek · 18章系统梳理</span>
+</header>
+
+<div class="layout">
+  <!-- ===== 侧边导航（默认折叠） ===== -->
+  <aside>
+    <div class="aside-title">章节目录导航</div>
+    <ul class="nav-list">
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第1章 快速上手</div>
+        <ul class="nav-sub">
+          <li><a href="#ch1-1">1.1 简介</a></li>
+          <li><a href="#ch1-2">1.2 补充说明</a></li>
+          <li><a href="#ch1-3">1.3 编译</a></li>
+          <li><a href="#ch1-4">1.4 总结</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第2章 基本概念</div>
+        <ul class="nav-sub">
+          <li><a href="#ch2-1">2.1 环境</a></li>
+          <li><a href="#ch2-2">2.2 翻译</a></li>
+          <li><a href="#ch2-3">2.3 词法规则</a></li>
+          <li><a href="#ch2-4">2.4 风格</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第3章 数据</div>
+        <ul class="nav-sub">
+          <li><a href="#ch3-1">3.1 基本数据类型</a></li>
+          <li><a href="#ch3-2">3.2 整型家族</a></li>
+          <li><a href="#ch3-3">3.3 浮点类型</a></li>
+          <li><a href="#ch3-4">3.4 指针</a></li>
+          <li><a href="#ch3-5">3.5 字符串常量</a></li>
+          <li><a href="#ch3-6">3.6 声明</a></li>
+          <li><a href="#ch3-7">3.7 typedef</a></li>
+          <li><a href="#ch3-8">3.8 常量</a></li>
+          <li><a href="#ch3-9">3.9 作用域</a></li>
+          <li><a href="#ch3-10">3.10 链接属性</a></li>
+          <li><a href="#ch3-11">3.11 存储类型</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第4章 语句</div>
+        <ul class="nav-sub">
+          <li><a href="#ch4-1">4.1 表达式语句</a></li>
+          <li><a href="#ch4-2">4.2 代码块</a></li>
+          <li><a href="#ch4-3">4.3 if语句</a></li>
+          <li><a href="#ch4-4">4.4 while循环</a></li>
+          <li><a href="#ch4-5">4.5 for循环</a></li>
+          <li><a href="#ch4-6">4.6 do循环</a></li>
+          <li><a href="#ch4-7">4.7 switch</a></li>
+          <li><a href="#ch4-8">4.8 goto</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第5章 操作符和表达式</div>
+        <ul class="nav-sub">
+          <li><a href="#ch5-1">5.1 操作符</a></li>
+          <li><a href="#ch5-2">5.2 算术操作符</a></li>
+          <li><a href="#ch5-3">5.3 移位操作符</a></li>
+          <li><a href="#ch5-4">5.4 位操作符</a></li>
+          <li><a href="#ch5-5">5.5 赋值</a></li>
+          <li><a href="#ch5-6">5.6 单目操作符</a></li>
+          <li><a href="#ch5-7">5.7 关系操作符</a></li>
+          <li><a href="#ch5-8">5.8 逻辑操作符</a></li>
+          <li><a href="#ch5-9">5.9 条件操作符</a></li>
+          <li><a href="#ch5-10">5.10 逗号操作符</a></li>
+          <li><a href="#ch5-11">5.11 布尔值</a></li>
+          <li><a href="#ch5-12">5.12 优先级与求值</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第6章 指针 ★</div>
+        <ul class="nav-sub">
+          <li><a href="#ch6-1">6.1 内存和地址</a></li>
+          <li><a href="#ch6-2">6.2 值和类型</a></li>
+          <li><a href="#ch6-3">6.3 指针变量</a></li>
+          <li><a href="#ch6-4">6.4 间接访问</a></li>
+          <li><a href="#ch6-5">6.5 NULL指针</a></li>
+          <li><a href="#ch6-6">6.6 算术运算</a></li>
+          <li><a href="#ch6-7">6.7 字符串操作</a></li>
+          <li><a href="#ch6-8">6.8 指针与数组</a></li>
+          <li><a href="#ch6-9">6.9 指针与const</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第7章 函数</div>
+        <ul class="nav-sub">
+          <li><a href="#ch7-1">7.1 函数定义</a></li>
+          <li><a href="#ch7-2">7.2 函数声明</a></li>
+          <li><a href="#ch7-3">7.3 函数参数</a></li>
+          <li><a href="#ch7-4">7.4 ADT与黑盒</a></li>
+          <li><a href="#ch7-5">7.5 递归</a></li>
+          <li><a href="#ch7-6">7.6 可变参数</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第8章 数组</div>
+        <ul class="nav-sub">
+          <li><a href="#ch8-1">8.1 一维数组</a></li>
+          <li><a href="#ch8-2">8.2 多维数组</a></li>
+          <li><a href="#ch8-3">8.3 指针与数组</a></li>
+          <li><a href="#ch8-4">8.4 函数参数</a></li>
+          <li><a href="#ch8-5">8.5 初始化</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第9章 字符串/字符/字节</div>
+        <ul class="nav-sub">
+          <li><a href="#ch9-1">9.1 字符串基础</a></li>
+          <li><a href="#ch9-2">9.2 字符串长度</a></li>
+          <li><a href="#ch9-3">9.3 不受限制</a></li>
+          <li><a href="#ch9-4">9.4 长度受限</a></li>
+          <li><a href="#ch9-5">9.5 字符串查找</a></li>
+          <li><a href="#ch9-6">9.6 高级查找</a></li>
+          <li><a href="#ch9-7">9.7 错误信息</a></li>
+          <li><a href="#ch9-8">9.8 字符操作</a></li>
+          <li><a href="#ch9-9">9.9 内存操作</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第10章 结构和联合</div>
+        <ul class="nav-sub">
+          <li><a href="#ch10-1">10.1 结构基础</a></li>
+          <li><a href="#ch10-2">10.2 指针与成员</a></li>
+          <li><a href="#ch10-3">10.3 存储分配</a></li>
+          <li><a href="#ch10-4">10.4 作为函数参数</a></li>
+          <li><a href="#ch10-5">10.5 位段</a></li>
+          <li><a href="#ch10-6">10.6 联合</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第11章 动态内存分配</div>
+        <ul class="nav-sub">
+          <li><a href="#ch11-1">11.1 为什么用</a></li>
+          <li><a href="#ch11-2">11.2 malloc和free</a></li>
+          <li><a href="#ch11-3">11.3 calloc和realloc</a></li>
+          <li><a href="#ch11-4">11.4 使用分配内存</a></li>
+          <li><a href="#ch11-5">11.5 常见错误</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第12章 结构和指针</div>
+        <ul class="nav-sub">
+          <li><a href="#ch12-1">12.1 链表</a></li>
+          <li><a href="#ch12-2">12.2 单链表函数</a></li>
+          <li><a href="#ch12-3">12.3 双向链表</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第13章 高级指针话题</div>
+        <ul class="nav-sub">
+          <li><a href="#ch13-1">13.1 指向指针的指针</a></li>
+          <li><a href="#ch13-2">13.2 高级声明</a></li>
+          <li><a href="#ch13-3">13.3 函数指针</a></li>
+          <li><a href="#ch13-4">13.4 命令行参数</a></li>
+          <li><a href="#ch13-5">13.5 跳转</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第14章 预处理器</div>
+        <ul class="nav-sub">
+          <li><a href="#ch14-1">14.1 预定义符号</a></li>
+          <li><a href="#ch14-2">14.2 #define</a></li>
+          <li><a href="#ch14-3">14.3 宏</a></li>
+          <li><a href="#ch14-4">14.4 副作用</a></li>
+          <li><a href="#ch14-5">14.5 #include</a></li>
+          <li><a href="#ch14-6">14.6 条件编译</a></li>
+          <li><a href="#ch14-7">14.7 其他指令</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第15章 输入/输出</div>
+        <ul class="nav-sub">
+          <li><a href="#ch15-1">15.1 流</a></li>
+          <li><a href="#ch15-2">15.2 标准I/O</a></li>
+          <li><a href="#ch15-3">15.3 格式化I/O</a></li>
+          <li><a href="#ch15-4">15.4 字符I/O</a></li>
+          <li><a href="#ch15-5">15.5 行I/O</a></li>
+          <li><a href="#ch15-6">15.6 块I/O</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第16章 标准函数库</div>
+        <ul class="nav-sub">
+          <li><a href="#ch16-1">16.1 整型</a></li>
+          <li><a href="#ch16-2">16.2 浮点型</a></li>
+          <li><a href="#ch16-3">16.3 日期时间</a></li>
+          <li><a href="#ch16-4">16.4 实用</a></li>
+          <li><a href="#ch16-5">16.5 诊断</a></li>
+          <li><a href="#ch16-6">16.6 <limits.h></a></li>
+          <li><a href="#ch16-7">16.7 <float.h></a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第17章 经典ADT</div>
+        <ul class="nav-sub">
+          <li><a href="#ch17-1">17.1 内存分配</a></li>
+          <li><a href="#ch17-2">17.2 堆栈</a></li>
+          <li><a href="#ch17-3">17.3 队列</a></li>
+          <li><a href="#ch17-4">17.4 树</a></li>
+          <li><a href="#ch17-5">17.5 实现改进</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>第18章 运行时环境</div>
+        <ul class="nav-sub">
+          <li><a href="#ch18-1">18.1 判断环境</a></li>
+          <li><a href="#ch18-2">18.2 C和汇编</a></li>
+          <li><a href="#ch18-3">18.3 运行时结构</a></li>
+          <li><a href="#ch18-4">18.4 效率</a></li>
+        </ul>
+      </li>
+      <li class="nav-group collapsed">
+        <div class="nav-group-header"><span class="arrow">▼</span>附录</div>
+        <ul class="nav-sub">
+          <li><a href="#app-a">附录A 部分问题答案</a></li>
+          <li><a href="#app-b">附录B 参考文献</a></li>
+        </ul>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- ===== 主内容区 ===== -->
+  <main>
+
+    <!-- =================== 第1章 =================== -->
+    <section class="chapter" id="ch1">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第1章</span>快速上手</h2>
+        <div class="chapter-intro">通过一个完整示例程序（rearrange.c）从输入读取列标号并重排字符，演示 C 语言的核心编写技巧。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch1-1">
+          <h3>1.1 简介：示例程序 rearrange.c</h3>
+          <p>本章以一个完整的"列重排"程序作为开篇，演示了 C 编程所需的多数基本技巧。该程序从标准输入读取一串列标号对，提取输入行中指定范围的字符并输出。</p>
+
+          <h4>1.1.1 空白和注释</h4>
+          <ul>
+            <li><strong>自由格式语言</strong>：C 不强制要求语句外观，但应遵守良好的空白缩进约定</li>
+            <li><strong>注释</strong>：以 <span class="tag">/*</span> 开始，<span class="tag">*/</span> 结束，不能嵌套</li>
+            <li><strong>注释代码</strong>：建议使用 <span class="tag">#if 0 ... #endif</span>，避免 <span class="tag">/* */</span> 嵌套陷阱</li>
+          </ul>
+          <div class="code">/* 这是一个注释 */
+#if 0
+   这段代码将被编译器忽略
+#endif</div>
+
+          <h4>1.1.2 预处理指令</h4>
+          <ul>
+            <li><span class="tag">#include &lt;stdio.h&gt;</span> 引入标准 I/O 库头文件</li>
+            <li><span class="tag">#define NAME value</span> 定义符号常量，名字通常大写</li>
+            <li>预处理器先于编译器工作，修改源代码后再递交编译</li>
+          </ul>
+          <div class="code">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#define MAX_COLS   20
+#define MAX_INPUT  1000</div>
+
+          <h4>1.1.3 main 函数</h4>
+          <ul>
+            <li>每个 C 程序必须有一个 <span class="tag">main</span> 函数</li>
+            <li><span class="tag">int main(void)</span> 表示返回整型且无参数</li>
+            <li><strong>标量参数</strong>：传值调用；<strong>数组参数</strong>：传址调用（实际传递的是指针）</li>
+            <li><strong>NUL 字节</strong>：<span class="tag">'\0'</span> 标识字符串结束；NUL 与 NULL 值相同但用途不同</li>
+            <li><strong>字符串</strong>：一串以 NUL 字节结尾的字符</li>
+            <li><span class="tag">printf</span> 格式化输出，<span class="tag">scanf</span> 格式化输入</li>
+          </ul>
+          <div class="kbox"><strong>参数传递规则</strong>：所有参数都是按值传递的；但数组名作为参数时，传递的是指针的拷贝，因此表现出传址调用的语义。</div>
+
+          <h4>1.1.4 read_column_numbers 函数</h4>
+          <ul>
+            <li>函数原型与函数定义的参数个数、类型、返回类型必须匹配</li>
+            <li>数组参数不指定长度（允许任意长度），但函数无法得知数组长度，需另行传参</li>
+            <li>实参名字和形参名字可以不同（绝大多数语言如此）</li>
+            <li><span class="tag">scanf</span> 的标量参数前必须加 <span class="tag">&amp;</span>，数组参数不加</li>
+            <li><span class="tag">==</span> 是比较，<span class="tag">=</span> 是赋值，混淆会导致 bug</li>
+            <li><span class="tag">&amp;&amp;</span> 短路求值，左假则右边不再求值</li>
+            <li><span class="tag">EOF</span> 存于 stdio.h，标识文件末尾，必须用整型变量接收</li>
+            <li><strong>空语句</strong>：单写一个分号构成空循环体</li>
+          </ul>
+          <div class="warn"><strong>警告</strong>：机械照搬 printf 的格式代码到 scanf；该用 && 的地方误用 &amp;；用 = 测试相等性；scanf 标量参数前漏写 &amp;。</div>
+
+          <h4>1.1.5 rearrange 函数</h4>
+          <ul>
+            <li>数组名作实参时，传递的是指向数组起始位置的指针</li>
+            <li><span class="tag">const</span> 让编译器验证函数不会修改该参数</li>
+            <li><span class="tag">for</span> 等价于"初始化+while+调整"的简写</li>
+            <li><span class="tag">strncpy</span> 前两个参数是目标/源地址，第三个是字符数</li>
+            <li>字符串末尾必须显式添加 <span class="tag">'\0'</span></li>
+            <li>无返回值的函数应声明为 <span class="tag">void</span>，调用方可忽略返回值</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch1-2">
+          <h3>1.2 补充说明</h3>
+          <ul>
+            <li><span class="tag">putchar(int)</span>：打印单个字符，对应 getchar</li>
+            <li><span class="tag">strcpy(dst, src)</span>：字符串复制，无长度限制，目标不能是常量</li>
+            <li><span class="tag">strcat(dst, src)</span>：字符串拼接</li>
+            <li><span class="tag">strchr(str, ch)</span>：查找字符首次出现位置</li>
+            <li><span class="tag">strstr(s1, s2)</span>：查找子串首次出现位置</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch1-3">
+          <h3>1.3 编译</h3>
+          <div class="code"># UNIX
+cc testing.c    # 编译 → a.out
+a.out           # 执行
+# DOS/Windows (Borland)
+bcc testing.c
+testing</div>
+        </div>
+
+        <div class="section" id="ch1-4">
+          <h3>1.4 总结</h3>
+          <div class="kbox">
+            <strong>本章要点</strong>：注释、<code>#include</code>、<code>#define</code>、main 函数、参数传递规则、字符串约定、printf/scanf、getchar/putchar、if/while。
+          </div>
+          <h4>警告的总结（4 条）</h4>
+          <ol>
+            <li>scanf 标量参数前未加 &amp;</li>
+            <li>机械照搬 printf 格式代码给 scanf</li>
+            <li>该用 <span class="tag">&amp;&amp;</span> 的地方误用 <span class="tag">&amp;</span></li>
+            <li>用 <span class="tag">=</span> 测试相等性而非 <span class="tag">==</span></li>
+          </ol>
+          <h4>编程提示的总结（7 条）</h4>
+          <ol>
+            <li>用 <span class="tag">#include</span> 避免重复声明</li>
+            <li>用 <span class="tag">#define</span> 给字面值常量取名</li>
+            <li>把函数原型放在头文件并 <span class="tag">#include</span> 进来</li>
+            <li>使用下标前先检查值</li>
+            <li>while/if 表达式中蕴含赋值操作可消除冗余</li>
+            <li>空循环体用单独的分号表示</li>
+            <li>始终确保数组不越界</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第2章 =================== -->
+    <section class="chapter" id="ch2">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第2章</span>基本概念</h2>
+        <div class="chapter-intro">C 程序的翻译流程、词法规则、编程风格等语言基础。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch2-1">
+          <h3>2.1 环境</h3>
+          <p>ANSI C 的实现存在两种不同的环境：</p>
+          <ul>
+            <li><strong>翻译环境</strong>(translation environment)：源代码 → 可执行机器指令</li>
+            <li><strong>执行环境</strong>(execution environment)：用于实际执行代码</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch2-2">
+          <h3>2.2 翻译</h3>
+          <p>翻译过程分多个阶段：</p>
+          <ol>
+            <li>源代码 → 字符被映射为字符集（处理三字母词、多字节字符）</li>
+            <li><strong>物理行</strong>(physical line) 被映射为 <strong>逻辑行</strong>(logical line)（处理反斜杠续行）</li>
+            <li>被分成<strong>预处理记号</strong>(preprocessing token) 和空白序列</li>
+            <li>执行预处理指令</li>
+            <li>记号转换为翻译单元(translation unit)</li>
+            <li>处理外部对象/函数的链接</li>
+            <li>翻译单元组合成程序映像，调用链接器</li>
+          </ol>
+        </div>
+
+        <div class="section" id="ch2-3">
+          <h3>2.3 词法规则</h3>
+          <h4>2.3.1 字符集</h4>
+          <p>三字母词 <span class="tag">??(</span> → <span class="tag">[</span>、<span class="tag">??)</span> → <span class="tag">]</span> 等；双字符 <span class="tag">&lt;:</span> → <span class="tag">[</span> 等。</p>
+          <h4>2.3.2 注释</h4>
+          <p>注释先于预处理指令被替换为一个空格。</p>
+          <h4>2.3.3 自由形式的源代码</h4>
+          <p>C 是自由格式的，标点符号相邻不能有空白，但操作符和操作数之间可以有任意空白。</p>
+          <h4>2.3.4 记号</h4>
+          <p>由<strong>标识符</strong>、<strong>关键字</strong>、<strong>常量</strong>、<strong>字符串字面值</strong>、<strong>操作符</strong>等组成。</p>
+          <h4>2.3.5 关键字</h4>
+          <p>auto、break、case、char、const、continue、default、do、double、else、enum、extern、float、for、goto、if、int、long、register、return、short、signed、sizeof、static、struct、switch、typedef、union、unsigned、void、volatile、while。</p>
+        </div>
+
+        <div class="section" id="ch2-4">
+          <h3>2.4 风格</h3>
+          <p>推荐使用一致的缩进、适当的注释、清晰的命名（变量小写、常量大写、类型加首大写），以及合理的代码块布局。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第3章 =================== -->
+    <section class="chapter" id="ch3">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第3章</span>数据</h2>
+        <div class="chapter-intro">C 的基本数据类型、变量的三个属性（作用域、链接属性、存储类型）。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch3-1">
+          <h3>3.1 基本数据类型</h3>
+          <p>C 仅 4 种基本数据类型：<strong>整型</strong>、<strong>浮点型</strong>、<strong>指针</strong>、<strong>聚合类型</strong>（数组、结构等）。</p>
+        </div>
+
+        <div class="section" id="ch3-2">
+          <h3>3.2 整型家族</h3>
+          <p>字符型 char、整型 int、长整型 long、短整型 short，有符号 signed 与无符号 unsigned。</p>
+          <table class="table">
+            <tr><th>类型</th><th>最小尺寸</th><th>典型范围</th></tr>
+            <tr><td>char</td><td>8 位</td><td>-128 ~ 127 或 0 ~ 255</td></tr>
+            <tr><td>short</td><td>16 位</td><td>-32768 ~ 32767</td></tr>
+            <tr><td>int</td><td>≥ short</td><td>通常 32 位</td></tr>
+            <tr><td>long</td><td>≥ int</td><td>通常 32/64 位</td></tr>
+            <tr><td>long long (C99)</td><td>≥ long</td><td>至少 64 位</td></tr>
+          </table>
+          <div class="kbox"><strong>规则</strong>：char 与 signed char、unsigned char 是<strong>三种不同类型</strong>。可移植字符操作应声明为 signed char 或 unsigned char。</div>
+        </div>
+
+        <div class="section" id="ch3-3">
+          <h3>3.3 浮点类型</h3>
+          <p>float（单精度）、double（双精度）、long double（扩展精度）。<span class="tag">long double</span> ≥ <span class="tag">double</span> ≥ <span class="tag">float</span>。</p>
+        </div>
+
+        <div class="section" id="ch3-4">
+          <h3>3.4 指针</h3>
+          <p>指针的内容是地址，其类型决定如何解释所指向的内存。所有指针的值都是<strong>地址</strong>，但只有同类型的指针可以保证有意义地相互赋值（<span class="tag">void *</span> 例外）。</p>
+        </div>
+
+        <div class="section" id="ch3-5">
+          <h3>3.5 字符串常量</h3>
+          <p>"Hello" 占据 6 字节：H、e、l、l、o、<span class="tag">'\0'</span>。字符串常量出现在表达式中时，其值是首字符的地址（指针常量）。</p>
+          <div class="warn"><strong>警告</strong>：修改字符串常量是未定义行为；同一字符串常量可能在内存中共享。</div>
+        </div>
+
+        <div class="section" id="ch3-6">
+          <h3>3.6 声明</h3>
+          <h4>3.6.1 声明的组成</h4>
+          <p>声明由<strong>类型</strong>和<strong>一组声明符</strong>组成，声明符包含标识符和间接访问/下标/函数调用等衍生类型。</p>
+          <h4>3.6.2 优先级规则</h4>
+          <p>解读复杂声明：先找标识符；优先级 <span class="tag">[]</span> 和 <span class="tag">()</span> > <span class="tag">*</span>。</p>
+        </div>
+
+        <div class="section" id="ch3-7">
+          <h3>3.7 typedef</h3>
+          <p><span class="tag">typedef</span> 是一种更高级的抽象，允许为已有类型创建新名字。它与 <span class="tag">#define</span> 不同，<strong>typedef 由编译器解释</strong>，可以正确处理指针等复杂类型。</p>
+          <div class="code">typedef int IntArray[10];
+IntArray a;     // 等价于 int a[10];</div>
+        </div>
+
+        <div class="section" id="ch3-8">
+          <h3>3.8 常量</h3>
+          <p>整数常量、浮点常量、字符常量、字符串常量、枚举常量。<span class="tag">#define</span>、<span class="tag">const</span>、<span class="tag">enum</span> 三种方式定义常量。</p>
+        </div>
+
+        <div class="section" id="ch3-9">
+          <h3>3.9 作用域</h3>
+          <p>代码块作用域、文件作用域、原型作用域、函数作用域。</p>
+        </div>
+
+        <div class="section" id="ch3-10">
+          <h3>3.10 链接属性</h3>
+          <p>external（外部）、internal（内部）、none（无）。</p>
+          <ul>
+            <li>未初始化的全局变量默认为 external（外部链接）</li>
+            <li><span class="tag">static</span> 改为 internal</li>
+            <li><span class="tag">extern</span> 用于引用其他文件中的定义</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch3-11">
+          <h3>3.11 存储类型</h3>
+          <p>普通变量、寄存器变量、静态变量。变量的"存储类型"指存储位置：寄存器、堆栈、内存固定位置。</p>
+          <ul>
+            <li><span class="tag">auto</span>：默认，函数内部变量存于堆栈</li>
+            <li><span class="tag">register</span>：建议存于寄存器，不可取址</li>
+            <li><span class="tag">static</span>：函数内部声明时，函数返回后值仍保留</li>
+            <li><strong>静态变量初始化</strong>：只执行一次</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第4章 =================== -->
+    <section class="chapter" id="ch4">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第4章</span>语句</h2>
+        <div class="chapter-intro">C 的所有控制流语句：表达式语句、if、while、for、do、switch、goto。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch4-1">
+          <h3>4.1 表达式语句</h3>
+          <p>C 没有专门的赋值语句，赋值通过表达式语句完成。<span class="tag">x = y + 3;</span> 末尾加分号构成语句。</p>
+        </div>
+
+        <div class="section" id="ch4-2">
+          <h3>4.2 代码块</h3>
+          <p>复合语句 <span class="tag">{ ... }</span> 在语法上等价于一条语句。</p>
+        </div>
+
+        <div class="section" id="ch4-3">
+          <h3>4.3 if 语句</h3>
+          <div class="code">if (expression)
+    statement
+else
+    statement</div>
+          <p>悬空 else 问题：<span class="tag">else</span> 始终与最近未匹配的 <span class="tag">if</span> 配对。</p>
+          <div class="tip"><strong>提示</strong>：总是用花括号包围 if/else 的语句体，可避免悬空 else。</div>
+        </div>
+
+        <div class="section" id="ch4-4">
+          <h3>4.4 while 循环</h3>
+          <div class="code">while (expression)
+    statement</div>
+          <p>先测试条件，条件为真则执行循环体。</p>
+        </div>
+
+        <div class="section" id="ch4-5">
+          <h3>4.5 for 循环</h3>
+          <div class="code">for (init; test; adjust)
+    statement</div>
+          <p>三部分：初始化（执行一次）、条件测试、调整。C99 允许在 init 部分声明变量，其作用域限于 for 循环。</p>
+        </div>
+
+        <div class="section" id="ch4-6">
+          <h3>4.6 do 循环</h3>
+          <div class="code">do {
+    statement
+} while (expression);</div>
+          <p>至少执行一次循环体，再判断条件。</p>
+        </div>
+
+        <div class="section" id="ch4-7">
+          <h3>4.7 switch 语句</h3>
+          <div class="code">switch (expression) {
+    case const1: statements
+    case const2: statements
+    default:     statements
+}</div>
+          <ul>
+            <li><span class="tag">case</span> 标签必须是整型常量表达式</li>
+            <li>没有 <span class="tag">break</span> 时，会继续执行后续 <span class="tag">case</span>（fall-through）</li>
+            <li><span class="tag">default</span> 分支处理所有未匹配的情况</li>
+          </ul>
+          <div class="tip"><strong>提示</strong>：每个 case 末尾通常需要 break；故意 fall-through 时应加注释。</div>
+        </div>
+
+        <div class="section" id="ch4-8">
+          <h3>4.8 goto 语句</h3>
+          <p>无条件的跳转，会跳过所有中间代码。<strong>不要滥用</strong>。常见合法用途：从多层嵌套中跳出；统一错误处理。</p>
+          <div class="warn"><strong>警告</strong>：goto 不能跳过变量声明进入作用域。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第5章 =================== -->
+    <section class="chapter" id="ch5">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第5章</span>操作符和表达式</h2>
+        <div class="chapter-intro">C 语言丰富的操作符家族、表达式求值规则、优先级和算术转换。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch5-1">
+          <h3>5.1 操作符</h3>
+          <p>C 拥有异常丰富的操作符，按用途分类：算术、关系、逻辑、位、赋值、求值顺序、特殊。</p>
+        </div>
+
+        <div class="section" id="ch5-2">
+          <h3>5.2 算术操作符</h3>
+          <p><span class="tag">+ - * / %</span>。<span class="tag">/</span> 与 <span class="tag">%</span> 对负数的行为由实现定义（C99 规定向 0 取整）。</p>
+        </div>
+
+        <div class="section" id="ch5-3">
+          <h3>5.3 移位操作符</h3>
+          <p><span class="tag">&lt;&lt;</span> 左移（低位补 0），<span class="tag">&gt;&gt;</span> 右移（无符号补 0；有符号补符号位，由实现定义）。<strong>左移负数位或位移 ≥ 位宽是未定义行为</strong>。</p>
+        </div>
+
+        <div class="section" id="ch5-4">
+          <h3>5.4 位操作符</h3>
+          <p><span class="tag">&amp; | ^ ~</span>。&amp; 按位与、| 按位或、^ 按位异或、~ 按位求反。</p>
+        </div>
+
+        <div class="section" id="ch5-5">
+          <h3>5.5 赋值</h3>
+          <p><span class="tag">=</span> 是基本赋值；复合赋值 <span class="tag">+= -= *= /= %= &lt;&lt;= &gt;&gt;= &amp;= ^= |=</span>。赋值表达式的值是左操作数被赋值后的结果。</p>
+        </div>
+
+        <div class="section" id="ch5-6">
+          <h3>5.6 单目操作符</h3>
+          <ul>
+            <li><span class="tag">!</span> 逻辑非</li>
+            <li><span class="tag">~</span> 按位求反</li>
+            <li><span class="tag">+ -</span> 正负号</li>
+            <li><span class="tag">++ --</span> 前缀/后缀自增自减</li>
+            <li><span class="tag">*</span> 间接访问（解引用）</li>
+            <li><span class="tag">&amp;</span> 取地址</li>
+            <li><span class="tag">sizeof</span> 计算类型或表达式大小（结果为 size_t）</li>
+            <li><span class="tag">(type)</span> 强制类型转换</li>
+          </ul>
+          <div class="kbox"><strong>前缀 vs 后缀</strong>：前缀先增减再使用；后缀先使用原值再增减。</div>
+        </div>
+
+        <div class="section" id="ch5-7">
+          <h3>5.7 关系操作符</h3>
+          <p><span class="tag">&lt; &gt; &lt;= &gt;= != ==</span>。结果为 int（0 或 1）。</p>
+        </div>
+
+        <div class="section" id="ch5-8">
+          <h3>5.8 逻辑操作符</h3>
+          <p><span class="tag">&amp;&amp; ||</span>，短路求值。&amp;&amp; 优先级高于 ||。</p>
+        </div>
+
+        <div class="section" id="ch5-9">
+          <h3>5.9 条件操作符</h3>
+          <div class="code">cond ? expr1 : expr2</div>
+          <p>唯一的三目操作符。</p>
+        </div>
+
+        <div class="section" id="ch5-10">
+          <h3>5.10 逗号操作符</h3>
+          <p>在优先级最低的位置将两个表达式拼成一个，先评估左边，丢弃其值，结果为右边表达式的值。</p>
+        </div>
+
+        <div class="section" id="ch5-11">
+          <h3>5.11 布尔值</h3>
+          <p>C 用整型表示布尔：0 为假，非 0 为真。C99 新增 <span class="tag">_Bool</span> 类型与 <span class="tag">&lt;stdbool.h&gt;</span> 提供 bool、true、false。</p>
+        </div>
+
+        <div class="section" id="ch5-12">
+          <h3>5.12 优先级与求值</h3>
+          <h4>优先级（从高到低）</h4>
+          <ol>
+            <li><span class="tag">() [] -&gt; .</span></li>
+            <li><span class="tag">! ~ ++ -- + - * &amp; (type) sizeof</span></li>
+            <li><span class="tag">* / %</span></li>
+            <li><span class="tag">+ -</span></li>
+            <li><span class="tag">&lt;&lt; &gt;&gt;</span></li>
+            <li><span class="tag">&lt; &lt;= &gt; &gt;=</span></li>
+            <li><span class="tag">== !=</span></li>
+            <li><span class="tag">&amp;</span></li>
+            <li><span class="tag">^</span></li>
+            <li><span class="tag">|</span></li>
+            <li><span class="tag">&amp;&amp;</span></li>
+            <li><span class="tag">||</span></li>
+            <li><span class="tag">?:</span></li>
+            <li><span class="tag">= += -= ...</span></li>
+            <li><span class="tag">,</span></li>
+          </ol>
+          <h4>算术转换</h4>
+          <p>不同类型操作数进行算术运算时，按"整型提升"规则统一类型：char/short → int；再按 long → long long → float → double → long double 顺序提升。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第6章 =================== -->
+    <section class="chapter" id="ch6">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第6章</span>指针 ★</h2>
+        <div class="chapter-intro">本书核心：内存地址、间接访问、指针运算、字符串操作、指针与数组/const 的关系。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch6-1">
+          <h3>6.1 内存和地址</h3>
+          <ul>
+            <li>每个内存位置由<strong>独一无二的地址</strong>标识</li>
+            <li>每个位置都包含一个值</li>
+            <li>字节（byte）通常 8 位，字（word）通常 2 或 4 字节</li>
+            <li><strong>边界对齐</strong>：某些机器上整型值的起始地址必须是 2 或 4 的倍数</li>
+            <li>变量名是编译器为方便记忆而提供的，硬件仍通过地址访问</li>
+          </ul>
+          <div class="kbox"><strong>硬件与编译器</strong>：名字与内存位置的关联是编译器实现的，硬件仍通过地址访问内存。</div>
+        </div>
+
+        <div class="section" id="ch6-2">
+          <h3>6.2 值和类型</h3>
+          <ul>
+            <li>一个值的类型取决于它被<strong>使用</strong>的方式，不是位本身</li>
+            <li>同一序列位可以被解释为整型、浮点、字符、机器指令等</li>
+            <li>编译器根据声明的类型决定如何访问</li>
+          </ul>
+          <div class="kbox"><strong>类型是值的属性而非位的属性</strong>。判断类型必须观察值的使用方式。</div>
+        </div>
+
+        <div class="section" id="ch6-3">
+          <h3>6.3 指针变量的内容</h3>
+          <ul>
+            <li>指针的内容是地址，地址指向另一个变量</li>
+            <li>区分指针的"地址"（指针自身的存储位置）和"内容"（指针所保存的地址）</li>
+            <li>指针变量在表达式中的值就是其内容所存储的数值</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch6-4">
+          <h3>6.4 间接访问操作符 *</h3>
+          <p>单目操作符 <span class="tag">*</span> 取得指针所指向地址的值。<span class="tag">*ptr</span> 等价于"ptr 指向的变量"。</p>
+          <div class="code">int a = 112;
+int *d = &amp;a;     /* d 指向 a */
+*d = 200;          /* 间接访问：把 a 改为 200 */</div>
+        </div>
+
+        <div class="section" id="ch6-5">
+          <h3>6.5 NULL 指针</h3>
+          <p><span class="tag">NULL</span> 是定义为 0 的常量宏，作为特殊指针值表示"不指向任何地方"。对 NULL 指针解引用通常会崩溃。</p>
+          <div class="warn"><strong>警告</strong>：使用前必须检查指针是否为 NULL。</div>
+        </div>
+
+        <div class="section" id="ch6-6">
+          <h3>6.6 指针算术运算</h3>
+          <ul>
+            <li>指针 +/- 整数：移动 N 个元素位置（按类型大小）</li>
+            <li>指针 - 指针：结果为 ptrdiff_t，表示元素间隔数</li>
+            <li>指针 + 指针、指针 * 数字等都是非法的</li>
+            <li>只有在两个指针指向同一数组时，相减才有意义</li>
+          </ul>
+          <div class="code">int a[5];
+int *p = a;        /* 指向 a[0] */
+p = p + 1;          /* 指向 a[1] */
+p = p - 1;          /* 回到 a[0] */</div>
+        </div>
+
+        <div class="section" id="ch6-7">
+          <h3>6.7 字符串操作</h3>
+          <p>字符串就是一串以 NUL 结尾的字符。字符串名是指向首字符的指针常量。</p>
+          <div class="code">char *p = "Hello";
+while (*p != '\0') {
+    putchar(*p);
+    p = p + 1;
+}</div>
+        </div>
+
+        <div class="section" id="ch6-8">
+          <h3>6.8 指针与数组</h3>
+          <p>数组名在表达式中会"退化"为指向首元素的指针（除 sizeof &amp; 之外）。下标引用 <span class="tag">a[i]</span> 等价于 <span class="tag">*(a + i)</span>。</p>
+          <div class="kbox"><strong>等价关系</strong>：<code>a[i] ≡ *(a + i) ≡ *(i + a) ≡ i[a]</code>（后者合法但易读性差）。</div>
+        </div>
+
+        <div class="section" id="ch6-9">
+          <h3>6.9 指针与 const</h3>
+          <p>三种常见组合：</p>
+          <ul>
+            <li><span class="tag">const char *p</span>：指向<strong>常量字符</strong>的指针（最常用，指向字符串字面值）</li>
+            <li><span class="tag">char * const p</span>：指针本身是常量，不可修改</li>
+            <li><span class="tag">const char * const p</span>：两者都不可改</li>
+          </ul>
+          <div class="tip"><strong>记忆口诀</strong>：<code>const</code> 修饰其左边的类型；左边无东西则修饰右边。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第7章 =================== -->
+    <section class="chapter" id="ch7">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第7章</span>函数</h2>
+        <div class="chapter-intro">C 函数的定义、声明、参数传递、递归、可变参数列表与黑盒设计。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch7-1">
+          <h3>7.1 函数定义</h3>
+          <p>语法：<span class="tag">类型 函数名(形式参数) { 代码块 }</span>。K&R 旧式声明把参数类型单独列出，新式 ANSI C 在参数列表直接声明。</p>
+          <ul>
+            <li><span class="tag">return expression;</span> 返回值</li>
+            <li>void 函数无 return 表达式；执行到函数体末尾时隐式返回</li>
+            <li>不能从 void 函数返回非 void 值（编译器会报错）</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch7-2">
+          <h3>7.2 函数声明（原型）</h3>
+          <p>函数原型告诉编译器参数数量、类型与返回类型。强烈建议把原型放在头文件中由 <span class="tag">#include</span> 引入。</p>
+          <ul>
+            <li>无参数函数应写 <span class="tag">int func(void);</span></li>
+            <li>缺省认定：无原型时，编译器假定返回 int</li>
+            <li>返回值非 int 的函数必须有原型</li>
+          </ul>
+          <div class="warn"><strong>警告</strong>：返回值非 int 的函数没有原型会导致严重错误（如浮点返回被误读为整型）。</div>
+        </div>
+
+        <div class="section" id="ch7-3">
+          <h3>7.3 函数的参数</h3>
+          <ul>
+            <li>所有参数按值传递</li>
+            <li>数组参数传递的是指针的拷贝，表现为传址调用</li>
+            <li><span class="tag">const</span> 防止修改</li>
+            <li><span class="tag">register</span> 建议存于寄存器</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch7-4">
+          <h3>7.4 ADT 与黑盒</h3>
+          <p>通过头文件定义抽象数据类型（ADT），实现细节隐藏在 .c 文件中。这是 C 实现模块化的核心模式。</p>
+        </div>
+
+        <div class="section" id="ch7-5">
+          <h3>7.5 递归</h3>
+          <p>递归函数直接或间接调用自己。必须有一个或多个终止条件，否则栈会溢出。</p>
+          <ul>
+            <li>递归的代价是函数调用开销和栈空间</li>
+            <li>有些问题天然适合递归（树遍历、汉诺塔、阶乘）</li>
+          </ul>
+          <div class="code">/* 阶乘 */
+int factorial(int n) {
+    if (n &lt;= 1) return 1;
+    return n * factorial(n - 1);
+}</div>
+        </div>
+
+        <div class="section" id="ch7-6">
+          <h3>7.6 可变参数</h3>
+          <p>使用 <span class="tag">stdarg.h</span> 中的宏 <span class="tag">va_list</span>、<span class="tag">va_start</span>、<span class="tag">va_arg</span>、<span class="tag">va_end</span> 实现 printf 风格的可变参数函数。</p>
+          <div class="code">#include &lt;stdarg.h&gt;
+int sum(int n, ...) {
+    va_list ap;
+    int total = 0;
+    va_start(ap, n);
+    for (int i = 0; i &lt; n; i++)
+        total += va_arg(ap, int);
+    va_end(ap);
+    return total;
+}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第8章 =================== -->
+    <section class="chapter" id="ch8">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第8章</span>数组</h2>
+        <div class="chapter-intro">一维/多维数组、指针与数组的关系、作为函数参数的数组。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch8-1">
+          <h3>8.1 一维数组</h3>
+          <h4>8.1.1 数组名</h4>
+          <p>数组名是首元素的地址（除 <span class="tag">sizeof</span> 和 <span class="tag">&amp;</span> 操作）。</p>
+          <h4>8.1.2 下标引用</h4>
+          <p><span class="tag">a[i]</span> 等价于 <span class="tag">*(a+i)</span>。</p>
+          <h4>8.1.3 指针与下标</h4>
+          <p>指针版本（<span class="tag">*p++</span>）通常比下标版本（<span class="tag">a[i]</span>）略快，但可读性差。</p>
+        </div>
+
+        <div class="section" id="ch8-2">
+          <h3>8.2 多维数组</h3>
+          <p>如 <span class="tag">int matrix[3][4]</span>。本质是"数组的数组"，按行主序连续存储。</p>
+          <ul>
+            <li>第 1 维的下标决定行指针位置</li>
+            <li>第 2 维及之后的下标决定行内偏移</li>
+            <li><span class="tag">matrix[i][j]</span> ≡ <span class="tag">*(*(matrix + i) + j)</span></li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch8-3">
+          <h3>8.3 指针与数组</h3>
+          <p>数组名是指针常量（不能修改）；指针变量可以递增。指针效率略高，但下标可读性更好。</p>
+        </div>
+
+        <div class="section" id="ch8-4">
+          <h3>8.4 作为函数参数的数组</h3>
+          <p>以下三种原型等价：</p>
+          <div class="code">void f(int *a);
+void f(int a[]);
+void f(int a[10]);   /* 长度被忽略 */</div>
+          <p>函数需要额外参数传入数组长度。函数内部用 <span class="tag">sizeof(a)</span> 得到的是指针大小，而非数组大小。</p>
+        </div>
+
+        <div class="section" id="ch8-5">
+          <h3>8.5 初始化</h3>
+          <div class="code">int a[5] = {1, 2, 3};      /* 其余补 0 */
+int b[]  = {1, 2, 3, 4};   /* 自动推断大小 */
+int c[3][4] = {{1,2,3,4},{5,6,7,8}};  /* 多维 */</div>
+          <ul>
+            <li>未初始化的全局/静态数组默认值为 0</li>
+            <li>未初始化的局部数组值不确定（垃圾）</li>
+            <li>C99 允许指定初始化器：<span class="tag">int a[10] = {[3]=30,[7]=70};</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第9章 =================== -->
+    <section class="chapter" id="ch9">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第9章</span>字符串、字符和字节</h2>
+        <div class="chapter-intro">处理字符串和字节的标准库函数。&lt;string.h&gt; 中的所有重要函数。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch9-1">
+          <h3>9.1 字符串基础</h3>
+          <p>字符串以 <span class="tag">'\0'</span> 结尾。头文件 <span class="tag">&lt;string.h&gt;</span>。</p>
+        </div>
+
+        <div class="section" id="ch9-2">
+          <h3>9.2 字符串长度</h3>
+          <div class="code">size_t strlen(const char *s);    /* 不含 '\0' */</div>
+        </div>
+
+        <div class="section" id="ch9-3">
+          <h3>9.3 不受限制的字符串函数</h3>
+          <p><span class="tag">strcpy</span>、<span class="tag">strcat</span>、<span class="tag">strcmp</span>。可能溢出，无安全检查。</p>
+          <div class="code">char *strcpy(char *dst, const char *src);
+char *strcat(char *dst, const char *src);
+int   strcmp(const char *s1, const char *s2);</div>
+        </div>
+
+        <div class="section" id="ch9-4">
+          <h3>9.4 长度受限的字符串函数</h3>
+          <p><span class="tag">strncpy</span>、<span class="tag">strncat</span>、<span class="tag">strncmp</span>。更安全，推荐使用。</p>
+          <div class="code">char *strncpy(char *dst, const char *src, size_t n);
+char *strncat(char *dst, const char *src, size_t n);
+int   strncmp(const char *s1, const char *s2, size_t n);</div>
+        </div>
+
+        <div class="section" id="ch9-5">
+          <h3>9.5 字符串查找函数</h3>
+          <ul>
+            <li><span class="tag">strchr(s, ch)</span>：查找字符首次出现</li>
+            <li><span class="tag">strrchr(s, ch)</span>：查找字符最后出现</li>
+            <li><span class="tag">strstr(s, sub)</span>：查找子串首次出现</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch9-6">
+          <h3>9.6 高级字符串查找</h3>
+          <ul>
+            <li><span class="tag">strpbrk(s, accept)</span>：查找任一字符首次出现</li>
+            <li><span class="tag">strspn(s, accept)</span>：从 s 开头起连续属于 accept 的字符数</li>
+            <li><span class="tag">strcspn(s, reject)</span>：从 s 开头起连续不属于 reject 的字符数</li>
+            <li><span class="tag">strtok(s, delim)</span>：分割字符串为标记</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch9-7">
+          <h3>9.7 错误信息</h3>
+          <div class="code">char *strerror(int errnum);   /* 错误码 → 描述字符串 */</div>
+        </div>
+
+        <div class="section" id="ch9-8">
+          <h3>9.8 字符操作 &lt;ctype.h&gt;</h3>
+          <ul>
+            <li><span class="tag">isalpha</span>、<span class="tag">isdigit</span>、<span class="tag">isalnum</span>、<span class="tag">isspace</span></li>
+            <li><span class="tag">isupper</span>、<span class="tag">islower</span>、<span class="tag">ispunct</span>、<span class="tag">iscntrl</span>、<span class="tag">isprint</span>、<span class="tag">isgraph</span>、<span class="tag">isxdigit</span></li>
+            <li><span class="tag">toupper</span>、<span class="tag">tolower</span></li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch9-9">
+          <h3>9.9 内存操作</h3>
+          <p>操作任意字节序列，通用性更强：</p>
+          <div class="code">void *memcpy(void *dst, const void *src, size_t n);
+void *memmove(void *dst, const void *src, size_t n);  /* 源目标重叠安全 */
+int   memcmp(const void *s1, const void *s2, size_t n);
+void *memchr(const void *s, int c, size_t n);
+void *memset(void *s, int c, size_t n);</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第10章 =================== -->
+    <section class="chapter" id="ch10">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第10章</span>结构和联合</h2>
+        <div class="chapter-intro">结构 struct 允许把不同类型的值聚合在一起；联合 union 共享内存。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch10-1">
+          <h3>10.1 结构基础知识</h3>
+          <h4>10.1.1 结构声明</h4>
+          <div class="code">struct tag { member-list } variable-list;</div>
+          <p>至少要出现"tag"或"variable-list"两者之一。</p>
+          <h4>10.1.2 成员类型</h4>
+          <p>标量、数组、指针、甚至是其他结构都可作为成员。</p>
+          <h4>10.1.3 直接访问（点操作符 .）</h4>
+          <div class="code">struct COMPLEX comp;
+comp.a             /* 访问数组成员 */
+comp.s.a           /* 嵌套访问，结合性从左向右 */</div>
+          <h4>10.1.4 间接访问（箭头操作符 -&gt;）</h4>
+          <div class="code">struct COMPLEX *cp;
+cp-&gt;f              /* 等价于 (*cp).f */</div>
+          <h4>10.1.5 自引用</h4>
+          <p>结构内部可包含指向自身类型的指针（合法），但不能包含自身类型的完整结构（非法）。</p>
+          <h4>10.1.6 不完整声明</h4>
+          <p>用于解决两个结构相互引用问题：先用一个标签声明，再补全成员列表。</p>
+          <h4>10.1.7 初始化</h4>
+          <p>类似数组，用花括号按成员顺序初始化；不足部分用默认值（标量=0，指针=NULL）。</p>
+        </div>
+
+        <div class="section" id="ch10-2">
+          <h3>10.2 结构、指针和成员</h3>
+          <p>区分 <span class="tag">px</span>（指针）、<span class="tag">*px</span>（结构）、<span class="tag">px-&gt;a</span>（成员 a）的右值/左值类型。</p>
+          <ul>
+            <li><span class="tag">&amp;px-&gt;a</span> 取得成员 a 的地址</li>
+            <li>访问嵌套结构：<span class="tag">px-&gt;c.a</span></li>
+            <li>访问指针成员：<span class="tag">*px-&gt;d</span>（先解引用 d）</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch10-3">
+          <h3>10.3 结构的存储分配</h3>
+          <p>编译器按成员顺序分配内存，但可能因<strong>边界对齐</strong>插入填充字节。成员的声明顺序影响结构大小。</p>
+          <div class="kbox"><strong>优化技巧</strong>：把对边界要求最严格的成员（最大类型）放在最前面，可以减少内存浪费。</div>
+          <p><span class="tag">offsetof(type, member)</span>：返回成员偏移字节数。</p>
+        </div>
+
+        <div class="section" id="ch10-4">
+          <h3>10.4 作为函数参数的结构</h3>
+          <p>结构作参数<strong>按值传递</strong>，会复制整份结构体，开销大。推荐改为<strong>传递指针</strong>。</p>
+          <div class="code">void f(const Transaction *t);   /* 推荐：传指针 + const */</div>
+          <p>仅当结构非常小（≤ 指针大小）时，按值传递才划算。</p>
+        </div>
+
+        <div class="section" id="ch10-5">
+          <h3>10.5 位段</h3>
+          <p>位段允许在结构中以"位"为单位指定成员宽度，节省内存。常用于硬件寄存器映射。</p>
+          <div class="code">struct {
+    unsigned int flag : 1;
+    unsigned int code : 4;
+};</div>
+        </div>
+
+        <div class="section" id="ch10-6">
+          <h3>10.6 联合</h3>
+          <p>所有成员共享同一段内存，大小为最大成员的大小。同一时刻只有一个成员有效。</p>
+          <div class="code">union Data {
+    int i;
+    float f;
+    char s[4];
+};</div>
+          <p>典型用途：节省空间、访问同一数据的不同位模式。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第11章 =================== -->
+    <section class="chapter" id="ch11">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第11章</span>动态内存分配</h2>
+        <div class="chapter-intro">malloc、free、calloc、realloc 以及常见错误。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch11-1">
+          <h3>11.1 为什么使用动态内存分配</h3>
+          <p>数组长度必须在编译时确定，但实际需求常常运行时才知道。动态分配可以按需申请和释放。</p>
+        </div>
+
+        <div class="section" id="ch11-2">
+          <h3>11.2 malloc 和 free</h3>
+          <div class="code">void *malloc(size_t size);
+void  free(void *pointer);</div>
+          <ul>
+            <li><span class="tag">malloc</span> 分配 size 字节，返回 <span class="tag">void *</span>（必要时强制转换）</li>
+            <li>失败返回 <span class="tag">NULL</span>，必须检查</li>
+            <li><span class="tag">free(p)</span> 释放 p（p 必须来自 malloc/calloc/realloc）</li>
+            <li>free(NULL) 无效果</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch11-3">
+          <h3>11.3 calloc 和 realloc</h3>
+          <div class="code">void *calloc(size_t num_elements, size_t element_size);
+void *realloc(void *ptr, size_t new_size);</div>
+          <ul>
+            <li><span class="tag">calloc</span>：分配并清零为 0</li>
+            <li><span class="tag">realloc</span>：调整已分配块大小；可能移动到新位置（返回新指针）</li>
+            <li><span class="tag">realloc(NULL, size)</span> 等价于 <span class="tag">malloc(size)</span></li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch11-4">
+          <h3>11.4 使用动态分配的内存</h3>
+          <p>推荐写法（可移植）：<span class="tag">int *p = malloc(n * sizeof(int));</span></p>
+          <p>下标和指针都可以用来访问已分配的内存。</p>
+          <div class="code">int *p = malloc(25 * sizeof(int));
+for (int i = 0; i &lt; 25; i++)
+    p[i] = 0;</div>
+        </div>
+
+        <div class="section" id="ch11-5">
+          <h3>11.5 常见的动态内存错误</h3>
+          <ul>
+            <li>忘记检查 NULL</li>
+            <li>对分配的内存越界操作</li>
+            <li>释放并非动态分配的内存</li>
+            <li>试图释放一块动态分配内存的一部分</li>
+            <li>一块动态内存被释放之后继续使用（use-after-free）</li>
+          </ul>
+          <div class="warn"><strong>警告</strong>：动态内存错误往往不易发现。建议封装一个带检查的分配宏，如 <code>#define MALLOC(n, t) (t*)alloc((n)*sizeof(t))</code>。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第12章 =================== -->
+    <section class="chapter" id="ch12">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第12章</span>使用结构和指针</h2>
+        <div class="chapter-intro">链表、单链表/双链表数据结构及操作函数。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch12-1">
+          <h3>12.1 链表</h3>
+          <p>链表是节点的集合，每个节点包含数据和指向下一节点的指针。链表克服了数组的若干限制：</p>
+          <ul>
+            <li>长度可在运行时决定</li>
+            <li>插入/删除节点 O(1)（已知位置）</li>
+            <li>不需要连续内存</li>
+          </ul>
+          <div class="code">typedef struct NODE {
+    struct NODE *link;
+    int          value;
+} Node;</div>
+        </div>
+
+        <div class="section" id="ch12-2">
+          <h3>12.2 单链表函数</h3>
+          <p>典型操作：</p>
+          <ul>
+            <li><span class="tag">sll_insert(Node **head, int value)</span>：插入新节点（用指向指针的指针）</li>
+            <li><span class="tag">sll_remove(Node **head, int value)</span>：删除指定值的节点</li>
+            <li><span class="tag">sll_find(Node *head, int value)</span>：查找节点</li>
+            <li><span class="tag">sll_destroy(Node *head)</span>：销毁整个链表</li>
+          </ul>
+          <div class="kbox"><strong>技巧</strong>：插入/删除第一个节点需要修改头指针，因此参数为 <code>Node **head</code>（指向指针的指针）。</div>
+        </div>
+
+        <div class="section" id="ch12-3">
+          <h3>12.3 双向链表</h3>
+          <p>每个节点同时拥有前向（<span class="tag">fwd</span>）和后向（<span class="tag">bwd</span>）指针，可以从任一方向遍历。</p>
+          <ul>
+            <li>优点：可以反向遍历；删除已知节点 O(1)</li>
+            <li>缺点：每个节点多一个指针，插入/删除时需要维护更多指针</li>
+            <li><strong>哨兵节点</strong>：用哑节点简化边界处理</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第13章 =================== -->
+    <section class="chapter" id="ch13">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第13章</span>高级指针话题</h2>
+        <div class="chapter-intro">指向指针的指针、复杂声明解读、函数指针、命令行参数、跳转。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch13-1">
+          <h3>13.1 进一步探讨指向指针的指针</h3>
+          <div class="code">int a = 12;
+int *b = &amp;a;
+int **c = &amp;b;     /* 指向指针的指针 */</div>
+          <p>常见用途：修改传入的指针本身（如链表插入）、二维动态数组、字符串数组等。</p>
+        </div>
+
+        <div class="section" id="ch13-2">
+          <h3>13.2 高级声明</h3>
+          <p>解读 C 复杂声明的口诀：</p>
+          <ol>
+            <li>从标识符开始</li>
+            <li>先看右边：<span class="tag">[]</span> 和 <span class="tag">()</span> 优先级高于 <span class="tag">*</span></li>
+            <li>再看左边</li>
+            <li>用括号跳级</li>
+          </ol>
+          <div class="code">int *f();            /* f: 返回 int* 的函数 */
+int (*f)();           /* f: 指向"返回 int 的函数"的指针 */
+int *(*f)();          /* f: 指向"返回 int* 的函数"的指针 */
+int (*f[])(int);      /* f: 数组，元素是"接受 int 返回 int"的函数指针 */</div>
+        </div>
+
+        <div class="section" id="ch13-3">
+          <h3>13.3 函数指针</h3>
+          <p>函数指针指向函数而非数据。常用作<strong>回调</strong>(callback)。</p>
+          <div class="code">int (*compar)(const void *, const void *);
+qsort(array, n, sizeof(elem), compar);</div>
+          <p><strong>转移表</strong>(jump table)：用函数指针数组实现 switch 的高效替代。</p>
+        </div>
+
+        <div class="section" id="ch13-4">
+          <h3>13.4 命令行参数</h3>
+          <div class="code">int main(int argc, char *argv[]);</div>
+          <ul>
+            <li><span class="tag">argc</span>：参数个数</li>
+            <li><span class="tag">argv</span>：字符串数组，<span class="tag">argv[0]</span> 通常是程序名，<span class="tag">argv[argc]</span> 为 NULL</li>
+            <li>C 标准保证 <span class="tag">argv[argc] == NULL</span></li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch13-5">
+          <h3>13.5 跳转</h3>
+          <p><span class="tag">&lt;setjmp.h&gt;</span> 提供 setjmp / longjmp，用于从深层嵌套中直接跳出（类似 goto 的函数级版本）。</p>
+          <div class="warn"><strong>警告</strong>：longjmp 不保证自动对象（局部变量）正确恢复；C 标准对此有详细约束。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第14章 =================== -->
+    <section class="chapter" id="ch14">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第14章</span>预处理器</h2>
+        <div class="chapter-intro">C 预处理指令：宏定义、文件包含、条件编译。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch14-1">
+          <h3>14.1 预定义符号</h3>
+          <table class="table">
+            <tr><th>符号</th><th>含义</th><th>示例</th></tr>
+            <tr><td>__FILE__</td><td>当前文件名</td><td>"test.c"</td></tr>
+            <tr><td>__LINE__</td><td>当前行号</td><td>42</td></tr>
+            <tr><td>__DATE__</td><td>编译日期</td><td>"Mar 20 2026"</td></tr>
+            <tr><td>__TIME__</td><td>编译时间</td><td>"10:30:00"</td></tr>
+            <tr><td>__STDC__</td><td>是否 ANSI C</td><td>1</td></tr>
+          </table>
+        </div>
+
+        <div class="section" id="ch14-2">
+          <h3>14.2 #define</h3>
+          <p>两种用法：</p>
+          <ul>
+            <li>定义常量：<span class="tag">#define MAX 100</span></li>
+            <li>定义宏：<span class="tag">#define SQUARE(x) ((x)*(x))</span></li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch14-3">
+          <h3>14.3 宏</h3>
+          <p>宏的<strong>所有参数和结果都应加括号</strong>，避免优先级问题：</p>
+          <div class="code">/* 错误 */
+#define SQUARE(x) x * x
+SQUARE(a+1)   /* 展开为 a+1*a+1 = a+1+a*1，结果错误 */
+
+/* 正确 */
+#define SQUARE(x) ((x) * (x))</div>
+          <p>预处理器支持 <span class="tag">#</span>（参数转字符串）、<span class="tag">##</span>（标识符拼接）操作符。</p>
+        </div>
+
+        <div class="section" id="ch14-4">
+          <h3>14.4 宏的副作用</h3>
+          <p>宏参数如果带有副作用，可能被求值多次：</p>
+          <div class="code">#define MAX(a,b) ((a)&gt;(b)?(a):(b))
+MAX(x++, y++)   /* 大的被自增多次 */</div>
+          <div class="warn"><strong>警告</strong>：不要对带副作用的表达式使用宏。</div>
+        </div>
+
+        <div class="section" id="ch14-5">
+          <h3>14.5 #include</h3>
+          <ul>
+            <li><span class="tag">#include &lt;stdio.h&gt;</span>：系统头文件</li>
+            <li><span class="tag">#include "my.h"</span>：用户头文件，先查当前目录，再查系统路径</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch14-6">
+          <h3>14.6 条件编译</h3>
+          <div class="code">#if 常量表达式
+    ...
+#elif
+    ...
+#else
+    ...
+#endif</div>
+          <ul>
+            <li><span class="tag">#ifdef NAME</span>：是否已定义</li>
+            <li><span class="tag">#ifndef NAME</span>：是否未定义（常用于防止头文件重复包含）</li>
+            <li>头文件守卫：<span class="tag">#ifndef HEADER_H #define HEADER_H ... #endif</span></li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch14-7">
+          <h3>14.7 其他指令</h3>
+          <ul>
+            <li><span class="tag">#error message</span>：编译时报错</li>
+            <li><span class="tag">#pragma</span>：编译器特定指令</li>
+            <li><span class="tag">#line n</span>：改变当前行号</li>
+            <li><span class="tag">#undef NAME</span>：取消宏定义</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第15章 =================== -->
+    <section class="chapter" id="ch15">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第15章</span>输入/输出函数</h2>
+        <div class="chapter-intro">标准 I/O 流、printf、scanf、字符/行/块 I/O。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch15-1">
+          <h3>15.1 流</h3>
+          <p>所有 I/O 操作只需在"流"（stream）上完成。<span class="tag">FILE *</span> 是流对象，由 <span class="tag">fopen</span> 返回。</p>
+          <ul>
+            <li>三个标准流：<span class="tag">stdin</span>、<span class="tag">stdout</span>、<span class="tag">stderr</span></li>
+            <li>文本流 vs 二进制流：<span class="tag">"r"</span> vs <span class="tag">"rb"</span></li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch15-2">
+          <h3>15.2 标准 I/O</h3>
+          <div class="code">FILE *fopen(const char *path, const char *mode);
+int   fclose(FILE *stream);
+int   fflush(FILE *stream);</div>
+          <table class="table">
+            <tr><th>mode</th><th>含义</th></tr>
+            <tr><td>"r" / "w" / "a"</td><td>读 / 写（截断）/ 追加</td></tr>
+            <tr><td>"r+" / "w+" / "a+"</td><td>读写模式</td></tr>
+            <tr><td>后缀 "b"</td><td>二进制模式</td></tr>
+            <tr><td>后缀 "t"</td><td>文本模式（默认）</td></tr>
+          </table>
+        </div>
+
+        <div class="section" id="ch15-3">
+          <h3>15.3 格式化 I/O</h3>
+          <h4>printf 系列</h4>
+          <div class="code">int printf(const char *format, ...);
+int fprintf(FILE *stream, const char *format, ...);
+int sprintf(char *str, const char *format, ...);
+int snprintf(char *str, size_t size, const char *format, ...);</div>
+          <p>常用格式代码：<span class="tag">%d %u %x %o %f %e %g %c %s %p %%</span></p>
+          <h4>scanf 系列</h4>
+          <div class="code">int scanf(const char *format, ...);
+int fscanf(FILE *stream, const char *format, ...);
+int sscanf(const char *str, const char *format, ...);</div>
+          <ul>
+            <li>标量参数前加 <span class="tag">&amp;</span></li>
+            <li>返回成功赋值的个数；EOF 表示输入结束</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch15-4">
+          <h3>15.4 字符 I/O</h3>
+          <div class="code">int  getchar(void);              /* = getc(stdin) */
+int  putchar(int c);
+int  getc(FILE *stream);
+int  putc(int c, FILE *stream);
+int  ungetc(int c, FILE *stream); /* 字符回退 */</div>
+        </div>
+
+        <div class="section" id="ch15-5">
+          <h3>15.5 行 I/O</h3>
+          <div class="code">char *gets(char *s);                         /* 不安全，已废弃 */
+char *fgets(char *s, int size, FILE *stream);  /* 推荐 */
+int   puts(const char *s);
+int   fputs(const char *s, FILE *stream);</div>
+          <div class="warn"><strong>警告</strong>：<code>gets</code> 不检查缓冲区大小，已从 C11 标准移除，永远不要使用。改用 <code>fgets</code>。</div>
+        </div>
+
+        <div class="section" id="ch15-6">
+          <h3>15.6 块 I/O</h3>
+          <div class="code">size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);</div>
+          <p>适合二进制数据或大块读写。</p>
+          <p>其他常用：<span class="tag">fseek</span>、<span class="tag">ftell</span>、<span class="tag">rewind</span>、<span class="tag">feof</span>、<span class="tag">ferror</span>。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第16章 =================== -->
+    <section class="chapter" id="ch16">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第16章</span>标准函数库</h2>
+        <div class="chapter-intro">前面章节未覆盖的常用库函数：整型、浮点、日期、工具函数。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch16-1">
+          <h3>16.1 整型 &lt;stdlib.h&gt;</h3>
+          <ul>
+            <li><span class="tag">atoi/atol/atof</span>：字符串转 int/long/double</li>
+            <li><span class="tag">strtol/strtoul/strtod</span>：更安全的转换，可检测错误</li>
+            <li><span class="tag">abs/labs</span>：绝对值</li>
+            <li><span class="tag">rand/srand</span>：随机数</li>
+            <li><span class="tag">qsort</span>：快速排序</li>
+            <li><span class="tag">bsearch</span>：二分查找</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch16-2">
+          <h3>16.2 浮点型 &lt;math.h&gt;</h3>
+          <ul>
+            <li><span class="tag">sin cos tan asin acos atan atan2</span></li>
+            <li><span class="tag">exp log log10</span></li>
+            <li><span class="tag">pow sqrt</span></li>
+            <li><span class="tag">ceil floor fabs fmod</span></li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch16-3">
+          <h3>16.3 日期和时间 &lt;time.h&gt;</h3>
+          <ul>
+            <li><span class="tag">time_t time(time_t *t)</span>：当前时间戳</li>
+            <li><span class="tag">struct tm *localtime(const time_t *)</span>：分解时间</li>
+            <li><span class="tag">char *ctime(const time_t *)</span>：可读时间字符串</li>
+            <li><span class="tag">clock_t clock(void)</span>：CPU 时钟</li>
+            <li><span class="tag">double difftime(time_t, time_t)</span>：时间差</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch16-4">
+          <h3>16.4 实用函数</h3>
+          <ul>
+            <li><span class="tag">exit/atexit</span>：终止程序，注册终止处理函数</li>
+            <li><span class="tag">getenv</span>：读取环境变量</li>
+            <li><span class="tag">system</span>：执行系统命令</li>
+            <li><span class="tag">abort</span>：异常终止</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch16-5">
+          <h3>16.5 诊断 &lt;assert.h&gt;</h3>
+          <div class="code">#include &lt;assert.h&gt;
+assert(ptr != NULL);  /* 失败时终止程序 */</div>
+          <p>编译时定义 <span class="tag">NDEBUG</span> 可以禁用 assert。</p>
+        </div>
+
+        <div class="section" id="ch16-6">
+          <h3>16.6 &lt;limits.h&gt;</h3>
+          <p>定义整型极限：<span class="tag">INT_MAX</span>、<span class="tag">INT_MIN</span>、<span class="tag">CHAR_BIT</span>、<span class="tag">LONG_MAX</span> 等。</p>
+        </div>
+
+        <div class="section" id="ch16-7">
+          <h3>16.7 &lt;float.h&gt;</h3>
+          <p>定义浮点类型特性：<span class="tag">FLT_MAX</span>、<span class="tag">DBL_DIG</span>、<span class="tag">FLT_EPSILON</span> 等。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第17章 =================== -->
+    <section class="chapter" id="ch17">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第17章</span>经典抽象数据类型</h2>
+        <div class="chapter-intro">堆栈、队列、树等 ADT 的接口、内存策略与实现。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch17-1">
+          <h3>17.1 内存分配</h3>
+          <p>三种策略：</p>
+          <ul>
+            <li><strong>静态数组</strong>：长度固定，最简单</li>
+            <li><strong>动态数组</strong>：运行时定长，可增长</li>
+            <li><strong>动态链式</strong>：最大灵活性，每个元素单独分配</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch17-2">
+          <h3>17.2 堆栈（Stack）</h3>
+          <p>LIFO（后进先出）。基本操作：</p>
+          <ul>
+            <li><span class="tag">push</span>：压入</li>
+            <li><span class="tag">pop</span>：弹出（不返回值）</li>
+            <li><span class="tag">top</span>：查看栈顶</li>
+            <li><span class="tag">is_empty / is_full</span>：状态查询</li>
+          </ul>
+          <div class="kbox"><strong>设计原则</strong>：用单独的 <code>top()</code> 而不是 pop 的副作用来访问栈顶，函数无副作用更优。</div>
+        </div>
+
+        <div class="section" id="ch17-3">
+          <h3>17.3 队列（Queue）</h3>
+          <p>FIFO（先进先出）。操作：<span class="tag">enqueue</span>（入队，尾插）、<span class="tag">dequeue</span>（出队，头删）、<span class="tag">front</span>、<span class="tag">rear</span>、<span class="tag">is_empty</span>、<span class="tag">is_full</span>。</p>
+          <p>常见实现：循环数组（最高效）。</p>
+        </div>
+
+        <div class="section" id="ch17-4">
+          <h3>17.4 树（Tree）</h3>
+          <p>常用<strong>二叉搜索树</strong>（BST）：左 &lt; 父 &lt; 右。中序遍历得到有序序列。</p>
+          <p>操作：<span class="tag">insert</span>、<span class="tag">delete</span>、<span class="tag">find</span>、<span class="tag">traverse</span>。</p>
+          <p>平衡树：AVL、红黑树等避免 BST 退化为链表。</p>
+        </div>
+
+        <div class="section" id="ch17-5">
+          <h3>17.5 实现改进</h3>
+          <ul>
+            <li><strong>泛型</strong>：用 <span class="tag">void *</span> 和函数指针，让 ADT 支持任意类型</li>
+            <li><strong>命名约定</strong>：所有内部函数加 static，外部接口用统一前缀</li>
+            <li><strong>内存管理</strong>：谁分配谁释放，文档化清楚</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 第18章 =================== -->
+    <section class="chapter" id="ch18">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">第18章</span>运行时环境</h2>
+        <div class="chapter-intro">编译器生成的汇编代码、运行时堆栈结构、与汇编的接口、效率提示。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="ch18-1">
+          <h3>18.1 判断运行时环境</h3>
+          <p>不同机器、不同编译器生成的代码差异很大。本章示例基于 80x86 / Linux。</p>
+        </div>
+
+        <div class="section" id="ch18-2">
+          <h3>18.2 C 和汇编</h3>
+          <p>三种接口方式：</p>
+          <ul>
+            <li>汇编调用 C 函数：用 C 写函数，汇编通过 <span class="tag">call</span> 调用</li>
+            <li>C 调用汇编：汇编实现函数，C 中声明并调用</li>
+            <li><span class="tag">asm()</span> 内联汇编：直接在 C 中嵌入汇编（编译器相关）</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch18-3">
+          <h3>18.3 运行时结构</h3>
+          <ul>
+            <li><strong>代码段</strong>：存放机器指令</li>
+            <li><strong>数据段</strong>：存放已初始化的全局/静态变量</li>
+            <li><strong>BSS 段</strong>：未初始化的全局/静态变量（启动时清零）</li>
+            <li><strong>堆</strong>：动态分配的内存</li>
+            <li><strong>栈</strong>：函数调用、局部变量、返回地址</li>
+          </ul>
+        </div>
+
+        <div class="section" id="ch18-4">
+          <h3>18.4 效率</h3>
+          <ul>
+            <li>用寄存器变量（<span class="tag">register</span>）保存频繁使用的值</li>
+            <li>避免不必要的内存访问</li>
+            <li>函数调用有开销，小函数可考虑内联</li>
+            <li>循环体中减少计算</li>
+            <li>指针运算略快于下标引用，但可读性更重要</li>
+            <li>用 <span class="tag">-O2 / -O3</span> 让编译器优化</li>
+          </ul>
+          <div class="tip"><strong>提示</strong>：先写出清晰的代码，再用 profiler 找出瓶颈，最后针对瓶颈优化。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 附录 =================== -->
+    <section class="chapter" id="app">
+      <div class="chapter-header">
+        <h2><span class="chapter-num">附录</span>附录部分</h2>
+        <div class="chapter-intro">部分问题答案与参考文献。</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section" id="app-a">
+          <h3>附录 A 部分问题答案</h3>
+          <h4>第1章</h4>
+          <ul>
+            <li>1.2 声明只写一次，方便维护和修改</li>
+            <li>1.5 <span class="tag">scanf("%d %d %s", &amp;quantity, &amp;price, department);</span></li>
+          </ul>
+          <h4>第2章</h4>
+          <p>翻译环境和执行环境的概念；预处理阶段对源代码的修改。</p>
+          <h4>第3章</h4>
+          <p>基本类型大小、声明与定义的区别、typedef 与 #define 的差异。</p>
+          <h4>第6章</h4>
+          <p>指针运算、字符串复制、const 用法等问题的参考答案。</p>
+          <p>其余各章（7~18）均提供问题答案、编程练习参考实现思路。</p>
+        </div>
+
+        <div class="section" id="app-b">
+          <h3>附录 B 参考文献</h3>
+          <ul>
+            <li>[ANSI 90] American National Standard for Programming Languages-C, ANSI/ISO 9899-1990</li>
+            <li>[KERN 89] Kernighan, Brian 和 Dennis Ritchie. The C Programming Language, 2nd ed., 1989</li>
+            <li>[PLAU 92] Plauger, P. J. The Standard C Library, 1992</li>
+            <li>[RICH 89] Harbison, Samuel P. 和 Guy L. Steele Jr. C: A Reference Manual, 3rd ed., 1991</li>
+            <li>[SCHI 90] Schmidt, R. A. 各种 C 编程书籍</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      《C和指针》(Pointers on C) by Kenneth A. Reek · 人民邮电出版社 · 知识脑图整理
+    </footer>
+  </main>
+</div>
+
+<script>
+// 侧边导航折叠/展开
+document.querySelectorAll('.nav-group-header').forEach(function(header) {
+  header.addEventListener('click', function() {
+    this.parentElement.classList.toggle('collapsed');
+  });
+});
+
+// 点击导航链接，平滑滚动 + 父级自动展开
+document.querySelectorAll('.nav-sub a').forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    var href = this.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      var target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        // 展开所有父级
+        var group = this.closest('.nav-group');
+        if (group) group.classList.remove('collapsed');
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.pushState(null, '', href);
+      }
+    }
+  });
+});
+</script>
+
+</body>
+</html>
