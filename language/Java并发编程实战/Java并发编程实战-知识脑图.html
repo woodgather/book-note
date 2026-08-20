@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《Java并发编程实战》知识脑图</title>
+<style>
+:root {
+    --color-scheme: light;
+    --bg-primary: #f7f8fc;
+    --bg-sidebar: #ffffff;
+    --bg-card: #ffffff;
+    --bg-header: linear-gradient(135deg, #1e3a8a 0%, #312e81 50%, #4c1d95 100%);
+    --bg-part1: #3b82f6;
+    --bg-part2: #10b981;
+    --bg-part3: #f59e0b;
+    --bg-part4: #ef4444;
+    --bg-chap1: #6366f1;
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    --text-light: #9ca3af;
+    --text-inverse: #ffffff;
+    --border-color: #e5e7eb;
+    --border-hover: #c7d2fe;
+    --accent: #4f46e5;
+    --accent-light: #eef2ff;
+    --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --transition: all 0.2s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    line-height: 1.7;
+    font-size: 15px;
+}
+
+/* ===== Header ===== */
+.app-header {
+    background: var(--bg-header);
+    color: var(--text-inverse);
+    padding: 32px 40px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.app-header::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.08) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.app-header h1 {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    position: relative;
+}
+
+.app-header .subtitle {
+    font-size: 14px;
+    opacity: 0.85;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+.app-header .meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+    font-size: 13px;
+    opacity: 0.9;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.app-header .meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.app-header .meta .icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+}
+
+/* ===== Layout ===== */
+.app-container {
+    display: flex;
+    min-height: calc(100vh - 140px);
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+    width: 320px;
+    min-width: 320px;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    height: calc(100vh - 140px);
+    position: sticky;
+    top: 0;
+    padding: 20px 0;
+}
+
+.sidebar-title {
+    padding: 0 20px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 8px;
+}
+
+.nav {
+    list-style: none;
+    font-size: 14px;
+}
+
+.nav .nav-item {
+    position: relative;
+}
+
+.nav .nav-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 9px 20px 9px 20px;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    font-size: inherit;
+    transition: var(--transition);
+    border-left: 3px solid transparent;
+    line-height: 1.4;
+}
+
+.nav .nav-toggle:hover {
+    background: var(--accent-light);
+    color: var(--accent);
+}
+
+.nav .nav-toggle.active {
+    background: var(--accent-light);
+    color: var(--accent);
+    border-left-color: var(--accent);
+    font-weight: 600;
+}
+
+.nav .nav-arrow {
+    font-size: 10px;
+    color: var(--text-light);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    width: 12px;
+    display: inline-block;
+    text-align: center;
+}
+
+.nav .nav-item.open > .nav-toggle .nav-arrow {
+    transform: rotate(90deg);
+    color: var(--accent);
+}
+
+.nav .nav-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav .nav-num {
+    color: var(--text-light);
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-right: 4px;
+}
+
+/* Chapter level */
+.nav .nav-chapter > .nav-toggle {
+    padding-left: 16px;
+    font-weight: 500;
+}
+
+/* Section level */
+.nav .nav-section {
+    display: none;
+    background: #fafbfc;
+    border-left: 1px solid var(--border-color);
+    margin-left: 24px;
+}
+
+.nav .nav-item.open > .nav-section {
+    display: block;
+}
+
+.nav .nav-section .nav-toggle {
+    padding-left: 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.nav .nav-section .nav-toggle .nav-num {
+    font-size: 11px;
+}
+
+/* Part dividers */
+.nav .nav-part {
+    border-top: 2px solid var(--border-color);
+    margin-top: 6px;
+}
+
+.nav .nav-part:first-child {
+    border-top: none;
+    margin-top: 0;
+}
+
+.nav-part-label {
+    padding: 10px 20px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    background: #f9fafb;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-part-1 .nav-part-label { color: var(--bg-part1); }
+.nav-part-2 .nav-part-label { color: var(--bg-part2); }
+.nav-part-3 .nav-part-label { color: var(--bg-part3); }
+.nav-part-4 .nav-part-label { color: var(--bg-part4); }
+
+/* ===== Main Content ===== */
+.content {
+    flex: 1;
+    padding: 40px 60px;
+    max-width: 1200px;
+}
+
+/* Part title page */
+.part-cover {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 50px 40px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-md);
+    border-left: 6px solid;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.part-cover::after {
+    content: "";
+    position: absolute;
+    top: 0; right: 0;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.part-cover-1 { border-left-color: var(--bg-part1); }
+.part-cover-2 { border-left-color: var(--bg-part2); }
+.part-cover-3 { border-left-color: var(--bg-part3); }
+.part-cover-4 { border-left-color: var(--bg-part4); }
+
+.part-cover .label {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 16px;
+    letter-spacing: 1.5px;
+}
+
+.part-cover-1 .label { background: var(--bg-part1); }
+.part-cover-2 .label { background: var(--bg-part2); }
+.part-cover-3 .label { background: var(--bg-part3); }
+.part-cover-4 .label { background: var(--bg-part4); }
+
+.part-cover h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.part-cover p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+/* Chapter */
+.chapter {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 32px 36px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-md);
+    border-top: 4px solid;
+    scroll-margin-top: 24px;
+}
+
+.chapter-1 { border-top-color: var(--bg-chap1); }
+.chapter-2, .chapter-3, .chapter-4, .chapter-5 { border-top-color: var(--bg-part1); }
+.chapter-6, .chapter-7, .chapter-8, .chapter-9 { border-top-color: var(--bg-part2); }
+.chapter-10, .chapter-11, .chapter-12 { border-top-color: var(--bg-part3); }
+.chapter-13, .chapter-14, .chapter-15, .chapter-16 { border-top-color: var(--bg-part4); }
+
+.chapter-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chapter-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+    background: var(--accent);
+    letter-spacing: 1px;
+}
+
+.chapter-1 .chapter-num { background: var(--bg-chap1); }
+.chapter-2 .chapter-num, .chapter-3 .chapter-num, .chapter-4 .chapter-num, .chapter-5 .chapter-num { background: var(--bg-part1); }
+.chapter-6 .chapter-num, .chapter-7 .chapter-num, .chapter-8 .chapter-num, .chapter-9 .chapter-num { background: var(--bg-part2); }
+.chapter-10 .chapter-num, .chapter-11 .chapter-num, .chapter-12 .chapter-num { background: var(--bg-part3); }
+.chapter-13 .chapter-num, .chapter-14 .chapter-num, .chapter-15 .chapter-num, .chapter-16 .chapter-num { background: var(--bg-part4); }
+
+.chapter h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.chapter-intro {
+    color: var(--text-secondary);
+    margin-bottom: 22px;
+    padding: 14px 18px;
+    background: #f9fafb;
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--border-color);
+    font-size: 14px;
+}
+
+/* Section */
+.section {
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.section h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.section h3 .sec-num {
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.section h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 14px 0 8px;
+    padding-left: 12px;
+    border-left: 3px solid var(--accent);
+}
+
+/* Knowledge list */
+.knowledge {
+    list-style: none;
+    padding-left: 8px;
+}
+
+.knowledge > li {
+    position: relative;
+    padding: 8px 0 8px 22px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.knowledge > li::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 17px;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+}
+
+.knowledge > li strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.knowledge > li code {
+    background: #f1f5f9;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+    font-family: "SF Mono", "Consolas", "Monaco", monospace;
+    color: #be185d;
+    border: 1px solid #e2e8f0;
+}
+
+.knowledge ul {
+    list-style: none;
+    margin-top: 6px;
+    margin-left: 16px;
+    padding-left: 8px;
+    border-left: 2px solid #e0e7ff;
+}
+
+.knowledge ul li {
+    padding: 4px 0 4px 18px;
+    position: relative;
+    color: var(--text-muted);
+    font-size: 13.5px;
+}
+
+.knowledge ul li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 12px;
+}
+
+/* Highlight box */
+.highlight {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    color: #78350f;
+}
+
+.highlight .label {
+    font-weight: 700;
+    margin-right: 6px;
+    color: #92400e;
+}
+
+.danger {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-left: 4px solid #ef4444;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    color: #7f1d1d;
+}
+
+.danger .label {
+    font-weight: 700;
+    margin-right: 6px;
+    color: #991b1b;
+}
+
+.tip {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-left: 4px solid #3b82f6;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    color: #1e3a8a;
+}
+
+.tip .label {
+    font-weight: 700;
+    margin-right: 6px;
+    color: #1e40af;
+}
+
+/* Definition */
+.def {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-left: 4px solid #10b981;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    color: #064e3b;
+}
+
+.def .label {
+    font-weight: 700;
+    margin-right: 6px;
+    color: #065f46;
+}
+
+/* Concept cards */
+.concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+}
+
+.concept-card {
+    background: #f9fafb;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    transition: var(--transition);
+}
+
+.concept-card:hover {
+    background: var(--accent-light);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.concept-card .name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.concept-card .name::before {
+    content: "◆";
+    color: var(--accent);
+    font-size: 10px;
+}
+
+.concept-card .desc {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* Scrollbar */
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* Footer */
+.app-footer {
+    background: #1f2937;
+    color: #9ca3af;
+    padding: 24px 40px;
+    text-align: center;
+    font-size: 13px;
+    border-top: 1px solid #374151;
+}
+
+.app-footer strong { color: #e5e7eb; }
+
+/* Mobile */
+@media (max-width: 900px) {
+    .app-container { flex-direction: column; }
+    .sidebar { width: 100%; min-width: 100%; height: auto; max-height: 400px; position: relative; }
+    .content { padding: 24px 20px; }
+    .app-header { padding: 24px 20px; }
+    .app-header h1 { font-size: 22px; }
+    .concept-grid { grid-template-columns: 1fr; }
+    .part-cover { padding: 30px 20px; }
+    .part-cover h2 { font-size: 24px; }
+    .chapter { padding: 22px 20px; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+    <h1>📚 《Java并发编程实战》知识脑图</h1>
+    <div class="subtitle">Java Concurrency in Practice · 完整知识体系梳理</div>
+    <div class="meta">
+        <span>👤 Brian Goetz 等 著 · 童云兰 译</span>
+        <span>📖 16章 · 4大主题</span>
+        <span>🏷️ JSR-166 专家组编写</span>
+    </div>
+</header>
+
+<div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-title">📑 目录导航</div>
+        <ul class="nav" id="nav">
+            <li class="nav-part nav-part-1">
+                <div class="nav-part-label">▎第1章 入门</div>
+            </li>
+            <li class="nav-item nav-chapter chapter-1" data-target="ch1">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第1章</span><span class="nav-text">简介</span></button>
+                <ul class="nav-section">
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-1-1"><span class="nav-num">1.1</span><span class="nav-text">并发简史</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-1-2"><span class="nav-num">1.2</span><span class="nav-text">线程的优势</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-1-3"><span class="nav-num">1.3</span><span class="nav-text">线程带来的风险</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-1-4"><span class="nav-num">1.4</span><span class="nav-text">线程无处不在</span></a></li>
+                </ul>
+            </li>
+
+            <li class="nav-part nav-part-1">
+                <div class="nav-part-label">▎第一部分 · 基础知识</div>
+            </li>
+            <li class="nav-item nav-chapter chapter-2" data-target="ch2">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第2章</span><span class="nav-text">线程安全性</span></button>
+                <ul class="nav-section">
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-2-1"><span class="nav-num">2.1</span><span class="nav-text">什么是线程安全性</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-2-2"><span class="nav-num">2.2</span><span class="nav-text">原子性</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-2-3"><span class="nav-num">2.3</span><span class="nav-text">加锁机制</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-2-4"><span class="nav-num">2.4</span><span class="nav-text">用锁来保护状态</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-2-5"><span class="nav-num">2.5</span><span class="nav-text">活跃性与性能</span></a></li>
+                </ul>
+            </li>
+            <li class="nav-item nav-chapter chapter-3" data-target="ch3">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第3章</span><span class="nav-text">对象的共享</span></button>
+                <ul class="nav-section">
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-3-1"><span class="nav-num">3.1</span><span class="nav-text">可见性</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-3-2"><span class="nav-num">3.2</span><span class="nav-text">发布与逸出</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-3-3"><span class="nav-num">3.3</span><span class="nav-text">线程封闭</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-3-4"><span class="nav-num">3.4</span><span class="nav-text">不变性</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-3-5"><span class="nav-num">3.5</span><span class="nav-text">安全发布</span></a></li>
+                </ul>
+            </li>
+            <li class="nav-item nav-chapter chapter-4" data-target="ch4">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第4章</span><span class="nav-text">对象的组合</span></button>
+                <ul class="nav-section">
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-4-1"><span class="nav-num">4.1</span><span class="nav-text">设计线程安全的类</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-4-2"><span class="nav-num">4.2</span><span class="nav-text">实例封闭</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-4-3"><span class="nav-num">4.3</span><span class="nav-text">线程安全性的委托</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-4-4"><span class="nav-num">4.4</span><span class="nav-text">在现有线程安全类中添加功能</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-4-5"><span class="nav-num">4.5</span><span class="nav-text">将同步策略文档化</span></a></li>
+                </ul>
+            </li>
+            <li class="nav-item nav-chapter chapter-5" data-target="ch5">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第5章</span><span class="nav-text">基础构建模块</span></button>
+                <ul class="nav-section">
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-5-1"><span class="nav-num">5.1</span><span class="nav-text">同步容器类</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-5-2"><span class="nav-num">5.2</span><span class="nav-text">并发容器</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-5-3"><span class="nav-num">5.3</span><span class="nav-text">阻塞队列与生产者-消费者</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-5-4"><span class="nav-num">5.4</span><span class="nav-text">阻塞方法与中断方法</span></a></li>
+                    <li class="nav-item"><a class="nav-toggle" href="#sec-5-5"><span class="nav-num">5.5</span><span class="nav-text">同步工具类</span></a></li>
+                </ul>
+            </li>
+
+            <li class="nav-part nav-part-2">
+                <div class="nav-part-label">▎第二部分 · 结构化并发应用程序</div>
+            </li>
+            <li class="nav-item nav-chapter chapter-6" data-target="ch6">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第6章</span><span class="nav-text">任务执行</span></button>
+            </li>
+            <li class="nav-item nav-chapter chapter-7" data-target="ch7">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第7章</span><span class="nav-text">取消与关闭</span></button>
+            </li>
+            <li class="nav-item nav-chapter chapter-8" data-target="ch8">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第8章</span><span class="nav-text">线程池的使用</span></button>
+            </li>
+            <li class="nav-item nav-chapter chapter-9" data-target="ch9">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第9章</span><span class="nav-text">图形用户界面应用程序</span></button>
+            </li>
+
+            <li class="nav-part nav-part-3">
+                <div class="nav-part-label">▎第三部分 · 活跃性、性能与测试</div>
+            </li>
+            <li class="nav-item nav-chapter chapter-10" data-target="ch10">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第10章</span><span class="nav-text">避免活跃性危险</span></button>
+            </li>
+            <li class="nav-item nav-chapter chapter-11" data-target="ch11">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第11章</span><span class="nav-text">性能与可伸缩性</span></button>
+            </li>
+            <li class="nav-item nav-chapter chapter-12" data-target="ch12">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第12章</span><span class="nav-text">并发程序的测试</span></button>
+            </li>
+
+            <li class="nav-part nav-part-4">
+                <div class="nav-part-label">▎第四部分 · 高级主题</div>
+            </li>
+            <li class="nav-item nav-chapter chapter-13" data-target="ch13">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第13章</span><span class="nav-text">显式锁</span></button>
+            </li>
+            <li class="nav-item nav-chapter chapter-14" data-target="ch14">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第14章</span><span class="nav-text">构建自定义的同步工具</span></button>
+            </li>
+            <li class="nav-item nav-chapter chapter-15" data-target="ch15">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第15章</span><span class="nav-text">原子变量与非阻塞同步</span></button>
+            </li>
+            <li class="nav-item nav-chapter chapter-16" data-target="ch16">
+                <button class="nav-toggle"><span class="nav-arrow">▶</span><span class="nav-num">第16章</span><span class="nav-text">Java内存模型</span></button>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+
+        <!-- ========== Chapter 1 ========== -->
+        <article class="chapter chapter-1" id="ch1">
+            <div class="chapter-header">
+                <span class="chapter-num">第1章</span>
+                <h2>简介</h2>
+            </div>
+            <div class="chapter-intro">本章介绍了多线程编程的历史背景、线程带来的主要优势以及潜在风险。即使读者已熟悉线程相关的基本概念，仍需关注 1.4 节中关于"线程无处不在"的内容，因为随着框架与组件的广泛使用，线程问题会不经意地出现在日常开发中。</div>
+
+            <section class="section" id="sec-1-1">
+                <h3><span class="sec-num">1.1</span>并发简史</h3>
+                <ul class="knowledge">
+                    <li>操作系统的出现使计算机每次能运行多个程序，不同程序通过进程隔离。</li>
+                    <li>线程（Thread）允许同一个进程内同时存在多个程序控制流，是更细粒度的并发单元。</li>
+                    <li>线程共享进程范围内的资源（如内存句柄、文件句柄），因此编写/调试/测试难度更高。</li>
+                    <li>Java 从诞生起就内置了对线程的支持，并提供跨平台的内存模型（从 Java 5.0 起重新修订）。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-1-2">
+                <h3><span class="sec-num">1.2</span>线程的优势</h3>
+                <div class="concept-grid">
+                    <div class="concept-card"><div class="name">发挥多处理器的强大能力</div><div class="desc">充分利用多核 CPU 提升吞吐。理论上多线程在多处理器上可线性提升计算速度，但需避免瓶颈（如频繁加锁）。</div></div>
+                    <div class="concept-card"><div class="name">建模的简单性</div><div class="desc">将复杂异步流程分解为多个并发任务，使程序结构更贴近业务模型，提升可读性。</div></div>
+                    <div class="concept-card"><div class="name">异步事件的简化处理</div><div class="desc">为每个请求分配独立线程，避免事件回调地狱；服务程序可同时处理多个连接。</div></div>
+                    <div class="concept-card"><div class="name">响应更灵敏的用户界面</div><div class="desc">将耗时操作放入后台线程，UI 线程保持响应。AWT/Swing/SWT 通过事件分发线程实现。</div></div>
+                </div>
+            </section>
+
+            <section class="section" id="sec-1-3">
+                <h3><span class="sec-num">1.3</span>线程带来的风险</h3>
+                <div class="danger"><span class="label">⚠️ 安全性问题：</span>多线程下的竞态条件（Race Condition）可能导致错误的结果。最常见的表现是"读-改-写"操作被其他线程打断。</div>
+                <div class="highlight"><span class="label">🔄 活跃性问题：</span>包括死锁（Deadlock）、活锁（Livelock）、饥饿（Starvation）等，使线程无法继续执行。</div>
+                <div class="tip"><span class="label">⏱️ 性能问题：</span>线程调度、上下文切换、同步开销等都会带来额外成本。需要权衡并发带来的收益。</div>
+                <ul class="knowledge">
+                    <li><strong>线程安全的核心目标</strong>：避免错误、保持活跃、保证性能。
+                        <ul>
+                            <li>安全性（Safety）："不发生坏事"。</li>
+                            <li>活跃性（Liveness）："好事终将发生"。</li>
+                            <li>性能（Performance）："做事要快"。</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-1-4">
+                <h3><span class="sec-num">1.4</span>线程无处不在</h3>
+                <ul class="knowledge">
+                    <li>每个 Java 程序都会启动多个线程，包括<strong>主线程</strong>、<strong>垃圾回收线程</strong>、<strong>终结器线程</strong>等。</li>
+                    <li>Timer、Servlet、JSP、RMI、Application Server（如 JBoss、Tomcat）都会自动创建线程池。</li>
+                    <li>AWT/Swing 的事件分发线程、SwingUtilities.invokeLater 等是 UI 编程的基础。</li>
+                    <li>常用框架与组件的并发行为：
+                        <ul>
+                            <li><code>Timer</code>：单线程执行所有任务，任务异常会影响后续任务。</li>
+                            <li>Servlet/JSP：每个请求由 Servlet 容器中的某个线程处理，需注意共享资源。</li>
+                            <li>RMI：远程方法调用、对象序列化、GC 都涉及后台线程。</li>
+                            <li>Swing/AWT：事件分派线程（EDT）单线程处理所有 UI 事件。</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+        </article>
+
+        <!-- ========== Part 1 Cover ========== -->
+        <div class="part-cover part-cover-1">
+            <div class="label">PART 1</div>
+            <h2>第一部分 · 基础知识</h2>
+            <p>第2章至第5章。本部分将介绍并发性与线程安全性的基本概念，并讲解如何使用类库提供的基本并发构建块来构建线程安全的类。这些知识是后续所有内容的基础，建议在编写任何并发代码之前务必阅读。</p>
+        </div>
+
+        <!-- ========== Chapter 2 ========== -->
+        <article class="chapter chapter-2" id="ch2">
+            <div class="chapter-header">
+                <span class="chapter-num">第2章</span>
+                <h2>线程安全性</h2>
+            </div>
+            <div class="chapter-intro">线程安全性的核心是"对共享的可变状态进行正确的管理"。本章是全书的基石，几乎所有线程安全规则都源于这两章内容。</div>
+
+            <section class="section" id="sec-2-1">
+                <h3><span class="sec-num">2.1</span>什么是线程安全性</h3>
+                <div class="def"><span class="label">定义：</span>当多个线程访问某个类时，不管运行时环境采用何种调度方式或者这些线程将如何交替执行，并且在主调代码中不需要任何额外的同步或协同，这个类都能表现出正确的行为，那么这个类就是线程安全的。</div>
+                <ul class="knowledge">
+                    <li><strong>无状态对象</strong>（如 <code>Servlet</code> 中无字段的服务方法）一定是线程安全的，因为它们不持有共享状态。</li>
+                    <li>线程安全性体现在"竞态条件不会发生在该对象上"。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-2-2">
+                <h3><span class="sec-num">2.2</span>原子性</h3>
+
+                <h4 id="sec-2-2-1">2.2.1 竞态条件</h4>
+                <div class="def"><span class="label">竞态条件（Race Condition）：</span>由于不恰当的执行时序而出现不正确的结果。最常见类型是"先检查后执行"（Check-Then-act），如单例的延迟初始化。</div>
+
+                <h4 id="sec-2-2-2">2.2.2 示例：延迟初始化中的竞态条件</h4>
+                <ul class="knowledge">
+                    <li><code>if (instance == null) { instance = new Instance(); }</code> 看似安全，实则多个线程可能同时看到 <code>instance == null</code>，导致创建多个实例。</li>
+                    <li>可以通过 <code>synchronized</code> 或提前初始化（Eager Initialization）解决。</li>
+                </ul>
+
+                <h4 id="sec-2-2-3">2.2.3 复合操作</h4>
+                <ul class="knowledge">
+                    <li><strong>复合操作</strong>（Compound Action）：包含了一组必须以原子方式执行的复合操作。</li>
+                    <li>Java 5.0 之后，可以使用 <code>java.util.concurrent.atomic</code> 包中的原子变量类（如 <code>AtomicLong</code>、<code>AtomicReference</code>）实现无锁的复合操作。</li>
+                    <li>使用 <code>AtomicLong</code> 替代 <code>long</code> + <code>++</code> 即可解决竞态条件。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-2-3">
+                <h3><span class="sec-num">2.3</span>加锁机制</h3>
+
+                <h4 id="sec-2-3-1">2.3.1 内置锁</h4>
+                <ul class="knowledge">
+                    <li>Java 提供 <code>synchronized</code> 关键字支持内置锁（Monitor Lock）。每个 Java 对象都可以用作一个实现同步的锁。</li>
+                    <li><code>synchronized</code> 修饰方法或代码块时，线程进入前自动获得锁，退出时（无论是正常返回还是抛出异常）自动释放锁。</li>
+                    <li>内置锁是<strong>可重入</strong>的：同一线程可以多次获取同一把锁，避免了"自己死锁"的问题。</li>
+                </ul>
+
+                <h4 id="sec-2-3-2">2.3.2 重入</h4>
+                <ul class="knowledge">
+                    <li>重入锁的<strong>粒度</strong>是"线程"，而不是"调用"。</li>
+                    <li>子类覆写父类的 <code>synchronized</code> 方法并调用 <code>super.method()</code> 是合法的，因为外层方法已持有锁。</li>
+                    <li>重入简化了面向对象并发代码的编写，但也可能导致某些设计问题（如外层方法持有锁后调用重写方法）。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-2-4">
+                <h3><span class="sec-num">2.4</span>用锁来保护状态</h3>
+                <ul class="knowledge">
+                    <li>对于可能被多个线程同时访问的可变状态变量，在访问它时都需要持有同一个锁。</li>
+                    <li>每个共享的、可变的变量都应该只由<strong>一个</strong>锁来保护，从而使维护人员知道是哪一把锁。</li>
+                    <li>并非所有数据都需要锁保护：线程封闭（Thread Confinement）、只读共享（不可变对象）等方法可以避免加锁。</li>
+                    <li><strong>常见错误</strong>：用 <code>synchronized(this)</code> 保护一个字段，但其他方法不通过锁来访问该字段。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-2-5">
+                <h3><span class="sec-num">2.5</span>活跃性与性能</h3>
+                <ul class="knowledge">
+                    <li>通过缩小同步代码块的范围（"快进快出"），可以平衡安全性与性能。</li>
+                    <li>但<strong>简单性与性能之间是有冲突的</strong>，常常需要在这两者之间做权衡。优先保证正确性。</li>
+                    <li>同步的开销包括：锁获取/释放、线程调度、共享内存的同步（缓存刷新）等。</li>
+                </ul>
+            </section>
+        </article>
+
+        <!-- ========== Chapter 3 ========== -->
+        <article class="chapter chapter-3" id="ch3">
+            <div class="chapter-header">
+                <span class="chapter-num">第3章</span>
+                <h2>对象的共享</h2>
+            </div>
+            <div class="chapter-intro">第2章讨论了如何防止线程在访问对象时看到不一致的状态。本章将讨论如何确保对象被正确地发布与共享，包括可见性、发布逸出、线程封闭、不可变对象等关键概念。</div>
+
+            <section class="section" id="sec-3-1">
+                <h3><span class="sec-num">3.1</span>可见性</h3>
+                <div class="def"><span class="label">可见性问题：</span>某个线程对共享变量的修改，其他线程可能看不到。这是由现代处理器和编译器优化（指令重排序、缓存等）造成的。</div>
+
+                <h4 id="sec-3-1-1">3.1.1 失效数据</h4>
+                <ul class="knowledge">
+                    <li>在没有同步的情况下，线程可能读取到"过期"的值（Stale Data）。</li>
+                    <li>即使失效数据不会导致程序出错，活跃性问题（如意外的 <code>NullPointerException</code>）也可能发生。</li>
+                </ul>
+
+                <h4 id="sec-3-1-2">3.1.2 非原子的 64 位操作</h4>
+                <ul class="knowledge">
+                    <li>JVM 规范允许把 64 位的 <code>double</code> / <code>long</code> 变量读写分解为两个 32 位操作，因此可能读到"撕裂写"的高低位组合。</li>
+                    <li>使用 <code>volatile</code> 或加锁可以保证原子性。</li>
+                </ul>
+
+                <h4 id="sec-3-1-3">3.1.3 加锁与可见性</h4>
+                <ul class="knowledge">
+                    <li>加锁不仅能保证互斥，还能保证内存可见性。锁的获取会强制从主内存重新读取数据，锁的释放会强制将数据写回主内存。</li>
+                </ul>
+
+                <h4 id="sec-3-1-4">3.1.4 Volatile 变量</h4>
+                <ul class="knowledge">
+                    <li><code>volatile</code> 关键字提供了一种轻量级的同步机制：对该变量的写操作会立即刷新到主内存，读操作会从主内存重新加载。</li>
+                    <li>通常用作<strong>状态标志</strong>、一次性安全发布（one-time safe publication）等场景。</li>
+                    <li>使用条件：写入时<strong>不依赖变量的当前值</strong>，且变量<strong>不需要与其他状态变量共同参与不变性条件</strong>。</li>
+                    <li>加锁可以保证可见性与原子性；<code>volatile</code> 只能保证可见性。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-3-2">
+                <h3><span class="sec-num">3.2</span>发布与逸出</h3>
+                <div class="def"><span class="label">发布（Publishing）：</span>使对象能够在当前作用域之外的代码中使用。例如将引用保存到其他代码可以访问的地方，或者在非私有的方法中返回引用，或者通过其他线程发布。</div>
+                <div class="danger"><span class="label">逸出（Escape）：</span>当某个不应该被发布的对象被发布时，就称为逸出。逸出会导致对象的状态被意外的修改，破坏封装性。</div>
+                <ul class="knowledge">
+                    <li>常见的逸出场景：在构造函数中启动线程（<code>this</code> 引用被发布给新线程）、在构造函数中注册监听器等。</li>
+                    <li>原则：不要在构造函数中使 <code>this</code> 引用逸出。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-3-3">
+                <h3><span class="sec-num">3.3</span>线程封闭</h3>
+                <div class="def"><span class="label">线程封闭（Thread Confinement）：</span>把对象封闭在一个线程中，使得它天然线程安全，即使对象本身不是线程安全的。</div>
+
+                <h4 id="sec-3-3-1">3.3.1 Ad-hoc 线程封闭</h4>
+                <ul class="knowledge">
+                    <li>完全靠约定（如文档、注释）来维护线程封闭，<strong>非常脆弱</strong>，建议尽量少用。</li>
+                </ul>
+
+                <h4 id="sec-3-3-2">3.3.2 栈封闭</h4>
+                <ul class="knowledge">
+                    <li>只能通过局部变量才能访问对象，本质上是栈封闭。局部变量天生封闭在线程中。</li>
+                    <li>对于基本类型的局部变量，无论如何都不会破坏栈封闭。</li>
+                </ul>
+
+                <h4 id="sec-3-3-3">3.3.3 ThreadLocal 类</h4>
+                <ul class="knowledge">
+                    <li><code>ThreadLocal</code> 提供了线程级别的变量副本，每个线程独立拥有，互不影响。</li>
+                    <li>常见用途：JDBC 连接、Session、单实例的全局变量（避免传参）。</li>
+                    <li>注意：<code>ThreadLocal</code> 会持有对象引用，需谨慎避免内存泄漏（线程池中的 ThreadLocal 变量需在使用后清理）。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-3-4">
+                <h3><span class="sec-num">3.4</span>不变性</h3>
+                <div class="def"><span class="label">不可变对象（Immutable Object）：</span>对象创建后其状态不可修改。不可变对象一定是线程安全的。</div>
+                <ul class="knowledge">
+                    <li>不可变对象满足条件：状态在创建后不可修改、所有字段都是 <code>final</code>、正确构造（无 <code>this</code> 逸出）。</li>
+                </ul>
+
+                <h4 id="sec-3-4-1">3.4.1 Final 域</h4>
+                <ul class="knowledge">
+                    <li><code>final</code> 修饰的字段在构造完成后不可修改，JMM 保证 <code>final</code> 字段在构造函数结束后对其他线程可见（无需同步）。</li>
+                </ul>
+
+                <h4 id="sec-3-4-2">3.4.2 示例：使用 Volatile 类型来发布不可变对象</h4>
+                <ul class="knowledge">
+                    <li>将对象的引用保存到 <code>volatile</code> 类型或者 <code>AtomicReference</code> 中，可以实现安全发布。</li>
+                    <li>每次发布时，发布一个新对象（如 <code>VolatileCachedFactorizer</code> 的方式），避免可变状态。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-3-5">
+                <h3><span class="sec-num">3.5</span>安全发布</h3>
+
+                <h4 id="sec-3-5-1">3.5.1 不正确的发布：正确的对象被破坏</h4>
+                <div class="danger"><span class="label">问题：</span>没有正确同步的对象引用，其他线程看到的对象可能处于不一致状态（部分构造）。即使在构造时使用了不变性条件，缺少同步也会破坏该条件。</div>
+
+                <h4 id="sec-3-5-2">3.5.2 不可变对象与初始化安全性</h4>
+                <ul class="knowledge">
+                    <li>JMM 为共享不可变对象提供了<strong>初始化安全性保证</strong>：任何线程只要获得了不可变对象的引用，就一定能看到由构造函数正确初始化的值。</li>
+                </ul>
+
+                <h4 id="sec-3-5-3">3.5.3 安全发布的常用模式</h4>
+                <ul class="knowledge">
+                    <li>使用 <code>volatile</code>、<code>AtomicReference</code>、<code>synchronized</code>、<code>final</code> 域或并发容器来安全发布对象。</li>
+                    <li>事实不可变对象（Effectively Immutable）需要在发布时使用上述技术之一。</li>
+                </ul>
+
+                <h4 id="sec-3-5-4">3.5.4 事实不可变对象</h4>
+                <ul class="knowledge">
+                    <li>对象本身可变，但在发布后不会再被修改。通过安全发布可以避免同步。</li>
+                </ul>
+
+                <h4 id="sec-3-5-5">3.5.5 可变对象</h4>
+                <ul class="knowledge">
+                    <li>可变对象在发布后仍可能被修改，因此不仅发布时需要同步，每次访问时也都需要同步。</li>
+                </ul>
+
+                <h4 id="sec-3-5-6">3.5.6 安全地共享对象</h4>
+                <ul class="knowledge">
+                    <li>在并发程序中使用和共享对象时，可以采用以下实用策略：
+                        <ul>
+                            <li><strong>线程封闭</strong>：对象只由一个线程持有。</li>
+                            <li><strong>只读共享</strong>：使用只读 / 不可变对象（无需同步）。</li>
+                            <li><strong>线程安全共享</strong>：对象内部实现同步（如 <code>ConcurrentHashMap</code>）。</li>
+                            <li><strong>保护对象</strong>：通过加锁保护可变对象。</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+        </article>
+
+        <!-- ========== Chapter 4 ========== -->
+        <article class="chapter chapter-4" id="ch4">
+            <div class="chapter-header">
+                <span class="chapter-num">第4章</span>
+                <h2>对象的组合</h2>
+            </div>
+            <div class="chapter-intro">第3章介绍了如何发布对象，本章将讨论如何将小的线程安全类组合成更大的线程安全类，以及如何识别哪些类需要哪些保护。</div>
+
+            <section class="section" id="sec-4-1">
+                <h3><span class="sec-num">4.1</span>设计线程安全的类</h3>
+                <ul class="knowledge">
+                    <li>设计线程安全类的三个基本要素：找出构成对象状态的所有变量、找出约束状态变量的不变性条件、建立一个并发访问策略。</li>
+                </ul>
+
+                <h4 id="sec-4-1-1">4.1.1 收集同步需求</h4>
+                <ul class="knowledge">
+                    <li>明确类的<strong>不变性条件</strong>（如 <code>count &gt;= 0</code>）和<strong>后验条件</strong>（如 <code>remove</code> 后 size 必须减小）。</li>
+                    <li>使用原子操作或加锁来保证状态转换是原子的。</li>
+                </ul>
+
+                <h4 id="sec-4-1-2">4.1.2 依赖状态的操作</h4>
+                <ul class="knowledge">
+                    <li>类中的某些方法可能依赖于对象当前状态，必须基于当前状态进行判断与执行（如"如果当前状态为 X，则执行 Y"）。</li>
+                    <li>需要在复合操作中先检查状态，再执行相应动作；这通常需要加锁来保证原子性。</li>
+                </ul>
+
+                <h4 id="sec-4-1-3">4.1.3 状态的所有权</h4>
+                <ul class="knowledge">
+                    <li>状态的所有权决定了<strong>谁应该负责保护它</strong>。</li>
+                    <li>如果一个对象被发布出去，则其状态归外部代码所有，外部代码需要在访问时加锁。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-4-2">
+                <h3><span class="sec-num">4.2</span>实例封闭</h3>
+                <div class="def"><span class="label">实例封闭（Instance Confinement）：</span>将数据封装在对象内部，并限制外部代码直接访问，必须通过对象的方法访问。</div>
+
+                <h4 id="sec-4-2-1">4.2.1 Java 监视器模式</h4>
+                <ul class="knowledge">
+                    <li>把类的所有可变状态封装起来，并由类自己的内置锁保护所有方法。这是 Java 最常用的对象线程安全设计模式。</li>
+                </ul>
+
+                <h4 id="sec-4-2-2">4.2.2 示例：车辆追踪</h4>
+                <ul class="knowledge">
+                    <li>通过 <code>ConcurrentHashMap</code> + 同步的 <code>MutablePoint</code> 实现线程安全的车辆位置追踪器。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-4-3">
+                <h3><span class="sec-num">4.3</span>线程安全性的委托</h3>
+                <div class="def"><span class="label">线程安全性的委托：</span>如果类中的各个组件都是线程安全的，是否类本身也线程安全？答案为"取决于组合方式"。</div>
+
+                <h4 id="sec-4-3-1">4.3.1 示例：基于委托的车辆追踪器</h4>
+                <ul class="knowledge">
+                    <li>将位置信息发布为不可变对象 <code>ImmutablePoint</code>，避免共享可变状态。</li>
+                </ul>
+
+                <h4 id="sec-4-3-2">4.3.2 独立的状态变量</h4>
+                <ul class="knowledge">
+                    <li>如果类中的状态变量彼此独立（不存在不变性条件），则可以为每个状态变量分别使用独立的锁。</li>
+                </ul>
+
+                <h4 id="sec-4-3-3">4.3.3 当委托失效时</h4>
+                <ul class="knowledge">
+                    <li>当状态变量之间存在<strong>不变性条件</strong>时，简单的委托不足以保证线程安全，需要额外的同步机制（如加锁、原子类组合）。</li>
+                </ul>
+
+                <h4 id="sec-4-3-4">4.3.4 发布底层的状态变量</h4>
+                <ul class="knowledge">
+                    <li>如果必须发布底层状态变量，应发布其不可变副本或使用线程安全包装。</li>
+                </ul>
+
+                <h4 id="sec-4-3-5">4.3.5 示例：发布状态的车辆追踪器</h4>
+                <ul class="knowledge">
+                    <li>使用 <code>ConcurrentMap</code> + <code>AtomicReference</code>，在不破坏安全性的前提下支持位置快照。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-4-4">
+                <h3><span class="sec-num">4.4</span>在现有的线程安全类中添加功能</h3>
+
+                <h4 id="sec-4-4-1">4.4.1 客户端加锁机制</h4>
+                <div class="danger"><span class="label">注意：</span>客户端加锁（Client-side Locking）非常脆弱，因为客户端必须知道对象使用了哪一把锁。一旦类更换锁机制，所有客户端代码都会失效。</div>
+
+                <h4 id="sec-4-4-2">4.4.2 组合</h4>
+                <ul class="knowledge">
+                    <li>更稳健的方法是<strong>组合（Composition）</strong>：将现有类作为私有成员包含在新类中，新类的方法通过调用现有类的方法实现。</li>
+                    <li>如 <code>ImprovedList</code> 通过 <code>List</code> + 同步方法实现更可靠的扩展。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-4-5">
+                <h3><span class="sec-num">4.5</span>将同步策略文档化</h3>
+                <div class="tip"><span class="label">最佳实践：</span>良好的文档应该说明：类是否是线程安全的、支持哪种程度的加锁（无锁/对象锁/类锁）、是否支持迭代、哪些状态变量受哪把锁保护。</div>
+            </section>
+        </article>
+
+        <!-- ========== Chapter 5 ========== -->
+        <article class="chapter chapter-5" id="ch5">
+            <div class="chapter-header">
+                <span class="chapter-num">第5章</span>
+                <h2>基础构建模块</h2>
+            </div>
+            <div class="chapter-intro">本章介绍 Java 平台类库中提供的一些基础的并发构建模块，包括线程安全的容器类、阻塞队列以及同步工具类等。</div>
+
+            <section class="section" id="sec-5-1">
+                <h3><span class="sec-num">5.1</span>同步容器类</h3>
+                <div class="def"><span class="label">同步容器类：</span>如 <code>Vector</code>、<code>Hashtable</code>、<code>Collections.synchronizedXxx</code> 等。这些类通过内置锁实现线程安全，但有性能与功能局限。</div>
+
+                <h4 id="sec-5-1-1">5.1.1 同步容器类的问题</h4>
+                <ul class="knowledge">
+                    <li>同步容器类对所有方法使用单一锁（粗粒度），并发性能较差。</li>
+                    <li>复合操作（如"先检查再执行"）仍然需要客户端加锁。</li>
+                </ul>
+
+                <h4 id="sec-5-1-2">5.1.2 迭代器与 ConcurrentModificationException</h4>
+                <ul class="knowledge">
+                    <li>同步容器的 <code>Iterator</code> 在迭代过程中若其他线程修改容器，会抛出 <code>ConcurrentModificationException</code>（fail-fast）。</li>
+                    <li>即使不修改，迭代过程也可能看到过期数据。</li>
+                </ul>
+
+                <h4 id="sec-5-1-3">5.1.3 隐藏迭代器</h4>
+                <div class="danger"><span class="label">陷阱：</span><code>toString()</code>、<code>hashCode()</code>、<code>equals()</code>、<code>containsAll()</code>、<code>removeAll()</code> 等方法会隐式迭代容器，因此即使代码中没有显式迭代，仍可能出现并发问题。</div>
+            </section>
+
+            <section class="section" id="sec-5-2">
+                <h3><span class="sec-num">5.2</span>并发容器</h3>
+                <div class="def"><span class="label">并发容器：</span>通过更细粒度的锁（如分段锁、CAS）实现高并发。代表类有 <code>ConcurrentHashMap</code>、<code>CopyOnWriteArrayList</code>、<code>ConcurrentLinkedQueue</code> 等。</div>
+
+                <h4 id="sec-5-2-1">5.2.1 ConcurrentHashMap</h4>
+                <ul class="knowledge">
+                    <li>使用<strong>分段锁（Java 7）</strong> / <strong>CAS + synchronized（Java 8+）</strong> 实现高并发读写。</li>
+                    <li>迭代器是<strong>弱一致</strong>的，不会抛出 <code>ConcurrentModificationException</code>，但可能反映部分修改。</li>
+                    <li>支持原子的复合操作：<code>putIfAbsent</code>、<code>compute</code>、<code>merge</code>、<code>computeIfAbsent</code> 等。</li>
+                </ul>
+
+                <h4 id="sec-5-2-2">5.2.2 额外的原子 Map 操作</h4>
+                <ul class="knowledge">
+                    <li><code>putIfAbsent</code>、<code>remove(key, value)</code>、<code>replace(key, oldValue, newValue)</code> 等原子操作是构建复合操作的基础。</li>
+                </ul>
+
+                <h4 id="sec-5-2-3">5.2.3 CopyOnWriteArrayList</h4>
+                <ul class="knowledge">
+                    <li>每次修改都会创建并发布新的底层数组副本，读操作无需加锁，适合<strong>读多写少</strong>的场景。</li>
+                    <li>常见用途：监听器列表（add/remove listener vs. fire event）。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-5-3">
+                <h3><span class="sec-num">5.3</span>阻塞队列和生产者-消费者模式</h3>
+                <div class="def"><span class="label">阻塞队列（BlockingQueue）：</span>支持阻塞的 <code>put</code> 和 <code>take</code>，是实现<strong>生产者-消费者</strong>模式的核心组件。</div>
+                <ul class="knowledge">
+                    <li>实现类：<code>LinkedBlockingQueue</code>、<code>ArrayBlockingQueue</code>、<code>PriorityBlockingQueue</code>、<code>SynchronousQueue</code>、<code>DelayQueue</code>。</li>
+                    <li>无界队列（如 <code>LinkedBlockingQueue</code>）可能导致 OOM；需根据场景选择有界队列。</li>
+                </ul>
+
+                <h4 id="sec-5-3-1">5.3.1 示例：桌面搜索</h4>
+                <ul class="knowledge">
+                    <li>多个爬虫线程（生产者）将文件放入阻塞队列，索引线程（消费者）取出并建立索引。</li>
+                </ul>
+
+                <h4 id="sec-5-3-2">5.3.2 串行线程封闭</h4>
+                <ul class="knowledge">
+                    <li>对象从生产者交给消费者后，只能由消费者线程访问；通过<strong>安全发布</strong>实现对象所有权转移。</li>
+                </ul>
+
+                <h4 id="sec-5-3-3">5.3.3 双端队列与工作密取</h4>
+                <ul class="knowledge">
+                    <li><code>Deque</code> 实现类（如 <code>LinkedBlockingDeque</code>）支持两端操作，适合工作密取（Work Stealing）模式：每个消费者有自己的双端队列，当自己队列空时，从其他消费者队列"窃取"任务。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-5-4">
+                <h3><span class="sec-num">5.4</span>阻塞方法与中断方法</h3>
+                <ul class="knowledge">
+                    <li>线程可能因为多种原因阻塞：等待 I/O、等待锁、等待其他线程的结果等。</li>
+                    <li><code>Thread</code> 提供了<strong>中断</strong>机制：<code>interrupt()</code> 设置中断标志，<code>isInterrupted()</code> 检查，可用于取消阻塞操作。</li>
+                    <li>大多数可中断的阻塞方法在收到中断时抛出 <code>InterruptedException</code>。</li>
+                    <li>在捕获 <code>InterruptedException</code> 后通常应恢复中断状态：<code>Thread.currentThread().interrupt()</code>。</li>
+                </ul>
+            </section>
+
+            <section class="section" id="sec-5-5">
+                <h3><span class="sec-num">5.5</span>同步工具类</h3>
+                <div class="def"><span class="label">同步工具类：</span>根据自身的状态来协调线程的控制流。包括 <strong>闭锁（Latch）</strong>、<strong>FutureTask</strong>、<strong>信号量（Semaphore）</strong>、<strong>屏障（Barrier）</strong> 等。</div>
+
+                <h4 id="sec-5-5-1">5.5.1 闭锁</h4>
+                <ul class="knowledge">
+                    <li><code>CountDownLatch</code>：通过计数器实现，线程调用 <code>await()</code> 阻塞，<code>countDown()</code> 计数减一；计数器为零时所有等待线程被唤醒。</li>
+                    <li>典型应用：等待多个并发任务完成、启动信号（确保所有资源就绪后再开始）。</li>
+                </ul>
+
+                <h4 id="sec-5-5-2">5.5.2 FutureTask</h4>
+                <ul class="knowledge">
+                    <li><code>FutureTask</code> 表示一个异步计算，可通过 <code>get()</code> 获取结果（如果未完成则阻塞）。</li>
+                    <li>实现类 <code>RunnableFuture</code>，可以包装 <code>Callable</code> 或 <code>Runnable</code>，并通过 <code>Executor</code> 执行。</li>
+                </ul>
+            </section>
+        </article>
+
+        <!-- ========== Part 2 Cover ========== -->
+        <div class="part-cover part-cover-2">
+            <div class="label">PART 2</div>
+            <h2>第二部分 · 结构化并发应用程序</h2>
+            <p>第6章至第9章。本部分将介绍如何利用线程来提高并发应用程序的吞吐量或响应性。涵盖任务执行框架、任务取消与关闭、线程池的高级特性以及 GUI 应用程序的并发模式。</p>
+        </div>
+
+        <!-- ========== Chapter 6 ========== -->
+        <article class="chapter chapter-6" id="ch6">
+            <div class="chapter-header">
+                <span class="chapter-num">第6章</span>
+                <h2>任务执行</h2>
+            </div>
+            <div class="chapter-intro">"任务"是抽象且离散的工作单元。本章介绍如何识别可并行执行的任务，以及如何在任务执行框架中执行它们。</div>
+            <ul class="knowledge">
+                <li>大多数并发应用围绕"任务执行"展开：服务器接受请求 → 创建任务 → 处理。</li>
+                <li><strong>串行执行</strong>：简单但吞吐差；<strong>为每个任务创建线程</strong>：资源消耗大，可能耗尽。</li>
+                <li><strong>Executor 框架</strong>：基于生产者-消费者模式，提供了灵活的任务执行机制。
+                    <ul>
+                        <li><code>Executor</code> 接口：<code>execute(Runnable)</code>。</li>
+                        <li><code>ExecutorService</code>：扩展 <code>Executor</code>，增加生命周期管理（shutdown）。</li>
+                        <li><code>ScheduledExecutorService</code>：支持定时和周期任务。</li>
+                        <li><code>Executors</code> 工厂类：<code>newFixedThreadPool</code>、<code>newCachedThreadPool</code>、<code>newSingleThreadExecutor</code>、<code>newScheduledThreadPool</code>。</li>
+                    </ul>
+                </li>
+                <li><strong>任务的生命周期</strong>：提交、执行中、完成。</li>
+                <li><strong>Callable 与 Future</strong>：<code>Callable</code> 可以返回结果或抛出异常，<code>Future</code> 用于获取结果或取消任务。</li>
+                <li>批量任务：<code>invokeAll</code> / <code>invokeAny</code> 用于批量执行任务并获取结果。</li>
+            </ul>
+        </article>
+
+        <!-- ========== Chapter 7 ========== -->
+        <article class="chapter chapter-7" id="ch7">
+            <div class="chapter-header">
+                <span class="chapter-num">第7章</span>
+                <h2>取消与关闭</h2>
+            </div>
+            <div class="chapter-intro">在健壮的并发应用程序与"看似能正常工作的"应用程序之间存在的重要差异之一就是：如何处理任务的取消与线程的关闭。</div>
+            <ul class="knowledge">
+                <li><strong>任务取消</strong>的机制：
+                    <ul>
+                        <li>使用 <code>volatile boolean cancelled</code> 标志位。</li>
+                        <li>通过 <code>Future.cancel(...)</code> 取消任务（mayInterruptIfRunning）。</li>
+                        <li>处理不可中断的阻塞（如 <code>socket IO</code>、<code>synchronized</code> 块）。</li>
+                    </ul>
+                </li>
+                <li><strong>线程的中断</strong>：<code>Thread.interrupt()</code>、<code>Thread.interrupted()</code>、<code>Thread.isInterrupted()</code>。</li>
+                <li>处理 <code>InterruptedException</code> 的两条准则：
+                    <ul>
+                        <li>传递异常：让调用者处理。</li>
+                        <li>恢复中断状态：<code>Thread.currentThread().interrupt()</code>，使上层代码能看到中断标志。</li>
+                    </ul>
+                </li>
+                <li><strong>JVM 关闭</strong>：正常关闭（最后一个非守护线程结束）、强制关闭（<code>Runtime.halt</code>）、<code>Shutdown Hook</code>、守护线程（Daemon Thread）等。</li>
+                <li>避免在 <code>finalize</code> 中执行关闭/清理工作（不可靠、影响 GC 性能）。</li>
+            </ul>
+        </article>
+
+        <!-- ========== Chapter 8 ========== -->
+        <article class="chapter chapter-8" id="ch8">
+            <div class="chapter-header">
+                <span class="chapter-num">第8章</span>
+                <h2>线程池的使用</h2>
+            </div>
+            <div class="chapter-intro">线程池（ThreadPool）是管理一组工作线程的资源池，提供了更灵活的任务执行策略。</div>
+            <ul class="knowledge">
+                <li><strong>任务执行策略</strong>：在什么线程中执行、按什么顺序执行、多少个任务可并发、最大等待队列长度、拒绝策略等。</li>
+                <li><code>ThreadPoolExecutor</code> 构造参数：<code>corePoolSize</code>、<code>maximumPoolSize</code>、<code>keepAliveTime</code>、<code>workQueue</code>、<code>handler</code>。</li>
+                <li><strong>饱和策略（RejectedExecutionHandler）</strong>：<code>AbortPolicy</code>（抛异常）、<code>CallerRunsPolicy</code>（调用者执行）、<code>DiscardPolicy</code>（丢弃）、<code>DiscardOldestPolicy</code>（丢弃最旧）。</li>
+                <li><strong>ThreadFactory</strong>：自定义线程创建（命名、守护标志、UncaughtExceptionHandler）。</li>
+                <li><strong>扩展 ThreadPoolExecutor</strong>：<code>beforeExecute</code>、<code>afterExecute</code>、<code>terminated</code> 钩子方法。</li>
+                <li>并行递归算法（如 <code>fork/join</code>）和 <code>ForkJoinPool</code>：Java 7 引入，专门为"分而治之"设计，采用工作密取策略。</li>
+            </ul>
+        </article>
+
+        <!-- ========== Chapter 9 ========== -->
+        <article class="chapter chapter-9" id="ch9">
+            <div class="chapter-header">
+                <span class="chapter-num">第9章</span>
+                <h2>图形用户界面应用程序</h2>
+            </div>
+            <div class="chapter-intro">GUI 应用程序中只有一个特殊的线程：<strong>事件分发线程（EDT）</strong>，负责处理所有 UI 事件。耗时的任务不能放在 EDT 中执行，否则会"冻结"界面。</div>
+            <ul class="knowledge">
+                <li><strong>为什么 GUI 是单线程的</strong>：简化组件模型，避免竞态条件、可见性问题、死锁。</li>
+                <li>耗时的任务应在后台线程中执行，完成后通过 <code>SwingUtilities.invokeLater</code> 或 <code>SwingWorker</code> 把结果发布回 EDT。</li>
+                <li><code>SwingWorker</code>：Java 6 引入，封装了"后台执行 + EDT 中回调"的模式，简化线程切换。</li>
+                <li>线程封闭的扩展：所有 UI 组件只能由 EDT 创建/修改，这是隐式线程封闭。</li>
+                <li>数据模型的共享：使用<strong>线程安全的数据模型</strong>（如不可变对象 + 同步访问）让后台线程安全地修改数据。</li>
+            </ul>
+        </article>
+
+        <!-- ========== Part 3 Cover ========== -->
+        <div class="part-cover part-cover-3">
+            <div class="label">PART 3</div>
+            <h2>第三部分 · 活跃性、性能与测试</h2>
+            <p>第10章至第12章。本部分介绍如何确保并发程序执行预期的任务并获得理想的性能。包括避免活跃性故障、提高性能与可伸缩性、以及测试并发代码的技术。</p>
+        </div>
+
+        <!-- ========== Chapter 10 ========== -->
+        <article class="chapter chapter-10" id="ch10">
+            <div class="chapter-header">
+                <span class="chapter-num">第10章</span>
+                <h2>避免活跃性危险</h2>
+            </div>
+            <div class="chapter-intro">活跃性失败会使线程无法继续执行。本章讨论常见的活跃性危险：死锁、活锁、饥饿。</div>
+            <ul class="knowledge">
+                <li><strong>死锁（Deadlock）</strong>：每个线程都在等待其他线程持有的资源，导致永久阻塞。
+                    <ul>
+                        <li>锁顺序死锁：两个线程以不同顺序获取相同的锁。</li>
+                        <li>动态锁顺序死锁：参数传递导致的不可预测的锁顺序。</li>
+                        <li>协作对象间的死锁：相互调用导致锁顺序不一致。</li>
+                        <li>资源死锁：线程饥饿/死锁的复合。</li>
+                    </ul>
+                </li>
+                <li><strong>避免死锁的策略</strong>：
+                    <ul>
+                        <li>固定锁顺序（如 <code>System.identityHashCode</code> 比较）。</li>
+                        <li>开放调用（Open Call）：不持锁调用外部方法。</li>
+                        <li>使用<strong>定时锁（<code>tryLock</code>）</strong> + 回退 + 重试。</li>
+                        <li>使用<strong>线程转储（Thread Dump）</strong>分析死锁。</li>
+                    </ul>
+                </li>
+                <li><strong>活锁（Livelock）</strong>：线程不断响应对方的行为但无法推进（如互相礼让）。</li>
+                <li><strong>饥饿（Starvation）</strong>：线程由于优先级、调度等原因一直得不到资源。</li>
+                <li><strong>公平性（Fairness）</strong>：<code>ReentrantLock</code> 提供公平锁选项，但会降低吞吐。</li>
+            </ul>
+        </article>
+
+        <!-- ========== Chapter 11 ========== -->
+        <article class="chapter chapter-11" id="ch11">
+            <div class="chapter-header">
+                <span class="chapter-num">第11章</span>
+                <h2>性能与可伸缩性</h2>
+            </div>
+            <div class="chapter-intro">性能是多维度的：服务时间、吞吐、效率、可伸缩性等。本章讨论影响并发程序性能的关键因素。</div>
+            <ul class="knowledge">
+                <li><strong>性能 vs 可伸缩性</strong>：性能指"单个请求快慢"，可伸缩性指"在增加资源时吞吐是否线性增长"。</li>
+                <li>Amdahl 定律：<code>加速比 = 1 / ((1 - P) + P/N)</code>，其中 <code>P</code> 是可并行部分比例，<code>N</code> 是处理器数。</li>
+                <li><strong>线程引入的开销</strong>：
+                    <ul>
+                        <li>上下文切换：数千 CPU 周期。</li>
+                        <li>内存同步：<code>synchronized</code>、<code>volatile</code> 会导致缓存失效。</li>
+                        <li>阻塞：线程挂起/唤醒的开销。</li>
+                    </ul>
+                </li>
+                <li><strong>减少锁竞争</strong>：
+                    <ul>
+                        <li>缩小锁范围（lock splitting）。</li>
+                        <li>减少锁粒度（lock striping，如 <code>ConcurrentHashMap</code>）。</li>
+                        <li>使用并发容器代替同步容器。</li>
+                        <li>使用读写锁（<code>ReadWriteLock</code>）分离读写。</li>
+                        <li>使用无锁算法（CAS、原子变量）。</li>
+                    </ul>
+                </li>
+                <li>使用 <code>vmstat</code>、<code>mpstat</code>、<code>perf</code> 等工具监测 CPU 利用率与上下文切换。</li>
+            </ul>
+        </article>
+
+        <!-- ========== Chapter 12 ========== -->
+        <article class="chapter chapter-12" id="ch12">
+            <div class="chapter-header">
+                <span class="chapter-num">第12章</span>
+                <h2>并发程序的测试</h2>
+            </div>
+            <div class="chapter-intro">并发程序测试比串行程序更困难。挑战包括：竞态条件难以复现、活跃性问题需要足够负载才显现、性能测试需要稳定的环境。</div>
+            <ul class="knowledge">
+                <li><strong>正确性测试</strong>：
+                    <ul>
+                        <li>自动化：<code>ThreadJiggleRunner</code>（增加上下文切换）、<code>MultithreadedTester</code>。</li>
+                        <li>单元测试并发类：对状态空间进行"暴力搜索"（如 BoundedBuffer 的状态机）。</li>
+                        <li>阻塞操作的测试：<code>Thread.getState</code> + <code>assertTrue(t.getState() == Thread.State.WAITING)</code>。</li>
+                    </ul>
+                </li>
+                <li><strong>活跃性测试</strong>：通过让程序"卡住"来发现问题，如 <code>ThreadMXBean.findDeadlockedThreads</code>。</li>
+                <li><strong>性能测试</strong>：
+                    <ul>
+                        <li>增加线程数测量吞吐变化（衡量可伸缩性）。</li>
+                        <li>多种算法/数据结构对比。</li>
+                        <li>使用 <code>jmh</code>（Java Microbenchmark Harness）做微基准测试。</li>
+                    </ul>
+                </li>
+                <li><strong>避免性能测试的陷阱</strong>：JVM 预热不够、GC 干扰、编译优化等。</li>
+                <li><strong>代码审查清单</strong>：
+                    <ul>
+                        <li>所有共享变量是否都受到正确的同步保护？</li>
+                        <li>是否存在"先检查后执行"模式？</li>
+                        <li>是否有不必要的对象发布（逸出）？</li>
+                        <li>复合操作是否原子化？</li>
+                        <li>锁顺序是否固定？</li>
+                    </ul>
+                </li>
+            </ul>
+        </article>
+
+        <!-- ========== Part 4 Cover ========== -->
+        <div class="part-cover part-cover-4">
+            <div class="label">PART 4</div>
+            <h2>第四部分 · 高级主题</h2>
+            <p>第13章至第16章。本部分面向资深开发人员，深入探讨显式锁、自定义同步工具、原子变量与非阻塞算法，以及 Java 内存模型的底层细节。</p>
+        </div>
+
+        <!-- ========== Chapter 13 ========== -->
+        <article class="chapter chapter-13" id="ch13">
+            <div class="chapter-header">
+                <span class="chapter-num">第13章</span>
+                <h2>显式锁</h2>
+            </div>
+            <div class="chapter-intro">Java 5.0 引入了 <code>java.util.concurrent.locks</code> 下的显式锁（<code>Lock</code> 接口），提供了 <code>synchronized</code> 之外更灵活的锁机制。</div>
+            <ul class="knowledge">
+                <li><code>Lock</code> 接口：<code>lock()</code>、<code>unlock()</code>、<code>tryLock()</code>、<code>tryLock(time, unit)</code>、<code>lockInterruptibly()</code>、<code>newCondition()</code>。</li>
+                <li><strong>轮询锁 + 定时的 tryLock</strong>：能解决死锁（如转移资金业务），比 <code>synchronized</code> 更灵活。</li>
+                <li><strong>可中断的锁获取</strong>：<code>lockInterruptibly</code> 允许线程在等待锁时响应中断。</li>
+                <li><strong>公平性</strong>：<code>ReentrantLock</code> 构造参数 <code>fair=true</code> 表示公平锁，按等待时间分配锁。代价是吞吐下降。</li>
+                <li><strong>读-写锁（<code>ReadWriteLock</code>）</strong>：
+                    <ul>
+                        <li>允许多个读者并发访问，写者独占。适合<strong>读多写少</strong>场景。</li>
+                        <li>实现类 <code>ReentrantReadWriteLock</code>，支持公平/非公平、可重入、降级（写锁降级为读锁）。</li>
+                    </ul>
+                </li>
+                <li><strong>何时选择 ReentrantLock vs synchronized</strong>：
+                    <ul>
+                        <li>需要 <code>tryLock</code>、<code>lockInterruptibly</code>、公平性、多条件变量时选 <code>ReentrantLock</code>。</li>
+                        <li>简单同步场景优先 <code>synchronized</code>，更简洁且 JVM 持续优化。</li>
+                    </ul>
+                </li>
+            </ul>
+        </article>
+
+        <!-- ========== Chapter 14 ========== -->
+        <article class="chapter chapter-14" id="ch14">
+            <div class="chapter-header">
+                <span class="chapter-num">第14章</span>
+                <h2>构建自定义的同步工具</h2>
+            </div>
+            <div class="chapter-intro">基于状态（State-dependent）的同步工具类，如闭锁、信号量、屏障等。本章讨论如何基于 <code>Condition</code> 或 AQS 构建自定义同步工具。</div>
+            <ul class="knowledge">
+                <li><strong>状态依赖性管理</strong>：如 <code>BlockingQueue.put</code> 在队列满时阻塞，<code>take</code> 在队列空时阻塞。</li>
+                <li>通常模式：在锁内检查状态条件，调用 <code>await()</code> 释放锁并阻塞；满足条件后被唤醒，重新获取锁。</li>
+                <li><strong>条件队列（Condition Queue）</strong>：
+                    <ul>
+                        <li><code>Condition</code> 接口：<code>await</code>、<code>signal</code>、<code>signalAll</code>。</li>
+                        <li>一个 <code>Lock</code> 可以有多个 <code>Condition</code>，比 <code>Object.wait/notify</code> 更灵活。</li>
+                    </ul>
+                </li>
+                <li>使用条件队列的准则：
+                    <ul>
+                        <li>每个对象都可以作为条件队列，但显式锁对应的 <code>Condition</code> 更灵活。</li>
+                        <li>条件谓词（如 <code>!queue.isEmpty()</code>）必须由 <code>Lock</code> 保护。</li>
+                        <li><code>signal</code> vs <code>signalAll</code>：<code>signalAll</code> 更安全但效率低；<code>signal</code> 适用于条件谓词为单次事件。</li>
+                        <li>使用 <code>while</code> 而非 <code>if</code> 包裹 <code>await</code>，防止"虚假唤醒"。</li>
+                    </ul>
+                </li>
+                <li><strong>AbstractQueuedSynchronizer（AQS）</strong>：用于构建锁和同步器的框架。ReentrantLock、Semaphore、CountDownLatch 等都基于 AQS。</li>
+                <li><code>java.util.concurrent</code> 中的同步工具：<code>Semaphore</code>（计数信号量）、<code>CountDownLatch</code>、<code>CyclicBarrier</code>、<code>Exchanger</code>、<code>Phaser</code>。</li>
+                <li><code>CyclicBarrier</code>：让一组线程相互等待，全部到达屏障点后继续。可重用。</li>
+                <li><code>Exchanger</code>：两线程间交换数据的同步点，常用于"双缓冲"流水线。</li>
+            </ul>
+        </article>
+
+        <!-- ========== Chapter 15 ========== -->
+        <article class="chapter chapter-15" id="ch15">
+            <div class="chapter-header">
+                <span class="chapter-num">第15章</span>
+                <h2>原子变量与非阻塞同步机制</h2>
+            </div>
+            <div class="chapter-intro">锁是悲观策略；非阻塞算法基于<strong>比较并交换（CAS）</strong>实现乐观并发，性能通常更优。</div>
+            <ul class="knowledge">
+                <li><strong>锁的劣势</strong>：挂起/恢复线程的开销、优先级反转、死锁。</li>
+                <li><strong>硬件对并发的支持</strong>：CAS（Compare-and-Swap）、<code>getAndIncrement</code> 等原子指令。</li>
+                <li><strong>原子变量类（java.util.concurrent.atomic）</strong>：
+                    <ul>
+                        <li>标量类：<code>AtomicInteger</code>、<code>AtomicLong</code>、<code>AtomicBoolean</code>、<code>AtomicReference</code>。</li>
+                        <li>数组类：<code>AtomicIntegerArray</code> 等。</li>
+                        <li>字段更新器：<code>AtomicIntegerFieldUpdater</code> 等。</li>
+                        <li>复合变量：<code>AtomicReference</code> + <code>AtomicReferenceFieldUpdater</code>。</li>
+                        <li>JDK 8+：<code>LongAdder</code>、<code>DoubleAdder</code>（高竞争下性能更好）、<code>LongAccumulator</code>。</li>
+                    </ul>
+                </li>
+                <li><strong>非阻塞算法（Non-blocking Algorithm）</strong>：
+                    <ul>
+                        <li>无锁（Lock-free）：保证系统整体进度。</li>
+                        <li>无等待（Wait-free）：保证每个线程在有限步骤内完成。</li>
+                    </ul>
+                </li>
+                <li>构建非阻塞算法的关键：CAS + 版本号（如 <code>AtomicStampedReference</code> 解决 ABA 问题）。</li>
+                <li>ABA 问题：CAS 看到值未变，但实际经历了 A→B→A 的变化，可能造成错误。解决方案：版本戳（Stamp）、<code>AtomicStampedReference</code>。</li>
+                <li>非阻塞算法的优势：避免死锁、优先级反转；吞吐更高（但单线程延迟可能更高）。</li>
+            </ul>
+        </article>
+
+        <!-- ========== Chapter 16 ========== -->
+        <article class="chapter chapter-16" id="ch16">
+            <div class="chapter-header">
+                <span class="chapter-num">第16章</span>
+                <h2>Java 内存模型</h2>
+            </div>
+            <div class="chapter-intro">Java 内存模型（JMM）定义了线程之间的共享变量在程序中的可见性规则，是理解并发编程的底层基础。</div>
+            <ul class="knowledge">
+                <li><strong>内存模型的必要性</strong>：现代硬件（CPU 多级缓存、写缓冲器、写重排、流水线）以及编译器优化都会改变指令执行顺序，导致跨线程的可见性问题。</li>
+                <li><strong>Java 内存模型</strong>（JSR 133，Java 5.0+）：
+                    <ul>
+                        <li><strong>Happens-Before 关系</strong>：定义操作之间的偏序关系，程序顺序、监视器锁、<code>volatile</code>、线程启动、线程终止、线程中断、对象终结、传递性。</li>
+                        <li><strong>同步语义</strong>：<code>synchronized</code>、<code>volatile</code>、<code>final</code> 提供 Happens-Before 关系。</li>
+                        <li>只要一个操作 Happens-Before 另一个操作，则前者的结果对后者可见。</li>
+                    </ul>
+                </li>
+                <li><strong>重排序（Reordering）</strong>：
+                    <ul>
+                        <li>编译器重排序。</li>
+                        <li>指令级并行重排序。</li>
+                        <li>内存系统重排序（缓存、写入缓冲器）。</li>
+                    </ul>
+                </li>
+                <li><strong>Final 域的内存语义</strong>：JMM 保证正确构造的 <code>final</code> 字段在构造函数返回前一定被冻结，其他线程无需同步即可看到正确的 <code>final</code> 值。</li>
+                <li><strong>Word Tearing</strong>：32 位 JVM 上对 <code>long</code>/<code>double</code> 的非原子读写。</li>
+                <li><strong>双重检查锁定（DCL）</strong>：必须配合 <code>volatile</code> 才能保证正确性（否则可能看到"部分构造"的对象）。</li>
+                <li>JMM 的设计目标：在不牺牲性能的前提下提供清晰的并发语义；为开发者提供"足够强"的内存可见性保证。</li>
+            </ul>
+        </article>
+
+        <!-- ========== Summary ========== -->
+        <article class="chapter chapter-1" id="summary">
+            <div class="chapter-header">
+                <span class="chapter-num">📌</span>
+                <h2>核心要点速查</h2>
+            </div>
+            <section class="section">
+                <h3><span class="sec-num">★</span>编写线程安全类的核心技术</h3>
+                <div class="concept-grid">
+                    <div class="concept-card"><div class="name">1. 封装 + 不可变</div><div class="desc">尽量让对象不可变，不可变对象天然线程安全。</div></div>
+                    <div class="concept-card"><div class="name">2. 线程封闭</div><div class="desc">把可变状态局限在一个线程内（栈封闭、ThreadLocal）。</div></div>
+                    <div class="concept-card"><div class="name">3. 委托给线程安全类</div><div class="desc">优先使用 ConcurrentHashMap、ConcurrentLinkedQueue 等。</div></div>
+                    <div class="concept-card"><div class="name">4. 加锁保护共享状态</div><div class="desc">synchronized 或 Lock + 单一锁原则 + 固定锁顺序。</div></div>
+                    <div class="concept-card"><div class="name">5. 文档化同步策略</div><div class="desc">明确类是否线程安全、锁对象、不变性条件。</div></div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h3><span class="sec-num">★</span>常见并发 Bug 与避免</h3>
+                <ul class="knowledge">
+                    <li><strong>竞态条件</strong>：使用原子变量或加锁保证复合操作原子性。</li>
+                    <li><strong>死锁</strong>：固定锁顺序、开放调用、<code>tryLock</code> + 回退。</li>
+                    <li><strong>可见性</strong>：使用 <code>volatile</code>、<code>synchronized</code> 或 <code>final</code>。</li>
+                    <li><strong>对象逸出</strong>：不在构造函数中发布 <code>this</code> 引用。</li>
+                    <li><strong>迭代时修改</strong>：使用并发容器的弱一致迭代器，或克隆再迭代。</li>
+                    <li><strong>线程饥饿</strong>：避免在持锁时调用外部方法，使用公平锁或合理调度。</li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h3><span class="sec-num">★</span>JDK 并发包速记</h3>
+                <ul class="knowledge">
+                    <li><strong>原子类</strong>：<code>AtomicXxx</code>、<code>LongAdder</code>、<code>AtomicStampedReference</code>。</li>
+                    <li><strong>并发容器</strong>：<code>ConcurrentHashMap</code>、<code>ConcurrentLinkedQueue</code>、<code>CopyOnWriteArrayList</code>。</li>
+                    <li><strong>阻塞队列</strong>：<code>LinkedBlockingQueue</code>、<code>ArrayBlockingQueue</code>、<code>PriorityBlockingQueue</code>、<code>SynchronousQueue</code>、<code>DelayQueue</code>。</li>
+                    <li><strong>同步器</strong>：<code>CountDownLatch</code>、<code>CyclicBarrier</code>、<code>Semaphore</code>、<code>Exchanger</code>、<code>Phaser</code>。</li>
+                    <li><strong>显示锁</strong>：<code>ReentrantLock</code>、<code>ReentrantReadWriteLock</code>、<code>StampedLock</code>。</li>
+                    <li><strong>执行器</strong>：<code>ExecutorService</code>、<code>ScheduledExecutorService</code>、<code>ForkJoinPool</code>。</li>
+                    <li><strong>并行流</strong>：JDK 8+ 的 Stream parallel() 底层使用 ForkJoinPool。</li>
+                </ul>
+            </section>
+        </article>
+
+    </main>
+</div>
+
+<footer class="app-footer">
+    <p><strong>《Java并发编程实战》</strong> · 知识脑图整理 · 涵盖 16 章核心内容</p>
+    <p>适合 Java 开发者系统学习并发编程，建议结合原书章节精读</p>
+</footer>
+
+<script>
+(function(){
+    // Navigation: chapter expand/collapse
+    const chapterItems = document.querySelectorAll('.nav-item.nav-chapter');
+    chapterItems.forEach(item => {
+        const toggle = item.querySelector(':scope > .nav-toggle');
+        if (!toggle) return;
+        toggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            item.classList.toggle('open');
+        });
+    });
+
+    // Default: all chapters collapsed
+    chapterItems.forEach(item => item.classList.remove('open'));
+
+    // Smooth scroll for in-page links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', function(e){
+            const href = this.getAttribute('href');
+            if (href.length > 1) {
+                const target = document.querySelector(href);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({behavior: 'smooth', block: 'start'});
+                    // Highlight the parent chapter (expand it) and mark active
+                    const parentChapter = target.closest('.chapter');
+                    if (parentChapter) {
+                        const id = parentChapter.id;
+                        // Open the corresponding sidebar chapter
+                        chapterItems.forEach(it => {
+                            if (it.getAttribute('data-target') === id) {
+                                it.classList.add('open');
+                            }
+                        });
+                    }
+                    // Update active link
+                    document.querySelectorAll('.nav-section .nav-toggle').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            }
+        });
+    });
+
+    // Chapter header click in sidebar toggles expand
+    chapterItems.forEach(item => {
+        const target = item.getAttribute('data-target');
+        const article = document.getElementById(target);
+        if (article) {
+            const header = item.querySelector(':scope > .nav-toggle');
+            header.addEventListener('click', () => {
+                article.scrollIntoView({behavior: 'smooth', block: 'start'});
+            });
+        }
+    });
+})();
+</script>
+
+</body>
+</html>

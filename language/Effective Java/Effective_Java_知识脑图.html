@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Effective Java 中文版（第3版）- 知识脑图</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg-primary: #f5f7fa;
+  --bg-secondary: #ffffff;
+  --bg-sidebar: #1e293b;
+  --bg-sidebar-hover: #334155;
+  --bg-sidebar-active: #3b82f6;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-sidebar: #cbd5e1;
+  --text-sidebar-active: #ffffff;
+  --accent: #3b82f6;
+  --accent-light: #dbeafe;
+  --border: #e2e8f0;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.app { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 320px;
+  background: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: var(--shadow-lg);
+}
+
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: var(--bg-sidebar); }
+.sidebar::-webkit-scrollbar-thumb { background: var(--bg-sidebar-hover); border-radius: 3px; }
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--bg-sidebar-hover);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.sidebar-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 4px; }
+.sidebar-subtitle { font-size: 12px; color: #94a3b8; }
+.sidebar-stats {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+}
+.sidebar-stat {
+  background: rgba(255,255,255,0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: #cbd5e1;
+}
+
+.nav-section { border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+.nav-section-header {
+  padding: 12px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.nav-section-header:hover { background: var(--bg-sidebar-hover); }
+
+.nav-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-sidebar);
+}
+
+.nav-icon { font-size: 18px; }
+
+.nav-toggle {
+  font-size: 11px;
+  color: #94a3b8;
+  transition: transform 0.3s;
+}
+
+.nav-section.expanded .nav-toggle { transform: rotate(90deg); }
+
+.nav-section-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  background: rgba(0,0,0,0.2);
+}
+
+.nav-section.expanded .nav-section-content { max-height: 2000px; }
+
+.nav-item {
+  padding: 8px 18px 8px 50px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--text-sidebar);
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+  display: block;
+  text-decoration: none;
+  line-height: 1.5;
+}
+
+.nav-item:hover {
+  background: var(--bg-sidebar-hover);
+  color: #ffffff;
+  border-left-color: var(--accent);
+}
+
+.nav-item.active {
+  background: var(--bg-sidebar-active);
+  color: var(--text-sidebar-active);
+  border-left-color: #ffffff;
+}
+
+.nav-item-num {
+  display: inline-block;
+  width: 32px;
+  font-weight: 700;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.nav-item.active .nav-item-num { color: #ffffff; }
+
+.main { flex: 1; margin-left: 320px; }
+
+.topbar {
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+  box-shadow: var(--shadow);
+}
+
+.topbar-title { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.content { padding: 32px; max-width: 1100px; margin: 0 auto; }
+
+.hero {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 40px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-lg);
+}
+
+.hero h1 { font-size: 32px; margin-bottom: 8px; }
+.hero p { font-size: 16px; opacity: 0.95; line-height: 1.6; }
+.hero-meta { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-tag {
+  background: rgba(255,255,255,0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.chapter-section {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow);
+}
+
+.chapter-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--accent-light);
+}
+
+.chapter-icon { font-size: 36px; }
+
+.chapter-title { font-size: 24px; font-weight: 700; color: var(--text-primary); }
+
+.chapter-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
+
+.chapter-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-light);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.item-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+  scroll-margin-top: 80px;
+}
+
+.item-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+
+.item-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.item-num {
+  background: var(--accent);
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.item-title { font-size: 17px; font-weight: 700; color: var(--text-primary); flex: 1; line-height: 1.4; }
+
+.item-intro {
+  background: rgba(59, 130, 246, 0.06);
+  border-left: 3px solid var(--accent);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.item-content { color: var(--text-primary); font-size: 14px; line-height: 1.85; }
+
+.item-content ul { padding-left: 22px; margin-bottom: 12px; }
+.item-content li { margin-bottom: 8px; }
+.item-content strong { color: var(--accent); font-weight: 600; }
+
+.item-content code {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 12.5px;
+  color: #be185d;
+}
+
+.item-content pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.item-content pre code {
+  background: transparent;
+  color: #e2e8f0;
+  padding: 0;
+  font-size: 13px;
+}
+
+.takeaway {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-left: 4px solid var(--success);
+  padding: 14px 18px;
+  border-radius: 6px;
+  margin-top: 14px;
+  font-size: 14px;
+  color: #064e3b;
+}
+
+.takeaway::before {
+  content: "💡 核心要点";
+  display: block;
+  font-weight: 700;
+  color: #047857;
+  margin-bottom: 6px;
+}
+
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  box-shadow: var(--shadow-lg);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.back-to-top.show { display: flex; }
+
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99;
+}
+
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .menu-toggle { display: block; }
+  .content { padding: 20px; }
+  .chapter-section { padding: 20px; }
+  .hero { padding: 24px; }
+  .hero h1 { font-size: 22px; }
+  .overlay.show { display: block; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">📘 Effective Java</div>
+      <div class="sidebar-subtitle">第3版 · Joshua Bloch</div>
+      <div class="sidebar-stats">
+        <span class="sidebar-stat">11 章</span>
+        <span class="sidebar-stat">90 条</span>
+        <span class="sidebar-stat">知识脑图</span>
+      </div>
+    </div>
+    <nav id="nav">
+      <div class="nav-section" data-section="ch1">
+        <div class="nav-section-header" onclick="toggleSection('ch1')">
+          <div class="nav-section-title">
+            <span class="nav-icon">🏗️</span>
+            <span>第1章 创建和销毁对象</span>
+          </div>
+          <span class="nav-toggle">▶</span>
+        </div>
+        <div class="nav-section-content">
+          <a href="#item-1" class="nav-item" data-item="1" onclick="navigateTo(event, 1)">
+            <span class="nav-item-num">01</span>考虑使用静态工厂方法替代构造方法
+          </a>
+          <a href="#item-2" class="nav-item" data-item="2" onclick="navigateTo(event, 2)">
+            <span class="nav-item-num">02</span>当构造方法参数过多时使用builder模式
+          </a>
+          <a href="#item-3" class="nav-item" data-item="3" onclick="navigateTo(event, 3)">
+            <span class="nav-item-num">03</span>使用私有构造方法或枚类实现Singleton属性
+          </a>
+          <a href="#item-4" class="nav-item" data-item="4" onclick="navigateTo(event, 4)">
+            <span class="nav-item-num">04</span>使用私有构造方法执行非实例化
+          </a>
+          <a href="#item-5" class="nav-item" data-item="5" onclick="navigateTo(event, 5)">
+            <span class="nav-item-num">05</span>依赖注入优于硬连接资源(hardwiring resources)
+          </a>
+          <a href="#item-6" class="nav-item" data-item="6" onclick="navigateTo(event, 6)">
+            <span class="nav-item-num">06</span>避免创建不必要的对象
+          </a>
+          <a href="#item-7" class="nav-item" data-item="7" onclick="navigateTo(event, 7)">
+            <span class="nav-item-num">07</span>消除过期的对象引用
+          </a>
+          <a href="#item-8" class="nav-item" data-item="8" onclick="navigateTo(event, 8)">
+            <span class="nav-item-num">08</span>避免使用Finalizer和Cleaner机制
+          </a>
+          <a href="#item-9" class="nav-item" data-item="9" onclick="navigateTo(event, 9)">
+            <span class="nav-item-num">09</span>使用try-with-resources语句替代try-finally语句
+          </a>
+        </div>
+      </div>
+      <div class="nav-section" data-section="ch2">
+        <div class="nav-section-header" onclick="toggleSection('ch2')">
+          <div class="nav-section-title">
+            <span class="nav-icon">🔧</span>
+            <span>第2章 所有对象都通用的方法</span>
+          </div>
+          <span class="nav-toggle">▶</span>
+        </div>
+        <div class="nav-section-content">
+          <a href="#item-10" class="nav-item" data-item="10" onclick="navigateTo(event, 10)">
+            <span class="nav-item-num">10</span>重写equals方法时遵守通用约定
+          </a>
+          <a href="#item-11" class="nav-item" data-item="11" onclick="navigateTo(event, 11)">
+            <span class="nav-item-num">11</span>重写equals方法时同时也要重写hashcode方法
+          </a>
+          <a href="#item-12" class="nav-item" data-item="12" onclick="navigateTo(event, 12)">
+            <span class="nav-item-num">12</span>始终重写 toString 方法
+          </a>
+          <a href="#item-13" class="nav-item" data-item="13" onclick="navigateTo(event, 13)">
+            <span class="nav-item-num">13</span>谨慎地重写 clone 方法
+          </a>
+          <a href="#item-14" class="nav-item" data-item="14" onclick="navigateTo(event, 14)">
+            <span class="nav-item-num">14</span>考虑实现Comparable接口
+          </a>
+        </div>
+      </div>
+      <div class="nav-section" data-section="ch3">
+        <div class="nav-section-header" onclick="toggleSection('ch3')">
+          <div class="nav-section-title">
+            <span class="nav-icon">🏛️</span>
+            <span>第3章 类和接口</span>
+          </div>
+          <span class="nav-toggle">▶</span>
+        </div>
+        <div class="nav-section-content">
+          <a href="#item-15" class="nav-item" data-item="15" onclick="navigateTo(event, 15)">
+            <span class="nav-item-num">15</span>使类和成员的可访问性最小化
+          </a>
+          <a href="#item-16" class="nav-item" data-item="16" onclick="navigateTo(event, 16)">
+            <span class="nav-item-num">16</span>在公共类中使用访问方法而不是公共属性
+          </a>
+          <a href="#item-17" class="nav-item" data-item="17" onclick="navigateTo(event, 17)">
+            <span class="nav-item-num">17</span>最小化可变性
+          </a>
+          <a href="#item-18" class="nav-item" data-item="18" onclick="navigateTo(event, 18)">
+            <span class="nav-item-num">18</span>组合优于继承
+          </a>
+          <a href="#item-19" class="nav-item" data-item="19" onclick="navigateTo(event, 19)">
+            <span class="nav-item-num">19</span>要么设计继承并提供文档说明，要么禁用继承
+          </a>
+          <a href="#item-20" class="nav-item" data-item="20" onclick="navigateTo(event, 20)">
+            <span class="nav-item-num">20</span>接口优于抽象类
+          </a>
+          <a href="#item-21" class="nav-item" data-item="21" onclick="navigateTo(event, 21)">
+            <span class="nav-item-num">21</span>为后代设计接口
+          </a>
+          <a href="#item-22" class="nav-item" data-item="22" onclick="navigateTo(event, 22)">
+            <span class="nav-item-num">22</span>接口仅用来定义类型
+          </a>
+          <a href="#item-23" class="nav-item" data-item="23" onclick="navigateTo(event, 23)">
+            <span class="nav-item-num">23</span>类层次结构优于标签类
+          </a>
+          <a href="#item-24" class="nav-item" data-item="24" onclick="navigateTo(event, 24)">
+            <span class="nav-item-num">24</span>支持使用静态成员类而不是非静态类
+          </a>
+          <a href="#item-25" class="nav-item" data-item="25" onclick="navigateTo(event, 25)">
+            <span class="nav-item-num">25</span>将源文件限制为单个顶级类
+          </a>
+        </div>
+      </div>
+      <div class="nav-section" data-section="ch4">
+        <div class="nav-section-header" onclick="toggleSection('ch4')">
+          <div class="nav-section-title">
+            <span class="nav-icon">📦</span>
+            <span>第4章 泛型</span>
+          </div>
+          <span class="nav-toggle">▶</span>
+        </div>
+        <div class="nav-section-content">
+          <a href="#item-26" class="nav-item" data-item="26" onclick="navigateTo(event, 26)">
+            <span class="nav-item-num">26</span>不要使用原始类型
+          </a>
+          <a href="#item-27" class="nav-item" data-item="27" onclick="navigateTo(event, 27)">
+            <span class="nav-item-num">27</span>消除非检查警告
+          </a>
+          <a href="#item-28" class="nav-item" data-item="28" onclick="navigateTo(event, 28)">
+            <span class="nav-item-num">28</span>列表优于数组
+          </a>
+          <a href="#item-29" class="nav-item" data-item="29" onclick="navigateTo(event, 29)">
+            <span class="nav-item-num">29</span>优先考虑泛型
+          </a>
+          <a href="#item-30" class="nav-item" data-item="30" onclick="navigateTo(event, 30)">
+            <span class="nav-item-num">30</span>优先使用泛型方法
+          </a>
+          <a href="#item-31" class="nav-item" data-item="31" onclick="navigateTo(event, 31)">
+            <span class="nav-item-num">31</span>使用限定通配符来增加API的灵活性
+          </a>
+          <a href="#item-32" class="nav-item" data-item="32" onclick="navigateTo(event, 32)">
+            <span class="nav-item-num">32</span>合理地结合泛型和可变参数
+          </a>
+          <a href="#item-33" class="nav-item" data-item="33" onclick="navigateTo(event, 33)">
+            <span class="nav-item-num">33</span>优先考虑类型安全的异构容器
+          </a>
+        </div>
+      </div>
+      <div class="nav-section" data-section="ch5">
+        <div class="nav-section-header" onclick="toggleSection('ch5')">
+          <div class="nav-section-title">
+            <span class="nav-icon">🏷️</span>
+            <span>第5章 枚举和注解</span>
+          </div>
+          <span class="nav-toggle">▶</span>
+        </div>
+        <div class="nav-section-content">
+          <a href="#item-34" class="nav-item" data-item="34" onclick="navigateTo(event, 34)">
+            <span class="nav-item-num">34</span>使用枚举类型替代整型常量
+          </a>
+          <a href="#item-35" class="nav-item" data-item="35" onclick="navigateTo(event, 35)">
+            <span class="nav-item-num">35</span>使用实例属性替代序数
+          </a>
+          <a href="#item-36" class="nav-item" data-item="36" onclick="navigateTo(event, 36)">
+            <span class="nav-item-num">36</span>使用EnumSet替代位属性
+          </a>
+          <a href="#item-37" class="nav-item" data-item="37" onclick="navigateTo(event, 37)">
+            <span class="nav-item-num">37</span>使用EnumMap替代序数索引
+          </a>
+          <a href="#item-38" class="nav-item" data-item="38" onclick="navigateTo(event, 38)">
+            <span class="nav-item-num">38</span>使用接口模拟可扩展的枚举
+          </a>
+          <a href="#item-39" class="nav-item" data-item="39" onclick="navigateTo(event, 39)">
+            <span class="nav-item-num">39</span>注解优于命名模式
+          </a>
+          <a href="#item-40" class="nav-item" data-item="40" onclick="navigateTo(event, 40)">
+            <span class="nav-item-num">40</span>始终使用Override注解
+          </a>
+          <a href="#item-41" class="nav-item" data-item="41" onclick="navigateTo(event, 41)">
+            <span class="nav-item-num">41</span>使用标记接口定义类型
+          </a>
+        </div>
+      </div>
+      <div class="nav-section" data-section="ch6">
+        <div class="nav-section-header" onclick="toggleSection('ch6')">
+          <div class="nav-section-title">
+            <span class="nav-icon">🌊</span>
+            <span>第6章 Lambda和Stream</span>
+          </div>
+          <span class="nav-toggle">▶</span>
+        </div>
+        <div class="nav-section-content">
+          <a href="#item-42" class="nav-item" data-item="42" onclick="navigateTo(event, 42)">
+            <span class="nav-item-num">42</span>lambda表达式优于匿名类
+          </a>
+          <a href="#item-43" class="nav-item" data-item="43" onclick="navigateTo(event, 43)">
+            <span class="nav-item-num">43</span>方法引用优于lambda表达式
+          </a>
+          <a href="#item-44" class="nav-item" data-item="44" onclick="navigateTo(event, 44)">
+            <span class="nav-item-num">44</span>优先使用标准的函数式接口
+          </a>
+          <a href="#item-45" class="nav-item" data-item="45" onclick="navigateTo(event, 45)">
+            <span class="nav-item-num">45</span>明智审慎地使用Stream
+          </a>
+          <a href="#item-46" class="nav-item" data-item="46" onclick="navigateTo(event, 46)">
+            <span class="nav-item-num">46</span>优先考虑流中无副作用的函数
+          </a>
+          <a href="#item-47" class="nav-item" data-item="47" onclick="navigateTo(event, 47)">
+            <span class="nav-item-num">47</span>优先使用Collection而不是Stream来作为方法的返回类型
+          </a>
+          <a href="#item-48" class="nav-item" data-item="48" onclick="navigateTo(event, 48)">
+            <span class="nav-item-num">48</span>谨慎使用流并行
+          </a>
+        </div>
+      </div>
+      <div class="nav-section" data-section="ch7">
+        <div class="nav-section-header" onclick="toggleSection('ch7')">
+          <div class="nav-section-title">
+            <span class="nav-icon">⚙️</span>
+            <span>第7章 方法</span>
+          </div>
+          <span class="nav-toggle">▶</span>
+        </div>
+        <div class="nav-section-content">
+          <a href="#item-49" class="nav-item" data-item="49" onclick="navigateTo(event, 49)">
+            <span class="nav-item-num">49</span>检查参数有效性
+          </a>
+          <a href="#item-50" class="nav-item" data-item="50" onclick="navigateTo(event, 50)">
+            <span class="nav-item-num">50</span>必要时进行防御性拷贝
+          </a>
+          <a href="#item-51" class="nav-item" data-item="51" onclick="navigateTo(event, 51)">
+            <span class="nav-item-num">51</span>仔细设计方法签名
+          </a>
+          <a href="#item-52" class="nav-item" data-item="52" onclick="navigateTo(event, 52)">
+            <span class="nav-item-num">52</span>明智审慎地使用重载
+          </a>
+          <a href="#item-53" class="nav-item" data-item="53" onclick="navigateTo(event, 53)">
+            <span class="nav-item-num">53</span>明智审慎地使用可变参数
+          </a>
+          <a href="#item-54" class="nav-item" data-item="54" onclick="navigateTo(event, 54)">
+            <span class="nav-item-num">54</span>返回空的数组或集合，不要返回 null
+          </a>
+          <a href="#item-55" class="nav-item" data-item="55" onclick="navigateTo(event, 55)">
+            <span class="nav-item-num">55</span>明智审慎地返回 Optional
+          </a>
+          <a href="#item-56" class="nav-item" data-item="56" onclick="navigateTo(event, 56)">
+            <span class="nav-item-num">56</span>为所有已公开的 API 元素编写文档注释
+          </a>
+        </div>
+      </div>
+      <div class="nav-section" data-section="ch8">
+        <div class="nav-section-header" onclick="toggleSection('ch8')">
+          <div class="nav-section-title">
+            <span class="nav-icon">📚</span>
+            <span>第8章 通用编程</span>
+          </div>
+          <span class="nav-toggle">▶</span>
+        </div>
+        <div class="nav-section-content">
+          <a href="#item-57" class="nav-item" data-item="57" onclick="navigateTo(event, 57)">
+            <span class="nav-item-num">57</span>最小化局部变量的作用域
+          </a>
+          <a href="#item-58" class="nav-item" data-item="58" onclick="navigateTo(event, 58)">
+            <span class="nav-item-num">58</span>for-each 循环优于传统 for 循环
+          </a>
+          <a href="#item-59" class="nav-item" data-item="59" onclick="navigateTo(event, 59)">
+            <span class="nav-item-num">59</span>了解并使用库
+          </a>
+          <a href="#item-60" class="nav-item" data-item="60" onclick="navigateTo(event, 60)">
+            <span class="nav-item-num">60</span>若需要精确答案就应避免使用 float 和 double 类型
+          </a>
+          <a href="#item-61" class="nav-item" data-item="61" onclick="navigateTo(event, 61)">
+            <span class="nav-item-num">61</span>基本数据类型优于包装类
+          </a>
+          <a href="#item-62" class="nav-item" data-item="62" onclick="navigateTo(event, 62)">
+            <span class="nav-item-num">62</span>当使用其他类型更合适时应避免使用字符串
+          </a>
+          <a href="#item-63" class="nav-item" data-item="63" onclick="navigateTo(event, 63)">
+            <span class="nav-item-num">63</span>当心字符串连接引起的性能问题
+          </a>
+          <a href="#item-64" class="nav-item" data-item="64" onclick="navigateTo(event, 64)">
+            <span class="nav-item-num">64</span>通过接口引用对象
+          </a>
+          <a href="#item-65" class="nav-item" data-item="65" onclick="navigateTo(event, 65)">
+            <span class="nav-item-num">65</span>接口优于反射
+          </a>
+          <a href="#item-66" class="nav-item" data-item="66" onclick="navigateTo(event, 66)">
+            <span class="nav-item-num">66</span>明智审慎地本地方法
+          </a>
+          <a href="#item-67" class="nav-item" data-item="67" onclick="navigateTo(event, 67)">
+            <span class="nav-item-num">67</span>明智审慎地进行优化
+          </a>
+          <a href="#item-68" class="nav-item" data-item="68" onclick="navigateTo(event, 68)">
+            <span class="nav-item-num">68</span>遵守被广泛认可的命名约定
+          </a>
+        </div>
+      </div>
+      <div class="nav-section" data-section="ch9">
+        <div class="nav-section-header" onclick="toggleSection('ch9')">
+          <div class="nav-section-title">
+            <span class="nav-icon">⚠️</span>
+            <span>第9章 异常</span>
+          </div>
+          <span class="nav-toggle">▶</span>
+        </div>
+        <div class="nav-section-content">
+          <a href="#item-69" class="nav-item" data-item="69" onclick="navigateTo(event, 69)">
+            <span class="nav-item-num">69</span>只针对异常的情况下才使用异常
+          </a>
+          <a href="#item-70" class="nav-item" data-item="70" onclick="navigateTo(event, 70)">
+            <span class="nav-item-num">70</span>对可恢复的情况使用受检异常，对编程错误使用运行时异常
+          </a>
+          <a href="#item-71" class="nav-item" data-item="71" onclick="navigateTo(event, 71)">
+            <span class="nav-item-num">71</span>避免不必要的使用受检异常
+          </a>
+          <a href="#item-72" class="nav-item" data-item="72" onclick="navigateTo(event, 72)">
+            <span class="nav-item-num">72</span>优先使用标准的异常
+          </a>
+          <a href="#item-73" class="nav-item" data-item="73" onclick="navigateTo(event, 73)">
+            <span class="nav-item-num">73</span>抛出与抽象对应的异常
+          </a>
+          <a href="#item-74" class="nav-item" data-item="74" onclick="navigateTo(event, 74)">
+            <span class="nav-item-num">74</span>每个方法抛出的异常都需要创建文档
+          </a>
+          <a href="#item-75" class="nav-item" data-item="75" onclick="navigateTo(event, 75)">
+            <span class="nav-item-num">75</span>在细节消息中包含失败一捕获信息
+          </a>
+          <a href="#item-76" class="nav-item" data-item="76" onclick="navigateTo(event, 76)">
+            <span class="nav-item-num">76</span>保持失败原子性
+          </a>
+          <a href="#item-77" class="nav-item" data-item="77" onclick="navigateTo(event, 77)">
+            <span class="nav-item-num">77</span>不要忽略异常
+          </a>
+        </div>
+      </div>
+      <div class="nav-section" data-section="ch10">
+        <div class="nav-section-header" onclick="toggleSection('ch10')">
+          <div class="nav-section-title">
+            <span class="nav-icon">🔀</span>
+            <span>第10章 并发</span>
+          </div>
+          <span class="nav-toggle">▶</span>
+        </div>
+        <div class="nav-section-content">
+          <a href="#item-78" class="nav-item" data-item="78" onclick="navigateTo(event, 78)">
+            <span class="nav-item-num">78</span>同步访问共享的可变数据
+          </a>
+          <a href="#item-79" class="nav-item" data-item="79" onclick="navigateTo(event, 79)">
+            <span class="nav-item-num">79</span>避免过度同步
+          </a>
+          <a href="#item-80" class="nav-item" data-item="80" onclick="navigateTo(event, 80)">
+            <span class="nav-item-num">80</span>executor 、task 和 stream 优先于线程
+          </a>
+          <a href="#item-81" class="nav-item" data-item="81" onclick="navigateTo(event, 81)">
+            <span class="nav-item-num">81</span>并发工具优于 wait 和 notify
+          </a>
+          <a href="#item-82" class="nav-item" data-item="82" onclick="navigateTo(event, 82)">
+            <span class="nav-item-num">82</span>文档应包含线程安全属性
+          </a>
+          <a href="#item-83" class="nav-item" data-item="83" onclick="navigateTo(event, 83)">
+            <span class="nav-item-num">83</span>明智审慎的使用延迟初始化
+          </a>
+          <a href="#item-84" class="nav-item" data-item="84" onclick="navigateTo(event, 84)">
+            <span class="nav-item-num">84</span>不要依赖线程调度器
+          </a>
+        </div>
+      </div>
+      <div class="nav-section" data-section="ch11">
+        <div class="nav-section-header" onclick="toggleSection('ch11')">
+          <div class="nav-section-title">
+            <span class="nav-icon">💾</span>
+            <span>第11章 序列化</span>
+          </div>
+          <span class="nav-toggle">▶</span>
+        </div>
+        <div class="nav-section-content">
+          <a href="#item-85" class="nav-item" data-item="85" onclick="navigateTo(event, 85)">
+            <span class="nav-item-num">85</span>优先选择 Java 序列化的替代方案
+          </a>
+          <a href="#item-86" class="nav-item" data-item="86" onclick="navigateTo(event, 86)">
+            <span class="nav-item-num">86</span>非常谨慎地实现 Serializable
+          </a>
+          <a href="#item-87" class="nav-item" data-item="87" onclick="navigateTo(event, 87)">
+            <span class="nav-item-num">87</span>考虑使用自定义的序列化形式
+          </a>
+          <a href="#item-88" class="nav-item" data-item="88" onclick="navigateTo(event, 88)">
+            <span class="nav-item-num">88</span>保护性的编写 readObject 方法
+          </a>
+          <a href="#item-89" class="nav-item" data-item="89" onclick="navigateTo(event, 89)">
+            <span class="nav-item-num">89</span>对于实例控制，枚举类型优于 readResolve
+          </a>
+          <a href="#item-90" class="nav-item" data-item="90" onclick="navigateTo(event, 90)">
+            <span class="nav-item-num">90</span>考虑用序列化代理代替序列化实例
+          </a>
+        </div>
+      </div>
+    </nav>
+  </aside>
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title">Effective Java 中文版（第3版）· 知识脑图</div>
+    </div>
+    <div class="content">
+      <div class="hero">
+        <h1>📘 Effective Java 中文版（第3版）</h1>
+        <p>Joshua Bloch 经典著作 · 90 条最佳实践 · Java 程序员必读</p>
+        <p style="font-size: 14px; margin-top: 8px; opacity: 0.85;">本知识脑图基于原书全部 11 章、90 条目系统整理，涵盖创建销毁对象、方法通用约定、类与接口设计、泛型、枚举注解、Lambda Stream、异常处理、并发编程、对象序列化等核心主题。</p>
+        <div class="hero-meta">
+          <span class="hero-tag">📚 11 大主题</span>
+          <span class="hero-tag">📋 90 条规则</span>
+          <span class="hero-tag">💡 核心要点</span>
+          <span class="hero-tag">🔍 代码示例</span>
+        </div>
+      </div>
+      <section class="chapter-section" id="ch1">
+        <div class="chapter-header">
+          <span class="chapter-icon">🏗️</span>
+          <h2 class="chapter-title">第1章 创建和销毁对象</h2>
+        </div>
+        <p class="chapter-desc">介绍如何高效、安全地创建和销毁对象</p>
+        <div class="chapter-stats">📋 共 9 条</div>
+        <div class="item-card" id="item-1">
+          <div class="item-header">
+            <span class="item-num">第 1 条</span>
+            <h3 class="item-title">考虑使用静态工厂方法替代构造方法</h3>
+          </div>
+          <div class="item-intro">💬 探讨使用静态工厂方法替代公共构造方法的优缺点。</div>
+          <div class="item-content">
+            <ul>              <li><strong>有名字</strong>：静态工厂方法有名称，比构造方法更易读懂、便于使用，避免重载歧义</li>              <li><strong>不必每次创建新对象</strong>：可重复返回相同实例（实例控制），是单例、不可变类、享元模式的基础</li>              <li><strong>可返回子类型</strong>：隐藏实现类、API更紧凑，特别适合基于接口的框架</li>              <li><strong>根据参数返回不同子类型</strong>：如 EnumSet 根据枚举大小返回 RegularEnumSet/JumboEnumSet</li>              <li><strong>编写时返回类型可不存在</strong>：是 JDBC 等服务提供者框架的基础，可使用 java.util.ServiceLoader</li>              <li><strong>缺点</strong>：没有公开构造方法的类无法被继承；难以在 API 文档中查找，需遵守 from/of/valueOf/instance/getInstance 等命名规范</li>            </ul>            <pre><code class="language-java">public static Boolean valueOf(boolean b) {
+    return b ? Boolean.TRUE : Boolean.FALSE;
+}</code></pre>          </div>
+          <div class="takeaway">默认优先选择静态工厂方法，再考虑公共构造方法。</div>
+        </div>
+        <div class="item-card" id="item-2">
+          <div class="item-header">
+            <span class="item-num">第 2 条</span>
+            <h3 class="item-title">当构造方法参数过多时使用builder模式</h3>
+          </div>
+          <div class="item-intro">💬 当构造方法参数过多时，使用 Builder 模式解决伸缩构造方法与 JavaBeans 模式的问题。</div>
+          <div class="item-content">
+            <ul>              <li><strong>伸缩构造方法</strong>：参数过多时难用、易出错、相同类型参数顺序易混</li>              <li><strong>JavaBeans 模式</strong>：无参构造 + setter，无法保证不可变性、可能处于不一致状态</li>              <li><strong>Builder 模式</strong>：用链式 setter 构建不可变对象，代码清晰且线程安全</li>              <li><strong>层级 Builder</strong>：子类的 builder 模拟自限定型（self-typed）方法</li>              <li><strong>优点</strong>：比构造方法更易扩展参数、利于阅读、可保证状态一致性、支持泛型与可变参数</li>            </ul>            <pre><code class="language-java">NutritionFacts cocaCola = new NutritionFacts.Builder(240, 8)
+    .calories(100).sodium(35).carbohydrate(27).build();</code></pre>          </div>
+          <div class="takeaway">参数 ≥ 4 个或将来可能扩展时，Builder 模式是最佳选择。</div>
+        </div>
+        <div class="item-card" id="item-3">
+          <div class="item-header">
+            <span class="item-num">第 3 条</span>
+            <h3 class="item-title">使用私有构造方法或枚类实现Singleton属性</h3>
+          </div>
+          <div class="item-intro">💬 实现 Singleton 属性的三种方法及其序列化问题。</div>
+          <div class="item-content">
+            <ul>              <li><strong>方法一</strong>：公有静态 final 字段，简单、可序列化（在 JDK 1.5 之前是最佳方法）</li>              <li><strong>方法二</strong>：静态工厂方法，可灵活改为泛型、改变 API（如 ThreadPoolExector 的方法）</li>              <li><strong>方法三</strong>：单元素枚举类型，<strong>最佳方法</strong> — 自动支持序列化机制、防止多次实例化</li>              <li><strong>序列化陷阱</strong>：实现 Serializable 的单例必须实现 readResolve 方法，否则会创建新实例</li>            </ul>            <pre><code class="language-java">public enum Elvis {
+    INSTANCE;
+    public void leaveTheBuilding() { ... }
+}</code></pre>          </div>
+          <div class="takeaway">单元素枚举是实现 Singleton 的最佳方式，简洁、免费提供序列化、线程安全。</div>
+        </div>
+        <div class="item-card" id="item-4">
+          <div class="item-header">
+            <span class="item-num">第 4 条</span>
+            <h3 class="item-title">使用私有构造方法执行非实例化</h3>
+          </div>
+          <div class="item-intro">💬 通过私有构造方法实现非实例化来阻止类被创建实例。</div>
+          <div class="item-content">
+            <ul>              <li><strong>用途</strong>：工具类（如 java.lang.Math、java.util.Arrays）不希望被实例化</li>              <li><strong>做法</strong>：显式声明私有构造方法并抛出 AssertionError</li>              <li><strong>好处</strong>：显式表达意图；防止类被意外实例化；继承时子类不会意外获得公共构造方法</li>            </ul>            <pre><code class="language-java">public class UtilityClass {
+    private UtilityClass() {
+        throw new AssertionError();
+    }
+}</code></pre>          </div>
+          <div class="takeaway">工具类应显式声明私有构造方法以禁止实例化。</div>
+        </div>
+        <div class="item-card" id="item-5">
+          <div class="item-header">
+            <span class="item-num">第 5 条</span>
+            <h3 class="item-title">依赖注入优于硬连接资源(hardwiring resources)</h3>
+          </div>
+          <div class="item-intro">💬 依赖注入优于硬连接资源（hardwiring resources），提高可测试性和灵活性。</div>
+          <div class="item-content">
+            <ul>              <li><strong>反模式</strong>：静态工具类或单例依赖底层资源（如拼写检查器使用静态字典）</li>              <li><strong>正确做法</strong>：通过构造方法或 setter 注入资源（Dependency Injection）</li>              <li><strong>优点</strong>：提高灵活性、可测试性、可复用性</li>              <li><strong>常见形式</strong>：构造方法注入、Spring 框架、Guice、Java EE 容器等</li>            </ul>            <pre><code class="language-java">public class SpellChecker {
+    private final Lexicon dictionary;
+    public SpellChecker(Lexicon dictionary) {
+        this.dictionary = Objects.requireNonNull(dictionary);
+    }
+}</code></pre>          </div>
+          <div class="takeaway">类不应直接 new 资源对象，应通过依赖注入获取。</div>
+        </div>
+        <div class="item-card" id="item-6">
+          <div class="item-header">
+            <span class="item-num">第 6 条</span>
+            <h3 class="item-title">避免创建不必要的对象</h3>
+          </div>
+          <div class="item-intro">💬 避免创建不必要的对象，特别是不可变对象和适配器。</div>
+          <div class="item-content">
+            <ul>              <li><strong>重用不可变对象</strong>：String s = &quot;bikini&quot;; 而不是 new String(&quot;bikini&quot;)</li>              <li><strong>静态工厂方法</strong>：Boolean.valueOf(String) 优于构造方法</li>              <li><strong>适配器模式</strong>：Map.keySet() 每次返回同一 Set 视图</li>              <li><strong>装箱陷阱</strong>：避免无意中的自动装箱（long sum 与 Long sum 性能差异巨大）</li>              <li><strong>不要误用</strong>：池化对象在现代 JVM 上成本可能高于直接创建小对象</li>            </ul>            <pre><code class="language-java">// 反例：每次都创建相同实例
+String s = new String(&quot;bikini&quot;);
+// 正例：复用
+String s = &quot;bikini&quot;;</code></pre>          </div>
+          <div class="takeaway">能重用的对象就不要新建；注意自动装箱的隐藏成本。</div>
+        </div>
+        <div class="item-card" id="item-7">
+          <div class="item-header">
+            <span class="item-num">第 7 条</span>
+            <h3 class="item-title">消除过期的对象引用</h3>
+          </div>
+          <div class="item-intro">💬 消除过期的对象引用以避免内存泄漏。</div>
+          <div class="item-content">
+            <ul>              <li><strong>常见场景</strong>：数组实现的栈/队列/缓存 — 弹出元素后应将引用置 null</li>              <li><strong>缓存</strong>：使用 WeakHashMap 或定时清理</li>              <li><strong>监听器/回调</strong>：只注册必要的回调，并及时注销</li>              <li><strong>内存泄漏的征兆</strong>：OutOfMemoryError 异常或 heap dump 异常</li>            </ul>            <pre><code class="language-java">public Object pop() {
+    if (size == 0) throw new EmptyStackException();
+    Object result = elements[--size];
+    elements[size] = null; // 消除过期引用
+    return result;
+}</code></pre>          </div>
+          <div class="takeaway">只要类自己管理内存，就要警惕内存泄漏。</div>
+        </div>
+        <div class="item-card" id="item-8">
+          <div class="item-header">
+            <span class="item-num">第 8 条</span>
+            <h3 class="item-title">避免使用Finalizer和Cleaner机制</h3>
+          </div>
+          <div class="item-intro">💬 避免使用 Finalizer 和 Cleaner 机制，二者都不能保证及时执行且已被废弃。</div>
+          <div class="item-content">
+            <ul>              <li><strong>Finalizer</strong>：不可预测、危险、严重性能损失（JDK 9 起已弃用）</li>              <li><strong>Cleaner</strong>：比 Finalizer 稍好，但仍不可控，不能保证及时执行</li>              <li><strong>替代方案</strong>：实现 AutoCloseable，配合 try-with-resources</li>              <li><strong>唯一合法用途</strong>：作为 native peer 的安全网或终止关键本地资源（仍需提供 close 方法）</li>            </ul>            <pre><code class="language-java">try (CleanableResource res = new CleanableResource()) {
+    // 使用资源
+} // 自动关闭</code></pre>          </div>
+          <div class="takeaway">不要使用 Finalizer/Cleaner，请用 try-with-resources 和 AutoCloseable。</div>
+        </div>
+        <div class="item-card" id="item-9">
+          <div class="item-header">
+            <span class="item-num">第 9 条</span>
+            <h3 class="item-title">使用try-with-resources语句替代try-finally语句</h3>
+          </div>
+          <div class="item-intro">💬 使用 try-with-resources 语句替代 try-finally，提高可读性和正确性。</div>
+          <div class="item-content">
+            <ul>              <li><strong>try-finally 问题</strong>：多层嵌套时难以阅读；异常可能被屏蔽</li>              <li><strong>try-with-resources</strong>：自动关闭多个资源，代码简洁、异常完整</li>              <li><strong>实现要求</strong>：资源必须实现 AutoCloseable 接口（其 close 方法可抛出 Exception）</li>              <li><strong>catch 子句</strong>：可与 try-with-resources 结合使用，处理特定异常</li>            </ul>            <pre><code class="language-java">try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+    return br.readLine();
+}</code></pre>          </div>
+          <div class="takeaway">处理必须关闭的资源时，try-with-resources 永远优于 try-finally。</div>
+        </div>      </section>
+      <section class="chapter-section" id="ch2">
+        <div class="chapter-header">
+          <span class="chapter-icon">🔧</span>
+          <h2 class="chapter-title">第2章 所有对象都通用的方法</h2>
+        </div>
+        <p class="chapter-desc">讨论equals、hashCode、toString等通用方法</p>
+        <div class="chapter-stats">📋 共 5 条</div>
+        <div class="item-card" id="item-10">
+          <div class="item-header">
+            <span class="item-num">第 10 条</span>
+            <h3 class="item-title">重写equals方法时遵守通用约定</h3>
+          </div>
+          <div class="item-intro">💬 重写 equals 方法时遵守通用约定，避免破坏集合等依赖 equals 的逻辑。</div>
+          <div class="item-content">
+            <ul>              <li><strong>不需要重写的情况</strong>：每个实例本质唯一（如 Thread）；类是逻辑单例；父类已重写；私有类且只比较内存地址</li>              <li><strong>equals 约定</strong>：自反性、对称性、传递性、一致性、非空性</li>              <li><strong>实现步骤</strong>：== 检查、instanceof 检查、强转、关键字段比较</li>              <li><strong>使用 Objects.equals 简化比较</strong></li>            </ul>            <pre><code class="language-java">@Override public boolean equals(Object o) {
+    if (o == this) return true;
+    if (!(o instanceof PhoneNumber)) return false;
+    PhoneNumber pn = (PhoneNumber) o;
+    return pn.lineNum == lineNum &amp;&amp; pn.prefix == prefix;
+}</code></pre>          </div>
+          <div class="takeaway">重写 equals 必须严格遵守五大约定，否则 HashMap/HashSet 等行为会出错。</div>
+        </div>
+        <div class="item-card" id="item-11">
+          <div class="item-header">
+            <span class="item-num">第 11 条</span>
+            <h3 class="item-title">重写equals方法时同时也要重写hashcode方法</h3>
+          </div>
+          <div class="item-intro">💬 重写 equals 时必须同时重写 hashCode，违反会导致 HashMap/HashSet 行为异常。</div>
+          <div class="item-content">
+            <ul>              <li><strong>约定</strong>：相等的对象必须有相等的散列码（equals 相等 → hashCode 相等）</li>              <li><strong>实现思路</strong>：选择非零初始值，对关键字段计算 c = 31 * c + (boolean ? 1 : 0) 等，累加后返回</li>              <li><strong>延迟初始化</strong>：缓存 hashCode 值（不可变类适用）</li>              <li><strong>不要试图排除关键字段</strong>（追求性能除外），不要用 getClass() 测试替代 instanceof</li>            </ul>            <pre><code class="language-java">@Override public int hashCode() {
+    int result = Short.hashCode(areaCode);
+    result = 31 * result + Short.hashCode(prefix);
+    result = 31 * result + Short.hashCode(lineNum);
+    return result;
+}</code></pre>          </div>
+          <div class="takeaway">equals 与 hashCode 必须同时重写，否则 HashMap 等集合会出现严重 bug。</div>
+        </div>
+        <div class="item-card" id="item-12">
+          <div class="item-header">
+            <span class="item-num">第 12 条</span>
+            <h3 class="item-title">始终重写 toString 方法</h3>
+          </div>
+          <div class="item-intro">💬 始终重写 toString 方法，提供清晰有用的对象表示。</div>
+          <div class="item-content">
+            <ul>              <li><strong>约定</strong>：简洁、易读、包含对象所有感兴趣的信息</li>              <li><strong>格式</strong>：是否在文档中指定格式需谨慎权衡（影响灵活性和价值）</li>              <li><strong>提供静态工厂或构造方法</strong>：方便从 toString 重建对象</li>              <li><strong>建议</strong>：无论是否指定格式，文档中应清晰说明意图</li>            </ul>            <pre><code class="language-java">@Override public String toString() {
+    return String.format(&quot;PhoneNumber(%03d) %03d-%04d&quot;,
+        areaCode, prefix, lineNum);
+}</code></pre>          </div>
+          <div class="takeaway">toString 是对象的&quot;名片&quot;，务必清晰、包含关键信息。</div>
+        </div>
+        <div class="item-card" id="item-13">
+          <div class="item-header">
+            <span class="item-num">第 13 条</span>
+            <h3 class="item-title">谨慎地重写 clone 方法</h3>
+          </div>
+          <div class="item-intro">💬 谨慎地重写 clone 方法，因为其机制复杂且与正常构造方法冲突。</div>
+          <div class="item-content">
+            <ul>              <li><strong>Cloneable 接口</strong>：marker interface，规定 clone 应返回字段拷贝</li>              <li><strong>问题</strong>：构造方法不会执行、约定薄弱、与 final 字段冲突、抛出受检异常</li>              <li><strong>替代方案</strong>：<strong>优先使用拷贝构造方法或拷贝工厂</strong>（如 new MyClass(original)）</li>              <li><strong>何时实现 Cloneable</strong>：仅当类设计上主要为了继承且受限于 final 字段时考虑数组复制</li>            </ul>            <pre><code class="language-java">public MyClass(MyClass original) {
+    this.data = original.data; // 深拷贝
+}</code></pre>          </div>
+          <div class="takeaway">不要使用 Cloneable，应提供拷贝构造方法或拷贝工厂。</div>
+        </div>
+        <div class="item-card" id="item-14">
+          <div class="item-header">
+            <span class="item-num">第 14 条</span>
+            <h3 class="item-title">考虑实现Comparable接口</h3>
+          </div>
+          <div class="item-intro">💬 考虑实现 Comparable 接口，让对象支持自然排序。</div>
+          <div class="item-content">
+            <ul>              <li><strong>优势</strong>：享受 Arrays.sort、TreeMap、TreeSet、Collections.sort 等排序能力</li>              <li><strong>约定</strong>：确保 sgn(x.compareTo(y)) == -sgn(y.compareTo(x))；传递性；x.compareTo(y) == 0 ⇔ x.equals(y)（建议）</li>              <li><strong>实现技巧</strong>：比较关键字段，使用 Comparator 工具方法简化（comparingInt、thenComparingInt）</li>              <li><strong>新旧 API</strong>：Java 8+ 优先用 Comparator 链式 API</li>            </ul>            <pre><code class="language-java">private static final Comparator&lt;PhoneNumber&gt; COMPARATOR =
+    Comparator.comparingInt((PhoneNumber pn) -&gt; pn.areaCode)
+        .thenComparingInt(pn -&gt; pn.prefix)
+        .thenComparingInt(pn -&gt; pn.lineNum);</code></pre>          </div>
+          <div class="takeaway">实现 value class 时让其实现 Comparable，便于排序与集合管理。</div>
+        </div>      </section>
+      <section class="chapter-section" id="ch3">
+        <div class="chapter-header">
+          <span class="chapter-icon">🏛️</span>
+          <h2 class="chapter-title">第3章 类和接口</h2>
+        </div>
+        <p class="chapter-desc">讲解类和接口的设计原则</p>
+        <div class="chapter-stats">📋 共 11 条</div>
+        <div class="item-card" id="item-15">
+          <div class="item-header">
+            <span class="item-num">第 15 条</span>
+            <h3 class="item-title">使类和成员的可访问性最小化</h3>
+          </div>
+          <div class="item-intro">💬 使类和成员的可访问性最小化，良好的封装是软件设计的基础。</div>
+          <div class="item-content">
+            <ul>              <li><strong>访问级别</strong>：private（仅本类）→ package-private（默认）→ protected（子类）→ public（全部）</li>              <li><strong>原则</strong>：尽可能使每个类或成员不被外界访问</li>              <li><strong>实例字段</strong>：<strong>绝不能是 public</strong>（非 final 会失去线程安全；final 限制灵活性）</li>              <li><strong>静态 final 字段</strong>：可以暴露但要注意其引用对象的可变性（如 public static final Thing[] 是危险的）</li>              <li><strong>模块化（Java 9+）</strong>：模块提供了超出包级别的封装机制</li>            </ul>            <pre><code class="language-java">public class Access {
+    public static final int VALUE = 10;          // OK
+    public static final Thing[] VALUES = {...}; // 危险
+    private int x;                              // 默认 private
+}</code></pre>          </div>
+          <div class="takeaway">API 越小越好，越小越易维护。</div>
+        </div>
+        <div class="item-card" id="item-16">
+          <div class="item-header">
+            <span class="item-num">第 16 条</span>
+            <h3 class="item-title">在公共类中使用访问方法而不是公共属性</h3>
+          </div>
+          <div class="item-intro">💬 在公共类中使用访问方法（getter）而不是公共属性。</div>
+          <div class="item-content">
+            <ul>              <li><strong>理由</strong>：保留改变内部表示的灵活性；可在访问方法中执行同步、校验、通知等操作</li>              <li><strong>public 字段的缺点</strong>：无法改变数据表示；无法在访问时执行额外操作；破坏封装</li>              <li><strong>例外</strong>：package-private 或 private 嵌套类可直接暴露字段</li>            </ul>            <pre><code class="language-java">public class Point {
+    private double x;
+    private double y;
+    public Point(double x, double y) { this.x = x; this.y = y; }
+    public double getX() { return x; }
+    public double getY() { return y; }
+}</code></pre>          </div>
+          <div class="takeaway">公共类应使用 private 字段 + 公共访问方法，保持封装性。</div>
+        </div>
+        <div class="item-card" id="item-17">
+          <div class="item-header">
+            <span class="item-num">第 17 条</span>
+            <h3 class="item-title">最小化可变性</h3>
+          </div>
+          <div class="item-intro">💬 最小化可变性，让类成为不可变类是最简单也最安全的设计。</div>
+          <div class="item-content">
+            <ul>              <li><strong>五大规则</strong>：不提供修改对象状态的方法；类不能被继承；所有字段 final；所有字段 private；防御性拷贝可变组件</li>              <li><strong>优点</strong>：线程安全、可共享、可作为 Map key 或 Set 元素、可安全共享内部信息</li>              <li><strong>缺点</strong>：每个不同的值都需要一个对象；可能带来性能问题</li>              <li><strong>折中方案</strong>：让类不可继承、构造方法私有，提供静态工厂；或考虑 builder 模式</li>            </ul>            <pre><code class="language-java">public final class Complex {
+    private final double re, im;
+    public Complex(double re, double im) { this.re = re; this.im = im; }
+    public Complex plus(Complex c) { return new Complex(re + c.re, im + c.im); }
+}</code></pre>          </div>
+          <div class="takeaway">类应尽量不可变，String、基本类型包装类都是优秀范例。</div>
+        </div>
+        <div class="item-card" id="item-18">
+          <div class="item-header">
+            <span class="item-num">第 18 条</span>
+            <h3 class="item-title">组合优于继承</h3>
+          </div>
+          <div class="item-intro">💬 组合优于继承，打破继承的滥用局面。</div>
+          <div class="item-content">
+            <ul>              <li><strong>继承的危险</strong>：子类继承父类所有 API 细节，父类修改会破坏子类；跨包继承尤其危险</li>              <li><strong>包装类模式</strong>：通过组合 + 接口转发实现代码复用（装饰器模式）</li>              <li><strong>何时使用继承</strong>：当子类和父类之间存在真正的 is-a 关系，且在同一包内、专为继承设计时</li>              <li><strong>包装类的代价</strong>：不适合 callback 框架；影响性能（极少）</li>            </ul>            <pre><code class="language-java">// 包装类 - 优于继承
+public class InstrumentedSet&lt;E&gt; extends ForwardingSet&lt;E&gt; {
+    private int addCount = 0;
+    @Override public boolean add(E e) { addCount++; return super.add(e); }
+}</code></pre>          </div>
+          <div class="takeaway">能用组合就用组合，继承仅在 is-a 关系明确时使用。</div>
+        </div>
+        <div class="item-card" id="item-19">
+          <div class="item-header">
+            <span class="item-num">第 19 条</span>
+            <h3 class="item-title">要么设计继承并提供文档说明，要么禁用继承</h3>
+          </div>
+          <div class="item-intro">💬 要么为继承而设计并提供文档说明，要么禁用继承。</div>
+          <div class="item-content">
+            <ul>              <li><strong>关键</strong>：文档必须说明可重写方法的实现细节与自用模式</li>              <li><strong>构造方法中</strong>：不要调用可重写方法（会导致子类字段未初始化即被使用）</li>              <li><strong>Cloneable 和 Serializable</strong>：实现时要特别小心，因为 clone/readObject 行为类似构造方法</li>              <li><strong>禁用继承两种方式</strong>：类声明为 final；构造方法私有 + 静态工厂</li>            </ul>            <pre><code class="language-java">// 禁用继承
+public final class FinalClass { ... }
+// 或：私有构造方法 + 静态工厂</code></pre>          </div>
+          <div class="takeaway">专为继承设计的类需要投入大量设计成本，否则应禁用继承。</div>
+        </div>
+        <div class="item-card" id="item-20">
+          <div class="item-header">
+            <span class="item-num">第 20 条</span>
+            <h3 class="item-title">接口优于抽象类</h3>
+          </div>
+          <div class="item-intro">💬 接口优于抽象类，Java 只支持单继承但可实现多个接口。</div>
+          <div class="item-content">
+            <ul>              <li><strong>接口优势</strong>：现有类可轻松实现新接口；可使用 mixin（混合类型）</li>              <li><strong>抽象骨架类</strong>：配合接口使用（AbstractList、AbstractSet、AbstractMap），提供部分实现</li>              <li><strong>Java 8+</strong>：接口支持默认方法，但仍有局限（不能引用字段、Object 方法不能默认等）</li>              <li><strong>设计 API</strong>：先定义接口，再考虑是否需要抽象骨架类</li>            </ul>            <pre><code class="language-java">public interface List&lt;E&gt; {
+    boolean add(E e);
+    default void shuffle() { /* 默认实现 */ }
+}</code></pre>          </div>
+          <div class="takeaway">优先用接口定义类型，必要时配合抽象骨架类复用代码。</div>
+        </div>
+        <div class="item-card" id="item-21">
+          <div class="item-header">
+            <span class="item-num">第 21 条</span>
+            <h3 class="item-title">为后代设计接口</h3>
+          </div>
+          <div class="item-intro">💬 为后代设计接口，默认方法可能打破现有实现的契约。</div>
+          <div class="item-content">
+            <ul>              <li><strong>默认方法风险</strong>：在已有实现类上注入方法可能引起编译错误或行为变化</li>              <li><strong>设计原则</strong>：默认方法应谨慎设计，避免依赖未知的状态；尽量提供完整文档</li>              <li><strong>不可移除</strong>：默认方法无法从接口中移除（兼容性问题）</li>              <li><strong>Java 8 教训</strong>：Collections 接口添加的 default 方法在 Servlet 容器等场景下导致二进制兼容问题</li>            </ul>            <pre><code class="language-java">default boolean removeIf(Predicate&lt;? super E&gt; filter) {
+    boolean result = false;
+    for (Iterator&lt;E&gt; it = iterator(); it.hasNext(); )
+        if (filter.test(it.next())) { it.remove(); result = true; }
+    return result;
+}</code></pre>          </div>
+          <div class="takeaway">默认方法让添加 API 更简单，但每个方法都应被精心设计。</div>
+        </div>
+        <div class="item-card" id="item-22">
+          <div class="item-header">
+            <span class="item-num">第 22 条</span>
+            <h3 class="item-title">接口仅用来定义类型</h3>
+          </div>
+          <div class="item-intro">💬 接口仅用来定义类型，不要将常量放在接口中。</div>
+          <div class="item-content">
+            <ul>              <li><strong>反模式</strong>：constant interface（常量接口），如 <code>public interface Constants { int A = 1; }</code></li>              <li><strong>危害</strong>：实现常量接口会暴露实现细节、污染类命名空间、破坏封装</li>              <li><strong>正确做法</strong>：用 final 类+私有构造方法，或使用枚举或静态导入</li>              <li><strong>Java 中常用模式</strong>：在工具类中提供常量（如 Integer.MAX_VALUE）</li>            </ul>            <pre><code class="language-java">// 正确做法
+public final class PhysicalConstants {
+    private PhysicalConstants() {}
+    public static final double AVOGADROS_NUMBER = 6.022_140_857e23;
+    public static final double BOLTZMANN_CONSTANT = 1.380_648_52e-23;
+}</code></pre>          </div>
+          <div class="takeaway">接口只用来定义类型，常量请放在 final 工具类或枚举中。</div>
+        </div>
+        <div class="item-card" id="item-23">
+          <div class="item-header">
+            <span class="item-num">第 23 条</span>
+            <h3 class="item-title">类层次结构优于标签类</h3>
+          </div>
+          <div class="item-intro">💬 类层次结构优于标签类，用多态替代 if/else 链和 switch。</div>
+          <div class="item-content">
+            <ul>              <li><strong>标签类缺点</strong>：冗长、易出错、效率低、破坏可扩展性</li>              <li><strong>类层次结构</strong>：抽象根类 + 多个具体子类，每个子类独立扩展</li>              <li><strong>设计模式</strong>：用工厂方法（静态工厂）返回合适的子类实例</li>              <li><strong>优势</strong>：类型安全、清晰表达、便于扩展新标签</li>            </ul>            <pre><code class="language-java">abstract class Figure { abstract double area(); }
+class Circle extends Figure { /* ... */ }
+class Rectangle extends Figure { /* ... */ }</code></pre>          </div>
+          <div class="takeaway">用类层次结构表达分类概念，告别标签类。</div>
+        </div>
+        <div class="item-card" id="item-24">
+          <div class="item-header">
+            <span class="item-num">第 24 条</span>
+            <h3 class="item-title">支持使用静态成员类而不是非静态类</h3>
+          </div>
+          <div class="item-intro">💬 支持使用静态成员类而不是非静态类，节省内存。</div>
+          <div class="item-content">
+            <ul>              <li><strong>嵌套类四种</strong>：静态成员类、非静态成员类、匿名类、局部类</li>              <li><strong>非静态成员类</strong>：会隐式持有外部类引用，导致外部类无法被 GC</li>              <li><strong>静态成员类</strong>：独立存在，无外部类引用，更节省内存</li>              <li><strong>何时用非静态</strong>：当需要访问外部类实例字段时（如 Iterator 实现）</li>            </ul>            <pre><code class="language-java">// 静态成员类 - 更好
+public static class MyStaticNested { ... }
+// 仅在需要访问外部类实例时用非静态</code></pre>          </div>
+          <div class="takeaway">嵌套类默认应使用 static，需要访问外部实例时才用非静态。</div>
+        </div>
+        <div class="item-card" id="item-25">
+          <div class="item-header">
+            <span class="item-num">第 25 条</span>
+            <h3 class="item-title">将源文件限制为单个顶级类</h3>
+          </div>
+          <div class="item-intro">💬 将源文件限制为单个顶级类，提高可维护性。</div>
+          <div class="item-content">
+            <ul>              <li><strong>理由</strong>：避免跨类调试混淆、单一职责、便于重构与代码审查</li>              <li><strong>编译顺序</strong>：Java 编译器在编译时对同文件内多个顶级类的处理可能与分开不同</li>              <li><strong>反例</strong>：一个 .java 文件中多个 public 类会导致编译失败；同包内多个顶级类令人困惑</li>              <li><strong>建议</strong>：一个文件只放一个顶级类（含其嵌套类）</li>            </ul>            <pre><code class="language-java">// 一个文件 = 一个顶级类
+// MyClass.java
+public class MyClass { ... }</code></pre>          </div>
+          <div class="takeaway">保持源文件结构简单清晰。</div>
+        </div>      </section>
+      <section class="chapter-section" id="ch4">
+        <div class="chapter-header">
+          <span class="chapter-icon">📦</span>
+          <h2 class="chapter-title">第4章 泛型</h2>
+        </div>
+        <p class="chapter-desc">深入Java泛型的使用</p>
+        <div class="chapter-stats">📋 共 8 条</div>
+        <div class="item-card" id="item-26">
+          <div class="item-header">
+            <span class="item-num">第 26 条</span>
+            <h3 class="item-title">不要使用原始类型</h3>
+          </div>
+          <div class="item-intro">💬 不要使用原始类型，泛型带来类型安全和更好的可读性。</div>
+          <div class="item-content">
+            <ul>              <li><strong>原始类型 vs 参数化类型</strong>：List vs List&lt;String&gt;，前者绕过类型检查</li>              <li><strong>安全性</strong>：参数化类型在编译期检查类型，运行时无需强制转换</li>              <li><strong>Set&lt;Object&gt; 与 Set&lt;?&gt; 的区别</strong>：Object 可放入任意类型；? 表示未知类型，不能添加</li>              <li><strong>List 与 List&lt;Object&gt; 的区别</strong>：后者可放任意类型；List&lt;String&gt; 不可赋给前者</li>            </ul>            <pre><code class="language-java">// 错误
+List list = new ArrayList();
+// 正确
+List&lt;String&gt; list = new ArrayList&lt;&gt;();</code></pre>          </div>
+          <div class="takeaway">永远不要在代码中使用原始类型，否则失去泛型的所有好处。</div>
+        </div>
+        <div class="item-card" id="item-27">
+          <div class="item-header">
+            <span class="item-num">第 27 条</span>
+            <h3 class="item-title">消除非检查警告</h3>
+          </div>
+          <div class="item-intro">💬 消除非检查警告，反映代码的真实问题。</div>
+          <div class="item-content">
+            <ul>              <li><strong>原则</strong>：每条非检查警告都代表潜在的运行时 ClassCastException</li>              <li><strong>消除方法</strong>：完善类型参数；用 @SuppressWarnings(&quot;unchecked&quot;) 但需评论说明原因</li>              <li><strong>作用域最小化</strong>：@SuppressWarnings 尽量放在最小作用域（如局部变量），不要放在整个类上</li>              <li><strong>重新启用</strong>：当 @SuppressWarnings 应用范围扩大时记得添加 @SuppressWarnings(&quot;unchecked&quot;)</li>            </ul>            <pre><code class="language-java">@SuppressWarnings(&quot;unchecked&quot;) // 由 List&lt;String&gt;.toArray 决定
+public &lt;T&gt; T[] toArray(T[] a) { ... }</code></pre>          </div>
+          <div class="takeaway">非检查警告不可忽视，逐一消除。</div>
+        </div>
+        <div class="item-card" id="item-28">
+          <div class="item-header">
+            <span class="item-num">第 28 条</span>
+            <h3 class="item-title">列表优于数组</h3>
+          </div>
+          <div class="item-intro">💬 列表优于数组，泛型在编译期、数组在运行时体现类型差异。</div>
+          <div class="item-content">
+            <ul>              <li><strong>数组协变</strong>：Long[] 是 Object[] 的子类，可能导致运行时 ArrayStoreException</li>              <li><strong>泛型不可变</strong>：List&lt;Long&gt; 与 List&lt;Object&gt; 无关系，编译期保证类型安全</li>              <li><strong>数组 vs List</strong>：性能敏感且明确知道不存在泛型擦除相关问题时才用数组</li>              <li><strong>混合使用</strong>：用 List 替代数组，必要时将 List 转为数组</li>            </ul>            <pre><code class="language-java">// 不安全
+Object[] arr = new Long[1];
+arr[0] = &quot;string&quot;; // ArrayStoreException
+// 安全
+List&lt;Long&gt; list = new ArrayList&lt;&gt;();</code></pre>          </div>
+          <div class="takeaway">新代码优先使用 List，避免数组与泛型混用。</div>
+        </div>
+        <div class="item-card" id="item-29">
+          <div class="item-header">
+            <span class="item-num">第 29 条</span>
+            <h3 class="item-title">优先考虑泛型</h3>
+          </div>
+          <div class="item-intro">💬 优先考虑泛型，让类支持类型参数化。</div>
+          <div class="item-content">
+            <ul>              <li><strong>基础步骤</strong>：将普通类改造为泛型类，移除 Object 类型和强制转换</li>              <li><strong>迭代演进</strong>：从支持 Object 的类逐步重构为泛型类</li>              <li><strong>类型擦除</strong>：泛型信息仅存在于编译期，运行时擦除</li>              <li><strong>限制</strong>：无法创建泛型数组；不能实例化类型参数（new T()）</li>            </ul>            <pre><code class="language-java">public class Stack&lt;E&gt; {
+    private E[] elements;
+    public E pop() { /* ... */ }
+}</code></pre>          </div>
+          <div class="takeaway">新代码应直接使用泛型，老代码应演进为泛型。</div>
+        </div>
+        <div class="item-card" id="item-30">
+          <div class="item-header">
+            <span class="item-num">第 30 条</span>
+            <h3 class="item-title">优先使用泛型方法</h3>
+          </div>
+          <div class="item-intro">💬 优先使用泛型方法，使 API 更加类型安全。</div>
+          <div class="item-content">
+            <ul>              <li><strong>静态工具方法</strong>：特别适合泛型化（如 Collections.emptyList()）</li>              <li><strong>类型推导</strong>：Java 7+ 的菱形语法 &lt;T&gt; T reduce(...)，更简洁</li>              <li><strong>递归类型限制</strong>：&lt;T extends Comparable&lt;T&gt;&gt; T max(T... args)</li>              <li><strong>泛型单例工厂</strong>：identityFunction() 返回 Function&lt;T,T&gt;，适用于所有 T</li>            </ul>            <pre><code class="language-java">public static &lt;E&gt; Set&lt;E&gt; union(Set&lt;? extends E&gt; s1, Set&lt;? extends E&gt; s2) { ... }</code></pre>          </div>
+          <div class="takeaway">静态工具方法几乎都应该泛型化。</div>
+        </div>
+        <div class="item-card" id="item-31">
+          <div class="item-header">
+            <span class="item-num">第 31 条</span>
+            <h3 class="item-title">使用限定通配符来增加API的灵活性</h3>
+          </div>
+          <div class="item-intro">💬 使用限定通配符来增加 API 的灵活性。</div>
+          <div class="item-content">
+            <ul>              <li><strong>PECS 原则</strong>：Producer 用 extends（? extends T），Consumer 用 super（? super T）</li>              <li><strong>何时用 ? extends</strong>：从集合中读取 T 类型对象（生产者）</li>              <li><strong>何时用 ? super</strong>：向集合中写入 T 类型对象（消费者）</li>              <li><strong>Comparable/Comparator</strong>：永远是 Consumer，用 ? super T</li>              <li><strong>类型推导</strong>：Java 8+ 大多数情况无需显式类型参数</li>            </ul>            <pre><code class="language-java">public void pushAll(Iterable&lt;? extends E&gt; src) { ... }
+public E reduce(List&lt;? super E&gt; list, Function&lt;E, E&gt; f, E initVal) { ... }</code></pre>          </div>
+          <div class="takeaway">记住 PECS：频繁读取用 extends，写入用 super。</div>
+        </div>
+        <div class="item-card" id="item-32">
+          <div class="item-header">
+            <span class="item-num">第 32 条</span>
+            <h3 class="item-title">合理地结合泛型和可变参数</h3>
+          </div>
+          <div class="item-intro">💬 合理地结合泛型和可变参数，谨慎处理数组创建。</div>
+          <div class="item-content">
+            <ul>              <li><strong>问题</strong>：泛型可变参数 T... 在 Java 中实际是 T[]，会创建泛型数组</li>              <li><strong>安全使用场景</strong>：@SafeVarargs 标注的纯转发方法（如 List.of、Collections.addAll）</li>              <li><strong>禁止使用</strong>：在泛型可变参数上存储到字段、返回给调用方</li>              <li><strong>替代方案</strong>：用 List&lt;T&gt; 替代 T...（如 Arrays.asList(T... a) → toList(T... a)）</li>            </ul>            <pre><code class="language-java">@SafeVarargs
+public static &lt;T&gt; List&lt;T&gt; toList(T... args) {
+    return List.of(args);
+}</code></pre>          </div>
+          <div class="takeaway">@SafeVarargs 让可变参数泛型方法变得安全，但请确保方法确实安全。</div>
+        </div>
+        <div class="item-card" id="item-33">
+          <div class="item-header">
+            <span class="item-num">第 33 条</span>
+            <h3 class="item-title">优先考虑类型安全的异构容器</h3>
+          </div>
+          <div class="item-intro">💬 优先考虑类型安全的异构容器，如 Typesafe-Heterogeneous-Container 模式。</div>
+          <div class="item-content">
+            <ul>              <li><strong>问题</strong>：单个对象的容器参数化（如 Set&lt;T&gt;）通常只支持固定数量的类型参数</li>              <li><strong>解决方案</strong>：用 Class&lt;T&gt; 作为 key 模拟不同类型，Map&lt;Class&lt;?&gt;, Object&gt; 存储</li>              <li><strong>实现要点</strong>：putFavor、favorites(Class&lt;T&gt; type) 配合 cast() 进行类型转换</li>              <li><strong>应用</strong>：JDK 中的 AnnotatedElement、Guice 的 TypeLiteral</li>            </ul>            <pre><code class="language-java">public &lt;T&gt; void putFavorite(Class&lt;T&gt; type, T instance);
+public &lt;T&gt; T getFavorite(Class&lt;T&gt; type);</code></pre>          </div>
+          <div class="takeaway">需要键类型变化时，使用异构容器模式打破单一参数化。</div>
+        </div>      </section>
+      <section class="chapter-section" id="ch5">
+        <div class="chapter-header">
+          <span class="chapter-icon">🏷️</span>
+          <h2 class="chapter-title">第5章 枚举和注解</h2>
+        </div>
+        <p class="chapter-desc">枚举类型与注解的最佳实践</p>
+        <div class="chapter-stats">📋 共 8 条</div>
+        <div class="item-card" id="item-34">
+          <div class="item-header">
+            <span class="item-num">第 34 条</span>
+            <h3 class="item-title">使用枚举类型替代整型常量</h3>
+          </div>
+          <div class="item-intro">💬 使用枚举类型替代整型常量，枚举是更优雅的常量集合。</div>
+          <div class="item-content">
+            <ul>              <li><strong>优势</strong>：类型安全、命名空间隔离、可关联数据和行为</li>              <li><strong>枚举本质</strong>：枚举值本质是 public static final 字段，每个值都是枚举类的实例</li>              <li><strong>丰富能力</strong>：枚举可定义字段、方法、抽象方法（实现多态）</li>              <li><strong>应用</strong>：状态机、命令模式、策略模式、与 switch 完美结合</li>            </ul>            <pre><code class="language-java">public enum Operation {
+    PLUS { public double apply(double x, double y) { return x + y; } },
+    MINUS { public double apply(double x, double y) { return x - y; } };
+    public abstract double apply(double x, double y);
+}</code></pre>          </div>
+          <div class="takeaway">用枚举表达固定的常量集合，比 int/String 常量安全得多。</div>
+        </div>
+        <div class="item-card" id="item-35">
+          <div class="item-header">
+            <span class="item-num">第 35 条</span>
+            <h3 class="item-title">使用实例属性替代序数</h3>
+          </div>
+          <div class="item-intro">💬 使用实例属性替代序数，告别基于 ordinal() 的代码。</div>
+          <div class="item-content">
+            <ul>              <li><strong>反模式</strong>：用 ordinal() 作为数组索引、保存枚举状态信息</li>              <li><strong>问题</strong>：常量顺序改变导致行为变化；难以维护多个状态信息</li>              <li><strong>正确做法</strong>：用实例字段（int 或 EnumSet）保存所需信息</li>              <li><strong>保留 ordinal() 用途</strong>：仅用于通用数据结构如 EnumSet、EnumMap 的内部实现</li>            </ul>            <pre><code class="language-java">public enum Ensemble {
+    SOLO(1), DUET(2), TRIO(3);
+    private final int numberOfMusicians;
+    Ensemble(int size) { this.numberOfMusicians = size; }
+    public int getNumberOfMusicians() { return numberOfMusicians; }
+}</code></pre>          </div>
+          <div class="takeaway">永远不要用 ordinal() 保存业务数据。</div>
+        </div>
+        <div class="item-card" id="item-36">
+          <div class="item-header">
+            <span class="item-num">第 36 条</span>
+            <h3 class="item-title">使用EnumSet替代位属性</h3>
+          </div>
+          <div class="item-intro">💬 使用 EnumSet 替代位属性，高效表达位标志。</div>
+          <div class="item-content">
+            <ul>              <li><strong>位属性反模式</strong>：text.applyStyles(STYLE_BOLD | STYLE_ITALIC)，难读、难维护</li>              <li><strong>EnumSet 优势</strong>：内部用位向量实现，性能与位运算相当；表达力强</li>              <li><strong>限制</strong>：不能创建不可变 EnumSet；无法在 Java 8 之前用 Collection 操作</li>              <li><strong>何时回退到位属性</strong>：用 long 位运算时（EnumSet 内部实现）</li>            </ul>            <pre><code class="language-java">text.applyStyles(EnumSet.of(Style.BOLD, Style.ITALIC));</code></pre>          </div>
+          <div class="takeaway">用 EnumSet 替代位标志，简洁安全且性能优异。</div>
+        </div>
+        <div class="item-card" id="item-37">
+          <div class="item-header">
+            <span class="item-num">第 37 条</span>
+            <h3 class="item-title">使用EnumMap替代序数索引</h3>
+          </div>
+          <div class="item-intro">💬 使用 EnumMap 替代序数索引，类型安全的二维映射。</div>
+          <div class="item-content">
+            <ul>              <li><strong>反模式</strong>：用 ordinal() 作为数组索引（如 phases[Phase.ordinal()][Transition.ordinal()]）</li>              <li><strong>问题</strong>：类型不安全、性能不如 EnumMap、数组维度难理解</li>              <li><strong>EnumMap 优势</strong>：用枚举作为 key，类型安全、内部用数组实现、性能极佳</li>              <li><strong>高级用法</strong>：嵌套 EnumMap（EnumMap&lt;K, EnumMap&lt;K, V&gt;&gt;）模拟多维数组</li>            </ul>            <pre><code class="language-java">Map&lt;Plant.LifeCycle, Set&lt;Plant&gt;&gt; plantsByLifeCycle =
+    new EnumMap&lt;&gt;(Plant.LifeCycle.class);</code></pre>          </div>
+          <div class="takeaway">用 EnumMap 替代基于序数的二维表。</div>
+        </div>
+        <div class="item-card" id="item-38">
+          <div class="item-header">
+            <span class="item-num">第 38 条</span>
+            <h3 class="item-title">使用接口模拟可扩展的枚举</h3>
+          </div>
+          <div class="item-intro">💬 使用接口模拟可扩展的枚举，实现枚举的可扩展性。</div>
+          <div class="item-content">
+            <ul>              <li><strong>枚举限制</strong>：枚举类型无法被继承，无法在已有枚举上添加新值</li>              <li><strong>解决方案</strong>：用接口 + 基础枚举实现，客户端编写操作接口的方法</li>              <li><strong>示例</strong>：BasicOperation 实现 Operation 接口，ExtendedOperation 同样实现</li>              <li><strong>限制</strong>：实现无法继承基础枚举的状态字段</li>            </ul>            <pre><code class="language-java">public interface Operation { double apply(double x, double y); }
+public enum BasicOperation implements Operation { ... }
+public enum ExtendedOperation implements Operation { ... }</code></pre>          </div>
+          <div class="takeaway">需要可扩展枚举时，使用接口 + 实现枚举的模式。</div>
+        </div>
+        <div class="item-card" id="item-39">
+          <div class="item-header">
+            <span class="item-num">第 39 条</span>
+            <h3 class="item-title">注解优于命名模式</h3>
+          </div>
+          <div class="item-intro">💬 注解优于命名模式，使用注解代替过期的前缀式约定。</div>
+          <div class="item-content">
+            <ul>              <li><strong>命名模式问题</strong>：拼写错误难发现、参数无关联、缺乏一致的命名规范</li>              <li><strong>注解优势</strong>：编译期类型检查、可关联参数、被工具识别</li>              <li><strong>设计原则</strong>：使用 @Retention(RetentionPolicy.RUNTIME) 才能运行时通过反射读取</li>              <li><strong>使用场景</strong>：JUnit (@Test)、Spring 框架的众多注解</li>            </ul>            <pre><code class="language-java">@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Test { }</code></pre>          </div>
+          <div class="takeaway">用注解表达元数据，告别命名模式。</div>
+        </div>
+        <div class="item-card" id="item-40">
+          <div class="item-header">
+            <span class="item-num">第 40 条</span>
+            <h3 class="item-title">始终使用Override注解</h3>
+          </div>
+          <div class="item-intro">💬 始终使用 Override 注解，让编译器帮你检查重写。</div>
+          <div class="item-content">
+            <ul>              <li><strong>理由</strong>：编译器会验证方法确实重写了父类方法，避免拼写错误等 bug</li>              <li><strong>适用</strong>：重写普通方法、抽象方法、接口方法</li>              <li><strong>例外</strong>：重写 Object 的 equals 时不一定需要（但建议加）</li>              <li><strong>不适用</strong>：在非重写方法上添加（如新方法、静态方法）</li>            </ul>            <pre><code class="language-java">@Override public boolean equals(Object o) { ... }</code></pre>          </div>
+          <div class="takeaway">无 @Override 不重写，这是契约。</div>
+        </div>
+        <div class="item-card" id="item-41">
+          <div class="item-header">
+            <span class="item-num">第 41 条</span>
+            <h3 class="item-title">使用标记接口定义类型</h3>
+          </div>
+          <div class="item-intro">💬 使用标记接口定义类型，区分&quot;标记&quot;和&quot;标记注解&quot;。</div>
+          <div class="item-content">
+            <ul>              <li><strong>标记接口</strong>：不包含方法的接口，仅用于标记实现类具有某种属性</li>              <li><strong>示例</strong>：Serializable、Cloneable、RandomAccess</li>              <li><strong>优势</strong>：被类型系统识别；编译期类型检查；可应用于方法参数类型</li>              <li><strong>何时用标记注解</strong>：当需要应用于除类/接口外的元素（如方法、字段）</li>            </ul>            <pre><code class="language-java">public interface MyCapability { /* marker only */ }
+public class MyService implements MyCapability { ... }</code></pre>          </div>
+          <div class="takeaway">如果标记需要应用到类或接口，使用标记接口。</div>
+        </div>      </section>
+      <section class="chapter-section" id="ch6">
+        <div class="chapter-header">
+          <span class="chapter-icon">🌊</span>
+          <h2 class="chapter-title">第6章 Lambda和Stream</h2>
+        </div>
+        <p class="chapter-desc">函数式编程API的使用</p>
+        <div class="chapter-stats">📋 共 7 条</div>
+        <div class="item-card" id="item-42">
+          <div class="item-header">
+            <span class="item-num">第 42 条</span>
+            <h3 class="item-title">lambda表达式优于匿名类</h3>
+          </div>
+          <div class="item-intro">💬 Lambda 表达式优于匿名类，让函数式编程更简洁。</div>
+          <div class="item-content">
+            <ul>              <li><strong>Lambda 优势</strong>：简洁、可读性强、无类型膨胀</li>              <li><strong>适用场景</strong>：函数式接口（单抽象方法的接口）的实例创建</li>              <li><strong>限制</strong>：无法访问外部非 final 变量；不能有命名；this 指代外层</li>              <li><strong>匿名类适用</strong>：需要实现多个方法、需要访问构造方法、引用自身</li>            </ul>            <pre><code class="language-java">// 匿名类
+Collections.sort(words, new Comparator&lt;String&gt;() {
+    public int compare(String s1, String s2) { return Integer.compare(s1.length(), s2.length()); }
+});
+// Lambda
+Collections.sort(words, (s1, s2) -&gt; Integer.compare(s1.length(), s2.length()));</code></pre>          </div>
+          <div class="takeaway">函数式接口的实现一律用 Lambda。</div>
+        </div>
+        <div class="item-card" id="item-43">
+          <div class="item-header">
+            <span class="item-num">第 43 条</span>
+            <h3 class="item-title">方法引用优于lambda表达式</h3>
+          </div>
+          <div class="item-intro">💬 方法引用优于 Lambda 表达式，更具表现力。</div>
+          <div class="item-content">
+            <ul>              <li><strong>五类方法引用</strong>：
+  - 类::实例方法 (String::length)
+  - 类::静态方法 (Math::max)
+  - 实例::实例方法 (expensiveTransaction::getValue)
+  - 类::new (TreeMap&lt;K,V&gt;::new)
+  - 实例::new (MyClass::new)</li>              <li><strong>何时用 Lambda</strong>：方法引用过长、方法不存在、参数不直接映射</li>              <li><strong>经验</strong>：能用方法引用就用方法引用</li>            </ul>            <pre><code class="language-java">map.merge(key, 1, Integer::sum); // 优于 (count, incr) -&gt; count + incr</code></pre>          </div>
+          <div class="takeaway">方法引用让代码如散文般自然。</div>
+        </div>
+        <div class="item-card" id="item-44">
+          <div class="item-header">
+            <span class="item-num">第 44 条</span>
+            <h3 class="item-title">优先使用标准的函数式接口</h3>
+          </div>
+          <div class="item-intro">💬 优先使用标准的函数式接口，如 java.util.function 包中的接口。</div>
+          <div class="item-content">
+            <ul>              <li><strong>六大基本接口</strong>：Function、Consumer、Supplier、Predicate、UnaryOperator、BinaryOperator</li>              <li><strong>基本类型特化</strong>：IntFunction、LongToDoubleFunction 等避免装箱</li>              <li><strong>何时自定义接口</strong>：当有自己的契约或需要 default 方法时</li>              <li><strong>@FunctionalInterface 注解</strong>：明确函数式接口意图</li>            </ul>            <pre><code class="language-java">@FunctionalInterface
+public interface MyFunc&lt;T&gt; {
+    boolean test(T t);
+    default MyFunc&lt;T&gt; negate() { return t -&gt; !test(t); }
+}</code></pre>          </div>
+          <div class="takeaway">先看 java.util.function 是否满足需求，再考虑自定义。</div>
+        </div>
+        <div class="item-card" id="item-45">
+          <div class="item-header">
+            <span class="item-num">第 45 条</span>
+            <h3 class="item-title">明智审慎地使用Stream</h3>
+          </div>
+          <div class="item-intro">💬 明智审慎地使用 Stream，stream 不是所有场景的银弹。</div>
+          <div class="item-content">
+            <ul>              <li><strong>Stream 优点</strong>：表达力强、可读性高、易于并行化</li>              <li><strong>Stream 缺点</strong>：难以调试、难以重用中间操作、某些场景性能不如普通循环</li>              <li><strong>何时不用</strong>：char 值处理（应使用 stream 之外的方式）；无法直接做 break/continue；复杂业务逻辑</li>              <li><strong>经验</strong>：以可读性为先，stream 和循环结合使用</li>            </ul>            <pre><code class="language-java">// 适合 Stream
+List&lt;String&gt; names = users.stream().map(User::getName).collect(toList());
+// 不适合：复杂循环逻辑</code></pre>          </div>
+          <div class="takeaway">Stream 是工具，不是教条。</div>
+        </div>
+        <div class="item-card" id="item-46">
+          <div class="item-header">
+            <span class="item-num">第 46 条</span>
+            <h3 class="item-title">优先考虑流中无副作用的函数</h3>
+          </div>
+          <div class="item-intro">💬 优先考虑流中无副作用的函数，避免修改外部状态。</div>
+          <div class="item-content">
+            <ul>              <li><strong>forEach 是报告式</strong>：应只用于打印等最终操作，不应用于计算</li>              <li><strong>收集器 Collectors</strong>：toList、toSet、toMap、joining、groupingBy、partitioningBy</li>              <li><strong>避免陷阱</strong>：不要在 lambda 中修改外部可变对象（导致难以诊断的问题）</li>              <li><strong>收集器的强大</strong>：嵌套 groupingBy、mapping、reducing、teeing</li>            </ul>            <pre><code class="language-java">Map&lt;City, List&lt;String&gt;&gt; byCity = people.stream()
+    .collect(groupingBy(Person::getCity, mapping(Person::getLastName, toList())));</code></pre>          </div>
+          <div class="takeaway">Stream 流水线要保持纯函数风格，副作用留给终止操作。</div>
+        </div>
+        <div class="item-card" id="item-47">
+          <div class="item-header">
+            <span class="item-num">第 47 条</span>
+            <h3 class="item-title">优先使用Collection而不是Stream来作为方法的返回类型</h3>
+          </div>
+          <div class="item-intro">💬 优先使用 Collection 而不是 Stream 来作为方法的返回类型。</div>
+          <div class="item-content">
+            <ul>              <li><strong>Collection 优势</strong>：支持 for-each 循环；支持 stream()；支持 size()；可同时满足多种需求</li>              <li><strong>Stream 仅适合作返回值</strong>：如果只做 for-each 循环操作</li>              <li><strong>何时用 Stream</strong>：未来一定会做流处理；返回的是巨大序列（IntStream.range）</li>              <li><strong>性能</strong>：Collection 的 stream() 是廉价的，返回 iter 也很高效</li>            </ul>            <pre><code class="language-java">// 优先
+public List&lt;Cheese&gt; getCheeses() { return cheesesInStock; }
+// 当需要延迟序列时
+public Stream&lt;Cheese&gt; stream() { return cheesesInStock.stream(); }</code></pre>          </div>
+          <div class="takeaway">让调用方决定何时用 stream、何时用循环。</div>
+        </div>
+        <div class="item-card" id="item-48">
+          <div class="item-header">
+            <span class="item-num">第 48 条</span>
+            <h3 class="item-title">谨慎使用流并行</h3>
+          </div>
+          <div class="item-intro">💬 谨慎使用流并行，确保理解底层成本与正确性。</div>
+          <div class="item-content">
+            <ul>              <li><strong>适用场景</strong>：ArrayList、HashMap、数组；规模足够大（N &gt;= 几十到几万）；计算密集</li>              <li><strong>不适用场景</strong>：limit、findFirst 等短路操作；iterators 慢；流水线大量 boxing</li>              <li><strong>正确性问题</strong>：共享可变状态、reduce/collect 操作的 combiner 必须正确</li>              <li><strong>性能陷阱</strong>：fork-join 池的线程调度开销可能超过并行收益</li>            </ul>            <pre><code class="language-java">// 适合
+long count = primes.parallelStream().filter(p -&gt; p &gt; 1_000_000).count();
+// 危险：自定义 reduce 需仔细编写</code></pre>          </div>
+          <div class="takeaway">并行前要测量，并行后要验证。</div>
+        </div>      </section>
+      <section class="chapter-section" id="ch7">
+        <div class="chapter-header">
+          <span class="chapter-icon">⚙️</span>
+          <h2 class="chapter-title">第7章 方法</h2>
+        </div>
+        <p class="chapter-desc">方法设计的注意事项</p>
+        <div class="chapter-stats">📋 共 8 条</div>
+        <div class="item-card" id="item-49">
+          <div class="item-header">
+            <span class="item-num">第 49 条</span>
+            <h3 class="item-title">检查参数有效性</h3>
+          </div>
+          <div class="item-intro">💬 检查参数有效性，越早失败越好。</div>
+          <div class="item-content">
+            <ul>              <li><strong>重要性</strong>：无效参数导致运行时异常远晚于调用时，调试困难</li>              <li><strong>做法</strong>：方法开头检查参数，使用 Objects.requireNonNull、checkFromToIndex 等</li>              <li><strong>文档约定</strong>：用 @throws 声明 IllegalArgumentException、NullPointerException</li>              <li><strong>性能权衡</strong>：包私有方法可用断言（assert）代替检查</li>            </ul>            <pre><code class="language-java">public Period(Date start, Date end) {
+    this.start = Objects.requireNonNull(start, &quot;start&quot;);
+    this.end = Objects.requireNonNull(end, &quot;end&quot;);
+    if (start.compareTo(end) &gt; 0) throw new IllegalArgumentException();
+}</code></pre>          </div>
+          <div class="takeaway">fail fast 原则：方法应快速失败，明确告知错误原因。</div>
+        </div>
+        <div class="item-card" id="item-50">
+          <div class="item-header">
+            <span class="item-num">第 50 条</span>
+            <h3 class="item-title">必要时进行防御性拷贝</h3>
+          </div>
+          <div class="item-intro">💬 必要时进行防御性拷贝，保护类的不变性。</div>
+          <div class="item-content">
+            <ul>              <li><strong>何时使用</strong>：类包含可变对象字段（如 Date、数组、List）时</li>              <li><strong>方法</strong>：构造方法中对参数进行防御性拷贝；getter 中也需返回拷贝</li>              <li><strong>注意</strong>：防御性拷贝在检查参数合法性<strong>之前</strong>（防止 TOCTOU 攻击）</li>              <li><strong>何时不需要</strong>：信任的内部组件；性能要求极高且可变对象不可变时</li>            </ul>            <pre><code class="language-java">public Period(Date start, Date end) {
+    this.start = new Date(start.getTime());  // 拷贝在前
+    this.end = new Date(end.getTime());
+    if (this.start.compareTo(this.end) &gt; 0) throw new IllegalArgumentException();
+}</code></pre>          </div>
+          <div class="takeaway">不要相信调用者，保护你的不可变类。</div>
+        </div>
+        <div class="item-card" id="item-51">
+          <div class="item-header">
+            <span class="item-num">第 51 条</span>
+            <h3 class="item-title">仔细设计方法签名</h3>
+          </div>
+          <div class="item-intro">💬 仔细设计方法签名，API 设计需深思熟虑。</div>
+          <div class="item-content">
+            <ul>              <li><strong>谨慎选择方法名</strong>：应清晰、易于理解、与同包命名风格一致</li>              <li><strong>不要过于追求便利方法</strong>：每个方法都有维护成本</li>              <li><strong>避免过长的参数列表</strong>：超过 4 个应考虑重构（参数对象、builder）</li>              <li><strong>参数类型优先用接口</strong>：而非具体实现类</li>              <li><strong>boolean 参数危险</strong>：使方法签名难理解，应使用两个枚举或两个方法</li>            </ul>            <pre><code class="language-java">// 避免
+public void print(boolean isMale) { ... }
+// 推荐
+public void printAsMale() { ... }
+public void printAsFemale() { ... }</code></pre>          </div>
+          <div class="takeaway">方法签名是 API 的核心，一旦发布就难以修改。</div>
+        </div>
+        <div class="item-card" id="item-52">
+          <div class="item-header">
+            <span class="item-num">第 52 条</span>
+            <h3 class="item-title">明智审慎地使用重载</h3>
+          </div>
+          <div class="item-intro">💬 明智审慎地使用重载，重载是编译时多态、覆盖是运行时多态。</div>
+          <div class="item-content">
+            <ul>              <li><strong>核心原则</strong>：永远不要导出具有相同数量参数的重载方法，使每个调用都有明显不同的行为</li>              <li><strong>避免歧义</strong>：overload 选择是编译期静态的，不关心运行时类型</li>              <li><strong>构造方法可重载</strong>：因为构造方法总有名字，调用时必须明确使用哪个</li>              <li><strong>不要对不同概念使用相同签名</strong>（如 List.remove(int) vs List.remove(Object)）</li>            </ul>            <pre><code class="language-java">// 危险：List.remove(int) 与 List.remove(Object) 重载
+list.remove(0);    // 按索引
+list.remove(&quot;x&quot;);  // 按对象</code></pre>          </div>
+          <div class="takeaway">如果重载会让调用者困惑，就不要重载。</div>
+        </div>
+        <div class="item-card" id="item-53">
+          <div class="item-header">
+            <span class="item-num">第 53 条</span>
+            <h3 class="item-title">明智审慎地使用可变参数</h3>
+          </div>
+          <div class="item-intro">💬 明智审慎地使用可变参数，正确处理零参数情况。</div>
+          <div class="item-content">
+            <ul>              <li><strong>可变参数本质</strong>：接受零个或多个参数，内部是数组</li>              <li><strong>注意性能</strong>：每次调用都创建数组，慎用于性能关键路径</li>              <li><strong>反射问题</strong>：在重载时，Object... 与 Object[] 模糊不清</li>              <li><strong>规范设计</strong>：每个重载只接受可变参数一次；不要用可变参数做条件性功能开关</li>            </ul>            <pre><code class="language-java">// 推荐：先有一个普通方法，再有可变参数重载
+public int sum(int a, int b) { return a + b; }
+public int sum(int a, int b, int c) { return a + b + c; }
+// 可变参数作为补充</code></pre>          </div>
+          <div class="takeaway">可变参数是便利的，但有性能成本。</div>
+        </div>
+        <div class="item-card" id="item-54">
+          <div class="item-header">
+            <span class="item-num">第 54 条</span>
+            <h3 class="item-title">返回空的数组或集合，不要返回 null</h3>
+          </div>
+          <div class="item-intro">💬 返回空的数组或集合，不要返回 null。</div>
+          <div class="item-content">
+            <ul>              <li><strong>null 的危害</strong>：调用者必须做 null 检查；容易遗忘导致 NullPointerException</li>              <li><strong>正确做法</strong>：返回空集合（Collections.emptyList() 等）或空数组（new T[0]）</li>              <li><strong>性能优化</strong>：对反复返回空集合的场景，使用预分配的不可变空集合</li>              <li><strong>特殊考虑</strong>：不能返回 null 的接口；文档化以说明空返回</li>            </ul>            <pre><code class="language-java">public List&lt;Cheese&gt; getCheeses() {
+    return cheesesInStock.isEmpty() ?
+        Collections.emptyList() : new ArrayList&lt;&gt;(cheesesInStock);
+}</code></pre>          </div>
+          <div class="takeaway">返回空集合而非 null 是 API 友好的体现。</div>
+        </div>
+        <div class="item-card" id="item-55">
+          <div class="item-header">
+            <span class="item-num">第 55 条</span>
+            <h3 class="item-title">明智审慎地返回 Optional</h3>
+          </div>
+          <div class="item-intro">💬 明智审慎地返回 Optional，避免过度使用。</div>
+          <div class="item-content">
+            <ul>              <li><strong>Optional 价值</strong>：API 表达&quot;可能为空&quot;，强迫调用方处理缺失</li>              <li><strong>何时返回</strong>：当结果可能缺失且客户端必须处理时</li>              <li><strong>何时不返回</strong>：作为集合元素；作为 map 的 value；作为字段</li>              <li><strong>不要用 Optional.of(null)</strong>，应使用 ofNullable；Optional 自身也有性能开销</li>            </ul>            <pre><code class="language-java">public Optional&lt;Foo&gt; findById(long id) {
+    return Optional.ofNullable(map.get(id));
+}</code></pre>          </div>
+          <div class="takeaway">Optional 是 API 信号，不是包装 null 的工具。</div>
+        </div>
+        <div class="item-card" id="item-56">
+          <div class="item-header">
+            <span class="item-num">第 56 条</span>
+            <h3 class="item-title">为所有已公开的 API 元素编写文档注释</h3>
+          </div>
+          <div class="item-intro">💬 为所有已公开的 API 元素编写文档注释。</div>
+          <div class="item-content">
+            <ul>              <li><strong>Javadoc 价值</strong>：标准 Java 文档工具生成的 API 文档是开发者最常用的参考</li>              <li><strong>必须文档化</strong>：每个 public 类、接口、构造方法、方法、字段</li>              <li><strong>要点</strong>：简洁、完整、前后句式应能独立成句；@param、@return、@throws、@deprecated</li>              <li><strong>HTML 标签</strong>：用 {@code} 替代 &lt;code&gt;；用 {@literal} 防止 HTML 解析</li>            </ul>            <pre><code class="language-java">/**
+ * 返回指定键映射的值，如果不存在返回 null。
+ * @param key 键
+ * @return 值
+ * @throws NullPointerException 如果 key 为 null
+ */
+public V get(K key) { ... }</code></pre>          </div>
+          <div class="takeaway">良好的 API 文档是 Javadoc 工具链的基础。</div>
+        </div>      </section>
+      <section class="chapter-section" id="ch8">
+        <div class="chapter-header">
+          <span class="chapter-icon">📚</span>
+          <h2 class="chapter-title">第8章 通用编程</h2>
+        </div>
+        <p class="chapter-desc">日常编程的最佳实践</p>
+        <div class="chapter-stats">📋 共 12 条</div>
+        <div class="item-card" id="item-57">
+          <div class="item-header">
+            <span class="item-num">第 57 条</span>
+            <h3 class="item-title">最小化局部变量的作用域</h3>
+          </div>
+          <div class="item-intro">💬 最小化局部变量的作用域，提高可读性。</div>
+          <div class="item-content">
+            <ul>              <li><strong>C 语言风格问题</strong>：习惯在方法开头声明所有变量，导致变量离使用点很远</li>              <li><strong>最佳实践</strong>：在第一次使用变量的地方声明；初始化器优先于赋值</li>              <li><strong>for 循环优势</strong>：循环变量作用域天然受限；Java 早期需要 i 声明在 for 之外（已修正）</li>              <li><strong>try-catch</strong>：catch 块中的异常只在 catch 块内使用</li>            </ul>            <pre><code class="language-java">// 推荐：紧贴使用处声明
+for (int i = 0; i &lt; list.size(); i++) {
+    // 使用 i
+}</code></pre>          </div>
+          <div class="takeaway">变量声明越靠近使用点越好。</div>
+        </div>
+        <div class="item-card" id="item-58">
+          <div class="item-header">
+            <span class="item-num">第 58 条</span>
+            <h3 class="item-title">for-each 循环优于传统 for 循环</h3>
+          </div>
+          <div class="item-intro">💬 for-each 循环优于传统 for 循环，简洁且避免陷阱。</div>
+          <div class="item-content">
+            <ul>              <li><strong>优势</strong>：无索引变量、无 off-by-one 错误、可同时遍历多个集合</li>              <li><strong>适用</strong>：Collection、数组、Iterable 实现类</li>              <li><strong>不适用场景</strong>：需要修改或删除元素（用 Iterator.remove）；需要并行遍历（需手动控制）</li>              <li><strong>嵌套迭代陷阱</strong>：多个 for-each 循环遍历同一集合仍会冲突（参考 item 79）</li>            </ul>            <pre><code class="language-java">// 推荐
+for (Element e : elements) { ... }
+// 不推荐（除非有特殊需求）
+for (int i = 0; i &lt; elements.length; i++) { ... }</code></pre>          </div>
+          <div class="takeaway">默认用 for-each 循环，需要索引才退而求其次。</div>
+        </div>
+        <div class="item-card" id="item-59">
+          <div class="item-header">
+            <span class="item-num">第 59 条</span>
+            <h3 class="item-title">了解并使用库</h3>
+          </div>
+          <div class="item-intro">💬 了解并使用库，Java 生态系统已经为你准备好了一切。</div>
+          <div class="item-content">
+            <ul>              <li><strong>标准库的价值</strong>：Random、ThreadLocalRandom、BitSet 等经过优化的实现</li>              <li><strong>第三方库</strong>：Guava、Apache Commons 等生态补充</li>              <li><strong>自己造轮子代价</strong>：难以达到专业库的质量（性能、可靠性、可维护性）</li>              <li><strong>学以致用</strong>：先掌握标准库的常用 API</li>            </ul>            <pre><code class="language-java">// 标准库
+List&lt;Integer&gt; list = new ArrayList&lt;&gt;(List.of(1, 2, 3));
+// 错误：自己实现</code></pre>          </div>
+          <div class="takeaway">站在巨人的肩膀上，不要重复造轮子。</div>
+        </div>
+        <div class="item-card" id="item-60">
+          <div class="item-header">
+            <span class="item-num">第 60 条</span>
+            <h3 class="item-title">若需要精确答案就应避免使用 float 和 double 类型</h3>
+          </div>
+          <div class="item-intro">💬 若需要精确答案就应避免使用 float 和 double 类型。</div>
+          <div class="item-content">
+            <ul>              <li><strong>二进制浮点问题</strong>：0.1 + 0.2 != 0.3，浮点数不适合金融货币</li>              <li><strong>解决方案</strong>：用 BigDecimal（性能较差但精确）；或用 int/long 表示分（cents）</li>              <li><strong>何时用 float/double</strong>：科学计算等允许舍入误差的场景</li>              <li><strong>替代品</strong>：货币计算可用 int（cents）或 BigDecimal</li>            </ul>            <pre><code class="language-java">// 危险
+System.out.println(1.03 - 0.42); // 0.6100000000000001
+// 推荐
+BigDecimal result = new BigDecimal(&quot;1.03&quot;).subtract(new BigDecimal(&quot;0.42&quot;));</code></pre>          </div>
+          <div class="takeaway">金融货币用 BigDecimal 或整数表示。</div>
+        </div>
+        <div class="item-card" id="item-61">
+          <div class="item-header">
+            <span class="item-num">第 61 条</span>
+            <h3 class="item-title">基本数据类型优于包装类</h3>
+          </div>
+          <div class="item-intro">💬 基本数据类型优于包装类，避免不必要的自动装箱。</div>
+          <div class="item-content">
+            <ul>              <li><strong>自动装箱成本</strong>：将 long 装箱为 Long 约需 8-20 ns；拆箱类似</li>              <li><strong>反例</strong>：Long sum = 0L; for (long i = 0; i &lt; n; i++) sum += i; 性能比 long sum 差很多</li>              <li><strong>何时用包装类</strong>：作为类型参数（List&lt;Integer&gt;）；反射调用；与 null 关联时</li>              <li><strong>比较陷阱</strong>：包装类的 == 比较的是引用而非值</li>            </ul>            <pre><code class="language-java">// 性能差
+Long sum = 0L;
+for (long i = 0; i &lt; Integer.MAX_VALUE; i++) sum += i;
+// 推荐
+long sum = 0L;
+for (long i = 0; i &lt; Integer.MAX_VALUE; i++) sum += i;</code></pre>          </div>
+          <div class="takeaway">能避免自动装箱就避免。</div>
+        </div>
+        <div class="item-card" id="item-62">
+          <div class="item-header">
+            <span class="item-num">第 62 条</span>
+            <h3 class="item-title">当使用其他类型更合适时应避免使用字符串</h3>
+          </div>
+          <div class="item-intro">💬 当使用其他类型更合适时应避免使用字符串。</div>
+          <div class="item-content">
+            <ul>              <li><strong>字符串滥用</strong>：用 String 表示枚举类型、聚合类型、线程本地变量、密码、JSON 等</li>              <li><strong>问题</strong>：类型不安全、无法在编译期检查、本地化困难、性能差</li>              <li><strong>正确做法</strong>：枚举、领域对象、ThreadLocal&lt;T&gt;、byte[] 存储密码</li>              <li><strong>线程局部</strong>：ThreadLocal&lt;String&gt; 应改为 ThreadLocal&lt;MyContext&gt;</li>            </ul>            <pre><code class="language-java">// 不推荐
+String threadName = ...;
+Thread.currentThread().setName(threadName);
+// 当领域类型出现时，应使用领域对象</code></pre>          </div>
+          <div class="takeaway">字符串是工具，不是万能胶水。</div>
+        </div>
+        <div class="item-card" id="item-63">
+          <div class="item-header">
+            <span class="item-num">第 63 条</span>
+            <h3 class="item-title">当心字符串连接引起的性能问题</h3>
+          </div>
+          <div class="item-intro">💬 当心字符串连接引起的性能问题。</div>
+          <div class="item-content">
+            <ul>              <li><strong>反模式</strong>：String result = s1 + s2 + s3; 在循环中构建字符串</li>              <li><strong>性能差</strong>：每次连接都创建新的 String 对象，时间复杂度 O(n²)</li>              <li><strong>正确做法</strong>：使用 StringBuilder（线程不安全但更快）；多线程场景用 StringBuffer</li>              <li><strong>注意</strong>：JDK 9+ 字符串连接 + 实际是 invokedynamic 实现，但循环中仍应用 StringBuilder</li>            </ul>            <pre><code class="language-java">// 不推荐
+String s = &quot;&quot;;
+for (int i = 0; i &lt; items.size(); i++) s += items.get(i);
+// 推荐
+StringBuilder sb = new StringBuilder();
+for (Item item : items) sb.append(item);
+String s = sb.toString();</code></pre>          </div>
+          <div class="takeaway">大量字符串拼接用 StringBuilder。</div>
+        </div>
+        <div class="item-card" id="item-64">
+          <div class="item-header">
+            <span class="item-num">第 64 条</span>
+            <h3 class="item-title">通过接口引用对象</h3>
+          </div>
+          <div class="item-intro">💬 通过接口引用对象，提高程序灵活性。</div>
+          <div class="item-content">
+            <ul>              <li><strong>反模式</strong>：List&lt;Subscriber&gt; subscribers = new ArrayList&lt;&gt;()</li>              <li><strong>正确做法</strong>：List&lt;Subscriber&gt; subscribers = new ArrayList&lt;&gt;()（已经正确）</li>              <li><strong>何时用具体类</strong>：没有合适的接口时（如 Random、BigInteger）</li>              <li><strong>价值类最佳实践</strong>：总是使用接口类型的参数、返回值、字段、局部变量</li>            </ul>            <pre><code class="language-java">// 错误：依赖实现类
+LinkedList&lt;String&gt; list = new LinkedList&lt;&gt;();
+// 正确：依赖抽象
+List&lt;String&gt; list = new LinkedList&lt;&gt;();</code></pre>          </div>
+          <div class="takeaway">面向接口编程，让实现可替换。</div>
+        </div>
+        <div class="item-card" id="item-65">
+          <div class="item-header">
+            <span class="item-num">第 65 条</span>
+            <h3 class="item-title">接口优于反射</h3>
+          </div>
+          <div class="item-intro">💬 接口优于反射，避免在常规代码中使用反射。</div>
+          <div class="item-content">
+            <ul>              <li><strong>反射的代价</strong>：失去编译期类型检查；性能差；代码笨拙</li>              <li><strong>适用场景</strong>：框架代码、库（依赖注入、JSON 序列化）、JDK 自身</li>              <li><strong>普通代码应避免</strong>：运行时才能知道类名、无法在编译期引用</li>              <li><strong>Native Method 时代</strong>：Java 9+ 已将 JDK 改为用 VarHandle 等替代 Reflection 性能问题</li>            </ul>            <pre><code class="language-java">// 反模式：使用反射调用
+Method m = cls.getMethod(&quot;doSomething&quot;);
+m.invoke(obj);
+// 正模式：直接调用
+obj.doSomething();</code></pre>          </div>
+          <div class="takeaway">普通应用代码应避免使用反射。</div>
+        </div>
+        <div class="item-card" id="item-66">
+          <div class="item-header">
+            <span class="item-num">第 66 条</span>
+            <h3 class="item-title">明智审慎地本地方法</h3>
+          </div>
+          <div class="item-intro">💬 明智审慎地使用本地方法（native methods）。</div>
+          <div class="item-content">
+            <ul>              <li><strong>本地方法代价</strong>：JNI 调用成本高；丧失可移植性；调试困难；内存泄漏风险</li>              <li><strong>现代情况</strong>：JVM 性能优异，Java 替代 C++ 实现本地方法必要性降低</li>              <li><strong>可接受场景</strong>：访问特定平台特性（注册表、文件系统）；本地遗留代码</li>              <li><strong>JDK 9+</strong>：改善了 Object 类的本地方法实现</li>            </ul>            <pre><code class="language-java">// 谨慎使用
+private native void registerNatives();
+static { registerNatives(); }</code></pre>          </div>
+          <div class="takeaway">JNI 不是性能优化的首选方案。</div>
+        </div>
+        <div class="item-card" id="item-67">
+          <div class="item-header">
+            <span class="item-num">第 67 条</span>
+            <h3 class="item-title">明智审慎地进行优化</h3>
+          </div>
+          <div class="item-intro">💬 明智审慎地进行优化，Knuth 的经典格言。</div>
+          <div class="item-content">
+            <ul>              <li><strong>原则 1</strong>：不要因为性能牺牲好的设计</li>              <li><strong>原则 2</strong>：先写清晰正确的代码，再优化（如果必要）</li>              <li><strong>原则 3</strong>：通过 profiling 找到真正的瓶颈，不要凭直觉优化</li>              <li><strong>设计层面</strong>：好的 API 设计决定性能上限</li>            </ul>            <pre><code class="language-java">// 错误：一开始就过度优化
+// 正确：先写清晰代码</code></pre>          </div>
+          <div class="takeaway">优化是最后一步，而且要有数据支撑。</div>
+        </div>
+        <div class="item-card" id="item-68">
+          <div class="item-header">
+            <span class="item-num">第 68 条</span>
+            <h3 class="item-title">遵守被广泛认可的命名约定</h3>
+          </div>
+          <div class="item-intro">💬 遵守被广泛认可的命名约定，让代码如文章般自然。</div>
+          <div class="item-content">
+            <ul>              <li><strong>包名</strong>：小写、点分隔、反域名开头</li>              <li><strong>类名/接口名</strong>：UpperCamelCase</li>              <li><strong>方法名/字段名</strong>：lowerCamelCase</li>              <li><strong>常量</strong>：UPPER_SNAKE_CASE</li>              <li><strong>类型参数</strong>：T（任意）、E（元素）、K（key）、V（value）、X（异常）、R（返回类型）</li>            </ul>            <pre><code class="language-java">public class HashMap&lt;K, V&gt; { ... }
+public static final int MAX_VALUE = 100;</code></pre>          </div>
+          <div class="takeaway">命名是代码可读性的核心。</div>
+        </div>      </section>
+      <section class="chapter-section" id="ch9">
+        <div class="chapter-header">
+          <span class="chapter-icon">⚠️</span>
+          <h2 class="chapter-title">第9章 异常</h2>
+        </div>
+        <p class="chapter-desc">异常处理的准则</p>
+        <div class="chapter-stats">📋 共 9 条</div>
+        <div class="item-card" id="item-69">
+          <div class="item-header">
+            <span class="item-num">第 69 条</span>
+            <h3 class="item-title">只针对异常的情况下才使用异常</h3>
+          </div>
+          <div class="item-intro">💬 只针对异常的情况下才使用异常，不要用于正常控制流。</div>
+          <div class="item-content">
+            <ul>              <li><strong>反模式</strong>：用异常进行循环退出、用 try-catch 实现条件判断</li>              <li><strong>问题</strong>：异常开销大（stack trace）、代码意图模糊、难以优化</li>              <li><strong>正确做法</strong>：状态测试方法（state-testing）、Optional、控制流 API</li>              <li><strong>何时用异常</strong>：真正的异常情况：文件不存在、网络中断</li>            </ul>            <pre><code class="language-java">// 错误：用异常控制流
+try { iterator.next(); } catch (NoSuchElementException e) { ... }
+// 正确：hasNext() 测试
+if (iterator.hasNext()) { iterator.next(); }</code></pre>          </div>
+          <div class="takeaway">异常是异常的机制，不是控制流的工具。</div>
+        </div>
+        <div class="item-card" id="item-70">
+          <div class="item-header">
+            <span class="item-num">第 70 条</span>
+            <h3 class="item-title">对可恢复的情况使用受检异常，对编程错误使用运行时异常</h3>
+          </div>
+          <div class="item-intro">💬 对可恢复的情况使用受检异常，对编程错误使用运行时异常。</div>
+          <div class="item-content">
+            <ul>              <li><strong>三种异常</strong>：受检异常（Exception）、运行时异常（RuntimeException）、错误（Error）</li>              <li><strong>受检异常</strong>：调用方应恢复的情况（IOException）；强迫处理</li>              <li><strong>运行时异常</strong>：编程错误（NullPointerException、IndexOutOfBoundsException）</li>              <li><strong>错误（Error）</strong>：JVM 资源不足等不可恢复情况</li>            </ul>            <pre><code class="language-java">// 受检异常
+public void readFile() throws IOException { ... }
+// 运行时异常（编程错误）
+public Object get(int i) { /* IndexOutOfBoundsException if i &lt; 0 || i &gt;= size */ }</code></pre>          </div>
+          <div class="takeaway">异常类型传递了错误恢复的可行性信号。</div>
+        </div>
+        <div class="item-card" id="item-71">
+          <div class="item-header">
+            <span class="item-num">第 71 条</span>
+            <h3 class="item-title">避免不必要的使用受检异常</h3>
+          </div>
+          <div class="item-intro">💬 避免不必要的使用受检异常，减轻 API 负担。</div>
+          <div class="item-content">
+            <ul>              <li><strong>问题</strong>：受检异常强制处理，链式调用中破坏 stream/lambda 流</li>              <li><strong>解决思路</strong>：返回一个 Optional；提供无异常版本的方法（tryXxx）</li>              <li><strong>何时保留</strong>：调用方确实能从异常恢复且值得付出 API 复杂度的代价</li>              <li><strong>重构方向</strong>：当方法只抛出一个受检异常时，可考虑返回 Optional</li>            </ul>            <pre><code class="language-java">// 改为 Optional
+public Optional&lt;Foo&gt; tryReadFile() { ... }
+// 而不是
+public Foo readFile() throws IOException { ... }</code></pre>          </div>
+          <div class="takeaway">不要轻易让方法 throws，多用 Optional。</div>
+        </div>
+        <div class="item-card" id="item-72">
+          <div class="item-header">
+            <span class="item-num">第 72 条</span>
+            <h3 class="item-title">优先使用标准的异常</h3>
+          </div>
+          <div class="item-intro">💬 优先使用标准的异常，避免自定义异常。</div>
+          <div class="item-content">
+            <ul>              <li><strong>常用异常</strong>：
+  - IllegalArgumentException - 参数值不当
+  - IllegalStateException - 状态不适当
+  - NullPointerException - 参数 null
+  - IndexOutOfBoundsException - 索引越界
+  - ConcurrentModificationException - 并发修改
+  - UnsupportedOperationException - 不支持的操作</li>              <li><strong>何时自定义异常</strong>：需要传达特定业务语义、捕获后需要专门处理</li>              <li><strong>复用原则</strong>：能复用就复用，自定义异常增加学习成本</li>            </ul>            <pre><code class="language-java">if (count &gt; MAX) throw new IllegalArgumentException(&quot;count &gt; MAX&quot;);
+if (state != READY) throw new IllegalStateException(&quot;not ready&quot;);</code></pre>          </div>
+          <div class="takeaway">先看 JDK 是否已提供合适的异常类型。</div>
+        </div>
+        <div class="item-card" id="item-73">
+          <div class="item-header">
+            <span class="item-num">第 73 条</span>
+            <h3 class="item-title">抛出与抽象对应的异常</h3>
+          </div>
+          <div class="item-intro">💬 抛出与抽象对应的异常，让异常与抽象层次一致。</div>
+          <div class="item-content">
+            <ul>              <li><strong>问题</strong>：底层异常直接抛出暴露实现细节，破坏抽象</li>              <li><strong>解决</strong>：异常转译（exception translation）</li>              <li><strong>高级形式</strong>：异常链（exception chaining），保留原始 cause</li>              <li><strong>何时用</strong>：底层抽象无法解决时；不要滥用，否则会变成 try-catch-and-rethrow 循环</li>            </ul>            <pre><code class="language-java">try {
+    // 底层操作
+} catch (LowerLevelException e) {
+    throw new HigherLevelException(&quot;error&quot;, e);
+}</code></pre>          </div>
+          <div class="takeaway">异常传播应与抽象层级保持一致。</div>
+        </div>
+        <div class="item-card" id="item-74">
+          <div class="item-header">
+            <span class="item-num">第 74 条</span>
+            <h3 class="item-title">每个方法抛出的异常都需要创建文档</h3>
+          </div>
+          <div class="item-intro">💬 每个方法抛出的异常都需要创建文档。</div>
+          <div class="item-content">
+            <ul>              <li><strong>价值</strong>：让调用方明确知道需要处理什么异常</li>              <li><strong>Javadoc 标签</strong>：@throws 描述异常类型、触发条件、恢复策略</li>              <li><strong>原则</strong>：每个 throws 子句声明的异常都要在 javadoc 中说明</li>              <li><strong>重要</strong>：也要为 RuntimeException 编写文档（即使不显式声明）</li>            </ul>            <pre><code class="language-java">/**
+ * @throws IllegalArgumentException 如果 index 越界
+ * @throws NullPointerException 如果 list 为 null
+ */
+public E get(int index) { ... }</code></pre>          </div>
+          <div class="takeaway">文档异常如同文档方法签名。</div>
+        </div>
+        <div class="item-card" id="item-75">
+          <div class="item-header">
+            <span class="item-num">第 75 条</span>
+            <h3 class="item-title">在细节消息中包含失败一捕获信息</h3>
+          </div>
+          <div class="item-intro">💬 在细节消息中包含失败捕获信息，让错误易诊断。</div>
+          <div class="item-content">
+            <ul>              <li><strong>目的</strong>：异常消息应包含所有相关参数和字段值</li>              <li><strong>示例</strong>：IndexOutOfBoundsException 应包含 index、size、上界下界</li>              <li><strong>不要包含</strong>：敏感信息（密码）、堆栈跟踪（已自动生成）</li>              <li><strong>构造方法</strong>：可以提供构造方法接收所有失败相关字段</li>            </ul>            <pre><code class="language-java">public IndexOutOfBoundsException(int index) {
+    super(&quot;Index: &quot; + index);
+}
+// 或更详细
+public IndexOutOfBoundsException(int lowerBound, int upperBound, int index) {
+    super(&quot;Index: &quot; + index + &quot;, Size: &quot; + (upperBound - lowerBound));
+}</code></pre>          </div>
+          <div class="takeaway">异常信息应包含足够诊断的上下文。</div>
+        </div>
+        <div class="item-card" id="item-76">
+          <div class="item-header">
+            <span class="item-num">第 76 条</span>
+            <h3 class="item-title">保持失败原子性</h3>
+          </div>
+          <div class="item-intro">💬 保持失败原子性，失败时对象应保持调用前状态。</div>
+          <div class="item-content">
+            <ul>              <li><strong>概念</strong>：方法抛出异常后，对象应保持在调用前状态（不应被破坏）</li>              <li><strong>实现方式</strong>：先检查参数、调整计算顺序、临时副本、写时复制（CopyOnWrite）</li>              <li><strong>不可变对象天然具备</strong>：如 Period、String</li>              <li><strong>价值</strong>：易于调试、易于恢复</li>            </ul>            <pre><code class="language-java">public void addAll(Collection&lt;? extends E&gt; c) {
+    Object[] oldElements = elements.clone();
+    // 尝试添加
+    elements = Arrays.asList(oldElements).plus(c); // 失败不会影响
+}</code></pre>          </div>
+          <div class="takeaway">对象要么完全成功，要么保持原样。</div>
+        </div>
+        <div class="item-card" id="item-77">
+          <div class="item-header">
+            <span class="item-num">第 77 条</span>
+            <h3 class="item-title">不要忽略异常</h3>
+          </div>
+          <div class="item-intro">💬 不要忽略异常，catch 块至少应有注释解释。</div>
+          <div class="item-content">
+            <ul>              <li><strong>反模式</strong>：catch (Exception e) {} 空 catch 块</li>              <li><strong>后果</strong>：异常吞没，程序可能持续错误状态而无人知晓</li>              <li><strong>最低标准</strong>：在 catch 块中写明为什么可以安全忽略</li>              <li><strong>何时忽略</strong>：终止操作、FileNotFoundException 时使用默认配置等</li>            </ul>            <pre><code class="language-java">// 错误
+try { ... } catch (Exception e) {}
+// 最起码的注释
+try { ... } catch (UnknownHostException e) {
+    // 测试环境，无法解析是正常的
+}</code></pre>          </div>
+          <div class="takeaway">忽略异常是 bug 滋生的温床。</div>
+        </div>      </section>
+      <section class="chapter-section" id="ch10">
+        <div class="chapter-header">
+          <span class="chapter-icon">🔀</span>
+          <h2 class="chapter-title">第10章 并发</h2>
+        </div>
+        <p class="chapter-desc">多线程编程的关键点</p>
+        <div class="chapter-stats">📋 共 7 条</div>
+        <div class="item-card" id="item-78">
+          <div class="item-header">
+            <span class="item-num">第 78 条</span>
+            <h3 class="item-title">同步访问共享的可变数据</h3>
+          </div>
+          <div class="item-intro">💬 同步访问共享的可变数据，避免内存可见性问题。</div>
+          <div class="item-content">
+            <ul>              <li><strong>可见性</strong>：一个线程修改共享数据后，其他线程必须能看见</li>              <li><strong>synchronized/volatile</strong>：保证可见性；volatile 仅保证可见性，synchronized 还保证原子性</li>              <li><strong>正确同步</strong>：读写都需同步（不仅是写）</li>              <li><strong>避免活跃性问题</strong>：不要在同步块中调用外部方法</li>            </ul>            <pre><code class="language-java">private static volatile int nextSerialNumber = 0;
+public static int generateSerialNumber() {
+    return nextSerialNumber++;
+}</code></pre>          </div>
+          <div class="takeaway">共享可变数据是并发的最大隐患。</div>
+        </div>
+        <div class="item-card" id="item-79">
+          <div class="item-header">
+            <span class="item-num">第 79 条</span>
+            <h3 class="item-title">避免过度同步</h3>
+          </div>
+          <div class="item-intro">💬 避免过度同步，控制在同步块中做的工作。</div>
+          <div class="item-content">
+            <ul>              <li><strong>死锁</strong>：多个锁、循环等待；Java 不保证避免死锁</li>              <li><strong>性能成本</strong>：同步阻止 JVM 优化；锁争用降低吞吐</li>              <li><strong>正确做法</strong>：同步块尽量小、避免在同步中调用外部方法（开放调用）</li>              <li><strong>设计层面</strong>：用并发集合（ConcurrentHashMap）替代同步块</li>            </ul>            <pre><code class="language-java">// 推荐：开放调用
+public void doWork() {
+    synchronized (lock) {
+        // 快速修改共享状态
+    }
+    doExternalCall(); // 在锁外调用
+}</code></pre>          </div>
+          <div class="takeaway">同步是为了安全，不是为了保险。</div>
+        </div>
+        <div class="item-card" id="item-80">
+          <div class="item-header">
+            <span class="item-num">第 80 条</span>
+            <h3 class="item-title">executor 、task 和 stream 优先于线程</h3>
+          </div>
+          <div class="item-intro">💬 executor、task 和 stream 优先于线程，Java 已为你准备好了一切。</div>
+          <div class="item-content">
+            <ul>              <li><strong>Executors 工厂</strong>：newFixedThreadPool、newCachedThreadPool、newScheduledThreadPool</li>              <li><strong>Future</strong>：表示异步计算的结果</li>              <li><strong>ExecutorService</strong>：管理线程生命周期；建议使用 ThreadPoolExecutor 自定义</li>              <li><strong>并行 Stream</strong>：fork-join 池；适合计算密集型任务</li>            </ul>            <pre><code class="language-java">ExecutorService exec = Executors.newFixedThreadPool(4);
+exec.execute(() -&gt; { /* task */ });</code></pre>          </div>
+          <div class="takeaway">使用 Executors 而不是直接创建 Thread。</div>
+        </div>
+        <div class="item-card" id="item-81">
+          <div class="item-header">
+            <span class="item-num">第 81 条</span>
+            <h3 class="item-title">并发工具优于 wait 和 notify</h3>
+          </div>
+          <div class="item-intro">💬 并发工具优于 wait 和 notify。</div>
+          <div class="item-content">
+            <ul>              <li><strong>高级工具</strong>：ConcurrentHashMap、ConcurrentLinkedQueue、BlockingQueue、CountDownLatch、Semaphore、CyclicBarrier、Phaser</li>              <li><strong>java.util.concurrent</strong>：ConcurrentHashMap 性能比 Hashtable 显著提升</li>              <li><strong>wait/notify 的陷阱</strong>：必须在同步块中调用；易错；难以维护</li>              <li><strong>何时仍用 wait/notify</strong>：维护遗留代码、构建底层同步原语</li>            </ul>            <pre><code class="language-java">// 推荐：使用 ConcurrentHashMap
+ConcurrentMap&lt;K, V&gt; map = new ConcurrentHashMap&lt;&gt;();
+// 避免：使用 Hashtable 或 Collections.synchronizedMap</code></pre>          </div>
+          <div class="takeaway">优先使用 java.util.concurrent 中的高级并发工具。</div>
+        </div>
+        <div class="item-card" id="item-82">
+          <div class="item-header">
+            <span class="item-num">第 82 条</span>
+            <h3 class="item-title">文档应包含线程安全属性</h3>
+          </div>
+          <div class="item-intro">💬 文档应包含线程安全属性，让 API 调用者明确知道同步责任。</div>
+          <div class="item-content">
+            <ul>              <li><strong>同步级别</strong>：不可变、线程安全、有条件线程安全、线程不安全、线程对立</li>              <li><strong>Javadoc 标注</strong>：用 @threadSafe、@NotThreadSafe 标注</li>              <li><strong>价值</strong>：调用方知道是否需要外部同步</li>              <li><strong>示例</strong>：String、Integer 是不可变线程安全；ArrayList 非线程安全</li>            </ul>            <pre><code class="language-java">/**
+ * @implNote 此实现是线程安全的。
+ * @see java.util.Collections#synchronizedMap
+ */
+public class ConcurrentHashMap&lt;K, V&gt; { ... }</code></pre>          </div>
+          <div class="takeaway">线程安全是 API 契约的一部分。</div>
+        </div>
+        <div class="item-card" id="item-83">
+          <div class="item-header">
+            <span class="item-num">第 83 条</span>
+            <h3 class="item-title">明智审慎的使用延迟初始化</h3>
+          </div>
+          <div class="item-intro">💬 明智审慎地使用延迟初始化，避免过早优化。</div>
+          <div class="item-content">
+            <ul>              <li><strong>适用场景</strong>：仅在确实需要时才初始化；且会显著提升启动速度、减少内存占用</li>              <li><strong>静态字段</strong>：用 Lazy initialization holder class idiom（内部类按需加载）</li>              <li><strong>实例字段</strong>：用双重检查模式 + volatile，注意 1.4 之前的语义问题</li>              <li><strong>常见反模式</strong>：在性能关键场景使用不必要的延迟初始化</li>            </ul>            <pre><code class="language-java">// Holder class idiom - 推荐
+private static class FieldHolder {
+    static final FieldType field = computeFieldValue();
+}
+private static FieldType getField() { return FieldHolder.field; }</code></pre>          </div>
+          <div class="takeaway">延迟初始化是双刃剑，谨慎使用。</div>
+        </div>
+        <div class="item-card" id="item-84">
+          <div class="item-header">
+            <span class="item-num">第 84 条</span>
+            <h3 class="item-title">不要依赖线程调度器</h3>
+          </div>
+          <div class="item-intro">💬 不要依赖线程调度器，编写与平台无关的并发代码。</div>
+          <div class="item-content">
+            <ul>              <li><strong>反模式</strong>：用 Thread.yield、线程优先级、调整线程数来&quot;调优&quot;性能</li>              <li><strong>问题</strong>：JVM 实现差异大；行为不可预测</li>              <li><strong>正确做法</strong>：让 JVM 决定线程调度；通过修改类结构、并发度解决问题</li>              <li><strong>原则</strong>：程序应在不同硬件、JVM 下表现一致</li>            </ul>            <pre><code class="language-java">// 错误
+Thread.yield();
+Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+// 正确：让 JVM 决定</code></pre>          </div>
+          <div class="takeaway">让线程调度成为可移植实现的最后手段。</div>
+        </div>      </section>
+      <section class="chapter-section" id="ch11">
+        <div class="chapter-header">
+          <span class="chapter-icon">💾</span>
+          <h2 class="chapter-title">第11章 序列化</h2>
+        </div>
+        <p class="chapter-desc">对象序列化的注意事项</p>
+        <div class="chapter-stats">📋 共 6 条</div>
+        <div class="item-card" id="item-85">
+          <div class="item-header">
+            <span class="item-num">第 85 条</span>
+            <h3 class="item-title">优先选择 Java 序列化的替代方案</h3>
+          </div>
+          <div class="item-intro">💬 优先选择 Java 序列化的替代方案，反序列化是巨大的攻击面。</div>
+          <div class="item-content">
+            <ul>              <li><strong>风险</strong>：反序列化是&quot;魔法构造函数&quot;，可执行任意代码（RCE）</li>              <li><strong>替代方案</strong>：
+  - JSON（Jackson、Gson）
+  - Protocol Buffers
+  - Avro、Thrift、MessagePack
+  - 跨语言 RPC 框架</li>              <li><strong>何时仍用序列化</strong>：仅当必须与 Java 序列化 API 交互的遗留代码</li>              <li><strong>绝不要反序列化不可信数据</strong></li>            </ul>            <pre><code class="language-java">// 推荐：使用 JSON
+ObjectMapper mapper = new ObjectMapper();
+Foo foo = mapper.readValue(json, Foo.class);</code></pre>          </div>
+          <div class="takeaway">新项目不要用 Java 序列化。</div>
+        </div>
+        <div class="item-card" id="item-86">
+          <div class="item-header">
+            <span class="item-num">第 86 条</span>
+            <h3 class="item-title">非常谨慎地实现 Serializable</h3>
+          </div>
+          <div class="item-intro">💬 非常谨慎地实现 Serializable，实现成本远高于想象。</div>
+          <div class="item-content">
+            <ul>              <li><strong>代价</strong>：
+  - 失去灵活性：内部表示变更会破坏序列化兼容
+  - 增加 bug 风险：构造方法不会执行、transient 字段处理
+  - 安全风险：反序列化攻击
+  - 测试成本：跨版本兼容性</li>              <li><strong>何时实现</strong>：明确需要跨 JVM 传递对象、值对象、配置对象</li>              <li><strong>何时不实现</strong>：单例、继承设计的类、有状态的瞬态对象</li>              <li><strong>特殊考虑</strong>：UID（serialVersionUID）管理</li>            </ul>            <pre><code class="language-java">public class Foo implements Serializable {
+    private static final long serialVersionUID = 1L;
+    // 字段
+}</code></pre>          </div>
+          <div class="takeaway">默认不要实现 Serializable，需要时深思熟虑。</div>
+        </div>
+        <div class="item-card" id="item-87">
+          <div class="item-header">
+            <span class="item-num">第 87 条</span>
+            <h3 class="item-title">考虑使用自定义的序列化形式</h3>
+          </div>
+          <div class="item-intro">💬 考虑使用自定义的序列化形式，让序列化反映对象结构。</div>
+          <div class="item-content">
+            <ul>              <li><strong>默认序列化问题</strong>：
+  - 暴露内部结构
+  - 体积大
+  - 可能违反约束（如不变量）</li>              <li><strong>自定义方法</strong>：writeObject、readObject、writeReplace、readResolve</li>              <li><strong>何时使用</strong>：默认序列化形式不能合理表示对象的逻辑状态时</li>              <li><strong>@serial 标签</strong>：标记文档化字段</li>            </ul>            <pre><code class="language-java">private void writeObject(ObjectOutputStream s) throws IOException {
+    s.defaultWriteObject();
+    s.writeInt(field);
+}
+private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+    s.defaultReadObject();
+    field = s.readInt();
+}</code></pre>          </div>
+          <div class="takeaway">如果默认序列化不合理，自定义序列化形式。</div>
+        </div>
+        <div class="item-card" id="item-88">
+          <div class="item-header">
+            <span class="item-num">第 88 条</span>
+            <h3 class="item-title">保护性的编写 readObject 方法</h3>
+          </div>
+          <div class="item-intro">💬 保护性的编写 readObject 方法，避免反序列化的潜在风险。</div>
+          <div class="item-content">
+            <ul>              <li><strong>问题</strong>：readObject 行为类似构造方法但不调用构造方法</li>              <li><strong>关键</strong>：用 @throws 标注 readObject 抛出的异常；不变量在 readObject 结束时必须成立</li>              <li><strong>禁止</strong>：readObject 中调用可被重写的方法</li>              <li><strong>反序列化攻击</strong>：不可信数据 + 危险方法 = RCE，使用 ObjectInputFilter 防护</li>            </ul>            <pre><code class="language-java">private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+    s.defaultReadObject();
+    // 验证不变量
+    if (start.compareTo(end) &gt; 0) throw new InvalidObjectException(&quot;...&quot;);
+}</code></pre>          </div>
+          <div class="takeaway">readObject 等同于构造方法，必须谨慎实现。</div>
+        </div>
+        <div class="item-card" id="item-89">
+          <div class="item-header">
+            <span class="item-num">第 89 条</span>
+            <h3 class="item-title">对于实例控制，枚举类型优于 readResolve</h3>
+          </div>
+          <div class="item-intro">💬 对于实例控制，枚举类型优于 readResolve。</div>
+          <div class="item-content">
+            <ul>              <li><strong>readResolve 作用</strong>：在反序列化后返回替代对象，实现 Singleton 持久性</li>              <li><strong>风险</strong>：所有实例字段都应是 transient；readResolve 本身需要实现；容易遗漏</li>              <li><strong>枚举优势</strong>：自动实现单例、线程安全、序列化机制由 JVM 保证</li>              <li><strong>何时用 readResolve</strong>：当不能使用枚举（如需在编译时引用类）时</li>            </ul>            <pre><code class="language-java">// 推荐
+public enum Singleton implements Serializable { INSTANCE; }
+// 退而求其次
+private Object readResolve() { return INSTANCE; }</code></pre>          </div>
+          <div class="takeaway">单例模式首选枚举，readResolve 是次选。</div>
+        </div>
+        <div class="item-card" id="item-90">
+          <div class="item-header">
+            <span class="item-num">第 90 条</span>
+            <h3 class="item-title">考虑用序列化代理代替序列化实例</h3>
+          </div>
+          <div class="item-intro">💬 考虑用序列化代理代替序列化实例，保护不可变性并防止攻击。</div>
+          <div class="item-content">
+            <ul>              <li><strong>序列化代理模式</strong>：编写私有静态内部类（serialization proxy），仅保存对象逻辑状态</li>              <li><strong>writeReplace</strong>：返回代理对象；readObject：调用代理的 readResolve 返回真实对象</li>              <li><strong>优势</strong>：
+  - 防止伪造攻击
+  - 防止盗用构造函数
+  - 不必担心不变量与字段约束
+  - 与客户端扩展兼容</li>              <li><strong>代价</strong>：性能略低（多一次转换）</li>            </ul>            <pre><code class="language-java">private static class SerializationProxy implements Serializable {
+    private final Date start, end;
+    SerializationProxy(Period p) { this.start = p.start; this.end = p.end; }
+    private Object readResolve() { return new Period(start, end); }
+}
+private Object writeReplace() { return new SerializationProxy(this); }</code></pre>          </div>
+          <div class="takeaway">需要实现 Serializable 时，序列化代理是最安全的方式。</div>
+        </div>      </section>
+    </div>
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+  </main>
+</div>
+<script>
+function toggleSection(id) {
+  const sec = document.querySelector(`[data-section="${id}"]`);
+  if (sec) sec.classList.toggle('expanded');
+}
+
+function expandSectionForItem(itemId) {
+  // Find which section contains the item
+  const link = document.querySelector(`[data-item="${itemId}"]`);
+  if (link) {
+    const section = link.closest('.nav-section');
+    if (section && !section.classList.contains('expanded')) {
+      section.classList.add('expanded');
+    }
+  }
+}
+
+function setActiveItem(itemId) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const link = document.querySelector(`[data-item="${itemId}"]`);
+  if (link) link.classList.add('active');
+}
+
+function navigateTo(event, itemId) {
+  // Mobile: close sidebar
+  if (window.innerWidth <= 900) {
+    closeSidebar();
+  }
+  setActiveItem(itemId);
+  expandSectionForItem(itemId);
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Scroll spy
+const itemCards = document.querySelectorAll('.item-card');
+const backToTop = document.getElementById('backToTop');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      const itemId = id.replace('item-', '');
+      setActiveItem(parseInt(itemId));
+      expandSectionForItem(parseInt(itemId));
+    }
+  });
+}, { rootMargin: '-20% 0px -60% 0px' });
+
+itemCards.forEach(card => observer.observe(card));
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) backToTop.classList.add('show');
+  else backToTop.classList.remove('show');
+});
+
+// Open first section by default for visibility
+// Sections start collapsed per requirement
+</script>
+</body>
+</html>

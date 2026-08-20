@@ -1,0 +1,2338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《Linux内核设计与实现》知识脑图</title>
+<style>
+:root {
+  color-scheme: light;
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1e40af;
+  --accent: #f59e0b;
+  --bg: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-hover: #eff6ff;
+  --bg-active: #dbeafe;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+  --radius: 8px;
+  --radius-sm: 4px;
+  --sidebar-w: 320px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Layout */
+.layout { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: var(--shadow);
+}
+
+.sidebar-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg-sidebar);
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 10px;
+}
+
+.brand-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.search-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: var(--text);
+}
+.search-box .ic { color: var(--text-muted); font-size: 14px; }
+
+.toolbar {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.toolbar button {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toolbar button:hover { background: var(--bg-hover); color: var(--primary); border-color: var(--primary-light); }
+
+/* TOC */
+.toc {
+  padding: 8px 0 80px;
+}
+
+.toc-list, .toc-sub {
+  list-style: none;
+}
+.toc-item { position: relative; }
+
+.toc-row {
+  display: flex;
+  align-items: center;
+  padding: 7px 14px 7px 12px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--text);
+  border-left: 3px solid transparent;
+  transition: background 0.12s;
+  user-select: none;
+}
+.toc-row:hover { background: var(--bg-hover); }
+.toc-row.active {
+  background: var(--bg-active);
+  border-left-color: var(--primary);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.toc-toggle {
+  width: 16px; height: 16px;
+  margin-right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 10px;
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+.toc-toggle.empty { visibility: hidden; }
+.toc-item.open > .toc-row > .toc-toggle { transform: rotate(90deg); }
+.toc-item.no-children > .toc-row > .toc-toggle { opacity: 0.3; }
+
+.toc-icon {
+  margin-right: 8px;
+  font-size: 13px;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.toc-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Sub lists */
+.toc-sub {
+  display: none;
+  background: #fafbfc;
+}
+.toc-item.open > .toc-sub { display: block; }
+
+.toc-sub .toc-row {
+  padding-left: 38px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.toc-sub .toc-sub .toc-row { padding-left: 60px; font-size: 12.5px; }
+
+/* Main content */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  padding: 32px 56px 80px;
+  max-width: 1100px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.breadcrumb span.sep { color: var(--text-light); }
+.breadcrumb a { color: var(--text-muted); }
+.breadcrumb a:hover { color: var(--primary); }
+
+.cover {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 40px 36px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -20%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.cover h1 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.cover .sub {
+  font-size: 16px;
+  opacity: 0.92;
+  margin-bottom: 20px;
+  position: relative;
+}
+.cover .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 13px;
+  opacity: 0.85;
+  position: relative;
+}
+.cover .meta span::before { content: "•"; margin-right: 8px; opacity: 0.6; }
+.cover .meta span:first-child::before { display: none; }
+
+.chapter {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+
+.chapter-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--bg-active);
+}
+.chapter-num {
+  display: inline-block;
+  padding: 2px 10px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+}
+.chapter-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  letter-spacing: 0.3px;
+}
+.chapter-tagline {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-style: italic;
+  margin: 8px 0 18px;
+  padding-left: 12px;
+  border-left: 3px solid var(--accent);
+}
+
+.section { margin: 20px 0; }
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 18px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::before {
+  content: '';
+  width: 4px; height: 16px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+.subsection { margin: 14px 0 14px 18px; }
+.subsection-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.subsection-title::before {
+  content: '▸';
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.content { margin: 8px 0 8px 12px; }
+.content p { margin-bottom: 8px; color: var(--text); }
+.content ul { list-style: none; padding-left: 0; margin: 6px 0; }
+.content li {
+  position: relative;
+  padding: 4px 0 4px 20px;
+  font-size: 14px;
+  color: var(--text);
+}
+.content li::before {
+  content: '';
+  position: absolute;
+  left: 6px; top: 13px;
+  width: 6px; height: 6px;
+  background: var(--primary-light);
+  border-radius: 50%;
+}
+
+.highlight {
+  background: linear-gradient(transparent 60%, #fef3c7 60%);
+  padding: 0 2px;
+  font-weight: 600;
+}
+
+.code {
+  background: #f1f5f9;
+  border-left: 3px solid var(--primary);
+  padding: 10px 14px;
+  margin: 10px 0;
+  border-radius: var(--radius-sm);
+  font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  color: #0f172a;
+  overflow-x: auto;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--bg-active);
+  color: var(--primary-dark);
+  font-size: 12px;
+  border-radius: 10px;
+  margin: 0 4px 4px 0;
+  font-weight: 500;
+}
+
+.note {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 4px solid var(--accent);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  margin: 10px 0;
+  font-size: 13.5px;
+  color: #78350f;
+}
+.note .label {
+  font-weight: 700;
+  color: #92400e;
+  margin-right: 6px;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-strong), transparent);
+  margin: 18px 0;
+}
+
+/* Back to top */
+#backToTop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 44px; height: 44px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+  z-index: 50;
+}
+#backToTop.show { opacity: 1; visibility: visible; }
+#backToTop:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+/* Scrollbar */
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background: var(--text-light); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.2s; }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 20px; }
+  .menu-btn { display: flex !important; }
+}
+
+.menu-btn {
+  display: none;
+  position: fixed;
+  top: 16px; left: 16px;
+  width: 40px; height: 40px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+}
+
+footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+</style>
+</head>
+<body>
+
+<button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<div class="layout">
+  <!-- 侧边导航 -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon">LKD</div>
+        <div>Linux 内核设计与实现</div>
+      </div>
+      <div class="search-box">
+        <span class="ic">🔍</span>
+        <input type="text" id="searchInput" placeholder="搜索章节...">
+      </div>
+      <div class="toolbar">
+        <button onclick="expandAll()">全部展开</button>
+        <button onclick="collapseAll()">全部折叠</button>
+      </div>
+    </div>
+    <nav class="toc" id="toc">
+      <ul class="toc-list" id="tocRoot"></ul>
+    </nav>
+  </aside>
+
+  <!-- 主内容 -->
+  <main class="main" id="main">
+
+    <section class="cover">
+      <h1>Linux 内核设计与实现</h1>
+      <div class="sub">原书第3版 · Linux Kernel Development Third Edition</div>
+      <div class="meta">
+        <span>作者：(美) Robert Love</span>
+        <span>译者：陈莉君 · 康华</span>
+        <span>基于内核：Linux 2.6.34</span>
+        <span>共 20 章</span>
+      </div>
+    </section>
+
+    <div class="breadcrumb">
+      <a href="#cover">首页</a>
+      <span class="sep">›</span>
+      <span id="crumb-current">章节内容</span>
+    </div>
+
+    <div id="content"><!-- 章节内容由 JS 注入 --></div>
+
+    <footer>
+      本知识脑图根据《Linux 内核设计与实现（原书第3版）》整理 · 仅供学习参考
+    </footer>
+  </main>
+</div>
+
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+/* ============================================================
+   知识脑图数据：完整覆盖 20 章全部小节
+   ============================================================ */
+const MIND_DATA = [
+  {
+    id: 'ch1', icon: '🐧', title: '第 1 章　Linux 内核简介',
+    summary: '本章从历史的角度介绍 Linux 内核，包括其与 Unix 的关系、与其他操作系统的差异，以及内核的开发模式。',
+    sections: [
+      { title: '1.1　Unix 的历史',
+        blocks: [
+          { p: 'Unix 诞生于 1969 年贝尔实验室，Ken Thompson 与 Dennis Ritchie 在 PDP-7 上开发了第一个版本。1973 年用 C 语言重写后，Unix 摆脱了硬件依赖，迅速在大学与研究机构传播。' },
+          { p: 'Unix 设计的几大支柱：' },
+          { ul: [
+            '简洁至上：提供几百个系统调用，每个系统调用功能明确、组合灵活。',
+            '一切皆文件：把几乎所有资源抽象为文件对象（设备、管道、socket 也是文件）。',
+            '进程创建迅速：fork + exec 让任务并行化非常自然。',
+            '稳定的 C 接口：用户程序不随内核升级而失效。'
+          ] },
+          { p: '这种"小而美"的设计哲学深刻影响了后来所有类 Unix 系统，包括 Linux。' }
+        ]
+      },
+      { title: '1.2　追寻 Linus 足迹：Linux 简介',
+        blocks: [
+          { p: '1991 年，Linus Torvalds 在赫尔辛基大学读书时，为了运行 Unix 类系统而开发了自己的内核，并以 Minix 为参考。最初只是个人项目，但通过 GNU 工具链（gcc、bash、glibc）的拼接，Linux 迅速成长为完整的类 Unix 系统。' },
+          { p: 'Linux 的关键时间节点：' },
+          { ul: [
+            '1991.10：Linus 在 comp.os.minix 新闻组公开 0.02 版。',
+            '1994.3：1.0 发布，开始支持网络协议栈。',
+            '1996：2.0 发布，SMP 与多平台支持。',
+            '2003：2.6 内核主线发布，引入 O(1) 调度、preempt、内核态抢占等。'
+          ] },
+          { p: 'Linux 内核本身只是"内核"，加上 GNU 工具、应用、桌面环境才构成完整的 GNU/Linux 操作系统。' }
+        ]
+      },
+      { title: '1.3　操作系统和内核简介',
+        blocks: [
+          { p: '操作系统（OS）= 内核 + 系统级应用程序（库、shell、窗口系统等）。内核负责：' },
+          { ul: [
+            '管理硬件资源：CPU、内存、I/O 设备。',
+            '向上层提供抽象接口：进程、文件、网络 socket。',
+            '保证多用户多进程环境下的安全与公平。'
+          ] },
+          { note: '内核在特权级（ring 0）运行，用户程序在非特权级（ring 3）。CPU 通过 MMU、特权级切换提供保护。' }
+        ]
+      },
+      { title: '1.4　Linux 内核和传统 Unix 内核的比较',
+        blocks: [
+          { p: '传统 Unix 多数是<span class="highlight">单内核</span>（Monolithic），少数研究型系统是<span class="highlight">微内核</span>（Microkernel）。Linux 沿袭单内核路线，但吸收了微内核思想的部分优势。' },
+          { sub: [
+            { title: '单内核与微内核设计之比较', blocks: [
+              { p: '单内核：整个内核作为一个大二进制映像运行在内核态，模块化通过动态加载实现。微内核：只把最核心的功能（IPC、调度、虚拟内存）放内核态，驱动与文件系统作为服务跑在用户态。' },
+              { ul: [
+                '单内核优点：性能高（函数直接调用，无消息传递开销）。',
+                '单内核缺点：任何 bug 都可能拖垮整个系统。',
+                '微内核优点：稳定性好，可热替换服务。',
+                '微内核缺点：IPC 频繁导致性能明显下降。'
+              ] },
+              { p: 'Linux 采用单内核 + 模块化 + 线程化内核 + 抢占式调度的折中方案，兼顾性能与可维护性。' }
+            ] }
+          ] }
+        ]
+      },
+      { title: '1.5　Linux 内核版本',
+        blocks: [
+          { p: 'Linux 采用三段式版本号：' },
+          { ul: [
+            '<strong>A.B.C</strong>：A 是主版本号，B 是次版本号（偶数稳定、奇数开发），C 是补丁版本。',
+            '2.6.0 之后改为时间基模型：3.0、4.0、5.0…无奇偶之分，每个版本约 2~3 个月一发布。',
+            'LTS（长期支持）版本：Debian、Red Hat、Android 等发行版会选定某个内核长期打补丁。'
+          ] }
+        ]
+      },
+      { title: '1.6　Linux 内核开发者社区',
+        blocks: [
+          { p: 'Linux 是 Git 历史上第一个被它托管的项目。社区由 Linus 维护的 mainline、各子系统的 maintainer、各发行版的 stable tree 三层结构组成。开发者通过邮件列表、LKML、git 提交补丁。' },
+          { note: '内核编码风格由 Documentation/CodingStyle 严格定义，是合并代码的硬性要求之一。' }
+        ]
+      },
+      { title: '1.7　小结',
+        blocks: [
+          { p: '本章建立了 Linux 内核的历史坐标系：继承了 Unix 哲学，采用了单内核 + 模块化结构，依赖全球社区协作开发。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch2', icon: '🛠️', title: '第 2 章　从内核出发',
+    summary: '介绍如何获取、编译、安装 Linux 内核源码，并讲解内核开发与用户空间程序开发的关键差异。',
+    sections: [
+      { title: '2.1　获取内核源码',
+        sub: [
+          { title: '2.1.1　使用 Git', blocks: [
+            { p: 'kernel.org 提供 git 镜像，可直接克隆：' },
+            { code: 'git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git' },
+            { p: 'tag 是稳定版本，master 是开发主分支，stable 是 stable maintainer 维护的稳定分支。' }
+          ] },
+          { title: '2.1.2　安装内核源代码', blocks: [
+            { p: '解压 tarball 即可：' },
+            { code: 'tar -xvJf linux-x.y.z.tar.xz' }
+          ] },
+          { title: '2.1.3　使用补丁', blocks: [
+            { p: '补丁即 unified diff 格式的 .patch 文件，通过 patch -p1 < xxx.patch 即可打上，反向打 -R。' }
+          ] }
+        ]
+      },
+      { title: '2.2　内核源码树',
+        blocks: [
+          { p: '内核源码按"功能"组织，主要目录：' },
+          { ul: [
+            '<code>arch/</code>：各 CPU 架构相关代码（x86、arm64、riscv…）。',
+            '<code>kernel/</code>：调度、信号、进程管理等核心代码。',
+            '<code>mm/</code>：内存管理。',
+            '<code>fs/</code>：VFS 与各具体文件系统。',
+            '<code>net/</code>：网络协议栈。',
+            '<code>drivers/</code>：设备驱动（占代码量 ~70%）。',
+            '<code>include/</code>：公共头文件。',
+            '<code>init/</code>：启动入口 main.c。',
+            '<code>scripts/</code>：编译与构建脚本。'
+          ] }
+        ]
+      },
+      { title: '2.3　编译内核',
+        sub: [
+          { title: '2.3.1　配置内核', blocks: [
+            { p: 'Kconfig 系统：每个目录都有 Kconfig 文件，描述可选配置项及其依赖。常用配置命令：' },
+            { code: 'make config      # 问答式\nmake menuconfig  # 基于 ncurses\nmake xconfig     # 基于 Qt' },
+            { p: '结果保存为顶层 .config 文件。' }
+          ] },
+          { title: '2.3.2　减少编译的垃圾信息', blocks: [
+            { code: 'make > /dev/null' }
+          ] },
+          { title: '2.3.3　衍生多个编译作业', blocks: [
+            { p: '并行编译充分利用多核：' },
+            { code: 'make -j$(nproc)' }
+          ] },
+          { title: '2.3.4　安装新内核', blocks: [
+            { p: '依次执行 make modules_install install，内核映像与 initramfs 会被复制到 /boot，由 bootloader 引导。' }
+          ] }
+        ]
+      },
+      { title: '2.4　内核开发的特点',
+        sub: [
+          { title: '2.4.1　无 libc 库抑或无标准头文件', blocks: [
+            { p: '内核是独立运行在裸机或 hypervisor 上的程序，不能链接 glibc，只能使用内核内置的 printk、kmalloc、memcpy 等。' }
+          ] },
+          { title: '2.4.2　GNU C', blocks: [
+            { p: '内核使用 GCC 的诸多扩展：' },
+            { ul: [
+              '<strong>内联函数</strong>：用 static inline 把短函数在调用点展开，节省函数调用开销。',
+              '<strong>内联汇编</strong>：用 __asm__ __volatile__ 在 C 中嵌入汇编，常用于临界区、CPU 特权指令。',
+              '<strong>分支声明</strong>：likely()/unlikely() 提示编译器优化分支预测。'
+            ] }
+          ] },
+          { title: '2.4.3　没有内存保护机制', blocks: [
+            { p: '内核态可以访问所有内存，一旦发生非法访问（如空指针解引用）通常直接 oops 而非 SIGSEGV。' }
+          ] },
+          { title: '2.4.4　不要轻易在内核中使用浮点数', blocks: [
+            { p: '内核态访问 FPU 寄存器需要显式 save/restore，FPU 上下文切换成本高。' }
+          ] },
+          { title: '2.4.5　容积小而固定的栈', blocks: [
+            { p: '内核栈通常只有 8KB（32 位）或 16KB（64 位），不要定义大数组或深递归。' }
+          ] },
+          { title: '2.4.6　同步和并发', blocks: [
+            { p: '内核是高度并发的：多 CPU、中断、软中断、preempt 都可能导致竞态。' }
+          ] },
+          { title: '2.4.7　可移植性的重要性', blocks: [
+            { p: 'Linux 支持 30+ 架构，所有与硬件/字节序/字长相关的部分都需抽象。' }
+          ] }
+        ]
+      },
+      { title: '2.5　小结',
+        blocks: [
+          { p: '本章奠定了内核开发的环境基础：源码获取、配置编译流程以及内核编程的基本约束。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch3', icon: '🧬', title: '第 3 章　进程管理',
+    summary: '进程是 Unix 系统的最基本抽象。本章介绍进程描述符、进程创建、线程在 Linux 中的实现以及进程终结。',
+    sections: [
+      { title: '3.1　进程',
+        blocks: [
+          { p: '进程是处于执行期的程序（不只是代码，还包括资源、状态、PCB）。Linux 中进程与线程的差异很小：线程被视为与其他进程共享资源的进程。' },
+          { ul: [
+            '进程提供两个虚拟化：虚拟 CPU（时分复用）和虚拟内存（地址空间隔离）。',
+            '系统调用 fork()、exec()、wait() 是 Unix 进程管理的三大基石。'
+          ] }
+        ]
+      },
+      { title: '3.2　进程描述符及任务结构',
+        sub: [
+          { title: '3.2.1　分配进程描述符', blocks: [
+            { p: '内核用 <code>struct task_struct</code> 描述一个进程，约 1.7KB。早期通过 slab 分配，如今 task_struct 本身从 thread_info 内嵌或单独分配。' }
+          ] },
+          { title: '3.2.2　进程描述符的存放', blocks: [
+            { p: '通过 current_thread_info()->task 找到当前 task_struct，再借助 current 宏快速访问。每个 CPU 都缓存当前 task_struct 指针。' }
+          ] },
+          { title: '3.2.3　进程状态', blocks: [
+            { p: '进程有五种基本状态：' },
+            { ul: [
+              '<code>TASK_RUNNING</code>：就绪或正在运行。',
+              '<code>TASK_INTERRUPTIBLE</code>：可被信号和唤醒事件打断的睡眠。',
+              '<code>TASK_UNINTERRUPTIBLE</code>：不可打断的睡眠（常用于关键 I/O）。',
+              '<code>__TASK_STOPPED</code>：被信号（如 SIGSTOP）暂停。',
+              '<code>__TASK_TRACED</code>：被调试器跟踪。'
+            ] }
+          ] },
+          { title: '3.2.4　设置当前进程状态', blocks: [
+            { p: '通常用 set_task_state(task, state) 或者 set_current_state(state)，后者配合内存屏障。' }
+          ] },
+          { title: '3.2.5　进程上下文', blocks: [
+            { p: '进程在内核态运行时称为进程上下文。它可以睡眠、调度，是与中断上下文的核心区别。' }
+          ] },
+          { title: '3.2.6　进程家族树', blocks: [
+            { p: '所有进程都是 init 进程的后代。task_struct 通过 real_parent、parent 指针与 children 链表构成树形结构。' }
+          ] }
+        ]
+      },
+      { title: '3.3　进程创建',
+        sub: [
+          { title: '3.3.1　写时拷贝', blocks: [
+            { p: '传统的 fork 会全拷贝父进程的地址空间，效率低。Linux 采用 Copy-on-Write（COW）：父子共享同一物理页，任意一方写入时触发缺页异常再分配新页。' }
+          ] },
+          { title: '3.3.2　fork()', blocks: [
+            { p: '用户态 fork() → 内核 do_fork() → copy_process()：' },
+            { ul: [
+              '1. 分配 task_struct 与内核栈。',
+              '2. 复制父进程的资源（files、fs、sighand、mm 等）。',
+              '3. 设置子进程状态为 TASK_RUNNING。',
+              '4. 分配 PID，写入调度队列。',
+              '5. 返回：子进程返回 0，父进程返回子 PID。'
+            ] }
+          ] },
+          { title: '3.3.3　vfork()', blocks: [
+            { p: '类似 fork 但父进程阻塞直到子进程调用 exec 或 _exit，因为子进程共享父的地址空间。开销极小，适合 exec 立即执行的场景。' }
+          ] }
+        ]
+      },
+      { title: '3.4　线程在 Linux 中的实现',
+        sub: [
+          { title: '3.4.1　创建线程', blocks: [
+            { p: 'Linux 没有专门的"线程"结构，线程就是与同进程其他线程共享地址空间的轻量级进程。' },
+            { code: 'pthread_create() → clone(CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | ...)' }
+          ] },
+          { title: '3.4.2　内核线程', blocks: [
+            { p: '内核线程只运行在内核态，没有用户地址空间，常驻后台做周期工作（如 kthreadd、migration、ksoftirqd）。通过 kthread_create() / kthread_run() 创建。' }
+          ] }
+        ]
+      },
+      { title: '3.5　进程终结',
+        sub: [
+          { title: '3.5.1　删除进程描述符', blocks: [
+            { p: '进程调用 exit() → do_exit()：释放资源 → 通知父进程 → 设置 EXIT_ZOMBIE → 调度切换。最后由父进程 wait() 释放 task_struct。' }
+          ] },
+          { title: '3.5.2　孤儿进程造成的进退维谷', blocks: [
+            { p: '父进程先于子进程退出时，子进程成为孤儿。Linux 把它重新挂到 init（PID=1）下，由 init 负责 wait() 释放。' }
+          ] }
+        ]
+      },
+      { title: '3.6　小结',
+        blocks: [
+          { p: '进程管理是内核最基础的功能。Linux 用轻量级进程统一实现"线程"，并以 COW 提升 fork 性能。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch4', icon: '⏱️', title: '第 4 章　进程调度',
+    summary: '调度器决定哪个可运行进程获得 CPU。本章介绍 Linux 完全公平调度器（CFS）的设计与实现。',
+    sections: [
+      { title: '4.1　多任务',
+        blocks: [
+          { p: '多任务操作系统通过分时（time-sharing）让多个进程"同时"运行。调度器负责进程切换，目标是充分利用 CPU、保证公平与响应。' }
+        ]
+      },
+      { title: '4.2　Linux 的进程调度',
+        blocks: [
+          { p: 'Linux 2.6 之前是 O(N) 调度器，之后 2.6.23 引入 RSDL/SD，再之后被 Ingo Molnar 的 CFS（Completely Fair Scheduler）取代。CFS 在桌面、服务器、实时场景都表现良好。' }
+        ]
+      },
+      { title: '4.3　策略',
+        sub: [
+          { title: '4.3.1　I/O 消耗型和处理器消耗型的进程', blocks: [
+            { p: 'I/O-bound 进程经常睡眠（等待键盘、网卡），应及时被唤醒；CPU-bound 进程长期占用 CPU，应降低其调度权重。CFS 通过"虚拟运行时间"自然平衡这两类进程。' }
+          ] },
+          { title: '4.3.2　进程优先级', blocks: [
+            { p: 'Linux 用 nice 值表示优先级，范围 -20 ~ 19，nice 越大权重越低。普通进程使用 CFS 类，实时进程使用 SCHED_FIFO / SCHED_RR。' }
+          ] },
+          { title: '4.3.3　时间片', blocks: [
+            { p: '传统调度器给每个进程一个固定时间片。CFS 不直接分配时间片，而是按"权重"按比例分配 CPU 时间，权重由 nice 值决定。' }
+          ] },
+          { title: '4.3.4　调度策略的活动', blocks: [
+            { p: '调度器会主动让出 CPU 的时机：进程阻塞、I/O 完成唤醒、更高优先级进程就绪、当前进程时间片耗尽。' }
+          ] }
+        ]
+      },
+      { title: '4.4　Linux 调度算法',
+        sub: [
+          { title: '4.4.1　调度器类', blocks: [
+            { p: 'Linux 用调度器类（sched_class）实现模块化策略。CFS、实时、idle 都是 sched_class 的实现，调度时按优先级依次遍历。' }
+          ] },
+          { title: '4.4.2　Unix 系统中的进程调度', blocks: [
+            { p: '传统 Unix 用多级反馈队列。CFS 摒弃队列模型，借鉴"理想多任务"的公平排队思想。' }
+          ] },
+          { title: '4.4.3　公平调度', blocks: [
+            { p: 'CFS 的核心思想：所有可运行进程的"虚拟运行时间"相等时不调度；任何进程虚拟运行时间落后时立即被调度。' }
+          ] }
+        ]
+      },
+      { title: '4.5　Linux 调度的实现',
+        sub: [
+          { title: '4.5.1　时间记账', blocks: [
+            { p: 'CFS 用 <code>struct sched_entity</code> 记录每个调度实体的 vruntime（虚拟运行时间）。' },
+            { ul: [
+              '<strong>调度器实体结构</strong>：sched_entity 嵌入 task_struct，可以用于进程或组调度。',
+              '<strong>虚拟实时</strong>：vruntime += 实际时间 × NICE_0_LOAD / 权重。'
+            ] }
+          ] },
+          { title: '4.5.2　进程选择', blocks: [
+            { p: 'CFS 用红黑树（rb_tree）按 vruntime 排序所有可运行进程。' },
+            { ul: [
+              '<strong>挑选下一个任务</strong>：取红黑树最左节点（vruntime 最小）。',
+              '<strong>向树中加入进程</strong>：__enqueue_entity() 插入。',
+              '<strong>从树中删除进程</strong>：__dequeue_entity() 删除。'
+            ] }
+          ] },
+          { title: '4.5.3　调度器入口', blocks: [
+            { p: '核心函数 schedule()：关闭 preempt、选择下一进程（pick_next_task）、context_switch() 切换。' }
+          ] },
+          { title: '4.5.4　睡眠和唤醒', blocks: [
+            { p: '进程睡眠时从红黑树删除，避免被调度。' },
+            { ul: [
+              '<strong>等待队列</strong>：wait_queue 把睡眠进程挂到事件上，事件触发时唤醒。',
+              '<strong>唤醒</strong>：wake_up() 把等待队列上的进程标为 TASK_RUNNING 并加入红黑树。'
+            ] }
+          ] }
+        ]
+      },
+      { title: '4.6　抢占和上下文切换',
+        sub: [
+          { title: '4.6.1　用户抢占', blocks: [
+            { p: '在用户态被调度即用户抢占，发生在从系统调用返回用户态时或中断返回用户态时。' }
+          ] },
+          { title: '4.6.2　内核抢占', blocks: [
+            { p: '内核配置了 CONFIG_PREEMPT 后，内核态代码也可能被抢占。前提是没有持锁。' }
+          ] }
+        ]
+      },
+      { title: '4.7　实时调度策略',
+        blocks: [
+          { p: 'SCHED_FIFO：先进先出，运行到阻塞或被抢占。SCHED_RR：时间片轮转的 FIFO。SCHED_DEADLINE：基于 CBS + EDF 的截止时间调度，用于多媒体等场景。' }
+        ]
+      },
+      { title: '4.8　与调度相关的系统调用',
+        sub: [
+          { title: '4.8.1　与调度策略和优先级相关的系统调用', blocks: [
+            { ul: [
+              '<code>nice()</code> / <code>setpriority()</code>：调整 nice 值。',
+              '<code>sched_setscheduler()</code> / <code>sched_setparam()</code>：设置调度策略与参数。'
+            ] }
+          ] },
+          { title: '4.8.2　与处理器亲和性相关的系统调用', blocks: [
+            { p: '<code>sched_setaffinity()</code> 把进程绑定到某些 CPU 上，常用于性能敏感场景。' }
+          ] },
+          { title: '4.8.3　放弃处理器时间', blocks: [
+            { p: '<code>sched_yield()</code> 主动让出 CPU。' }
+          ] }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch5', icon: '📞', title: '第 5 章　系统调用',
+    summary: '系统调用是用户进程进入内核的合法入口。本章介绍系统调用的实现机制、调用约定以及如何添加新的系统调用。',
+    sections: [
+      { title: '5.1　与内核通信',
+        blocks: [
+          { p: '应用程序通过系统调用让内核代为完成特权操作，如打开文件、创建进程、读写 socket 等。系统调用是用户态与内核态的唯一受控接口。' }
+        ]
+      },
+      { title: '5.2　API、POSIX 和 C 库',
+        blocks: [
+          { p: 'API 定义了程序员如何调用功能；POSIX 是一组 API 标准；C 库（glibc、musl）实现了大部分 POSIX API。内核只关心系统调用，POSIX 与内核系统调用并非一一对应（如 Linux 多个系统调用完成一个 POSIX 功能）。' }
+        ]
+      },
+      { title: '5.3　系统调用',
+        blocks: [
+          { p: '系统调用通常以 syscall 号标识，例如 x86_64 上 read=0、write=1、open=2。每个系统调用都有一个明确的语义，不能像普通函数那样直接调用，而是通过 glibc 的 wrapper 进入内核。' }
+        ]
+      },
+      { title: '5.4　系统调用的实现',
+        blocks: [
+          { p: '系统调用的实现流程：' },
+          { ul: [
+            '1. 用户态把系统调用号放入寄存器（x86: eax，x86_64: rax，arm64: x8）。',
+            '2. 通过 syscall/sysenter/svc 指令触发陷阱进入内核。',
+            '3. 内核的 entry_64.S 汇编入口保存寄存器，调用 do_syscall_64()。',
+            '4. do_syscall_64() 通过 sys_call_table 找到对应实现函数。',
+            '5. 内核执行系统调用，把结果返回用户态。'
+          ] },
+          { note: '系统调用参数最多 6 个，多余的用结构体指针传递。返回值放在 rax，负数代表错误码。' }
+        ]
+      },
+      { title: '5.5　系统调用的上下文',
+        blocks: [
+          { p: '系统调用处于进程上下文，可以睡眠、调度、可访问用户地址空间（用 copy_from_user/copy_to_user 拷贝数据）。' }
+        ]
+      },
+      { title: '5.6　从用户空间访问系统调用',
+        blocks: [
+          { p: 'glibc 提供 syscalls(2) 直接调用（绕过 wrapper）以及 syscall() 函数（手工传入调用号）。开发新系统调用时常先用 syscall() 测试。' }
+        ]
+      },
+      { title: '5.7　为什么不通过实现呢',
+        blocks: [
+          { p: '实现系统调用门槛较高：要修改多个架构的 entry.S、syscall_table；要遵循调用约定；要给稳定 ABI 长期承诺。多数功能通过 /proc、sysfs、ioctl 或 netlink 暴露给用户。' }
+        ]
+      },
+      { title: '5.8　小结',
+        blocks: [
+          { p: '系统调用是内核与用户态的受控桥梁，理解 syscall 流程是阅读内核源码的基础。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch6', icon: '📦', title: '第 6 章　内核数据结构',
+    summary: '本章介绍 Linux 内核中常用的几种数据结构：链表、队列、映射和红黑树。',
+    sections: [
+      { title: '6.1　链表',
+        sub: [
+          { title: '6.1.1　单向链表和双向链表', blocks: [
+            { p: '传统链表把 next/prev 指针嵌入数据结构本身。Linux 实现的是侵入式循环双向链表 <code>struct list_head</code>，所有链表操作都是 O(1) 时间，节省空间。' }
+          ] },
+          { title: '6.1.2　链表的遍历', blocks: [
+            { p: '内核提供 list_for_each_entry(pos, head, member) 宏，把 list_head 指针反算回外层结构。' }
+          ] },
+          { title: '6.1.3　使用链表', blocks: [
+            { code: 'static inline void list_add(struct list_head *new, struct list_head *head);\nstatic inline void list_del(struct list_head *entry);' }
+          ] },
+          { title: '6.1.4　散列表概述', blocks: [
+            { p: '链表也可作为 hash bucket 处理冲突的容器。' }
+          ] }
+        ]
+      },
+      { title: '6.2　队列',
+        blocks: [
+          { p: 'kfifo 是一个无锁的环形缓冲区，提供 <code>kfifo_put()</code> / <code>kfifo_get()</code>，用于生产者-消费者场景（串口、网卡驱动等）。' }
+        ]
+      },
+      { title: '6.3　映射',
+        blocks: [
+          { p: 'IDR（ID Radix）将一个 32/64 位 ID 映射到指针。旧 API 是 idr，新内核中常用 xarray（基树）替代。' }
+        ]
+      },
+      { title: '6.4　红黑树',
+        blocks: [
+          { p: '红黑树是自平衡二叉搜索树，O(log n) 查找/插入/删除。Linux 实现 rbtree，常用于 CFS 调度、epoll、内存管理等。' }
+        ]
+      },
+      { title: '6.5　数据结构的选择',
+        blocks: [
+          { p: '选择依据：' },
+          { ul: [
+            '小规模、顺序遍历：链表。',
+            'FIFO / 流量控制：kfifo。',
+            '稀疏 ID 映射：IDR / xarray。',
+            '大量数据 + 有序查找：红黑树。',
+            '键值缓存 + 哈希：hash table。'
+          ] }
+        ]
+      },
+      { title: '6.6　小结',
+        blocks: [
+          { p: '内核数据结构在用户态库基础上去除了边界检查、加锁友好、便于 SMP 使用。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch7', icon: '⚡', title: '第 7 章　中断和中断处理',
+    summary: '中断是设备与 CPU 通信的核心机制。本章介绍中断处理程序的设计、注册与执行流程。',
+    sections: [
+      { title: '7.1　中断',
+        blocks: [
+          { p: '中断分为同步中断（异常，CPU 内部产生）和异步中断（中断，外部设备产生）。可屏蔽中断（IRQ）可通过 CLI/STI 屏蔽。' }
+        ]
+      },
+      { title: '7.2　中断处理程序',
+        blocks: [
+          { p: '中断处理程序（ISR）是设备触发中断后内核执行的一段代码。设计要求：' },
+          { ul: [
+            '运行时间尽可能短（中断关闭，时间紧迫）。',
+            '只做"必须立刻做"的事（如清状态寄存器、应答中断），其他工作推迟到下半部。'
+          ] }
+        ]
+      },
+      { title: '7.3　上半部与下半部的对比',
+        blocks: [
+          { p: '上半部：关中断运行，紧急、不可阻塞。下半部：开中断运行，可延迟、可睡眠。' }
+        ]
+      },
+      { title: '7.4　注册中断处理程序',
+        blocks: [
+          { code: 'int request_irq(unsigned int irq, irq_handler_t handler,\n                unsigned long flags, const char *name, void *dev);' },
+          { p: 'flags：IRQF_SHARED（共享）、IRQF_ONESHOT（线程化中断）等。' }
+        ]
+      },
+      { title: '7.5　中断处理程序实现',
+        blocks: [
+          { p: '典型实现步骤：' },
+          { ul: [
+            '1. 检查设备状态寄存器。',
+            '2. 清除/应答中断。',
+            '3. 拷贝数据到缓冲区。',
+            '4. 调度下半部（如 tasklet、workqueue）。'
+          ] }
+        ]
+      },
+      { title: '7.6　中断上下文',
+        blocks: [
+          { p: '中断上下文与进程上下文不同：没有进程后备、不能睡眠、不能调用可能睡眠的函数。' }
+        ]
+      },
+      { title: '7.7　中断处理机制的实现',
+        blocks: [
+          { p: 'Linux 中断处理分层：' },
+          { ul: [
+            '设备 → IRQ 控制器（GIC、IO-APIC）→ 中断向量表 → 高层中断处理（handle_irq） → 芯片级 → 中断服务例程。',
+            '每条中断线有 irq_desc 结构描述当前状态。'
+          ] }
+        ]
+      },
+      { title: '7.8　/proc/interrupts',
+        blocks: [
+          { p: '显示各 CPU 上各中断号的触发次数，可用于性能分析。' }
+        ]
+      },
+      { title: '7.9　中断控制',
+        blocks: [
+          { p: 'local_irq_disable() / local_irq_enable()：关/开本地中断。local_bh_disable() / local_bh_enable()：禁/放下半部。' },
+          { note: '这些接口在抢占内核中要谨慎使用，关闭时间太长会延迟中断响应、增加调度延迟。' }
+        ]
+      },
+      { title: '7.10　小结',
+        blocks: [
+          { p: '中断是内核与硬件交互的入口。良好的 ISR 设计是系统稳定与实时性的基础。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch8', icon: '⏳', title: '第 8 章　下半部和推后执行的工作',
+    summary: '中断处理时间要尽可能短。本章介绍软中断、tasklet、工作队列等下半部机制。',
+    sections: [
+      { title: '8.1　下半部',
+        blocks: [
+          { p: '下半部是内核推后执行中断相关工作的机制。理想下半部：响应快、运行快、并发安全。' }
+        ]
+      },
+      { title: '8.2　软中断',
+        blocks: [
+          { p: 'softirq 是静态定义的下半部机制，编译期确定（如 NET_TX、NET_RX、TIMER、HI_SOFTIRQ 等共 10 个）。可并行执行，甚至在多 CPU 上同时运行。' }
+        ]
+      },
+      { title: '8.3　tasklet',
+        blocks: [
+          { p: 'tasklet 基于 softirq 实现，接口更简单（不关心并行问题），同一 tasklet 不会并行。适合大多数驱动开发者使用。' },
+          { code: 'DECLARE_TASKLET(my_tasklet, my_func, data);\ntasklet_schedule(&my_tasklet);' }
+        ]
+      },
+      { title: '8.4　工作队列',
+        blocks: [
+          { p: 'workqueue 把工作推后到进程上下文执行，因此可以睡眠。是唯一一个能在进程上下文跑的下半部机制。' },
+          { code: 'alloc_workqueue("name", WQ_MEM_RECLAIM, 0);\nqueue_work(wq, &work);' }
+        ]
+      },
+      { title: '8.5　在下半部之间加锁',
+        blocks: [
+          { p: '下半部之间共享数据时必须考虑：同一 tasklet 不并发；不同 tasklet/softirq 可能并发；工作队列与进程上下文并发。需要使用自旋锁或禁用下半部。' }
+        ]
+      },
+      { title: '8.6　禁止下半部',
+        blocks: [
+          { p: 'local_bh_disable() 禁止本地 CPU 的下半部处理。常与 spin_lock_bh() 一起使用。' }
+        ]
+      },
+      { title: '8.7　小结',
+        blocks: [
+          { p: '选择下半部机制：快速且无需睡眠 → softirq/tasklet；可能睡眠 → workqueue。线程化中断（threaded IRQ）把 ISR 分为硬中断和线程化处理两部分，是现代驱动的常见选择。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch9', icon: '🔄', title: '第 9 章　内核同步介绍',
+    summary: '内核是高度并发的，多种执行流可能同时访问共享数据。本章介绍竞态条件、临界区以及内核中需要保护的资源。',
+    sections: [
+      { title: '9.1　临界区和竞争条件',
+        blocks: [
+          { p: '临界区是访问共享资源的代码片段。竞争条件（race condition）指多个执行流同时进入临界区导致不可预期的结果。' }
+        ]
+      },
+      { title: '9.2　加锁',
+        blocks: [
+          { p: '锁是一种强制互斥的机制。设计锁时需要考虑：' },
+          { ul: [
+            '锁的粒度（细粒度 = 更高并发，代码复杂）。',
+            '锁的持有时间（越短越好）。',
+            '死锁与活锁的避免（统一加锁顺序）。'
+          ] }
+        ]
+      },
+      { title: '9.3　内核中造成并发的原因',
+        blocks: [
+          { ul: [
+            '中断与异常：可能随时打断当前代码。',
+            '软中断与 tasklet：在中断后运行。',
+            '内核抢占：高优先级进程可抢占当前进程。',
+            '多处理器：SMP 下多个 CPU 同时执行。',
+            '睡眠与唤醒：被换出的进程再次被唤醒时上下文已改变。'
+          ] }
+        ]
+      },
+      { title: '9.4　要保护的数据',
+        blocks: [
+          { p: '需要保护：' },
+          { ul: [
+            '全局变量（共享内存）。',
+            '共享缓冲（环形队列、链表）。',
+            '硬件寄存器（设备可能并发访问）。'
+          ] }
+        ]
+      },
+      { title: '9.5　小结',
+        blocks: [
+          { p: '理解内核的并发来源是设计正确同步方案的前提。下一章介绍具体同步原语。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch10', icon: '🔐', title: '第 10 章　内核同步方法',
+    summary: '本章详细介绍原子操作、自旋锁、信号量、互斥体、顺序锁、RCU 等内核同步原语。',
+    sections: [
+      { title: '10.1　原子操作',
+        blocks: [
+          { p: 'atomic_t 类型的变量通过 CPU 原子指令实现无锁加减、位操作。是所有锁的底层基础。' },
+          { code: 'atomic_inc(&v);\nint atomic_dec_return(&v);' }
+        ]
+      },
+      { title: '10.2　自旋锁',
+        blocks: [
+          { p: '自旋锁（spinlock）通过"忙等"实现互斥。适用于：' },
+          { ul: [
+            '临界区极短（不希望被换出）。',
+            '中断上下文（不能睡眠）。',
+            '持有锁的 CPU 不能是持有锁的同一线程（否则会自死锁）。'
+          ] },
+          { code: 'spin_lock(&lock);\n/* critical section */\nspin_unlock(&lock);' },
+          { sub: [
+            { title: '10.2.1　自旋锁方法', blocks: [
+              { p: 'spin_lock_irqsave() 还会关中断，避免 ISR 与进程上下文竞态。' }
+            ] },
+            { title: '10.2.2　其他针对自旋锁的操作', blocks: [
+              { ul: [
+                'spin_trylock()：尝试获取锁，不阻塞。',
+                'spin_lock_bh()：禁止软中断。'
+              ] }
+            ] },
+            { title: '10.2.3　自旋锁使用注意事项', blocks: [
+              { note: '自旋锁临界区内绝不能调用可能导致睡眠的函数（如 kmalloc( GFP_KERNEL )、schedule()、mutex_lock()）。' }
+            ] }
+          ] }
+        ]
+      },
+      { title: '10.3　读—写自旋锁',
+        blocks: [
+          { p: 'rwlock 把读者与写者区分开，多个读者可并发持有，写者独占。适合"读多写少"场景。' }
+        ]
+      },
+      { title: '10.4　信号量',
+        blocks: [
+          { p: '信号量（semaphore）使等待者进入睡眠而不是忙等。适用于：' },
+          { ul: [
+            '临界区较长。',
+            '等待时希望让出 CPU。',
+            '只能在进程上下文使用（会睡眠）。'
+          ] },
+          { code: 'down(&sem);  /* P 操作 */\n/* critical section */\nup(&sem);    /* V 操作 */' }
+        ]
+      },
+      { title: '10.5　读—写信号量',
+        blocks: [
+          { p: 'rw_semaphore 是信号量的读—写版本，与 rwlock 相对。' }
+        ]
+      },
+      { title: '10.6　互斥体',
+        blocks: [
+          { p: 'mutex 是"睡眠锁"，行为更严格（同一进程不能重复锁定、必须显式 unlock）。现代内核推荐用 mutex 替代大部分信号量。' },
+          { code: 'mutex_lock(&mtx);\n/* critical section */\nmutex_unlock(&mtx);' }
+        ]
+      },
+      { title: '10.7　完成变量',
+        blocks: [
+          { p: 'completion 用于"一个执行流等待另一个执行流完成某事"的同步。常见用法：' },
+          { code: 'wait_for_completion(&comp);\ncomplete(&comp);' }
+        ]
+      },
+      { title: '10.8　BLK：大内核锁',
+        blocks: [
+          { p: 'BKL（Big Kernel Lock）历史遗留，已废弃，仅在少数老驱动中存在。' }
+        ]
+      },
+      { title: '10.9　顺序锁',
+        blocks: [
+          { p: 'seqlock 通过递增序列号区分读—写。读侧开销极小，写侧不阻塞但读需要重试。适合"读极频繁、写极少"的统计/时间戳场景。' }
+        ]
+      },
+      { title: '10.10　禁止抢占',
+        blocks: [
+          { p: 'preempt_disable() 关闭内核抢占；与自旋锁组合实现"单 CPU 互斥"。' }
+        ]
+      },
+      { title: '10.11　顺序和屏障',
+        blocks: [
+          { p: '编译器与 CPU 都会重排指令。内存屏障保证特定顺序：' },
+          { ul: [
+            'rmb()：读屏障。',
+            'wmb()：写屏障。',
+            'mb()：读写屏障。',
+            'smp_mb()：跨 CPU 屏障。'
+          ] }
+        ]
+      },
+      { title: '10.12　SMP 屏障的起源',
+        blocks: [
+          { p: '不同架构的内存模型（x86 强、arm 弱）导致需要显式屏障。' }
+        ]
+      },
+      { title: '10.13　抢占模型总结',
+        blocks: [
+          { p: 'Linux 支持三种抢占模型：PREEMPT_NONE（无）、PREEMPT_VOLUNTARY（自愿）、PREEMPT（完全）。' }
+        ]
+      },
+      { title: '10.14　RCU',
+        blocks: [
+          { p: 'RCU（Read-Copy-Update）是高性能的读—写同步机制。读侧无锁、写侧拷贝后延迟释放旧数据，依赖宽限期（所有读者退出）。' },
+          { ul: [
+            '<code>rcu_read_lock()</code> / <code>rcu_read_unlock()</code>：读侧临界区。',
+            '<code>synchronize_rcu()</code>：等待宽限期结束。',
+            '<code>call_rcu()</code>：异步回收旧数据。'
+          ] }
+        ]
+      },
+      { title: '10.15　小结',
+        blocks: [
+          { p: '选择同步原语的经验法则：' },
+          { ul: [
+            '临界区极短、不睡眠：自旋锁。',
+            '临界区长、可能睡眠：信号量/互斥体。',
+            '读多写少：rwlock / RCU。',
+            '统计/时间戳：seqlock。',
+            '单变量：原子操作。'
+          ] }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch11', icon: '🕐', title: '第 11 章　定时器和时间管理',
+    summary: '时间是内核管理的关键资源。本章介绍内核时间基础设施：jiffies、定时器、时钟中断。',
+    sections: [
+      { title: '11.1　内核中的时间概念',
+        blocks: [
+          { p: '内核管理多种时间概念：' },
+          { ul: [
+            '<strong>绝对时间</strong>（wall clock）：实际日历时间。',
+            '<strong>相对时间</strong>（relative）：相对某个事件的时间。',
+            '<strong>单调时间</strong>（monotonic）：保证不回退的时间，用于测量间隔。',
+            '<strong>周期事件</strong>：以固定频率触发（如调度 tick）。'
+          ] }
+        ]
+      },
+      { title: '11.2　节拍率：HZ',
+        blocks: [
+          { p: '系统定时器以 HZ 频率产生时钟中断。x86 历史上 HZ=100、250、1000，2.6.13 后默认 250。HZ 越高，调度延迟越低，但中断开销越大。' }
+        ]
+      },
+      { title: '11.3　jiffies',
+        blocks: [
+          { p: 'jiffies 是自启动以来的时钟中断数（32/64 位），是内核时间的基本单位。比较应使用 time_after/before 等安全宏以应对回绕。' }
+        ]
+      },
+      { title: '11.4　硬时钟和定时器',
+        blocks: [
+          { p: '硬件定时器（HPET、TSC、ACPI PM Timer 等）以可编程频率产生中断，是软件定时器的基础。' }
+        ]
+      },
+      { title: '11.5　时钟中断处理程序',
+        blocks: [
+          { p: 'tick_handle_periodic() → update_process_times() → 每个任务的统计更新、scheduler_tick、动态定时器到期。' }
+        ]
+      },
+      { title: '11.6　定时器',
+        blocks: [
+          { p: '内核定时器（struct timer_list）在指定 jiffies 触发，软中断上下文运行。' },
+          { code: 'setup_timer(&t, func, data);\nmod_timer(&t, jiffies + HZ);' }
+        ]
+      },
+      { title: '11.7　延迟执行',
+        blocks: [
+          { p: '短延迟：udelay()/mdelay()（忙等，精度高）。长延迟：schedule_timeout() / msleep()（睡眠，节省 CPU）。' }
+        ]
+      },
+      { title: '11.8　内核中的延迟与睡眠',
+        blocks: [
+          { p: '内核禁止在中断/软中断上下文睡眠，只能在进程上下文。' }
+        ]
+      },
+      { title: '11.9　定时器竞争条件',
+        blocks: [
+          { p: 'mod_timer 与 del_timer 的并发：用 del_timer_sync() 等待回调结束。' }
+        ]
+      },
+      { title: '11.10　实现睡眠',
+        blocks: [
+          { p: 'schedule_timeout() 实现"睡眠 + 超时唤醒"，是 msleep_interruptible() 的基础。' }
+        ]
+      },
+      { title: '11.11　定时器和时钟的历史',
+        blocks: [
+          { p: 'Linux 经历了 PIT → APIC timer → TSC → HPET → tickless（NO_HZ）的演进，现代内核在 idle 时关闭 tick。' }
+        ]
+      },
+      { title: '11.12　小结',
+        blocks: [
+          { p: '时间子系统支撑调度、I/O 等待、用户态 gettimeofday 等几乎所有功能。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch12', icon: '🧠', title: '第 12 章　内存管理',
+    summary: '本章介绍内核内存管理的基础设施：页、内核分配器、SLAB 分配器、栈上分配以及高端内存。',
+    sections: [
+      { title: '12.1　页',
+        blocks: [
+          { p: '内核以 page（4KB 或 2MB/1GB 大页）为基本单位管理物理内存。struct page 描述一个物理页（包含 refcount、flags、mapping 等）。' }
+        ]
+      },
+      { title: '12.2　区',
+        blocks: [
+          { p: '由于硬件限制，内核把页分为不同 zone：' },
+          { ul: [
+            '<code>ZONE_DMA</code>：低 16MB，用于旧 ISA DMA。',
+            '<code>ZONE_NORMAL</code>：可直接映射（4GB 内）。',
+            '<code>ZONE_HIGHMEM</code>：32 位系统中需要临时映射的高位内存。',
+            '<code>ZONE_MOVABLE</code>：可迁移页，用于内存热插拔。'
+          ] }
+        ]
+      },
+      { title: '12.3　获得页',
+        blocks: [
+          { p: '底层分配接口 alloc_pages() / __get_free_page()，按阶（order）分配 2^order 个连续页。' },
+          { code: 'struct page *p = alloc_pages(GFP_KERNEL, order);' }
+        ]
+      },
+      { title: '12.4　获得填充为 0 的页',
+        blocks: [
+          { p: 'get_zeroed_page() 返回内容为 0 的单页。常用于分配后立即使用而无需 memset。' }
+        ]
+      },
+      { title: '12.5　释放页',
+        blocks: [
+          { p: '对应 __free_pages() / free_page() / free_pages()，注意 order 必须与分配时一致。' }
+        ]
+      },
+      { title: '12.6　kmalloc',
+        blocks: [
+          { p: 'kmalloc() 是最常用的内核分配接口，返回连续物理内存。flags 控制行为：' },
+          { ul: [
+            'GFP_ATOMIC：不可睡眠，中断上下文。',
+            'GFP_KERNEL：常规分配，可能睡眠。',
+            'GFP_USER：为用户态分配页。',
+            '__GFP_ZERO：内容清零。',
+            '__GFP_DMA / __GFP_HIGHMEM：从特定 zone 分配。'
+          ] }
+        ]
+      },
+      { title: '12.7　在栈上的静态分配',
+        sub: [
+          { title: '12.7.1　单页内核栈', blocks: [
+            { p: '2.6 之前内核栈为 8KB/16KB（双页），2.6.30 之后改回单页（8KB）。' }
+          ] },
+          { title: '12.7.2　在栈上光明正大地工作', blocks: [
+            { p: '栈上不要分配大数组；用 kzalloc() 申请堆内存。' }
+          ] }
+        ]
+      },
+      { title: '12.8　高端内存的映射',
+        sub: [
+          { title: '12.8.1　永久映射', blocks: [
+            { p: 'kmap() 把 highmem 页映射到内核地址空间（64 位上退化为直接映射）。' }
+          ] },
+          { title: '12.8.2　临时映射', blocks: [
+            { p: 'kmap_atomic() 提供临时映射，使用后立即 kunmap_atomic()，不会阻塞。' }
+          ] }
+        ]
+      },
+      { title: '12.9　每个 CPU 的分配',
+        blocks: [
+          { p: '每个 CPU 数据（per-CPU variables）是单独变量的多个实例，每个 CPU 访问自己的实例，避免锁。' }
+        ]
+      },
+      { title: '12.10　新的每个 CPU 接口',
+        sub: [
+          { title: '12.10.1　编译时的每个 CPU 数据', blocks: [
+            { code: 'DEFINE_PER_CPU(type, name);\nget_cpu_var(name)++;\nput_cpu_var(name);' }
+          ] },
+          { title: '12.10.2　运行时的每个CPU数据', blocks: [
+            { p: 'alloc_percpu()/free_percpu()/per_cpu(ptr, cpu) 用于动态 per-CPU 变量。' }
+          ] }
+        ]
+      },
+      { title: '12.11　使用每个 CPU 数据的原因',
+        blocks: [
+          { p: '减少锁竞争、避免伪共享（注意同一 cache line 上的变量要分开）。' }
+        ]
+      },
+      { title: '12.12　分配函数的选择',
+        blocks: [
+          { ul: [
+            '需要连续物理页：alloc_pages()。',
+            '小块对象、通用：kmalloc()。',
+            '频繁分配/释放同类对象：kmem_cache_alloc()（SLAB）。',
+            '可能睡眠：GFP_KERNEL；不能睡眠：GFP_ATOMIC。'
+          ] }
+        ]
+      },
+      { title: '12.13　小结',
+        blocks: [
+          { p: '理解页、zone、分配器是阅读所有内核子系统的基础。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch13', icon: '📂', title: '第 13 章　虚拟文件系统',
+    summary: 'VFS 是 Linux 文件系统的统一抽象层。本章介绍 VFS 的核心对象模型：超级块、索引节点、目录项、文件。',
+    sections: [
+      { title: '13.1　通用文件系统接口',
+        blocks: [
+          { p: 'VFS 把 ext4、XFS、NTFS、procfs、sysfs 等几十种文件系统统一为一套接口（open/read/write/close）。' }
+        ]
+      },
+      { title: '13.2　文件系统抽象层',
+        blocks: [
+          { p: 'VFS 位于具体文件系统与系统调用之间。系统调用只调用 VFS 函数，VFS 再回调具体文件系统的实现。' }
+        ]
+      },
+      { title: '13.3　Unix 文件系统',
+        blocks: [
+          { p: '经典 Unix 文件系统以 inode 为中心，文件由 inode 描述，目录是 inode + 名字的映射。' }
+        ]
+      },
+      { title: '13.4　VFS 对象及其数据结构',
+        blocks: [
+          { p: 'VFS 主要对象：' },
+          { ul: [
+            '<strong>超级块（super_block）</strong>：已挂载文件系统的整体。',
+            '<strong>索引节点（inode）</strong>：一个文件的元数据。',
+            '<strong>目录项（dentry）</strong>：路径中的一个分量。',
+            '<strong>文件（file）</strong>：进程打开的实例。'
+          ] }
+        ]
+      },
+      { title: '13.5　超级块对象',
+        blocks: [
+          { p: 'super_block 描述一个挂载的文件系统实例。包含文件系统类型、大小、设备、统计信息等。所有 super_block 通过链表挂在一起。' }
+        ]
+      },
+      { title: '13.6　超级块操作',
+        blocks: [
+          { p: 'super_operations 结构定义：' },
+          { ul: [
+            'write_inode() / sync_fs()：同步元数据。',
+            'put_super()：卸载。',
+            'statfs()：获取文件系统统计。'
+          ] }
+        ]
+      },
+      { title: '13.7　索引节点对象',
+        blocks: [
+          { p: 'inode 描述文件：i_mode、i_size、i_atime/i_mtime/i_ctime、i_ino、字节偏移、文件操作等。多个进程可打开同一 inode 但有各自 file。' }
+        ]
+      },
+      { title: '13.8　索引节点操作',
+        blocks: [
+          { p: 'inode_operations 包括 create()、lookup()、link()、unlink()、mkdir()、rename() 等目录项相关操作。' }
+        ]
+      },
+      { title: '13.9　目录项对象',
+        sub: [
+          { title: '13.9.1　目录项状态', blocks: [
+            { p: 'dentry 状态：USED（已被引用）、UNUSED（未被引用）、NEGATIVE（指向不存在的 inode）。' }
+          ] },
+          { title: '13.9.2　目录项缓存', blocks: [
+            { p: 'dcache 是内核的路径缓存，hash 索引 + LRU 链表。命中后大幅加速路径解析。' }
+          ] }
+        ]
+      },
+      { title: '13.10　目录项操作',
+        blocks: [
+          { p: 'dentry_operations：d_compare()、d_delete()、d_release()、d_hash() 等。' }
+        ]
+      },
+      { title: '13.11　文件对象',
+        blocks: [
+          { p: 'file 表示进程打开的文件：f_path、f_inode、f_op、f_pos、f_mode。多个进程可独立 open 同一文件得到不同 file。' }
+        ]
+      },
+      { title: '13.12　文件操作',
+        blocks: [
+          { p: 'file_operations 是最常用的回调：read()、write()、llseek()、poll()、ioctl()、mmap()、open()、release()。' },
+          { sub: [
+            { title: '如此之多的 loctls', blocks: [
+              { p: 'ioctl 是设备驱动的"万能"命令传递接口，语义因驱动而异，越来越多被 netlink 或 sysfs 替代。' }
+            ] }
+          ] }
+        ]
+      },
+      { title: '13.13　和文件系统相关的数据结构',
+        blocks: [
+          { p: 'file_system_type：描述文件系统类型（ext4、procfs…）。' },
+          { p: 'vfsmount：挂载点。' }
+        ]
+      },
+      { title: '13.14　和进程相关的数据结构',
+        blocks: [
+          { p: 'fs_struct（root + pwd + altroot）、files_struct（fdtable）、namespace（uts/ipc/pid/net/mount）。' }
+        ]
+      },
+      { title: '13.15　小结',
+        blocks: [
+          { p: 'VFS 抽象是 Linux 文件系统的灵魂，统一的接口让几十种文件系统无缝共存。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch14', icon: '💽', title: '第 14 章　块 I/O 层',
+    summary: '块设备以固定大小块为单位随机访问。本章介绍缓冲区、bio、请求队列和 I/O 调度器。',
+    sections: [
+      { title: '14.1　剖析一个块设备',
+        blocks: [
+          { p: '块设备（如硬盘、SSD、SD 卡）以扇区（sector，512B 或 4KB）为最小寻址单位。块是 VFS 与磁盘交互的最小单位。' }
+        ]
+      },
+      { title: '14.2　缓冲区和缓冲区头',
+        blocks: [
+          { p: '早期内核用 buffer_head（bh）作为块 I/O 单位。bh 描述"磁盘块 ↔ 内存页"的映射。bh 简单但粒度细、效率差。' }
+        ]
+      },
+      { title: '14.3　bio 结构体',
+        sub: [
+          { title: '14.3.1　I/O 向量', blocks: [
+            { p: 'bio 用 bi_io_vec 数组描述"一次 I/O 中的多个段"，每段是 <page, offset, len>。可一次表示散布在多页的数据。' }
+          ] },
+          { title: '14.3.2　新老方法对比', blocks: [
+            { p: 'bio 替代 buffer_head：支持高端内存、一次 I/O 多段、异步通知，性能与灵活性大幅提升。' }
+          ] }
+        ]
+      },
+      { title: '14.4　请求队列',
+        blocks: [
+          { p: '块设备的请求队列（request_queue）是 I/O 调度的核心。bio 通过 generic_make_request 提交到队列，由调度器排序后下发到设备。' }
+        ]
+      },
+      { title: '14.5　I/O 调度程序',
+        sub: [
+          { title: '14.5.1　I/O 调度程序的工作', blocks: [
+            { p: '合并相邻请求、按算法重排、减少磁盘寻道。' }
+          ] },
+          { title: '14.5.2　Linus 电梯', blocks: [
+            { p: '最简单：按到达顺序合并同方向请求。性能一般。' }
+          ] },
+          { title: '14.5.3　最终期限 I/O 调度程序', blocks: [
+            { p: '维护 read FIFO + write FIFO + sorted 三个队列，给请求加最后期限（read 500ms、write 5s），避免饥饿。' }
+          ] },
+          { title: '14.5.4　预测 I/O 调度程序', blocks: [
+            { p: '在 deadline 基础上加启发式：对顺序读预测下一个也会顺序读，略微延迟提交以提高合并。' }
+          ] },
+          { title: '14.5.5　完全公正的排队 I/O 调度程序', blocks: [
+            { p: 'CFQ 为每个进程分配时间片与独立队列，公平分配磁盘带宽。适合多用户。' }
+          ] },
+          { title: '14.5.6　空操作的 I/O 调度程序', blocks: [
+            { p: 'noop：仅做合并，不做排序。适合 SSD、自带命令队列的设备。' }
+          ] },
+          { title: '14.5.7　I/O 调度程序的选择', blocks: [
+            { p: 'SSD 通常 noop；机械盘 deadline（数据库）或 cfq（桌面）；virtio-blk 也有专用调度。' }
+          ] }
+        ]
+      },
+      { title: '14.6　小结',
+        blocks: [
+          { p: '块 I/O 层屏蔽了不同存储设备的差异，并通过调度器优化吞吐与延迟。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch15', icon: '🗺️', title: '第 15 章　进程地址空间',
+    summary: '进程地址空间是内核提供给进程的虚拟内存视图。本章介绍内存描述符、VMA 与 mmap。',
+    sections: [
+      { title: '15.1　地址空间',
+        blocks: [
+          { p: '每个进程都有独立的虚拟地址空间：用户空间 0~3G（32 位）或 0~128T（64 位），内核空间独占高位。' }
+        ]
+      },
+      { title: '15.2　内存描述符',
+        sub: [
+          { title: '15.2.1　分配内存描述符', blocks: [
+            { p: 'mm_struct 是进程的内存描述符，通过 alloc_mm() 分配，嵌入 task_struct。' }
+          ] },
+          { title: '15.2.2　撤销内存描述符', blocks: [
+            { p: '进程退出时 mmput() 释放：先释放所有 VMA，再释放页表，最后释放 mm_struct。' }
+          ] },
+          { title: '15.2.3　mm_struct 与内核线程', blocks: [
+            { p: '内核线程没有用户态地址空间，使用上一个被调度出去的进程的 mm（active_mm）。' }
+          ] }
+        ]
+      },
+      { title: '15.3　虚拟内存区域',
+        sub: [
+          { title: '15.3.1　VMA 标志', blocks: [
+            { p: 'vm_flags 描述区域属性：VM_READ、VM_WRITE、VM_EXEC、VM_SHARED、VM_GROWSDOWN（栈）、VM_LOCKED（锁在内存）等。' }
+          ] },
+          { title: '15.3.2　VMA 操作', blocks: [
+            { p: 'vm_operations_struct 提供 open()、close()、fault()、page_mkwrite() 等 mmap 钩子。' }
+          ] },
+          { title: '15.3.3　内存区域的树型结构和内存区域的链表结构', blocks: [
+            { p: 'mmap 用红黑树按地址排序 + 双向链表按地址顺序维护，兼顾 O(log n) 查找与线性遍历。' }
+          ] },
+          { title: '15.3.4　实际使用中的内存区域', blocks: [
+            { p: '典型 VMA：可执行文件代码段、共享库、堆、栈、mmap 区。' }
+          ] }
+        ]
+      },
+      { title: '15.4　操作内存区域',
+        sub: [
+          { title: '15.4.1　find_vma()', blocks: [
+            { p: '查找包含 addr 的第一个 VMA。' }
+          ] },
+          { title: '15.4.2　find_vma_prev()', blocks: [
+            { p: '同时返回前一个 VMA。' }
+          ] },
+          { title: '15.4.3　find_vma_intersection()', blocks: [
+            { p: '查找与给定范围相交的 VMA。' }
+          ] }
+        ]
+      },
+      { title: '15.5　mmap() 和 do_mmap()：创建地址区间',
+        blocks: [
+          { p: 'mmap() 创建 VMA 与可能的页表项。常见用途：' },
+          { ul: [
+            '映射共享库到进程。',
+            '将文件映射到内存。',
+            '匿名映射（大块内存）。'
+          ] }
+        ]
+      },
+      { title: '15.6　munmap() 和 do_munmap()：删除地址区间',
+        blocks: [
+          { p: '解除映射，释放对应的物理页（如果是私有的）或写回（如果是共享的）。' }
+        ]
+      },
+      { title: '15.7　页表',
+        blocks: [
+          { p: '页表是 MMU 翻译虚拟地址到物理地址的表。32 位用两级、64 位用四级（PML4/PDPT/PD/PT）。Linux 提供 pgd/p4d/pud/pmd/pte 一套抽象。' }
+        ]
+      },
+      { title: '15.8　小结',
+        blocks: [
+          { p: 'VMA + 页表 + mmap 是 Linux 虚拟内存的三大支柱。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch16', icon: '💾', title: '第 16 章　页高速缓存和页回写',
+    summary: '页高速缓存是 Linux 提升磁盘 I/O 性能的关键。本章介绍缓存机制、address_space、基树与 flusher 线程。',
+    sections: [
+      { title: '16.1　缓存手段',
+        sub: [
+          { title: '16.1.1　写缓存', blocks: [
+            { p: '把"写磁盘"操作延迟到内存，合并多次写。' }
+          ] },
+          { title: '16.1.2　缓存回收', blocks: [
+            { p: '内存不足时回收缓存页。策略：' },
+            { ul: [
+              '<strong>最近最少使用（LRU）</strong>：优先回收最久未用页。',
+              '<strong>双链策略</strong>：active 与 inactive 两个 LRU 链表，hot page 在 active，冷页在 inactive。'
+            ] }
+          ] }
+        ]
+      },
+      { title: '16.2　Linux 页高速缓存',
+        sub: [
+          { title: '16.2.1　address_space 对象', blocks: [
+            { p: 'address_space 是"文件 ↔ 页"的映射结构，嵌入 inode 的 i_data。每个缓存页有 struct page 指向 host。' }
+          ] },
+          { title: '16.2.2　address_space 操作', blocks: [
+            { p: 'address_space_operations 定义 readpage()、writepage()、writepages()、set_page_dirty() 等与底层设备的交互。' }
+          ] },
+          { title: '16.2.3　基树', blocks: [
+            { p: '基树（radix tree）按 page index 索引缓存页，O(log n) 查找。已被 xarray 取代。' }
+          ] },
+          { title: '16.2.4　以前的页散列表', blocks: [
+            { p: '2.6 之前用 hash 表管理缓存页，2.6 后改用基数树。' }
+          ] }
+        ]
+      },
+      { title: '16.3　缓冲区高速缓存',
+        blocks: [
+          { p: '内核曾同时维护 buffer cache（块设备缓存）和 page cache（文件缓存），2.4 之后合并为 page cache，buffer_head 仅作为"块 ↔ 页"的描述。' }
+        ]
+      },
+      { title: '16.4　flusher 线程',
+        sub: [
+          { title: '16.4.1　膝上型计算机模式', blocks: [
+            { p: '在电池供电时延迟刷盘，避免频繁唤醒磁盘。' }
+          ] },
+          { title: '16.4.2　历史上的 bdflush、kupdated 和 pdflush', blocks: [
+            { p: '内核刷盘机制经过多次演进：bdflush → kupdated → pdflush → per-bdi flusher。' }
+          ] },
+          { title: '16.4.3　避免拥塞的方法：使用多线程', blocks: [
+            { p: '为每个块设备队列分配一个 flusher 线程，避免单线程成为瓶颈。' }
+          ] }
+        ]
+      },
+      { title: '16.5　小结',
+        blocks: [
+          { p: '页高速缓存是 Linux I/O 性能的核心，理解它对优化数据库、虚拟化、容器等场景至关重要。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch17', icon: '🔌', title: '第 17 章　设备与模块',
+    summary: '本章介绍 Linux 设备类型、内核模块机制以及统一设备模型（kobject、ktype、kset、sysfs）。',
+    sections: [
+      { title: '17.1　设备类型',
+        blocks: [
+          { p: '三种设备：' },
+          { ul: [
+            '<strong>字符设备</strong>：按字节流顺序访问（键盘、串口、/dev/zero）。',
+            '<strong>块设备</strong>：按块随机访问（硬盘、SSD）。',
+            '<strong>网络设备</strong>：通过 socket API 访问（eth0、wlan0），不映射为文件。'
+          ] }
+        ]
+      },
+      { title: '17.2　模块',
+        sub: [
+          { title: '17.2.1　Hello, World', blocks: [
+            { code: '#include <linux/module.h>\n#include <linux/init.h>\nMODULE_LICENSE("GPL");\nstatic int __init hello_init(void) { printk(KERN_INFO "Hello\\n"); return 0; }\nstatic void __exit hello_exit(void) { printk(KERN_INFO "Bye\\n"); }\nmodule_init(hello_init);\nmodule_exit(hello_exit);' }
+          ] },
+          { title: '17.2.2　构建模块', blocks: [
+            { p: '两种方式：' },
+            { ul: [
+              '放在内核源码树中：写 Kconfig、Makefile，make menuconfig 选中，make modules。',
+              '放在内核代码外：用 M=<path> make modules 构建外部模块。'
+            ] }
+          ] },
+          { title: '17.2.3　安装模块', blocks: [
+            { p: 'make modules_install 安装到 /lib/modules/$(uname -r)/extra。' }
+          ] },
+          { title: '17.2.4　产生模块依赖性', blocks: [
+            { p: 'depmod 扫描 /lib/modules/$(uname -r) 生成 modules.dep，记录模块间依赖。' }
+          ] },
+          { title: '17.2.5　载入模块', blocks: [
+            { p: 'insmod 加载、rmmod 卸载、modprobe 智能加载（解析依赖）。' }
+          ] },
+          { title: '17.2.6　管理配置选项', blocks: [
+            { p: 'MODULE_PARM_DESC 描述参数；module_param() 声明运行时参数。' }
+          ] },
+          { title: '17.2.7　模块参数', blocks: [
+            { p: '加载时：insmod mymod.ko debug=1。运行时：/sys/module/mymod/parameters/debug。' }
+          ] },
+          { title: '17.2.8　导出符号表', blocks: [
+            { p: 'EXPORT_SYMBOL() 把符号导出供其他模块使用；EXPORT_SYMBOL_GPL() 仅供 GPL 模块。' }
+          ] }
+        ]
+      },
+      { title: '17.3　设备模型',
+        sub: [
+          { title: '17.3.1　kobject', blocks: [
+            { p: 'kobject 是设备模型的基础：每个对象都有名字、引用计数、parent、kset 指针。' }
+          ] },
+          { title: '17.3.2　ktype', blocks: [
+            { p: 'ktype 定义 kobject 的行为：release()、sysfs_ops、default attributes。' }
+          ] },
+          { title: '17.3.3　kset', blocks: [
+            { p: 'kset 是同类型 kobject 的集合，自身也是一个 kobject。' }
+          ] },
+          { title: '17.3.4　kobject、ktype 和 kset 的相互关系', blocks: [
+            { p: 'kobject 通过 ktype 描述行为，通过 kset 嵌入集合。' }
+          ] },
+          { title: '17.3.5　管理和操作 kobject', blocks: [
+            { p: 'kobject_init()、kobject_add()、kobject_put() 等标准生命周期 API。' }
+          ] },
+          { title: '17.3.6　引用计数', blocks: [
+            { p: 'kref 是简化版的引用计数，是 kobject 的核心。' },
+            { ul: [
+              '<strong>递增和递减引用计数</strong>：kref_get() / kref_put()。',
+              '<strong>kref</strong>：嵌入结构体，释放时调用用户提供的 release()。'
+            ] }
+          ] }
+        ]
+      },
+      { title: '17.4　sysfs',
+        sub: [
+          { title: '17.4.1　sysfs 中添加和删除 kobject', blocks: [
+            { p: 'kobject_add() 自动在 /sys 下创建目录。' }
+          ] },
+          { title: '17.4.2　向 sysfs 中添加文件', blocks: [
+            { ul: [
+              '<strong>默认属性</strong>：ktype 包含 default_attrs。',
+              '<strong>创建新属性</strong>：kobj_attr_create() 或 device_create_file()。',
+              '<strong>删除新属性</strong>：device_remove_file()。',
+              '<strong>sysfs 约定</strong>：一个文件一个值；尽量少；读为主；文件名小写下划线。'
+            ] }
+          ] },
+          { title: '17.4.3　内核事件层', blocks: [
+            { p: 'uevent 在 kobject 状态变化时通知用户态（udevd / mdevd），用户态可据此动态创建设备节点。' }
+          ] }
+        ]
+      },
+      { title: '17.5　小结',
+        blocks: [
+          { p: '设备模型把硬件、驱动、总线、类组织成树形结构，让统一管理、电源管理、热插拔成为可能。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch18', icon: '🐞', title: '第 18 章　调试',
+    summary: '内核调试比用户态更困难。本章介绍 printk、oops、kgdb、内核配置选项、二分查找等调试手段。',
+    sections: [
+      { title: '18.1　准备开始',
+        blocks: [
+          { p: '调试内核前应准备：测试环境、串口线、保留旧内核以便回退、启用合适的内核配置。' }
+        ]
+      },
+      { title: '18.2　内核中的 bug',
+        blocks: [
+          { p: '常见症状：oops、panic、死锁、内存泄漏、性能退化。' }
+        ]
+      },
+      { title: '18.3　通过打印来调试',
+        sub: [
+          { title: '18.3.1　健壮性', blocks: [
+            { p: 'printk 在中断/任何上下文都可用；不能睡眠；要小心缓冲区溢出。' }
+          ] },
+          { title: '18.3.2　日志等级', blocks: [
+            { p: 'KERN_EMERG、KERN_ALERT、KERN_CRIT、KERN_ERR、KERN_WARNING、KERN_NOTICE、KERN_INFO、KERN_DEBUG。控制台只显示等级 ≤ console_loglevel 的消息。' }
+          ] },
+          { title: '18.3.3　记录缓冲区', blocks: [
+            { p: '__log_buf 是 ring buffer；可用 dmesg 查看。' }
+          ] },
+          { title: '18.3.4　syslogd 和 klogd', blocks: [
+            { p: '用户态守护进程从 /proc/kmsg 读取并写入 /var/log/messages。' }
+          ] },
+          { title: '18.3.5　从 printf() 到 printk() 的转换', blocks: [
+            { p: '%d、%s、%p、%zu 等格式基本通用；不支持浮点。' }
+          ] }
+        ]
+      },
+      { title: '18.4　oops',
+        sub: [
+          { title: '18.4.1　ksymoops', blocks: [
+            { p: '把 oops 中的地址翻译为符号（旧内核工具）。' }
+          ] },
+          { title: '18.4.2　kallsyms', blocks: [
+            { p: '把内核符号表嵌入内核映像，使 oops 自动显示函数名（需 CONFIG_KALLSYMS）。' }
+          ] }
+        ]
+      },
+      { title: '18.5　内核调试配置选项',
+        blocks: [
+          { p: 'CONFIG_DEBUG_KERNEL、CONFIG_DEBUG_SLAB、CONFIG_DEBUG_PAGEALLOC、CONFIG_DEBUG_SPINLOCK、CONFIG_DEBUG_MUTEXES、CONFIG_DEBUG_ATOMIC_SLEEP 等。' }
+        ]
+      },
+      { title: '18.6　引发 bug 并打印信息',
+        blocks: [
+          { p: 'BUG() / BUG_ON() 触发 oops；WARN_ON() / WARN_ON_ONCE() 只打警告不 crash。' }
+        ]
+      },
+      { title: '18.7　神奇的系统请求键',
+        blocks: [
+          { p: 'Alt + SysRq + <key> 直接向内核发命令：' },
+          { ul: [
+            'r：把键盘从 X 切回 raw 模式。',
+            's：同步所有挂载文件系统。',
+            'u：umount 并 remount 只读。',
+            'b：立即重启。',
+            't：导出任务列表。',
+            'm：导出内存信息。'
+          ] }
+        ]
+      },
+      { title: '18.8　内核调试器的传奇',
+        sub: [
+          { title: '18.8.1　gdb', blocks: [
+            { p: 'gdb vmlinux /proc/kcore 可调试 core dump，但无法断点运行内核。' }
+          ] },
+          { title: '18.8.2　kgdb', blocks: [
+            { p: 'kgdb 是内核内的 GDB stub，通过串口与远端 gdb 通信，支持断点、单步。' }
+          ] }
+        ]
+      },
+      { title: '18.9　探测系统',
+        sub: [
+          { title: '18.9.1　用 UID 作为选择条件', blocks: [
+            { p: 'printk 只对特定用户的请求打印。' }
+          ] },
+          { title: '18.9.2　使用条件变量', blocks: [
+            { p: '静态变量 + /proc 接口动态打开/关闭调试输出。' }
+          ] },
+          { title: '18.9.3　使用统计量', blocks: [
+            { p: '统计某事件出现次数，事后输出。' }
+          ] },
+          { title: '18.9.4　重复频率限制', blocks: [
+            { p: '用 printk_ratelimited() 避免日志洪泛。' }
+          ] }
+        ]
+      },
+      { title: '18.10　用二分查找法找出引发罪恶的变更',
+        blocks: [
+          { p: '已知坏 commit 与好 commit 时，git bisect 二分定位第一个引入 bug 的提交。' }
+        ]
+      },
+      { title: '18.11　使用 Git 进行二分搜索',
+        blocks: [
+          { p: 'git bisect start / bad / good → git bisect run <test-script> 自动二分。' }
+        ]
+      },
+      { title: '18.12　当所有的努力都失败时：社区',
+        blocks: [
+          { p: '向 LKML、各子系统 maintainer 提交详细的 bug report（重现步骤、配置、dmesg、是否可 bisect）。' }
+        ]
+      },
+      { title: '18.13　小结',
+        blocks: [
+          { p: '内核调试的关键是耐心与系统化的方法。printk + bisect + 调试器是三大工具。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch19', icon: '🌐', title: '第 19 章　可移植性',
+    summary: 'Linux 支持 30+ 架构，本章讨论让代码可移植的关键：字长、数据类型、对齐、字节序、SMP 与高端内存。',
+    sections: [
+      { title: '19.1　可移植操作系统',
+        blocks: [
+          { p: '可移植性让同一份代码运行在 x86、ARM、RISC-V、MIPS、PowerPC 等不同架构上。内核通过分层（arch/ + 通用层）实现。' }
+        ]
+      },
+      { title: '19.2　Linux 移植史',
+        blocks: [
+          { p: '从 i386 起步，逐步加入 Alpha、Sparc、PowerPC、MIPS、ARM、ARM64、RISC-V 等。' }
+        ]
+      },
+      { title: '19.3　字长和数据类型',
+        sub: [
+          { title: '19.3.1　不透明类型', blocks: [
+            { p: 'size_t、pid_t、uintptr_t 等只关心用途不关心大小的类型。' }
+          ] },
+          { title: '19.3.2　指定数据类型', blocks: [
+            { p: 'u8/u16/u32/u64、s8/s16/s32/s64 严格指定大小，跨架构一致。' }
+          ] },
+          { title: '19.3.3　长度明确的类型', blocks: [
+            { p: '__u8、__s16 等在用户态头文件（asm/types.h）中使用，避免污染用户态 namespace。' }
+          ] },
+          { title: '19.3.4　char 型的符号问题', blocks: [
+            { p: 'char 默认符号由编译器决定，跨平台时不安全。需要明确带符号时用 signed char。' }
+          ] }
+        ]
+      },
+      { title: '19.4　数据对齐',
+        sub: [
+          { title: '19.4.1　避免对齐引发的问题', blocks: [
+            { p: '未对齐访问在 x86 上能容忍（但慢），在 ARM/MIPS/Sparc 上会 trap。统一用 get_unaligned/put_unaligned 访问。' }
+          ] },
+          { title: '19.4.2　非标准类型的对齐', blocks: [
+            { p: '__attribute__((aligned(N))) 指定对齐。' }
+          ] },
+          { title: '19.4.3　结构体填补', blocks: [
+            { p: '编译器自动在结构体成员间填充以满足对齐。__packed 禁止填充但性能下降。' }
+          ] }
+        ]
+      },
+      { title: '19.5　字节顺序',
+        blocks: [
+          { p: '大端（big-endian）vs 小端（little-endian）。网络协议规定大端（"network byte order"）。' },
+          { code: '__be16 cpu_to_be16(u16 val);\nu16 be16_to_cpu(__be16 val);' }
+        ]
+      },
+      { title: '19.6　时间',
+        blocks: [
+          { p: 'jiffies 与 HZ 在不同架构可能不同，代码应使用 msecs_to_jiffies() 等抽象，不假定 HZ=1000。' }
+        ]
+      },
+      { title: '19.7　页长度',
+        blocks: [
+          { p: 'PAGE_SIZE 一般 4KB，但某些架构支持 16K、64K。假设页大小的代码会出错。' }
+        ]
+      },
+      { title: '19.8　处理器排序',
+        blocks: [
+          { p: '内存屏障 mb()/rmb()/wmb() 处理 CPU 乱序。' }
+        ]
+      },
+      { title: '19.9　SMP、内核抢占、高端内存',
+        blocks: [
+          { p: '可移植代码必须考虑：多 CPU 并发、可抢占、高端内存映射。' }
+        ]
+      },
+      { title: '19.10　小结',
+        blocks: [
+          { p: '可移植性是 Linux 长期发展的关键。编码时应假设"任何架构都可能执行这份代码"。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch20', icon: '🤝', title: '第 20 章　补丁、开发和社区',
+    summary: '本章介绍 Linux 编码风格、内核提交流程、补丁制作以及如何参与社区贡献。',
+    sections: [
+      { title: '20.1　社区',
+        blocks: [
+          { p: 'Linux 社区由志愿者、企业、爱好者组成。沟通主要通过邮件列表（LKML）和 IRC。Linus 是最后合并者。' }
+        ]
+      },
+      { title: '20.2　Linux 编码风格',
+        sub: [
+          { title: '20.2.1　缩进', blocks: [
+            { p: 'Tab 缩进 8 字符宽，禁止空格缩进。' }
+          ] },
+          { title: '20.2.2　switch 语句', blocks: [
+            { p: '每个 case 必须有独立缩进，break 后不加额外缩进，default 也必须有。' }
+          ] },
+          { title: '20.2.3　空格', blocks: [
+            { p: '关键字后加空格、函数名后不加、指针 * 靠近变量名（int *p）。' }
+          ] },
+          { title: '20.2.4　花括号', blocks: [
+            { p: '左花括号不换行（K&R 风格），但函数定义除外。' }
+          ] },
+          { title: '20.2.5　每行代码的长度', blocks: [
+            { p: '建议不超过 80 列。' }
+          ] },
+          { title: '20.2.6　命名规范', blocks: [
+            { p: '变量名小写下划线，函数名小写下划线；类型名小写加 _t 后缀；宏全大写。' }
+          ] },
+          { title: '20.2.7　函数', blocks: [
+            { p: '函数尽量短小、单一职责；参数不超过 5~6 个。' }
+          ] },
+          { title: '20.2.8　注释', blocks: [
+            { p: '/* ... */ C 风格；// 仅在临时注释使用。' }
+          ] },
+          { title: '20.2.9　typedef', blocks: [
+            { p: '几乎禁止 typedef struct，结构体直接用 struct tag 引用。' }
+          ] },
+          { title: '20.2.10　多用现成的东西', blocks: [
+            { p: '用 printk、list_*、pr_* 而不是自造轮子。' }
+          ] },
+          { title: '20.2.11　在源码中减少使用 ifdef', blocks: [
+            { p: '把 ifdef 集中到头文件，.c 文件保持清晰。' }
+          ] },
+          { title: '20.2.12　结构初始化', blocks: [
+            { p: '用 .field = value 风格，便于阅读与维护。' }
+          ] },
+          { title: '20.2.13　代码的事后修正', blocks: [
+            { p: '"先把它做对，再把它做漂亮"——先正确，再优化风格。' }
+          ] }
+        ]
+      },
+      { title: '20.3　管理系统',
+        blocks: [
+          { p: 'Linux 采用分布式版本控制。mainline 由 Linus 维护；stable 由 Greg KH 等 maintainer 维护；各发行版维护 vendor tree。' }
+        ]
+      },
+      { title: '20.4　提交错误报告',
+        blocks: [
+          { p: '好 bug report 包括：详细描述、复现步骤、期望/实际行为、内核版本、配置、dmesg、是否可 bisect。' }
+        ]
+      },
+      { title: '20.5　补丁',
+        sub: [
+          { title: '20.5.1　创建补丁', blocks: [
+            { p: 'diff -urN old new > patch；diffstat 显示变更概况。' }
+          ] },
+          { title: '20.5.2　用 Git 创建补丁', blocks: [
+            { p: 'git format-patch -1 生成 patch；git send-email 直接发送邮件。' }
+          ] },
+          { title: '20.5.3　提交补丁', blocks: [
+            { p: 'CC 给子系统 maintainer + 相关邮件列表；Subject 前缀加 [PATCH]；正文包含 changelog、diffstat、Signed-off-by。' }
+          ] }
+        ]
+      },
+      { title: '20.6　小结',
+        blocks: [
+          { p: '参与 Linux 开发既是写代码，更是融入社区：尊重风格、清晰沟通、耐心迭代。' }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'ch-extra', icon: '📚', title: '附录：参考资料',
+    summary: '延伸阅读与参考资源。',
+    sections: [
+      { title: '推荐书目',
+        blocks: [
+          { ul: [
+            '<strong>操作系统设计书籍</strong>：Tanenbaum《现代操作系统》、Silberschatz《操作系统概念》。',
+            '<strong>Unix 内核书籍</strong>：Maurice Bach《UNIX 操作系统设计》、McKusick《UNIX 内核架构》。',
+            '<strong>Linux 内核书籍</strong>：Daniel Bovet & Marco Cesati《深入理解 Linux 内核》、Robert Love《Linux 内核设计与实现》、Greg Kroah-Hartman《Linux Kernel in a Nutshell》。',
+            '<strong>其他内核书</strong>：Solaris Internals、Mac OS X Internals。',
+            '<strong>Unix API</strong>：Stevens《UNIX 环境高级编程》《UNIX 网络编程》。',
+            '<strong>C 语言</strong>：K&R《C 程序设计语言》、Robert Love 自己写的《Linux System Programming》。'
+          ] }
+        ]
+      },
+      { title: '常用 Web 站点',
+        blocks: [
+          { ul: [
+            '<strong>kernel.org</strong>：官方源码、补丁与文档。',
+            '<strong>lwn.net</strong>：高质量内核新闻与分析。',
+            '<strong>lkml.org</strong>：Linux 内核邮件列表存档。',
+            '<strong>elixir.bootlin.com</strong>：交叉引用源码搜索。',
+            '<strong>linux.die.net</strong>：手册页。'
+          ] }
+        ]
+      }
+    ]
+  }
+];
+
+/* ============================================================
+   渲染导航
+   ============================================================ */
+const TOC_ROOT = document.getElementById('tocRoot');
+
+function createRow(item) {
+  const li = document.createElement('li');
+  li.className = 'toc-item';
+  if (item.children && item.children.length) li.classList.add('has-children');
+  else li.classList.add('no-children');
+
+  const row = document.createElement('div');
+  row.className = 'toc-row';
+  row.dataset.target = item.id;
+  row.innerHTML = `
+    <span class="toc-toggle">▶</span>
+    <span class="toc-icon">${item.icon || '·'}</span>
+    <span class="toc-text">${item.title}</span>
+  `;
+  li.appendChild(row);
+
+  if (item.children && item.children.length) {
+    const sub = document.createElement('ul');
+    sub.className = 'toc-sub';
+    item.children.forEach(c => sub.appendChild(createRow(c)));
+    li.appendChild(sub);
+    row.addEventListener('click', (e) => {
+      e.stopPropagation();
+      li.classList.toggle('open');
+    });
+  } else {
+    row.addEventListener('click', () => {
+      const target = document.getElementById(item.id);
+      if (target) {
+        document.querySelectorAll('.toc-row.active').forEach(r => r.classList.remove('active'));
+        row.classList.add('active');
+        window.scrollTo({ top: target.offsetTop - 20, behavior: 'smooth' });
+        updateBreadcrumb(item);
+      }
+    });
+  }
+  return li;
+}
+
+MIND_DATA.forEach(ch => TOC_ROOT.appendChild(createRow(ch)));
+
+/* ============================================================
+   渲染主内容
+   ============================================================ */
+const CONTENT = document.getElementById('content');
+
+function renderBlocks(blocks) {
+  if (!blocks) return '';
+  return blocks.map(b => {
+    if (b.p) return `<p>${b.p}</p>`;
+    if (b.ul) return `<ul>${b.ul.map(i => `<li>${i}</li>`).join('')}</ul>`;
+    if (b.code) return `<pre class="code">${escapeHtml(b.code)}</pre>`;
+    if (b.note) return `<div class="note"><span class="label">提示</span>${b.note}</div>`;
+    return '';
+  }).join('');
+}
+
+function renderSubs(subs) {
+  if (!subs) return '';
+  return subs.map(s => `
+    <div class="subsection">
+      <div class="subsection-title">${s.title}</div>
+      <div class="content">${renderBlocks(s.blocks)}${renderSubs(s.subsection)}</div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+MIND_DATA.forEach((ch, idx) => {
+  const chapterEl = document.createElement('section');
+  chapterEl.className = 'chapter';
+  chapterEl.id = ch.id;
+  chapterEl.innerHTML = `
+    <div class="chapter-head">
+      <span class="chapter-num">第 ${ch.id === 'ch-extra' ? '附' : idx + 1} 章</span>
+      <h2 class="chapter-title">${ch.title.replace(/^第\s*\S+\s*章\s*/, '')}</h2>
+    </div>
+    <div class="chapter-tagline">${ch.summary || ''}</div>
+    ${ch.sections.map(sec => `
+      <div class="section">
+        <div class="section-title">${sec.title}</div>
+        <div class="content">${renderBlocks(sec.blocks)}</div>
+        ${renderSubs(sec.subs)}
+      </div>
+    `).join('')}
+  `;
+  CONTENT.appendChild(chapterEl);
+});
+
+/* ============================================================
+   交互逻辑
+   ============================================================ */
+function expandAll() {
+  document.querySelectorAll('.toc-item').forEach(li => li.classList.add('open'));
+}
+function collapseAll() {
+  document.querySelectorAll('.toc-item').forEach(li => li.classList.remove('open'));
+  document.querySelectorAll('.toc-row.active').forEach(r => r.classList.remove('active'));
+}
+
+function updateBreadcrumb(item) {
+  const path = [];
+  let cur = item;
+  // simple: just show chapter title
+  document.getElementById('crumb-current').textContent = cur.title;
+}
+
+/* Search */
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  if (!q) {
+    document.querySelectorAll('.toc-item').forEach(li => li.style.display = '');
+    return;
+  }
+  document.querySelectorAll('.toc-item').forEach(li => {
+    const txt = li.querySelector('.toc-text').textContent.toLowerCase();
+    if (txt.includes(q)) {
+      li.style.display = '';
+      // open parents
+      let p = li.parentElement;
+      while (p && p.classList && p.classList.contains('toc-item')) {
+        p.classList.add('open');
+        p = p.parentElement;
+      }
+    } else {
+      li.style.display = 'none';
+    }
+  });
+});
+
+/* Back to top */
+const backBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 400) backBtn.classList.add('show');
+  else backBtn.classList.remove('show');
+});
+
+/* 默认折叠：仅展开第一章 */
+collapseAll();
+document.querySelector('.toc-item').classList.add('open');
+</script>
+</body>
+</html>
