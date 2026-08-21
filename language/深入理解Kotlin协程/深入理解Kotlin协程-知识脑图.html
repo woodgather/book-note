@@ -1,0 +1,2422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>深入理解Kotlin协程 - 知识脑图</title>
+<style>
+:root {
+    color-scheme: light;
+    --primary: #7c4dff;
+    --primary-light: #b388ff;
+    --primary-dark: #5e35b1;
+    --accent: #ff6e40;
+    --bg: #f5f5f7;
+    --bg-card: #ffffff;
+    --bg-sidebar: #fafafa;
+    --text: #1d1d1f;
+    --text-secondary: #5f6368;
+    --text-tertiary: #8e8e93;
+    --border: #e0e0e6;
+    --border-light: #ececf0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-hover: 0 4px 12px rgba(124, 77, 255, 0.12);
+    --radius: 8px;
+    --transition: 0.2s ease;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body {
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.7;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+}
+.layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+/* === Sidebar === */
+.sidebar {
+    width: 320px;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s ease, width 0.3s ease;
+    position: relative;
+    z-index: 100;
+}
+.sidebar.collapsed {
+    margin-left: -320px;
+}
+.sidebar-header {
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid var(--border-light);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    flex-shrink: 0;
+}
+.sidebar-title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+.sidebar-subtitle {
+    font-size: 12px;
+    opacity: 0.85;
+    margin-top: 4px;
+}
+.sidebar-toggle {
+    position: absolute;
+    top: 16px;
+    right: -14px;
+    width: 28px;
+    height: 28px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(124, 77, 255, 0.4);
+    font-size: 14px;
+    transition: transform 0.2s ease;
+    z-index: 10;
+}
+.sidebar-toggle:hover {
+    transform: scale(1.1);
+}
+.sidebar-toggle.collapsed {
+    transform: rotate(180deg);
+}
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 0;
+}
+.sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}
+.nav-list, .nav-sublist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.nav-sublist {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding-left: 0;
+}
+.nav-sublist.expanded {
+    max-height: 5000px;
+}
+.nav-chapter {
+    margin: 2px 0;
+}
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 9px 16px 9px 14px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all var(--transition);
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    gap: 6px;
+    line-height: 1.4;
+}
+.nav-link:hover {
+    background: rgba(124, 77, 255, 0.06);
+    color: var(--primary);
+}
+.nav-link.active {
+    background: rgba(124, 77, 255, 0.1);
+    color: var(--primary);
+    border-left-color: var(--primary);
+    font-weight: 500;
+}
+.nav-chapter > .nav-link {
+    font-weight: 500;
+    color: var(--text);
+    padding-top: 11px;
+    padding-bottom: 11px;
+}
+.nav-preface > .nav-link {
+    font-weight: 500;
+}
+.nav-section-link {
+    padding-left: 28px;
+    font-size: 13px;
+}
+.nav-sub-link {
+    padding-left: 50px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+.nav-sub-link:hover {
+    color: var(--primary);
+}
+.nav-toggle {
+    display: inline-block;
+    font-size: 9px;
+    color: var(--text-tertiary);
+    transition: transform 0.2s ease;
+    width: 12px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.nav-toggle.expanded {
+    transform: rotate(90deg);
+}
+.nav-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+.nav-chapter-label {
+    font-size: 11px;
+    background: var(--primary);
+    color: white;
+    padding: 1px 6px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    font-weight: 500;
+}
+.nav-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.nav-dot {
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+}
+/* === Main Content === */
+.main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 40px 80px;
+}
+.main::-webkit-scrollbar {
+    width: 8px;
+}
+.main::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+.main::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}
+.content-section {
+    max-width: 880px;
+    margin: 0 auto 60px;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 32px 36px;
+    box-shadow: var(--shadow);
+}
+.section-header {
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+}
+.chapter-header {
+    position: relative;
+}
+.chapter-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    line-height: 1.4;
+}
+.chapter-tag {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    background: var(--bg);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-top: 6px;
+}
+.chapter-intro {
+    background: linear-gradient(135deg, rgba(124, 77, 255, 0.04) 0%, rgba(179, 136, 255, 0.04) 100%);
+    border-left: 3px solid var(--primary);
+    padding: 14px 18px;
+    border-radius: 4px;
+    margin-bottom: 24px;
+}
+.lead {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+.section-block {
+    margin: 20px 0;
+    padding: 20px 24px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    transition: all var(--transition);
+}
+.section-block:hover {
+    box-shadow: var(--shadow-hover);
+    border-color: var(--primary-light);
+}
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+}
+.section-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background: var(--primary);
+    margin-right: 10px;
+    border-radius: 2px;
+}
+.section-content-text {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 12px;
+}
+.subsections-container {
+    margin-top: 16px;
+    padding-left: 8px;
+    border-left: 2px dashed var(--border);
+}
+.sub-block {
+    margin: 12px 0;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid var(--border-light);
+    transition: all var(--transition);
+}
+.sub-block:hover {
+    border-color: var(--primary-light);
+    transform: translateX(2px);
+}
+.sub-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+}
+.sub-title::before {
+    content: '▸';
+    color: var(--primary);
+    margin-right: 8px;
+    font-size: 12px;
+}
+.content-block p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-size: 14px;
+}
+/* === Floating action button when sidebar is collapsed === */
+.show-sidebar-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
+    font-size: 18px;
+    z-index: 99;
+    transition: all var(--transition);
+}
+.show-sidebar-btn:hover {
+    transform: scale(1.05);
+}
+.sidebar.collapsed ~ .main .show-sidebar-btn {
+    display: flex;
+}
+/* Highlight target on anchor jump */
+.content-section:target,
+.section-block:target,
+.sub-block:target {
+    animation: highlight 1.5s ease;
+}
+@keyframes highlight {
+    0% { background-color: rgba(124, 77, 255, 0.15); }
+    100% { background-color: var(--bg-card); }
+}
+.section-block:target {
+    animation: highlightBlock 1.5s ease;
+}
+@keyframes highlightBlock {
+    0% { background-color: rgba(124, 77, 255, 0.15); }
+    100% { background-color: var(--bg); }
+}
+.sub-block:target {
+    animation: highlightSub 1.5s ease;
+}
+@keyframes highlightSub {
+    0% { background-color: rgba(124, 77, 255, 0.15); }
+    100% { background-color: white; }
+}
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        height: 100vh;
+    }
+    .main {
+        padding: 20px 16px 60px;
+    }
+    .content-section {
+        padding: 20px 18px;
+    }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar" id="sidebar">
+        <button class="sidebar-toggle" id="sidebarToggle" title="折叠/展开导航">◀</button>
+        <div class="sidebar-header">
+            <div class="sidebar-title">深入理解Kotlin协程</div>
+            <div class="sidebar-subtitle">知识脑图 · 共9章 · 44节 · 129小节</div>
+        </div>
+        <nav class="sidebar-nav">
+            <ul class="nav-list">
+                <li class="nav-preface">
+    <a href="#preface" class="nav-link" data-target="preface">
+        <span class="nav-icon">📖</span>
+        <span class="nav-text">前言</span>
+    </a>
+</li>
+<li class="nav-chapter">
+        <a href="#chapter-1" class="nav-link nav-chapter-link" data-target="chapter-1">
+            <span class="nav-toggle" data-toggle="chapter-1">▶</span>
+            <span class="nav-chapter-label">第1章</span>
+            <span class="nav-text">异步程序设计介绍</span>
+        </a>
+        <ul class="nav-sublist" id="sublist-chapter-1">
+            <li>
+                <a href="#chapter-1-sec-9007" class="nav-link nav-section-link" data-target="chapter-1-sec-9007">
+                    <span class="nav-toggle" data-toggle="chapter-1-sec-9007">▶</span>
+                    <span class="nav-text">1.1 异步的概念</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-1-sec-9007">
+                    <li>
+                <a href="#chapter-1-sec-9007-sub-91461" class="nav-link nav-sub-link" data-target="chapter-1-sec-9007-sub-91461">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.1.1 程序的执行</span>
+                </a>
+            </li><li>
+                <a href="#chapter-1-sec-9007-sub-73669" class="nav-link nav-sub-link" data-target="chapter-1-sec-9007-sub-73669">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.1.2 异步与回调</span>
+                </a>
+            </li><li>
+                <a href="#chapter-1-sec-9007-sub-54992" class="nav-link nav-sub-link" data-target="chapter-1-sec-9007-sub-54992">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.1.3 回调地狱</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-1-sec-6398" class="nav-link nav-section-link" data-target="chapter-1-sec-6398">
+                    <span class="nav-toggle" data-toggle="chapter-1-sec-6398">▶</span>
+                    <span class="nav-text">1.2 异步程序设计的关键问题</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-1-sec-6398">
+                    <li>
+                <a href="#chapter-1-sec-6398-sub-52418" class="nav-link nav-sub-link" data-target="chapter-1-sec-6398-sub-52418">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.2.1 结果传递</span>
+                </a>
+            </li><li>
+                <a href="#chapter-1-sec-6398-sub-92558" class="nav-link nav-sub-link" data-target="chapter-1-sec-6398-sub-92558">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.2.2 异常处理</span>
+                </a>
+            </li><li>
+                <a href="#chapter-1-sec-6398-sub-23881" class="nav-link nav-sub-link" data-target="chapter-1-sec-6398-sub-23881">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.2.3 取消响应</span>
+                </a>
+            </li><li>
+                <a href="#chapter-1-sec-6398-sub-99393" class="nav-link nav-sub-link" data-target="chapter-1-sec-6398-sub-99393">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.2.4 复杂分支</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-1-sec-23711" class="nav-link nav-section-link" data-target="chapter-1-sec-23711">
+                    <span class="nav-toggle" data-toggle="chapter-1-sec-23711">▶</span>
+                    <span class="nav-text">1.3 常见异步程序设计思路</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-1-sec-23711">
+                    <li>
+                <a href="#chapter-1-sec-23711-sub-67443" class="nav-link nav-sub-link" data-target="chapter-1-sec-23711-sub-67443">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.3.1 Future</span>
+                </a>
+            </li><li>
+                <a href="#chapter-1-sec-23711-sub-36653" class="nav-link nav-sub-link" data-target="chapter-1-sec-23711-sub-36653">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.3.2 CompletableFuture</span>
+                </a>
+            </li><li>
+                <a href="#chapter-1-sec-23711-sub-39604" class="nav-link nav-sub-link" data-target="chapter-1-sec-23711-sub-39604">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.3.3 Promise与async/await</span>
+                </a>
+            </li><li>
+                <a href="#chapter-1-sec-23711-sub-83533" class="nav-link nav-sub-link" data-target="chapter-1-sec-23711-sub-83533">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.3.4 响应式编程</span>
+                </a>
+            </li><li>
+                <a href="#chapter-1-sec-23711-sub-77923" class="nav-link nav-sub-link" data-target="chapter-1-sec-23711-sub-77923">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">1.3.5 Kotlin协程</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-1-sec-27262" class="nav-link nav-section-link" data-target="chapter-1-sec-27262">
+                    <span class="nav-toggle" style="visibility:hidden">▶</span>
+                    <span class="nav-text">1.4 本章小结</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+<li class="nav-chapter">
+        <a href="#chapter-2" class="nav-link nav-chapter-link" data-target="chapter-2">
+            <span class="nav-toggle" data-toggle="chapter-2">▶</span>
+            <span class="nav-chapter-label">第2章</span>
+            <span class="nav-text">协程的基本概念</span>
+        </a>
+        <ul class="nav-sublist" id="sublist-chapter-2">
+            <li>
+                <a href="#chapter-2-sec-97247" class="nav-link nav-section-link" data-target="chapter-2-sec-97247">
+                    <span class="nav-toggle" style="visibility:hidden">▶</span>
+                    <span class="nav-text">2.1 协程究竟是什么</span>
+                </a>
+            </li><li>
+                <a href="#chapter-2-sec-88723" class="nav-link nav-section-link" data-target="chapter-2-sec-88723">
+                    <span class="nav-toggle" data-toggle="chapter-2-sec-88723">▶</span>
+                    <span class="nav-text">2.2 协程的分类</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-2-sec-88723">
+                    <li>
+                <a href="#chapter-2-sec-88723-sub-34348" class="nav-link nav-sub-link" data-target="chapter-2-sec-88723-sub-34348">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">2.2.1 按调用栈分类</span>
+                </a>
+            </li><li>
+                <a href="#chapter-2-sec-88723-sub-44622" class="nav-link nav-sub-link" data-target="chapter-2-sec-88723-sub-44622">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">2.2.2 按调度方式分类</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-2-sec-80577" class="nav-link nav-section-link" data-target="chapter-2-sec-80577">
+                    <span class="nav-toggle" data-toggle="chapter-2-sec-80577">▶</span>
+                    <span class="nav-text">2.3 协程的实现举例</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-2-sec-80577">
+                    <li>
+                <a href="#chapter-2-sec-80577-sub-28465" class="nav-link nav-sub-link" data-target="chapter-2-sec-80577-sub-28465">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">2.3.1 Python的Generator</span>
+                </a>
+            </li><li>
+                <a href="#chapter-2-sec-80577-sub-71152" class="nav-link nav-sub-link" data-target="chapter-2-sec-80577-sub-71152">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">2.3.2 Lua标准库的协程实现</span>
+                </a>
+            </li><li>
+                <a href="#chapter-2-sec-80577-sub-62433" class="nav-link nav-sub-link" data-target="chapter-2-sec-80577-sub-62433">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">2.3.3 Go的go routine</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-2-sec-57578" class="nav-link nav-section-link" data-target="chapter-2-sec-57578">
+                    <span class="nav-toggle" style="visibility:hidden">▶</span>
+                    <span class="nav-text">2.4 本章小结</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+<li class="nav-chapter">
+        <a href="#chapter-3" class="nav-link nav-chapter-link" data-target="chapter-3">
+            <span class="nav-toggle" data-toggle="chapter-3">▶</span>
+            <span class="nav-chapter-label">第3章</span>
+            <span class="nav-text">Kotlin协程的基础设施</span>
+        </a>
+        <ul class="nav-sublist" id="sublist-chapter-3">
+            <li>
+                <a href="#chapter-3-sec-93682" class="nav-link nav-section-link" data-target="chapter-3-sec-93682">
+                    <span class="nav-toggle" data-toggle="chapter-3-sec-93682">▶</span>
+                    <span class="nav-text">3.1 协程的构造</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-3-sec-93682">
+                    <li>
+                <a href="#chapter-3-sec-93682-sub-76127" class="nav-link nav-sub-link" data-target="chapter-3-sec-93682-sub-76127">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.1.1 协程的创建</span>
+                </a>
+            </li><li>
+                <a href="#chapter-3-sec-93682-sub-6300" class="nav-link nav-sub-link" data-target="chapter-3-sec-93682-sub-6300">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.1.2 协程的启动</span>
+                </a>
+            </li><li>
+                <a href="#chapter-3-sec-93682-sub-71343" class="nav-link nav-sub-link" data-target="chapter-3-sec-93682-sub-71343">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.1.3 协程体的Receiver</span>
+                </a>
+            </li><li>
+                <a href="#chapter-3-sec-93682-sub-86085" class="nav-link nav-sub-link" data-target="chapter-3-sec-93682-sub-86085">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.1.4 可挂起的main函数</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-3-sec-62039" class="nav-link nav-section-link" data-target="chapter-3-sec-62039">
+                    <span class="nav-toggle" data-toggle="chapter-3-sec-62039">▶</span>
+                    <span class="nav-text">3.2 函数的挂起</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-3-sec-62039">
+                    <li>
+                <a href="#chapter-3-sec-62039-sub-26343" class="nav-link nav-sub-link" data-target="chapter-3-sec-62039-sub-26343">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.2.1 挂起函数</span>
+                </a>
+            </li><li>
+                <a href="#chapter-3-sec-62039-sub-78400" class="nav-link nav-sub-link" data-target="chapter-3-sec-62039-sub-78400">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.2.2 挂起点</span>
+                </a>
+            </li><li>
+                <a href="#chapter-3-sec-62039-sub-79275" class="nav-link nav-sub-link" data-target="chapter-3-sec-62039-sub-79275">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.2.3 CPS变换</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-3-sec-46792" class="nav-link nav-section-link" data-target="chapter-3-sec-46792">
+                    <span class="nav-toggle" data-toggle="chapter-3-sec-46792">▶</span>
+                    <span class="nav-text">3.3 协程的上下文</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-3-sec-46792">
+                    <li>
+                <a href="#chapter-3-sec-46792-sub-57194" class="nav-link nav-sub-link" data-target="chapter-3-sec-46792-sub-57194">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.3.1 协程上下文的集合特征</span>
+                </a>
+            </li><li>
+                <a href="#chapter-3-sec-46792-sub-12825" class="nav-link nav-sub-link" data-target="chapter-3-sec-46792-sub-12825">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.3.2 协程上下文元素的实现</span>
+                </a>
+            </li><li>
+                <a href="#chapter-3-sec-46792-sub-37039" class="nav-link nav-sub-link" data-target="chapter-3-sec-46792-sub-37039">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.3.3 协程上下文的使用</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-3-sec-97238" class="nav-link nav-section-link" data-target="chapter-3-sec-97238">
+                    <span class="nav-toggle" data-toggle="chapter-3-sec-97238">▶</span>
+                    <span class="nav-text">3.4 协程的拦截器</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-3-sec-97238">
+                    <li>
+                <a href="#chapter-3-sec-97238-sub-14791" class="nav-link nav-sub-link" data-target="chapter-3-sec-97238-sub-14791">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.4.1 拦截的位置</span>
+                </a>
+            </li><li>
+                <a href="#chapter-3-sec-97238-sub-30200" class="nav-link nav-sub-link" data-target="chapter-3-sec-97238-sub-30200">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.4.2 拦截器的使用</span>
+                </a>
+            </li><li>
+                <a href="#chapter-3-sec-97238-sub-16679" class="nav-link nav-sub-link" data-target="chapter-3-sec-97238-sub-16679">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.4.3 拦截器的执行细节</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-3-sec-12371" class="nav-link nav-section-link" data-target="chapter-3-sec-12371">
+                    <span class="nav-toggle" data-toggle="chapter-3-sec-12371">▶</span>
+                    <span class="nav-text">3.5 Kotlin协程所属的类别</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-3-sec-12371">
+                    <li>
+                <a href="#chapter-3-sec-12371-sub-51507" class="nav-link nav-sub-link" data-target="chapter-3-sec-12371-sub-51507">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.5.1 调用栈的广义和狭义</span>
+                </a>
+            </li><li>
+                <a href="#chapter-3-sec-12371-sub-85278" class="nav-link nav-sub-link" data-target="chapter-3-sec-12371-sub-85278">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">3.5.2 调度关系的对立与统一</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-3-sec-6186" class="nav-link nav-section-link" data-target="chapter-3-sec-6186">
+                    <span class="nav-toggle" style="visibility:hidden">▶</span>
+                    <span class="nav-text">3.6 本章小结</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+<li class="nav-chapter">
+        <a href="#chapter-4" class="nav-link nav-chapter-link" data-target="chapter-4">
+            <span class="nav-toggle" data-toggle="chapter-4">▶</span>
+            <span class="nav-chapter-label">第4章</span>
+            <span class="nav-text">Kotlin协程的拓展实践</span>
+        </a>
+        <ul class="nav-sublist" id="sublist-chapter-4">
+            <li>
+                <a href="#chapter-4-sec-70237" class="nav-link nav-section-link" data-target="chapter-4-sec-70237">
+                    <span class="nav-toggle" data-toggle="chapter-4-sec-70237">▶</span>
+                    <span class="nav-text">4.1 序列生成器</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-4-sec-70237">
+                    <li>
+                <a href="#chapter-4-sec-70237-sub-5849" class="nav-link nav-sub-link" data-target="chapter-4-sec-70237-sub-5849">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">4.1.1 仿Python的Generator实现</span>
+                </a>
+            </li><li>
+                <a href="#chapter-4-sec-70237-sub-60233" class="nav-link nav-sub-link" data-target="chapter-4-sec-70237-sub-60233">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">4.1.2 标准库的序列生成器介绍</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-4-sec-28381" class="nav-link nav-section-link" data-target="chapter-4-sec-28381">
+                    <span class="nav-toggle" data-toggle="chapter-4-sec-28381">▶</span>
+                    <span class="nav-text">4.2 Promise模型</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-4-sec-28381">
+                    <li>
+                <a href="#chapter-4-sec-28381-sub-12683" class="nav-link nav-sub-link" data-target="chapter-4-sec-28381-sub-12683">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">4.2.1 async/await与suspend的设计对比</span>
+                </a>
+            </li><li>
+                <a href="#chapter-4-sec-28381-sub-96515" class="nav-link nav-sub-link" data-target="chapter-4-sec-28381-sub-96515">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">4.2.2 仿JavaScript的async/await实现</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-4-sec-52729" class="nav-link nav-section-link" data-target="chapter-4-sec-52729">
+                    <span class="nav-toggle" data-toggle="chapter-4-sec-52729">▶</span>
+                    <span class="nav-text">4.3 Lua风格的协程API</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-4-sec-52729">
+                    <li>
+                <a href="#chapter-4-sec-52729-sub-43822" class="nav-link nav-sub-link" data-target="chapter-4-sec-52729-sub-43822">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">4.3.1 非对称API实现</span>
+                </a>
+            </li><li>
+                <a href="#chapter-4-sec-52729-sub-99300" class="nav-link nav-sub-link" data-target="chapter-4-sec-52729-sub-99300">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">4.3.2 对称API实现</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-4-sec-44161" class="nav-link nav-section-link" data-target="chapter-4-sec-44161">
+                    <span class="nav-toggle" data-toggle="chapter-4-sec-44161">▶</span>
+                    <span class="nav-text">4.4 再谈协程的概念</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-4-sec-44161">
+                    <li>
+                <a href="#chapter-4-sec-44161-sub-94280" class="nav-link nav-sub-link" data-target="chapter-4-sec-44161-sub-94280">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">4.4.1 简单协程与复合协程</span>
+                </a>
+            </li><li>
+                <a href="#chapter-4-sec-44161-sub-39975" class="nav-link nav-sub-link" data-target="chapter-4-sec-44161-sub-39975">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">4.4.2 复合协程的实现模式</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-4-sec-56932" class="nav-link nav-section-link" data-target="chapter-4-sec-56932">
+                    <span class="nav-toggle" style="visibility:hidden">▶</span>
+                    <span class="nav-text">4.5 本章小结</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+<li class="nav-chapter">
+        <a href="#chapter-5" class="nav-link nav-chapter-link" data-target="chapter-5">
+            <span class="nav-toggle" data-toggle="chapter-5">▶</span>
+            <span class="nav-chapter-label">第5章</span>
+            <span class="nav-text">Kotlin协程框架开发初探</span>
+        </a>
+        <ul class="nav-sublist" id="sublist-chapter-5">
+            <li>
+                <a href="#chapter-5-sec-81873" class="nav-link nav-section-link" data-target="chapter-5-sec-81873">
+                    <span class="nav-toggle" style="visibility:hidden">▶</span>
+                    <span class="nav-text">5.1 开胃菜：实现一个delay函数</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-40098" class="nav-link nav-section-link" data-target="chapter-5-sec-40098">
+                    <span class="nav-toggle" data-toggle="chapter-5-sec-40098">▶</span>
+                    <span class="nav-text">5.2 协程的描述</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-5-sec-40098">
+                    <li>
+                <a href="#chapter-5-sec-40098-sub-67278" class="nav-link nav-sub-link" data-target="chapter-5-sec-40098-sub-67278">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.2.1 协程的描述类</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-40098-sub-37060" class="nav-link nav-sub-link" data-target="chapter-5-sec-40098-sub-37060">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.2.2 协程的状态</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-40098-sub-27364" class="nav-link nav-sub-link" data-target="chapter-5-sec-40098-sub-27364">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.2.3 支持回调的状态</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-40098-sub-35360" class="nav-link nav-sub-link" data-target="chapter-5-sec-40098-sub-35360">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.2.4 协程的初步实现</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-5-sec-23028" class="nav-link nav-section-link" data-target="chapter-5-sec-23028">
+                    <span class="nav-toggle" data-toggle="chapter-5-sec-23028">▶</span>
+                    <span class="nav-text">5.3 协程的创建</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-5-sec-23028">
+                    <li>
+                <a href="#chapter-5-sec-23028-sub-89321" class="nav-link nav-sub-link" data-target="chapter-5-sec-23028-sub-89321">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.3.1 无返回值的launch</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-23028-sub-62480" class="nav-link nav-sub-link" data-target="chapter-5-sec-23028-sub-62480">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.3.2 实现invokeOnCompletion</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-23028-sub-32859" class="nav-link nav-sub-link" data-target="chapter-5-sec-23028-sub-32859">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.3.3 实现join</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-23028-sub-42785" class="nav-link nav-sub-link" data-target="chapter-5-sec-23028-sub-42785">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.3.4 有返回值的async</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-5-sec-2439" class="nav-link nav-section-link" data-target="chapter-5-sec-2439">
+                    <span class="nav-toggle" data-toggle="chapter-5-sec-2439">▶</span>
+                    <span class="nav-text">5.4 协程的调度</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-5-sec-2439">
+                    <li>
+                <a href="#chapter-5-sec-2439-sub-82304" class="nav-link nav-sub-link" data-target="chapter-5-sec-2439-sub-82304">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.4.1 协程的执行调度</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-2439-sub-23615" class="nav-link nav-sub-link" data-target="chapter-5-sec-2439-sub-23615">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.4.2 协程的调度位置</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-2439-sub-52428" class="nav-link nav-sub-link" data-target="chapter-5-sec-2439-sub-52428">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.4.3 协程的调度器设计</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-2439-sub-31499" class="nav-link nav-sub-link" data-target="chapter-5-sec-2439-sub-31499">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.4.4 基于线程池的调度器</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-2439-sub-30847" class="nav-link nav-sub-link" data-target="chapter-5-sec-2439-sub-30847">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.4.5 基于UI事件循环的调度器</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-2439-sub-53430" class="nav-link nav-sub-link" data-target="chapter-5-sec-2439-sub-53430">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.4.6 为协程添加默认调度器</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-5-sec-51332" class="nav-link nav-section-link" data-target="chapter-5-sec-51332">
+                    <span class="nav-toggle" data-toggle="chapter-5-sec-51332">▶</span>
+                    <span class="nav-text">5.5 协程的取消</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-5-sec-51332">
+                    <li>
+                <a href="#chapter-5-sec-51332-sub-74142" class="nav-link nav-sub-link" data-target="chapter-5-sec-51332-sub-74142">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.5.1 完善协程的取消逻辑</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-51332-sub-33813" class="nav-link nav-sub-link" data-target="chapter-5-sec-51332-sub-33813">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.5.2 支持取消的挂起函数</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-51332-sub-49753" class="nav-link nav-sub-link" data-target="chapter-5-sec-51332-sub-49753">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.5.3 CancellableContinuation的实现</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-51332-sub-98356" class="nav-link nav-sub-link" data-target="chapter-5-sec-51332-sub-98356">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.5.4 改造挂起函数</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-5-sec-9714" class="nav-link nav-section-link" data-target="chapter-5-sec-9714">
+                    <span class="nav-toggle" data-toggle="chapter-5-sec-9714">▶</span>
+                    <span class="nav-text">5.6 协程的异常处理</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-5-sec-9714">
+                    <li>
+                <a href="#chapter-5-sec-9714-sub-97571" class="nav-link nav-sub-link" data-target="chapter-5-sec-9714-sub-97571">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.6.1 定义异常处理器</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-9714-sub-55958" class="nav-link nav-sub-link" data-target="chapter-5-sec-9714-sub-55958">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.6.2 处理协程的未捕获异常</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-9714-sub-9618" class="nav-link nav-sub-link" data-target="chapter-5-sec-9714-sub-9618">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.6.3 区别对待取消异常</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-9714-sub-21315" class="nav-link nav-sub-link" data-target="chapter-5-sec-9714-sub-21315">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.6.4 异常处理器的运用</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-5-sec-83362" class="nav-link nav-section-link" data-target="chapter-5-sec-83362">
+                    <span class="nav-toggle" data-toggle="chapter-5-sec-83362">▶</span>
+                    <span class="nav-text">5.7 协程的作用域</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-5-sec-83362">
+                    <li>
+                <a href="#chapter-5-sec-83362-sub-3872" class="nav-link nav-sub-link" data-target="chapter-5-sec-83362-sub-3872">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.7.1 作用域的概念</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-83362-sub-82216" class="nav-link nav-sub-link" data-target="chapter-5-sec-83362-sub-82216">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.7.2 作用域的声明</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-83362-sub-36923" class="nav-link nav-sub-link" data-target="chapter-5-sec-83362-sub-36923">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.7.3 建立父子关系</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-83362-sub-52442" class="nav-link nav-sub-link" data-target="chapter-5-sec-83362-sub-52442">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.7.4 顶级作用域</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-83362-sub-49789" class="nav-link nav-sub-link" data-target="chapter-5-sec-83362-sub-49789">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.7.5 协同作用域</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-83362-sub-14254" class="nav-link nav-sub-link" data-target="chapter-5-sec-83362-sub-14254">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.7.6 suspend fun main的作用域</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-83362-sub-48919" class="nav-link nav-sub-link" data-target="chapter-5-sec-83362-sub-48919">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.7.7 实现异常的传播</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-83362-sub-28280" class="nav-link nav-sub-link" data-target="chapter-5-sec-83362-sub-28280">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.7.8 主从作用域</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-83362-sub-81494" class="nav-link nav-sub-link" data-target="chapter-5-sec-83362-sub-81494">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.7.9 完整的异常处理流程</span>
+                </a>
+            </li><li>
+                <a href="#chapter-5-sec-83362-sub-54777" class="nav-link nav-sub-link" data-target="chapter-5-sec-83362-sub-54777">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">5.7.10 父协程等待子协程完成</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-5-sec-18825" class="nav-link nav-section-link" data-target="chapter-5-sec-18825">
+                    <span class="nav-toggle" style="visibility:hidden">▶</span>
+                    <span class="nav-text">5.8 本章小结</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+<li class="nav-chapter">
+        <a href="#chapter-6" class="nav-link nav-chapter-link" data-target="chapter-6">
+            <span class="nav-toggle" data-toggle="chapter-6">▶</span>
+            <span class="nav-chapter-label">第6章</span>
+            <span class="nav-text">Kotlin协程的官方框架</span>
+        </a>
+        <ul class="nav-sublist" id="sublist-chapter-6">
+            <li>
+                <a href="#chapter-6-sec-83374" class="nav-link nav-section-link" data-target="chapter-6-sec-83374">
+                    <span class="nav-toggle" data-toggle="chapter-6-sec-83374">▶</span>
+                    <span class="nav-text">6.1 协程框架概述</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-6-sec-83374">
+                    <li>
+                <a href="#chapter-6-sec-83374-sub-54566" class="nav-link nav-sub-link" data-target="chapter-6-sec-83374-sub-54566">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.1.1 框架的构成</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-83374-sub-47077" class="nav-link nav-sub-link" data-target="chapter-6-sec-83374-sub-47077">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.1.2 协程的启动模式</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-83374-sub-73217" class="nav-link nav-sub-link" data-target="chapter-6-sec-83374-sub-73217">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.1.3 协程的调度器</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-83374-sub-50938" class="nav-link nav-sub-link" data-target="chapter-6-sec-83374-sub-50938">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.1.4 协程的全局异常处理器</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-83374-sub-72776" class="nav-link nav-sub-link" data-target="chapter-6-sec-83374-sub-72776">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.1.5 协程的取消检查</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-83374-sub-49238" class="nav-link nav-sub-link" data-target="chapter-6-sec-83374-sub-49238">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.1.6 协程的超时取消</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-83374-sub-87366" class="nav-link nav-sub-link" data-target="chapter-6-sec-83374-sub-87366">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.1.7 禁止取消</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-6-sec-67150" class="nav-link nav-section-link" data-target="chapter-6-sec-67150">
+                    <span class="nav-toggle" data-toggle="chapter-6-sec-67150">▶</span>
+                    <span class="nav-text">6.2 热数据通道Channel</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-6-sec-67150">
+                    <li>
+                <a href="#chapter-6-sec-67150-sub-77816" class="nav-link nav-sub-link" data-target="chapter-6-sec-67150-sub-77816">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.2.1 认识Channel</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-67150-sub-19507" class="nav-link nav-sub-link" data-target="chapter-6-sec-67150-sub-19507">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.2.2 Channel的容量</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-67150-sub-27623" class="nav-link nav-sub-link" data-target="chapter-6-sec-67150-sub-27623">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.2.3 迭代Channel</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-67150-sub-1842" class="nav-link nav-sub-link" data-target="chapter-6-sec-67150-sub-1842">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.2.4 produce和actor</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-67150-sub-92582" class="nav-link nav-sub-link" data-target="chapter-6-sec-67150-sub-92582">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.2.5 Channel的关闭</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-67150-sub-60913" class="nav-link nav-sub-link" data-target="chapter-6-sec-67150-sub-60913">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.2.6 BroadcastChannel</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-67150-sub-68561" class="nav-link nav-sub-link" data-target="chapter-6-sec-67150-sub-68561">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.2.7 Channel版本的序列生成器</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-67150-sub-82451" class="nav-link nav-sub-link" data-target="chapter-6-sec-67150-sub-82451">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.2.8 Channel的内部结构</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-6-sec-15520" class="nav-link nav-section-link" data-target="chapter-6-sec-15520">
+                    <span class="nav-toggle" data-toggle="chapter-6-sec-15520">▶</span>
+                    <span class="nav-text">6.3 冷数据流Flow</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-6-sec-15520">
+                    <li>
+                <a href="#chapter-6-sec-15520-sub-92797" class="nav-link nav-sub-link" data-target="chapter-6-sec-15520-sub-92797">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.3.1 认识Flow</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-15520-sub-95076" class="nav-link nav-sub-link" data-target="chapter-6-sec-15520-sub-95076">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.3.2 对比RxJava的线程切换</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-15520-sub-37159" class="nav-link nav-sub-link" data-target="chapter-6-sec-15520-sub-37159">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.3.3 冷数据流</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-15520-sub-2270" class="nav-link nav-sub-link" data-target="chapter-6-sec-15520-sub-2270">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.3.4 异常处理</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-15520-sub-48078" class="nav-link nav-sub-link" data-target="chapter-6-sec-15520-sub-48078">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.3.5 末端操作符</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-15520-sub-53166" class="nav-link nav-sub-link" data-target="chapter-6-sec-15520-sub-53166">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.3.6 分离Flow的消费和触发</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-15520-sub-43170" class="nav-link nav-sub-link" data-target="chapter-6-sec-15520-sub-43170">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.3.7 Flow的取消</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-15520-sub-16615" class="nav-link nav-sub-link" data-target="chapter-6-sec-15520-sub-16615">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.3.8 其他Flow的创建方式</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-15520-sub-4363" class="nav-link nav-sub-link" data-target="chapter-6-sec-15520-sub-4363">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.3.9 Flow的背压</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-15520-sub-63398" class="nav-link nav-sub-link" data-target="chapter-6-sec-15520-sub-63398">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.3.10 Flow的变换</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-6-sec-39186" class="nav-link nav-section-link" data-target="chapter-6-sec-39186">
+                    <span class="nav-toggle" data-toggle="chapter-6-sec-39186">▶</span>
+                    <span class="nav-text">6.4 多路复用select</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-6-sec-39186">
+                    <li>
+                <a href="#chapter-6-sec-39186-sub-72589" class="nav-link nav-sub-link" data-target="chapter-6-sec-39186-sub-72589">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.4.1 复用多个await</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-39186-sub-88450" class="nav-link nav-sub-link" data-target="chapter-6-sec-39186-sub-88450">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.4.2 复用多个Channel</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-39186-sub-45665" class="nav-link nav-sub-link" data-target="chapter-6-sec-39186-sub-45665">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.4.3 SelectClause</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-39186-sub-70334" class="nav-link nav-sub-link" data-target="chapter-6-sec-39186-sub-70334">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.4.4 使用Flow实现多路复用</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-6-sec-71218" class="nav-link nav-section-link" data-target="chapter-6-sec-71218">
+                    <span class="nav-toggle" data-toggle="chapter-6-sec-71218">▶</span>
+                    <span class="nav-text">6.5 并发安全</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-6-sec-71218">
+                    <li>
+                <a href="#chapter-6-sec-71218-sub-53699" class="nav-link nav-sub-link" data-target="chapter-6-sec-71218-sub-53699">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.5.1 不安全的并发访问</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-71218-sub-90893" class="nav-link nav-sub-link" data-target="chapter-6-sec-71218-sub-90893">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.5.2 协程的并发工具</span>
+                </a>
+            </li><li>
+                <a href="#chapter-6-sec-71218-sub-8424" class="nav-link nav-sub-link" data-target="chapter-6-sec-71218-sub-8424">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">6.5.3 避免访问外部可变状态</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-6-sec-88319" class="nav-link nav-section-link" data-target="chapter-6-sec-88319">
+                    <span class="nav-toggle" style="visibility:hidden">▶</span>
+                    <span class="nav-text">6.6 本章小结</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+<li class="nav-chapter">
+        <a href="#chapter-7" class="nav-link nav-chapter-link" data-target="chapter-7">
+            <span class="nav-toggle" data-toggle="chapter-7">▶</span>
+            <span class="nav-chapter-label">第7章</span>
+            <span class="nav-text">Kotlin协程在Android上的应用</span>
+        </a>
+        <ul class="nav-sublist" id="sublist-chapter-7">
+            <li>
+                <a href="#chapter-7-sec-84521" class="nav-link nav-section-link" data-target="chapter-7-sec-84521">
+                    <span class="nav-toggle" data-toggle="chapter-7-sec-84521">▶</span>
+                    <span class="nav-text">7.1 Android上的异步问题</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-7-sec-84521">
+                    <li>
+                <a href="#chapter-7-sec-84521-sub-24607" class="nav-link nav-sub-link" data-target="chapter-7-sec-84521-sub-24607">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.1.1 基于UI的异步问题分析</span>
+                </a>
+            </li><li>
+                <a href="#chapter-7-sec-84521-sub-86986" class="nav-link nav-sub-link" data-target="chapter-7-sec-84521-sub-86986">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.1.2 &#x27;鸡肋&#x27;的AsyncTask</span>
+                </a>
+            </li><li>
+                <a href="#chapter-7-sec-84521-sub-96787" class="nav-link nav-sub-link" data-target="chapter-7-sec-84521-sub-96787">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.1.3 &#x27;烫手&#x27;的回调</span>
+                </a>
+            </li><li>
+                <a href="#chapter-7-sec-84521-sub-55816" class="nav-link nav-sub-link" data-target="chapter-7-sec-84521-sub-55816">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.1.4 &#x27;救世&#x27;的RxJava</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-7-sec-21112" class="nav-link nav-section-link" data-target="chapter-7-sec-21112">
+                    <span class="nav-toggle" data-toggle="chapter-7-sec-21112">▶</span>
+                    <span class="nav-text">7.2 协程对UI的支持</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-7-sec-21112">
+                    <li>
+                <a href="#chapter-7-sec-21112-sub-72926" class="nav-link nav-sub-link" data-target="chapter-7-sec-21112-sub-72926">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.2.1 UI调度器</span>
+                </a>
+            </li><li>
+                <a href="#chapter-7-sec-21112-sub-35903" class="nav-link nav-sub-link" data-target="chapter-7-sec-21112-sub-35903">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.2.2 协程版AutoDispose</span>
+                </a>
+            </li><li>
+                <a href="#chapter-7-sec-21112-sub-65669" class="nav-link nav-sub-link" data-target="chapter-7-sec-21112-sub-65669">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.2.3 Lifecycle的协程支持</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-7-sec-20259" class="nav-link nav-section-link" data-target="chapter-7-sec-20259">
+                    <span class="nav-toggle" data-toggle="chapter-7-sec-20259">▶</span>
+                    <span class="nav-text">7.3 常见框架的协程扩展</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-7-sec-20259">
+                    <li>
+                <a href="#chapter-7-sec-20259-sub-84586" class="nav-link nav-sub-link" data-target="chapter-7-sec-20259-sub-84586">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.3.1 RxJava的扩展</span>
+                </a>
+            </li><li>
+                <a href="#chapter-7-sec-20259-sub-97154" class="nav-link nav-sub-link" data-target="chapter-7-sec-20259-sub-97154">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.3.2 异步组件ListenableFuture</span>
+                </a>
+            </li><li>
+                <a href="#chapter-7-sec-20259-sub-9154" class="nav-link nav-sub-link" data-target="chapter-7-sec-20259-sub-9154">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.3.3 ORM框架Room</span>
+                </a>
+            </li><li>
+                <a href="#chapter-7-sec-20259-sub-47060" class="nav-link nav-sub-link" data-target="chapter-7-sec-20259-sub-47060">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.3.4 图片加载框架coil</span>
+                </a>
+            </li><li>
+                <a href="#chapter-7-sec-20259-sub-28968" class="nav-link nav-sub-link" data-target="chapter-7-sec-20259-sub-28968">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.3.5 网络框架Retrofit</span>
+                </a>
+            </li><li>
+                <a href="#chapter-7-sec-20259-sub-77164" class="nav-link nav-sub-link" data-target="chapter-7-sec-20259-sub-77164">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">7.3.6 协程风格的对话框</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-7-sec-72471" class="nav-link nav-section-link" data-target="chapter-7-sec-72471">
+                    <span class="nav-toggle" style="visibility:hidden">▶</span>
+                    <span class="nav-text">7.4 本章小结</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+<li class="nav-chapter">
+        <a href="#chapter-8" class="nav-link nav-chapter-link" data-target="chapter-8">
+            <span class="nav-toggle" data-toggle="chapter-8">▶</span>
+            <span class="nav-chapter-label">第8章</span>
+            <span class="nav-text">Kotlin协程在Web服务中的应用</span>
+        </a>
+        <ul class="nav-sublist" id="sublist-chapter-8">
+            <li>
+                <a href="#chapter-8-sec-10250" class="nav-link nav-section-link" data-target="chapter-8-sec-10250">
+                    <span class="nav-toggle" data-toggle="chapter-8-sec-10250">▶</span>
+                    <span class="nav-text">8.1 多任务并发模型</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-8-sec-10250">
+                    <li>
+                <a href="#chapter-8-sec-10250-sub-46385" class="nav-link nav-sub-link" data-target="chapter-8-sec-10250-sub-46385">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">8.1.1 多进程的服务模型</span>
+                </a>
+            </li><li>
+                <a href="#chapter-8-sec-10250-sub-38320" class="nav-link nav-sub-link" data-target="chapter-8-sec-10250-sub-38320">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">8.1.2 多线程的服务模型</span>
+                </a>
+            </li><li>
+                <a href="#chapter-8-sec-10250-sub-27633" class="nav-link nav-sub-link" data-target="chapter-8-sec-10250-sub-27633">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">8.1.3 事件驱动与异步I/O</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-8-sec-88101" class="nav-link nav-section-link" data-target="chapter-8-sec-88101">
+                    <span class="nav-toggle" data-toggle="chapter-8-sec-88101">▶</span>
+                    <span class="nav-text">8.2 协程在多任务模型中的运用</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-8-sec-88101">
+                    <li>
+                <a href="#chapter-8-sec-88101-sub-73279" class="nav-link nav-sub-link" data-target="chapter-8-sec-88101-sub-73279">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">8.2.1 协程与异步I/O</span>
+                </a>
+            </li><li>
+                <a href="#chapter-8-sec-88101-sub-85568" class="nav-link nav-sub-link" data-target="chapter-8-sec-88101-sub-85568">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">8.2.2 协程与&#x27;轻量级线程&#x27;</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-8-sec-1368" class="nav-link nav-section-link" data-target="chapter-8-sec-1368">
+                    <span class="nav-toggle" data-toggle="chapter-8-sec-1368">▶</span>
+                    <span class="nav-text">8.3 常见Web应用框架的协程扩展</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-8-sec-1368">
+                    <li>
+                <a href="#chapter-8-sec-1368-sub-28104" class="nav-link nav-sub-link" data-target="chapter-8-sec-1368-sub-28104">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">8.3.1 Spring的响应式支持</span>
+                </a>
+            </li><li>
+                <a href="#chapter-8-sec-1368-sub-51691" class="nav-link nav-sub-link" data-target="chapter-8-sec-1368-sub-51691">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">8.3.2 Vert.x</span>
+                </a>
+            </li><li>
+                <a href="#chapter-8-sec-1368-sub-66093" class="nav-link nav-sub-link" data-target="chapter-8-sec-1368-sub-66093">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">8.3.3 Ktor</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-8-sec-92135" class="nav-link nav-section-link" data-target="chapter-8-sec-92135">
+                    <span class="nav-toggle" style="visibility:hidden">▶</span>
+                    <span class="nav-text">8.4 本章小结</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+<li class="nav-chapter">
+        <a href="#chapter-9" class="nav-link nav-chapter-link" data-target="chapter-9">
+            <span class="nav-toggle" data-toggle="chapter-9">▶</span>
+            <span class="nav-chapter-label">第9章</span>
+            <span class="nav-text">Kotlin协程在其他平台上的应用</span>
+        </a>
+        <ul class="nav-sublist" id="sublist-chapter-9">
+            <li>
+                <a href="#chapter-9-sec-87263" class="nav-link nav-section-link" data-target="chapter-9-sec-87263">
+                    <span class="nav-toggle" data-toggle="chapter-9-sec-87263">▶</span>
+                    <span class="nav-text">9.1 Kotlin-Js</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-9-sec-87263">
+                    <li>
+                <a href="#chapter-9-sec-87263-sub-30011" class="nav-link nav-sub-link" data-target="chapter-9-sec-87263-sub-30011">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">9.1.1 Kotlin-Js概述</span>
+                </a>
+            </li><li>
+                <a href="#chapter-9-sec-87263-sub-72720" class="nav-link nav-sub-link" data-target="chapter-9-sec-87263-sub-72720">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">9.1.2 Kotlin-Js上的协程</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-9-sec-48322" class="nav-link nav-section-link" data-target="chapter-9-sec-48322">
+                    <span class="nav-toggle" data-toggle="chapter-9-sec-48322">▶</span>
+                    <span class="nav-text">9.2 Kotlin-Native</span>
+                </a>
+                <ul class="nav-sublist" id="sublist-chapter-9-sec-48322">
+                    <li>
+                <a href="#chapter-9-sec-48322-sub-8293" class="nav-link nav-sub-link" data-target="chapter-9-sec-48322-sub-8293">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">9.2.1 Kotlin-Native概述</span>
+                </a>
+            </li><li>
+                <a href="#chapter-9-sec-48322-sub-80953" class="nav-link nav-sub-link" data-target="chapter-9-sec-48322-sub-80953">
+                    <span class="nav-dot">·</span>
+                    <span class="nav-text">9.2.2 Kotlin-Native的协程支持</span>
+                </a>
+            </li>
+                </ul>
+            </li><li>
+                <a href="#chapter-9-sec-12624" class="nav-link nav-section-link" data-target="chapter-9-sec-12624">
+                    <span class="nav-toggle" style="visibility:hidden">▶</span>
+                    <span class="nav-text">9.3 本章小结</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+            </ul>
+        </nav>
+    </aside>
+    <main class="main" id="main">
+        <button class="show-sidebar-btn" id="showSidebarBtn" title="显示导航">☰</button>
+        
+    <section id="preface" class="content-section">
+        <div class="section-header">
+            <h1 class="chapter-title">📖 前言</h1>
+            <div class="chapter-tag">作者：霍丙乾</div>
+        </div>
+        <div class="chapter-intro">
+            <p class="lead">本书从异步程序的设计入手，探讨异步程序设计中要面对的关键问题，并在之后围绕这几个关键问题对Kotlin协程的设计实现展开探讨。</p>
+        </div>
+        <div class="section-content">
+        <div class="content-block">
+            <h4 class="sub-title">为什么要写这本书</h4>
+            <p>作者作为国内较早接触Kotlin的开发者，在Google I/O 2017之后开始系统地写文章和视频教程，最终出版本书。Kotlin协程不像Python、JavaScript的async/await那样容易上手，官方文档过于精练，因此需要一本系统性的书籍。</p>
+        </div>
+        <div class="content-block">
+            <h4 class="sub-title">读者对象</h4>
+            <p>适用于有一定基础的Kotlin开发者，包括但不限于正在使用和希望使用Kotlin开发Android、Web服务、iOS、前端等应用的开发者。Kotlin初学者建议先阅读基础书如《Kotlin核心编程》。</p>
+        </div>
+        <div class="content-block">
+            <h4 class="sub-title">本书特色</h4>
+            <p>1. 紧紧抓住概念问题，从各个角度去阐释什么是协程；2. 用实际问题引入，逐步给出解决思路；3. 提供丰富的状态图、时序图帮助理解；4. 围绕关键问题（结果传递、异常处理、取消响应、复杂分支）展开探讨。</p>
+        </div></div>
+    </section>
+
+    <section id="chapter-1" class="content-section chapter-section">
+        <div class="section-header chapter-header">
+            <h1 class="chapter-title">📕 第1章　异步程序设计介绍</h1>
+        </div>
+        <div class="chapter-intro">
+            <p class="lead">Kotlin协程主要应用于构建各类异步程序模型，因此本章先从异步程序的构建和设计入手，探讨常见的异步程序设计思路和模型。</p>
+        </div>
+        <div class="chapter-body">
+        <div class="content-block section-block" id="chapter-1-sec-9007">
+            <h2 class="section-title">1.1 异步的概念</h2>
+            <p class="section-content-text">异步是相对于同步的执行方式。处理器逐条执行指令，但程序要描述复杂的业务逻辑时，多个事件可能并发作用于同一个结果。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-1-sec-9007-sub-91461">
+                <h4 class="sub-title">1.1.1 程序的执行</h4>
+                <p>处理器是大脑，程序执行是对指令的阅读理解。同步执行是按顺序执行，异步执行是非顺序执行。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-1-sec-9007-sub-73669">
+                <h4 class="sub-title">1.1.2 异步与回调</h4>
+                <p>异步通过回调实现。回调函数作为参数传递给异步函数，在异步操作完成时被调用。Java风格的回调如：fun asyncBitmap(url, onSuccess, onError)。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-1-sec-9007-sub-54992">
+                <h4 class="sub-title">1.1.3 回调地狱</h4>
+                <p>当回调嵌套多层时，代码会形成金字塔结构，可读性和可维护性急剧下降，这就是回调地狱（Callback Hell）。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-1-sec-6398">
+            <h2 class="section-title">1.2 异步程序设计的关键问题</h2>
+            <p class="section-content-text">与同步程序相比，异步程序的设计复杂度往往更高。需要解决四大关键问题：</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-1-sec-6398-sub-52418">
+                <h4 class="sub-title">1.2.1 结果传递</h4>
+                <p>异步操作的结果如何从异步执行单元传递到调用方，是异步程序设计的首要问题。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-1-sec-6398-sub-92558">
+                <h4 class="sub-title">1.2.2 异常处理</h4>
+                <p>同步逻辑可以用try...catch直接捕获异常，但异步逻辑的异常处理不那么直接，需要通过回调（如onError）来处理。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-1-sec-6398-sub-23881">
+                <h4 class="sub-title">1.2.3 取消响应</h4>
+                <p>异步操作可能耗时较长，如何在用户取消请求时及时中断异步操作，是一个需要解决的问题。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-1-sec-6398-sub-99393">
+                <h4 class="sub-title">1.2.4 复杂分支</h4>
+                <p>多个异步操作之间存在依赖、分支、并行等复杂关系，如何简洁地表达这些逻辑是异步设计的挑战。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-1-sec-23711">
+            <h2 class="section-title">1.3 常见异步程序设计思路</h2>
+            <p class="section-content-text">业界针对异步程序设计提出了多种思路来解决这些关键问题。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-1-sec-23711-sub-67443">
+                <h4 class="sub-title">1.3.1 Future</h4>
+                <p>Future&lt;T&gt;是JDK 1.5引入的接口，它有一个get方法，能够同步阻塞地返回Future对应的异步任务的结果。fun bitmapFuture(url): Future&lt;Bitmap&gt;。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-1-sec-23711-sub-36653">
+                <h4 class="sub-title">1.3.2 CompletableFuture</h4>
+                <p>JDK 1.8引入CompletionStage，提供了thenApply、thenAccept、thenCompose等方法，可以链式地组合多个异步任务。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-1-sec-23711-sub-39604">
+                <h4 class="sub-title">1.3.3 Promise与async/await</h4>
+                <p>Promise是异步任务，存在挂起、完成、拒绝三个状态。JavaScript的Promise/A+规范定义了这一模型。async/await是基于Promise的语法糖。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-1-sec-23711-sub-83533">
+                <h4 class="sub-title">1.3.4 响应式编程</h4>
+                <p>响应式编程以数据流为中心，RxJava是典型代表。解决了异步编程中的回调地狱和复杂分支问题。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-1-sec-23711-sub-77923">
+                <h4 class="sub-title">1.3.5 Kotlin协程</h4>
+                <p>Kotlin协程是Kotlin官方推出的异步编程方案，结合了多种思路的优点，可以用顺序的代码风格编写异步逻辑。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-1-sec-27262">
+            <h2 class="section-title">1.4 本章小结</h2>
+            <p class="section-content-text">本章介绍了异步程序设计的核心问题，并对比了Future、CompletableFuture、Promise/async-await、响应式编程和Kotlin协程这五种异步程序设计思路。Kotlin协程作为后起之秀，吸收了其他方案的优点。</p>
+            
+        </div></div>
+    </section>
+
+    <section id="chapter-2" class="content-section chapter-section">
+        <div class="section-header chapter-header">
+            <h1 class="chapter-title">📕 第2章　协程的基本概念</h1>
+        </div>
+        <div class="chapter-intro">
+            <p class="lead">Kotlin协程从1.1实验版到如今已经非常成熟，但大家对它的概念一直存在疑问。本章从基础概念入手，厘清协程的本质。</p>
+        </div>
+        <div class="chapter-body">
+        <div class="content-block section-block" id="chapter-2-sec-97247">
+            <h2 class="section-title">2.1 协程究竟是什么</h2>
+            <p class="section-content-text">业界对协程的概念一直没有清晰统一的界定。Lua之父Roberto Ierusalimschy在论文&#x27;Revisiting Coroutines&#x27;中提到，协程鲜见于早期语言实现，究其原因，部分即源于此。我们需要从不同角度去理解协程。</p>
+            
+        </div>
+        <div class="content-block section-block" id="chapter-2-sec-88723">
+            <h2 class="section-title">2.2 协程的分类</h2>
+            <p class="section-content-text">协程的主流实现虽然在细节上差异较大，但总体来讲仍然有章可循。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-2-sec-88723-sub-34348">
+                <h4 class="sub-title">2.2.1 按调用栈分类</h4>
+                <p>按调用栈分类：调用栈（CallStack）协程和无栈（Stackless）协程。有栈协程有独立的调用栈，无栈协程通过状态机实现。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-2-sec-88723-sub-44622">
+                <h4 class="sub-title">2.2.2 按调度方式分类</h4>
+                <p>按调度方式分类：对称协程（任意两个协程可以直接切换）和非对称协程（协程与调用者之间切换）。Kotlin协程属于非对称协程。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-2-sec-80577">
+            <h2 class="section-title">2.3 协程的实现举例</h2>
+            <p class="section-content-text">通过对比其他语言的协程实现，可以帮助我们理解协程的本质。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-2-sec-80577-sub-28465">
+                <h4 class="sub-title">2.3.1 Python的Generator</h4>
+                <p>Python的Generator（生成器）是最简单的协程实现之一。通过yield暂停执行，send()方法恢复执行并传入值。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-2-sec-80577-sub-71152">
+                <h4 class="sub-title">2.3.2 Lua标准库的协程实现</h4>
+                <p>Lua标准库提供了完整的协程API：create、resume、yield、status、wrap。Lua协程是对称协程的代表。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-2-sec-80577-sub-62433">
+                <h4 class="sub-title">2.3.3 Go的go routine</h4>
+                <p>Go语言的goroutine是轻量级线程，由Go运行时调度，配合channel实现协程间通信。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-2-sec-57578">
+            <h2 class="section-title">2.4 本章小结</h2>
+            <p class="section-content-text">协程没有统一定义，但可以从调用栈和调度方式两个维度来分类。理解其他语言的协程实现有助于理解Kotlin协程的设计。</p>
+            
+        </div></div>
+    </section>
+
+    <section id="chapter-3" class="content-section chapter-section">
+        <div class="section-header chapter-header">
+            <h1 class="chapter-title">📕 第3章　Kotlin协程的基础设施</h1>
+        </div>
+        <div class="chapter-intro">
+            <p class="lead">本章介绍Kotlin协程的基础设施，包括协程的构造、函数的挂起、协程的上下文、协程的拦截器等核心概念。</p>
+        </div>
+        <div class="chapter-body">
+        <div class="content-block section-block" id="chapter-3-sec-93682">
+            <h2 class="section-title">3.1 协程的构造</h2>
+            <p class="section-content-text">要想进入协程的世界，首先需要做的就是构造出一个协程的实例。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-3-sec-93682-sub-76127">
+                <h4 class="sub-title">3.1.1 协程的创建</h4>
+                <p>Kotlin协程的创建需要Continuation、CoroutineContext和CoroutineStart三个要素。最底层API是createCoroutine和startCoroutine。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-3-sec-93682-sub-6300">
+                <h4 class="sub-title">3.1.2 协程的启动</h4>
+                <p>协程的启动通过startCoroutine传入的start参数控制，可分为DEFAULT、ATOMIC、UNDISPATCHED、LAZY四种启动模式。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-3-sec-93682-sub-71343">
+                <h4 class="sub-title">3.1.3 协程体的Receiver</h4>
+                <p>协程体是一个带接收者的lambda，可以访问receiver上的成员和方法。常见receiver类型有Continuation、CoroutineScope等。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-3-sec-93682-sub-86085">
+                <h4 class="sub-title">3.1.4 可挂起的main函数</h4>
+                <p>Kotlin 1.3引入suspend fun main()，允许在main函数中直接使用协程，无需显式创建协程。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-3-sec-62039">
+            <h2 class="section-title">3.2 函数的挂起</h2>
+            <p class="section-content-text">Kotlin协程的挂起和恢复能力本质上就是挂起函数的挂起和恢复。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-3-sec-62039-sub-26343">
+                <h4 class="sub-title">3.2.1 挂起函数</h4>
+                <p>用suspend关键字修饰的函数称为挂起函数。挂起函数只能在协程或其他挂起函数中调用。挂起函数可以像普通函数一样返回值。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-3-sec-62039-sub-78400">
+                <h4 class="sub-title">3.2.2 挂起点</h4>
+                <p>挂起函数被调用时，编译器会插入一个挂起点（suspension point），协程在此暂停执行，保存状态。挂起函数的执行结果通过Continuation传递。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-3-sec-62039-sub-79275">
+                <h4 class="sub-title">3.2.3 CPS变换</h4>
+                <p>CPS（Continuation-Passing Style，续体传递风格）是挂起函数的实现基础。编译器将挂起函数转换为接收Continuation作为参数的形式。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-3-sec-46792">
+            <h2 class="section-title">3.3 协程的上下文</h2>
+            <p class="section-content-text">Continuation除了可以通过恢复调用来控制执行流程的异步返回以外，还有一个重要的属性context，即协程的上下文。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-3-sec-46792-sub-57194">
+                <h4 class="sub-title">3.3.1 协程上下文的集合特征</h4>
+                <p>CoroutineContext本质是一个数据结构，类似Map，由多个Element组成，Key唯一标识，Value为Element实例。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-3-sec-46792-sub-12825">
+                <h4 class="sub-title">3.3.2 协程上下文元素的实现</h4>
+                <p>实现CoroutineContext.Element需要实现key和key对应的value。常见元素：Job、CoroutineDispatcher、CoroutineName、CoroutineExceptionHandler。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-3-sec-46792-sub-37039">
+                <h4 class="sub-title">3.3.3 协程上下文的使用</h4>
+                <p>协程上下文通过+操作符合并，相同Key的元素会被覆盖。可以使用minusKey移除元素，fold进行折叠。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-3-sec-97238">
+            <h2 class="section-title">3.4 协程的拦截器</h2>
+            <p class="section-content-text">协程如何处理线程的调度？标准库提供了拦截器（Interceptor）组件，允许我们拦截协程异步回调时的恢复调用。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-3-sec-97238-sub-14791">
+                <h4 class="sub-title">3.4.1 拦截的位置</h4>
+                <p>拦截器通过ContinuationInterceptor接口实现，拦截的是协程的恢复（resume）调用时机。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-3-sec-97238-sub-30200">
+                <h4 class="sub-title">3.4.2 拦截器的使用</h4>
+                <p>通过实现ContinuationInterceptor接口的interceptContinuation方法，可以对协程的resume调用进行拦截和包装。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-3-sec-97238-sub-16679">
+                <h4 class="sub-title">3.4.3 拦截器的执行细节</h4>
+                <p>interceptContinuation返回的Continuation会被用来替代原始的Continuation。resumeWith调用时，先经过拦截器处理再传递给原始Continuation。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-3-sec-12371">
+            <h2 class="section-title">3.5 Kotlin协程所属的类别</h2>
+            <p class="section-content-text">Kotlin协程从不同的角度看属于不同的类别。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-3-sec-12371-sub-51507">
+                <h4 class="sub-title">3.5.1 调用栈的广义和狭义</h4>
+                <p>广义的调用栈指整个调用关系链，狭义指操作系统线程的调用栈。Kotlin协程是无栈协程，但广义的调用栈很丰富。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-3-sec-12371-sub-85278">
+                <h4 class="sub-title">3.5.2 调度关系的对立与统一</h4>
+                <p>Kotlin协程是非对称协程，协程与调度器之间切换。dispatch/resume体现了调度关系的统一。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-3-sec-6186">
+            <h2 class="section-title">3.6 本章小结</h2>
+            <p class="section-content-text">本章详细介绍了Kotlin协程的基础设施：协程的构造、函数的挂起、协程上下文、协程拦截器。理解这些基础设施是深入学习Kotlin协程的关键。</p>
+            
+        </div></div>
+    </section>
+
+    <section id="chapter-4" class="content-section chapter-section">
+        <div class="section-header chapter-header">
+            <h1 class="chapter-title">📕 第4章　Kotlin协程的拓展实践</h1>
+        </div>
+        <div class="chapter-intro">
+            <p class="lead">本章通过仿写其他语言的协程实现，深入理解Kotlin协程的设计思想。</p>
+        </div>
+        <div class="chapter-body">
+        <div class="content-block section-block" id="chapter-4-sec-70237">
+            <h2 class="section-title">4.1 序列生成器</h2>
+            <p class="section-content-text">序列生成器包含了&#x27;序列&#x27;和&#x27;生成器&#x27;两部分。本节通过仿写Python的Generator来熟悉简单协程的用法。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-4-sec-70237-sub-5849">
+                <h4 class="sub-title">4.1.1 仿Python的Generator实现</h4>
+                <p>基于Kotlin协程实现Python风格的Generator，通过yield暂停和返回值，支持惰性求值。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-4-sec-70237-sub-60233">
+                <h4 class="sub-title">4.1.2 标准库的序列生成器介绍</h4>
+                <p>Kotlin标准库提供了sequence和iterator的协程版本实现，sequence { yield(...) }即可创建惰性序列。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-4-sec-28381">
+            <h2 class="section-title">4.2 Promise模型</h2>
+            <p class="section-content-text">Promise模型是JavaScript异步编程的核心，本节通过Kotlin协程实现类似功能。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-4-sec-28381-sub-12683">
+                <h4 class="sub-title">4.2.1 async/await与suspend的设计对比</h4>
+                <p>async/await是JavaScript的语法，suspend是Kotlin的关键字。两者都能以同步风格写异步代码，但底层实现机制不同。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-4-sec-28381-sub-96515">
+                <h4 class="sub-title">4.2.2 仿JavaScript的async/await实现</h4>
+                <p>使用Kotlin协程实现async/await语义，包括Promise的三种状态（pending、fulfilled、rejected）和then/catch链。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-4-sec-52729">
+            <h2 class="section-title">4.3 Lua风格的协程API</h2>
+            <p class="section-content-text">Lua协程API是经典的对称协程API。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-4-sec-52729-sub-43822">
+                <h4 class="sub-title">4.3.1 非对称API实现</h4>
+                <p>非对称协程API：create、resume、yield。协程只能在协程体与调用者之间切换。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-4-sec-52729-sub-99300">
+                <h4 class="sub-title">4.3.2 对称API实现</h4>
+                <p>对称协程API：任意两个协程可以互相切换。通过统一的状态机和共享调度器实现。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-4-sec-44161">
+            <h2 class="section-title">4.4 再谈协程的概念</h2>
+            <p class="section-content-text">通过前面的实践，我们再回头来理解协程的概念。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-4-sec-44161-sub-94280">
+                <h4 class="sub-title">4.4.1 简单协程与复合协程</h4>
+                <p>简单协程：仅具备挂起/恢复能力的协程。复合协程：在简单协程基础上封装的状态机框架，具备启动、取消、异常处理等高级功能。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-4-sec-44161-sub-39975">
+                <h4 class="sub-title">4.4.2 复合协程的实现模式</h4>
+                <p>复合协程通常包含：Job（生命周期）、Dispatcher（线程调度）、Continuation（执行流）、CoroutineExceptionHandler（异常处理）。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-4-sec-56932">
+            <h2 class="section-title">4.5 本章小结</h2>
+            <p class="section-content-text">通过仿写Python Generator、JS async/await、Lua协程API，我们深入理解了Kotlin协程的底层机制，也理解了简单协程与复合协程的区别。</p>
+            
+        </div></div>
+    </section>
+
+    <section id="chapter-5" class="content-section chapter-section">
+        <div class="section-header chapter-header">
+            <h1 class="chapter-title">📕 第5章　Kotlin协程框架开发初探</h1>
+        </div>
+        <div class="chapter-intro">
+            <p class="lead">本章仿照官方协程框架，从零开始实现一个迷你协程框架，帮助深入理解协程框架的设计与实现。</p>
+        </div>
+        <div class="chapter-body">
+        <div class="content-block section-block" id="chapter-5-sec-81873">
+            <h2 class="section-title">5.1 开胃菜：实现一个delay函数</h2>
+            <p class="section-content-text">delay函数的作用是让后面的代码延迟一段时间执行，但不应阻塞线程，应该是个挂起函数，指定时间后能恢复执行。suspend fun delay(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS)。</p>
+            
+        </div>
+        <div class="content-block section-block" id="chapter-5-sec-40098">
+            <h2 class="section-title">5.2 协程的描述</h2>
+            <p class="section-content-text">在协程框架中，需要一个数据结构来描述协程的状态。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-5-sec-40098-sub-67278">
+                <h4 class="sub-title">5.2.1 协程的描述类</h4>
+                <p>协程描述类通常包含：协程状态、Job引用、Continuation引用、上下文等字段。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-40098-sub-37060">
+                <h4 class="sub-title">5.2.2 协程的状态</h4>
+                <p>协程状态通常包括：Active（活跃）、Completing（完成中）、Completed（已完成）、Cancelling（取消中）、Cancelled（已取消）。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-40098-sub-27364">
+                <h4 class="sub-title">5.2.3 支持回调的状态</h4>
+                <p>协程状态需要支持回调通知。当状态发生变化时，通知等待该协程完成的调用者。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-40098-sub-35360">
+                <h4 class="sub-title">5.2.4 协程的初步实现</h4>
+                <p>基于状态机实现协程的描述类，支持状态转换和回调通知。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-5-sec-23028">
+            <h2 class="section-title">5.3 协程的创建</h2>
+            <p class="section-content-text">仿照官方API实现launch和async。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-5-sec-23028-sub-89321">
+                <h4 class="sub-title">5.3.1 无返回值的launch</h4>
+                <p>launch(context, start, block)返回一个Job，启动一个不返回值的协程。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-23028-sub-62480">
+                <h4 class="sub-title">5.3.2 实现invokeOnCompletion</h4>
+                <p>Job需要支持注册完成回调，invokeOnCompletion(handler)用于在协程完成时被调用。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-23028-sub-32859">
+                <h4 class="sub-title">5.3.3 实现join</h4>
+                <p>join()是一个挂起函数，挂起当前协程直到目标协程完成。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-23028-sub-42785">
+                <h4 class="sub-title">5.3.4 有返回值的async</h4>
+                <p>async(context, start, block)返回一个Deferred&lt;T&gt;，可通过await()获取结果。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-5-sec-2439">
+            <h2 class="section-title">5.4 协程的调度</h2>
+            <p class="section-content-text">协程如何在线程之间调度？需要设计调度器（Dispatcher）。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-5-sec-2439-sub-82304">
+                <h4 class="sub-title">5.4.1 协程的执行调度</h4>
+                <p>协程的执行调度通过拦截器实现。当协程恢复时，拦截器决定在哪个线程上执行resume。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-2439-sub-23615">
+                <h4 class="sub-title">5.4.2 协程的调度位置</h4>
+                <p>调度发生在协程挂起和恢复时。挂起时记录恢复所需的调度器，恢复时调用调度器。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-2439-sub-52428">
+                <h4 class="sub-title">5.4.3 协程的调度器设计</h4>
+                <p>调度器接口：dispatch(context, block)。需要实现将block调度到合适的线程上执行。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-2439-sub-31499">
+                <h4 class="sub-title">5.4.4 基于线程池的调度器</h4>
+                <p>基于Java的Executor实现线程池调度器，如Dispatchers.IO。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-2439-sub-30847">
+                <h4 class="sub-title">5.4.5 基于UI事件循环的调度器</h4>
+                <p>UI调度器基于UI线程的消息循环实现，如Android的Main dispatcher。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-2439-sub-53430">
+                <h4 class="sub-title">5.4.6 为协程添加默认调度器</h4>
+                <p>通过CoroutineContext的继承机制，为子协程提供默认调度器。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-5-sec-51332">
+            <h2 class="section-title">5.5 协程的取消</h2>
+            <p class="section-content-text">协程的取消是协作式的，需要协程主动检查取消状态。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-5-sec-51332-sub-74142">
+                <h4 class="sub-title">5.5.1 完善协程的取消逻辑</h4>
+                <p>cancel()方法将协程状态置为Cancelling，递归取消子协程，最终状态变为Cancelled。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-51332-sub-33813">
+                <h4 class="sub-title">5.5.2 支持取消的挂起函数</h4>
+                <p>挂起函数需要在挂起点检查取消状态，抛出CancellationException。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-51332-sub-49753">
+                <h4 class="sub-title">5.5.3 CancellableContinuation的实现</h4>
+                <p>CancellableContinuation是支持取消的Continuation，持有Job引用，在Job取消时也会取消自己。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-51332-sub-98356">
+                <h4 class="sub-title">5.5.4 改造挂起函数</h4>
+                <p>将挂起函数改造成使用CancellableContinuation，使其支持取消。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-5-sec-9714">
+            <h2 class="section-title">5.6 协程的异常处理</h2>
+            <p class="section-content-text">协程的异常处理需要区分未捕获异常和取消异常。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-5-sec-9714-sub-97571">
+                <h4 class="sub-title">5.6.1 定义异常处理器</h4>
+                <p>CoroutineExceptionHandler接口用于处理协程中的未捕获异常。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-9714-sub-55958">
+                <h4 class="sub-title">5.6.2 处理协程的未捕获异常</h4>
+                <p>未捕获异常会传递给父协程的异常处理器，最终传递给根协程的处理器。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-9714-sub-9618">
+                <h4 class="sub-title">5.6.3 区别对待取消异常</h4>
+                <p>CancellationException是协程取消的标志，不应该被当作错误处理，应该被静默吞掉。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-9714-sub-21315">
+                <h4 class="sub-title">5.6.4 异常处理器的运用</h4>
+                <p>CoroutineExceptionHandler通常与SupervisorJob配合使用，避免单个子协程的异常影响兄弟协程。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-5-sec-83362">
+            <h2 class="section-title">5.7 协程的作用域</h2>
+            <p class="section-content-text">作用域（CoroutineScope）管理协程的生命周期。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-5-sec-83362-sub-3872">
+                <h4 class="sub-title">5.7.1 作用域的概念</h4>
+                <p>CoroutineScope持有CoroutineContext，提供launch、async等方法创建子协程。子协程继承父协程的上下文。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-83362-sub-82216">
+                <h4 class="sub-title">5.7.2 作用域的声明</h4>
+                <p>通过CoroutineScope(context)函数创建作用域。常见的标准作用域有GlobalScope、MainScope等。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-83362-sub-36923">
+                <h4 class="sub-title">5.7.3 建立父子关系</h4>
+                <p>作用域内创建的协程会自动成为该作用域的子协程。父协程等待所有子协程完成后才完成。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-83362-sub-52442">
+                <h4 class="sub-title">5.7.4 顶级作用域</h4>
+                <p>GlobalScope是顶级作用域，协程的生命周期与应用程序一致，不受其他作用域管理。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-83362-sub-49789">
+                <h4 class="sub-title">5.7.5 协同作用域</h4>
+                <p>coroutineScope { ... }创建的协同作用域，作用域内所有子协程完成后作用域才完成。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-83362-sub-14254">
+                <h4 class="sub-title">5.7.6 suspend fun main的作用域</h4>
+                <p>suspend fun main运行在runBlocking创建的作用域中，主协程会等待所有子协程完成。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-83362-sub-48919">
+                <h4 class="sub-title">5.7.7 实现异常的传播</h4>
+                <p>在协同作用域中，子协程的未捕获异常会传播给父协程，导致兄弟协程被取消。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-83362-sub-28280">
+                <h4 class="sub-title">5.7.8 主从作用域</h4>
+                <p>supervisorScope创建主从作用域，子协程的异常不会影响兄弟协程。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-83362-sub-81494">
+                <h4 class="sub-title">5.7.9 完整的异常处理流程</h4>
+                <p>完整的异常处理：子协程未捕获异常→传递给异常处理器→决定是否取消父协程。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-5-sec-83362-sub-54777">
+                <h4 class="sub-title">5.7.10 父协程等待子协程完成</h4>
+                <p>父协程在所有子协程完成后才完成，类似于Thread.join()的效果。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-5-sec-18825">
+            <h2 class="section-title">5.8 本章小结</h2>
+            <p class="section-content-text">本章从零实现了一个迷你协程框架，涵盖了协程的描述、创建、调度、取消、异常处理、作用域等核心功能。这为我们理解官方协程框架打下了坚实基础。</p>
+            
+        </div></div>
+    </section>
+
+    <section id="chapter-6" class="content-section chapter-section">
+        <div class="section-header chapter-header">
+            <h1 class="chapter-title">📕 第6章　Kotlin协程的官方框架</h1>
+        </div>
+        <div class="chapter-intro">
+            <p class="lead">本章探讨官方协程框架的更多功能，并逐步尝试将协程运用于实际生产当中。</p>
+        </div>
+        <div class="chapter-body">
+        <div class="content-block section-block" id="chapter-6-sec-83374">
+            <h2 class="section-title">6.1 协程框架概述</h2>
+            <p class="section-content-text">官方协程框架提供了完整的协程编程模型。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-6-sec-83374-sub-54566">
+                <h4 class="sub-title">6.1.1 框架的构成</h4>
+                <p>官方框架由kotlinx-coroutines-core和kotlinx-coroutines-android等模块构成，提供了标准库、调度器、Flow、Channel等组件。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-83374-sub-47077">
+                <h4 class="sub-title">6.1.2 协程的启动模式</h4>
+                <p>CoroutineStart枚举：DEFAULT（默认）、ATOMIC（原子）、UNDISPATCHED（不调度）、LAZY（懒启动）。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-83374-sub-73217">
+                <h4 class="sub-title">6.1.3 协程的调度器</h4>
+                <p>Dispatchers定义：Main（UI线程）、IO（IO线程池）、Default（CPU密集型）、Unconfined（不限定）。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-83374-sub-50938">
+                <h4 class="sub-title">6.1.4 协程的全局异常处理器</h4>
+                <p>通过ServiceLoader加载全局异常处理器，可用于统一处理未捕获异常。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-83374-sub-72776">
+                <h4 class="sub-title">6.1.5 协程的取消检查</h4>
+                <p>ensureActive()用于检查协程是否被取消，yield()会检查并让出执行权。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-83374-sub-49238">
+                <h4 class="sub-title">6.1.6 协程的超时取消</h4>
+                <p>withTimeout { ... }设置超时时间，超时后协程被取消。可通过withTimeoutOrNull返回null代替异常。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-83374-sub-87366">
+                <h4 class="sub-title">6.1.7 禁止取消</h4>
+                <p>withContext(NonCancellable) { ... }内的代码不可被取消，用于必须执行的清理逻辑。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-6-sec-67150">
+            <h2 class="section-title">6.2 热数据通道Channel</h2>
+            <p class="section-content-text">Kotlin协程框架也提供了类似于Go routine的Channel。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-6-sec-67150-sub-77816">
+                <h4 class="sub-title">6.2.1 认识Channel</h4>
+                <p>Channel是一个面向多协程的数据传输通道，send发送数据，receive接收数据。Channel是热数据流。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-67150-sub-19507">
+                <h4 class="sub-title">6.2.2 Channel的容量</h4>
+                <p>Channel可设置容量：RENDEZVOUS（0容量）、CONFLATED（1容量，最新）、BUFFERED（默认64）、UNLIMITED（无限）。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-67150-sub-27623">
+                <h4 class="sub-title">6.2.3 迭代Channel</h4>
+                <p>可通过for (y in channel)迭代Channel，或使用consumeEach { ... }消费。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-67150-sub-1842">
+                <h4 class="sub-title">6.2.4 produce和actor</h4>
+                <p>produce是协程构建器，返回ReceiveChannel；actor是协程构建器，返回SendChannel。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-67150-sub-92582">
+                <h4 class="sub-title">6.2.5 Channel的关闭</h4>
+                <p>close()关闭Channel，接收方可以通过isClosedForReceive判断，for循环会自动结束。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-67150-sub-60913">
+                <h4 class="sub-title">6.2.6 BroadcastChannel</h4>
+                <p>BroadcastChannel是广播式的Channel，所有订阅者都会收到相同的数据。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-67150-sub-68561">
+                <h4 class="sub-title">6.2.7 Channel版本的序列生成器</h4>
+                <p>produce { ... }可以看作协程版的序列生成器，按需产出数据。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-67150-sub-82451">
+                <h4 class="sub-title">6.2.8 Channel的内部结构</h4>
+                <p>Channel内部使用链表或数组实现，send/remove是线程安全的。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-6-sec-15520">
+            <h2 class="section-title">6.3 冷数据流Flow</h2>
+            <p class="section-content-text">随着RxJava的流行，响应式编程模型逐步深入人心。Flow就是Kotlin协程与响应式编程模型结合的产物。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-6-sec-15520-sub-92797">
+                <h4 class="sub-title">6.3.1 认识Flow</h4>
+                <p>Flow是Kotlin协程的冷流API，只有在被collect时才会发射数据。Flow { emit(value) }创建。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-15520-sub-95076">
+                <h4 class="sub-title">6.3.2 对比RxJava的线程切换</h4>
+                <p>Flow通过flowOn(Dispatcher)切换上游线程，比RxJava的subscribeOn/observeOn更直观。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-15520-sub-37159">
+                <h4 class="sub-title">6.3.3 冷数据流</h4>
+                <p>Flow是冷流：每个collector都会触发一次完整的收集过程。channelFlow提供热流语义。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-15520-sub-2270">
+                <h4 class="sub-title">6.3.4 异常处理</h4>
+                <p>Flow使用catch { }捕获上游异常，onCompletion { }无论成功失败都执行。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-15520-sub-48078">
+                <h4 class="sub-title">6.3.5 末端操作符</h4>
+                <p>末端操作符：collect、toList、first、single、reduce、fold、launchIn等。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-15520-sub-53166">
+                <h4 class="sub-title">6.3.6 分离Flow的消费和触发</h4>
+                <p>通过SharedFlow或StateFlow可以将冷流转为热流。stateIn将Flow转为StateFlow。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-15520-sub-43170">
+                <h4 class="sub-title">6.3.7 Flow的取消</h4>
+                <p>Flow的收集在协程取消时自动取消。cancel()会取消正在进行的收集。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-15520-sub-16615">
+                <h4 class="sub-title">6.3.8 其他Flow的创建方式</h4>
+                <p>flowOf、asFlow、channelFlow、callbackFlow等创建Flow的多种方式。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-15520-sub-4363">
+                <h4 class="sub-title">6.3.9 Flow的背压</h4>
+                <p>Flow通过buffer()、conflate()、sample()等操作符处理背压问题。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-15520-sub-63398">
+                <h4 class="sub-title">6.3.10 Flow的变换</h4>
+                <p>中间操作符：map、filter、transform、take、drop、zip、combine、merge等。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-6-sec-39186">
+            <h2 class="section-title">6.4 多路复用select</h2>
+            <p class="section-content-text">select可以同时等待多个挂起函数的结果。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-6-sec-39186-sub-72589">
+                <h4 class="sub-title">6.4.1 复用多个await</h4>
+                <p>select { deferred1.await() ... deferred2.await() }，谁先完成就执行对应的分支。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-39186-sub-88450">
+                <h4 class="sub-title">6.4.2 复用多个Channel</h4>
+                <p>select { channel1.onReceive { } ... channel2.onReceive { } }等待多个Channel的接收。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-39186-sub-45665">
+                <h4 class="sub-title">6.4.3 SelectClause</h4>
+                <p>通过实现SelectClauseN接口，可以让自己的挂起函数支持select。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-39186-sub-70334">
+                <h4 class="sub-title">6.4.4 使用Flow实现多路复用</h4>
+                <p>merge操作符可以合并多个Flow，模拟多路复用效果。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-6-sec-71218">
+            <h2 class="section-title">6.5 并发安全</h2>
+            <p class="section-content-text">协程中的并发安全与线程类似，需要使用同步工具。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-6-sec-71218-sub-53699">
+                <h4 class="sub-title">6.5.1 不安全的并发访问</h4>
+                <p>多个协程同时修改共享变量会导致数据竞争。@Volatile、synchronized、ReentrantLock等工具可解决。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-71218-sub-90893">
+                <h4 class="sub-title">6.5.2 协程的并发工具</h4>
+                <p>协程特有工具：Mutex（互斥锁）、Semaphore（信号量）、Channel（通道通信）。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-6-sec-71218-sub-8424">
+                <h4 class="sub-title">6.5.3 避免访问外部可变状态</h4>
+                <p>最佳实践是避免共享状态，通过消息传递（Channel）和不可变数据实现协程间通信。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-6-sec-88319">
+            <h2 class="section-title">6.6 本章小结</h2>
+            <p class="section-content-text">本章介绍了官方协程框架的核心组件：Dispatchers、Job、Deferred、Channel、Flow、select、并发工具。这些组件构成了完整的协程编程模型。</p>
+            
+        </div></div>
+    </section>
+
+    <section id="chapter-7" class="content-section chapter-section">
+        <div class="section-header chapter-header">
+            <h1 class="chapter-title">📕 第7章　Kotlin协程在Android上的应用</h1>
+        </div>
+        <div class="chapter-intro">
+            <p class="lead">本章介绍Kotlin协程在Android开发中的应用。</p>
+        </div>
+        <div class="chapter-body">
+        <div class="content-block section-block" id="chapter-7-sec-84521">
+            <h2 class="section-title">7.1 Android上的异步问题</h2>
+            <p class="section-content-text">Android开发中异步处理一直是个难题。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-7-sec-84521-sub-24607">
+                <h4 class="sub-title">7.1.1 基于UI的异步问题分析</h4>
+                <p>Android是单线程UI模型，所有UI操作必须在主线程。耗时操作需要放到子线程，切换线程繁琐。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-7-sec-84521-sub-86986">
+                <h4 class="sub-title">7.1.2 &#x27;鸡肋&#x27;的AsyncTask</h4>
+                <p>AsyncTask是早期Android提供的异步API，但内存泄漏、生命周期管理等问题使其&#x27;鸡肋&#x27;。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-7-sec-84521-sub-96787">
+                <h4 class="sub-title">7.1.3 &#x27;烫手&#x27;的回调</h4>
+                <p>纯回调方式虽然灵活，但回调地狱和生命周期管理让人头疼。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-7-sec-84521-sub-55816">
+                <h4 class="sub-title">7.1.4 &#x27;救世&#x27;的RxJava</h4>
+                <p>RxJava通过响应式编程模型解决了大部分问题，但学习曲线陡峭，配置繁琐。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-7-sec-21112">
+            <h2 class="section-title">7.2 协程对UI的支持</h2>
+            <p class="section-content-text">Kotlin协程天然适合Android的UI编程模型。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-7-sec-21112-sub-72926">
+                <h4 class="sub-title">7.2.1 UI调度器</h4>
+                <p>Dispatchers.Main是UI调度器。launch(Dispatchers.Main) { ... }可直接在UI线程启动协程。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-7-sec-21112-sub-35903">
+                <h4 class="sub-title">7.2.2 协程版AutoDispose</h4>
+                <p>通过LifecycleScope和viewModelScope自动管理协程生命周期，无需AutoDispose。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-7-sec-21112-sub-65669">
+                <h4 class="sub-title">7.2.3 Lifecycle的协程支持</h4>
+                <p>Lifecycle 2.2+提供lifecycleScope、repeatOnLifecycle等API，自动响应生命周期变化。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-7-sec-20259">
+            <h2 class="section-title">7.3 常见框架的协程扩展</h2>
+            <p class="section-content-text">主流Android框架都提供了协程支持。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-7-sec-20259-sub-84586">
+                <h4 class="sub-title">7.3.1 RxJava的扩展</h4>
+                <p>kotlinx-coroutines-rx2模块提供RxJava与Flow/Deferred的互转。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-7-sec-20259-sub-97154">
+                <h4 class="sub-title">7.3.2 异步组件ListenableFuture</h4>
+                <p>kotlinx-coroutines-guava模块支持ListenableFuture与协程的互转。await()获取结果。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-7-sec-20259-sub-9154">
+                <h4 class="sub-title">7.3.3 ORM框架Room</h4>
+                <p>Room 2.1+原生支持协程，DAO方法可以返回suspend函数或Flow。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-7-sec-20259-sub-47060">
+                <h4 class="sub-title">7.3.4 图片加载框架coil</h4>
+                <p>coil是协程版的图片加载库，ImageView.load(url) { ... }即可加载图片。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-7-sec-20259-sub-28968">
+                <h4 class="sub-title">7.3.5 网络框架Retrofit</h4>
+                <p>Retrofit 2.6+支持suspend函数作为接口方法定义，自动处理协程。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-7-sec-20259-sub-77164">
+                <h4 class="sub-title">7.3.6 协程风格的对话框</h4>
+                <p>可以封装suspend函数让AlertDialog的使用更协程化。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-7-sec-72471">
+            <h2 class="section-title">7.4 本章小结</h2>
+            <p class="section-content-text">Kotlin协程为Android开发带来了一场变革，简化了异步编程模型，配合主流框架可以写出简洁优雅的代码。</p>
+            
+        </div></div>
+    </section>
+
+    <section id="chapter-8" class="content-section chapter-section">
+        <div class="section-header chapter-header">
+            <h1 class="chapter-title">📕 第8章　Kotlin协程在Web服务中的应用</h1>
+        </div>
+        <div class="chapter-intro">
+            <p class="lead">本章介绍Kotlin协程在Web服务开发中的应用。</p>
+        </div>
+        <div class="chapter-body">
+        <div class="content-block section-block" id="chapter-8-sec-10250">
+            <h2 class="section-title">8.1 多任务并发模型</h2>
+            <p class="section-content-text">Web服务需要处理大量并发请求。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-8-sec-10250-sub-46385">
+                <h4 class="sub-title">8.1.1 多进程的服务模型</h4>
+                <p>每个请求一个进程，资源消耗大，并发能力有限。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-8-sec-10250-sub-38320">
+                <h4 class="sub-title">8.1.2 多线程的服务模型</h4>
+                <p>每个请求一个线程，线程切换开销大，线程数量有限。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-8-sec-10250-sub-27633">
+                <h4 class="sub-title">8.1.3 事件驱动与异步I/O</h4>
+                <p>事件驱动模型通过非阻塞I/O实现高并发，但编程模型复杂。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-8-sec-88101">
+            <h2 class="section-title">8.2 协程在多任务模型中的运用</h2>
+            <p class="section-content-text">协程特别适合高并发的Web服务。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-8-sec-88101-sub-73279">
+                <h4 class="sub-title">8.2.1 协程与异步I/O</h4>
+                <p>协程与异步I/O结合，可以用同步的代码风格写异步I/O逻辑。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-8-sec-88101-sub-85568">
+                <h4 class="sub-title">8.2.2 协程与&#x27;轻量级线程&#x27;</h4>
+                <p>协程是轻量级线程，可以创建数十万个协程处理并发请求。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-8-sec-1368">
+            <h2 class="section-title">8.3 常见Web应用框架的协程扩展</h2>
+            <p class="section-content-text">主流Web框架都提供了协程支持。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-8-sec-1368-sub-28104">
+                <h4 class="sub-title">8.3.1 Spring的响应式支持</h4>
+                <p>Spring WebFlux是响应式Web框架，Spring 5.2+提供对Kotlin协程的原生支持。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-8-sec-1368-sub-51691">
+                <h4 class="sub-title">8.3.2 Vert.x</h4>
+                <p>Vert.x是Eclipse基金会开发的响应式工具集，vertx-lang-kotlin-coroutines模块提供协程支持。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-8-sec-1368-sub-66093">
+                <h4 class="sub-title">8.3.3 Ktor</h4>
+                <p>Ktor是JetBrains开发的纯Kotlin Web框架，原生支持协程。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-8-sec-92135">
+            <h2 class="section-title">8.4 本章小结</h2>
+            <p class="section-content-text">Kotlin协程为Web服务开发提供了高并发、低资源消耗的解决方案，是服务端开发的优秀选择。</p>
+            
+        </div></div>
+    </section>
+
+    <section id="chapter-9" class="content-section chapter-section">
+        <div class="section-header chapter-header">
+            <h1 class="chapter-title">📕 第9章　Kotlin协程在其他平台上的应用</h1>
+        </div>
+        <div class="chapter-intro">
+            <p class="lead">本章简要介绍Kotlin协程在JavaScript和Native平台的应用。</p>
+        </div>
+        <div class="chapter-body">
+        <div class="content-block section-block" id="chapter-9-sec-87263">
+            <h2 class="section-title">9.1 Kotlin-Js</h2>
+            <p class="section-content-text">Kotlin-Js将Kotlin代码编译为JavaScript。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-9-sec-87263-sub-30011">
+                <h4 class="sub-title">9.1.1 Kotlin-Js概述</h4>
+                <p>Kotlin-Js允许在浏览器和Node.js环境中运行Kotlin代码。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-9-sec-87263-sub-72720">
+                <h4 class="sub-title">9.1.2 Kotlin-Js上的协程</h4>
+                <p>Kotlin-Js支持协程，但调度器实现不同。Dispatchers.Default使用setTimeout等浏览器API。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-9-sec-48322">
+            <h2 class="section-title">9.2 Kotlin-Native</h2>
+            <p class="section-content-text">Kotlin-Native将Kotlin编译为原生二进制。</p>
+            <div class="subsections-container">
+            <div class="content-block sub-block" id="chapter-9-sec-48322-sub-8293">
+                <h4 class="sub-title">9.2.1 Kotlin-Native概述</h4>
+                <p>Kotlin-Native支持iOS、macOS、Linux、Windows等多个平台。</p>
+            </div>
+            <div class="content-block sub-block" id="chapter-9-sec-48322-sub-80953">
+                <h4 class="sub-title">9.2.2 Kotlin-Native的协程支持</h4>
+                <p>Kotlin-Native有自己的协程实现，通过Kotlin/Native Runtime调度，避免线程上下文切换。</p>
+            </div></div>
+        </div>
+        <div class="content-block section-block" id="chapter-9-sec-12624">
+            <h2 class="section-title">9.3 本章小结</h2>
+            <p class="section-content-text">Kotlin协程的多平台支持是Kotlin Multiplatform战略的重要组成部分，未来会在更多场景发挥作用。</p>
+            
+        </div></div>
+    </section>
+        <footer style="text-align:center; padding: 30px 0; color: var(--text-tertiary); font-size: 12px;">
+            <p>📚 《深入理解Kotlin协程》 · 作者：霍丙乾</p>
+            <p style="margin-top:4px;">本知识脑图基于原书结构整理，旨在辅助学习。</p>
+        </footer>
+    </main>
+</div>
+<script>
+// Sidebar toggle
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebarToggle');
+const showSidebarBtn = document.getElementById('showSidebarBtn');
+
+function toggleSidebar() {
+    sidebar.classList.toggle('collapsed');
+    sidebarToggle.classList.toggle('collapsed');
+}
+sidebarToggle.addEventListener('click', toggleSidebar);
+showSidebarBtn.addEventListener('click', toggleSidebar);
+
+// Sidebar expand/collapse for chapters and sections
+document.querySelectorAll('.nav-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const target = this.getAttribute('data-toggle');
+        const sublist = document.getElementById('sublist-' + target);
+        if (sublist) {
+            this.classList.toggle('expanded');
+            sublist.classList.toggle('expanded');
+        }
+    });
+});
+
+// Smooth scroll and active state
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        const target = this.getAttribute('data-target');
+        const targetEl = document.getElementById(target);
+        if (targetEl) {
+            // Update active state
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            // Auto-expand parent if needed
+            let parent = this.parentElement;
+            while (parent) {
+                if (parent.tagName === 'LI' && parent.classList.contains('nav-chapter')) {
+                    const chapLink = parent.querySelector('.nav-chapter-link');
+                    if (chapLink) {
+                        const targetId = chapLink.getAttribute('data-target');
+                        const sublist = document.getElementById('sublist-' + targetId);
+                        const toggle = parent.querySelector('.nav-toggle');
+                        if (sublist && !sublist.classList.contains('expanded')) {
+                            sublist.classList.add('expanded');
+                            if (toggle) toggle.classList.add('expanded');
+                        }
+                    }
+                }
+                if (parent.classList && parent.classList.contains('nav-sublist')) {
+                    parent.classList.add('expanded');
+                    const toggleEl = parent.parentElement.querySelector('.nav-toggle');
+                    if (toggleEl) toggleEl.classList.add('expanded');
+                }
+                parent = parent.parentElement;
+            }
+            // Smooth scroll
+            e.preventDefault();
+            setTimeout(() => {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+        }
+    });
+});
+
+// Highlight active section on scroll
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const id = entry.target.id;
+            document.querySelectorAll('.nav-link').forEach(l => {
+                if (l.getAttribute('data-target') === id) {
+                    l.classList.add('active');
+                }
+            });
+        }
+    });
+}, { rootMargin: '-30% 0px -60% 0px' });
+
+document.querySelectorAll('.content-section, .section-block, .sub-block').forEach(el => {
+    observer.observe(el);
+});
+</script>
+</body>
+</html>

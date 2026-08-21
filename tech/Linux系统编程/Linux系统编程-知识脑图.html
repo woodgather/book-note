@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《Linux系统编程(第2版)》知识脑图 - Robert Love</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg-primary: #f7f8fc;
+  --bg-card: #ffffff;
+  --bg-sidebar: #1e293b;
+  --bg-sidebar-hover: #334155;
+  --bg-sidebar-active: #3b82f6;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --text-sidebar: #cbd5e1;
+  --text-sidebar-active: #ffffff;
+  --accent-1: #3b82f6;
+  --accent-2: #8b5cf6;
+  --accent-3: #ec4899;
+  --accent-4: #f59e0b;
+  --accent-5: #10b981;
+  --accent-6: #06b6d4;
+  --accent-7: #ef4444;
+  --accent-8: #6366f1;
+  --border: #e2e8f0;
+  --code-bg: #f1f5f9;
+  --code-text: #0f172a;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.12);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", Roboto, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============== LAYOUT ============== */
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ============== SIDEBAR ============== */
+.sidebar {
+  width: 320px;
+  background: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  transition: var(--transition);
+}
+
+.sidebar-header {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: sticky;
+  top: 0;
+  background: var(--bg-sidebar);
+  z-index: 2;
+}
+
+.sidebar-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+
+.sidebar-subtitle {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 14px;
+}
+
+.sidebar-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sidebar-actions button {
+  flex: 1;
+  min-width: 60px;
+  padding: 6px 8px;
+  font-size: 12px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-sidebar);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.sidebar-actions button:hover {
+  background: var(--bg-sidebar-hover);
+  color: #fff;
+}
+
+/* ============== NAV TREE ============== */
+.nav {
+  padding: 12px 8px 24px;
+}
+
+.nav-list, .nav-sub-list {
+  list-style: none;
+}
+
+.nav-item {
+  margin: 2px 0;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  color: var(--text-sidebar);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  transition: var(--transition);
+  cursor: pointer;
+  user-select: none;
+  border-left: 3px solid transparent;
+}
+
+.nav-link:hover {
+  background: var(--bg-sidebar-hover);
+  color: #fff;
+}
+
+.nav-link.active {
+  background: var(--bg-sidebar-active);
+  color: var(--text-sidebar-active);
+  border-left-color: #fbbf24;
+  font-weight: 600;
+}
+
+.nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  font-size: 10px;
+  transition: transform 0.2s;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.nav-toggle.expanded {
+  transform: rotate(90deg);
+}
+
+.nav-toggle::before {
+  content: "▶";
+}
+
+.nav-toggle.empty::before {
+  content: "•";
+  font-size: 8px;
+  opacity: 0.5;
+}
+
+.nav-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-sub-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding-left: 18px;
+}
+
+.nav-sub-list.expanded {
+  max-height: 4000px;
+}
+
+/* ============== MAIN CONTENT ============== */
+.main {
+  flex: 1;
+  margin-left: 320px;
+  padding: 40px 48px 80px;
+  max-width: 1100px;
+}
+
+/* ============== HERO ============== */
+.hero {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #8b5cf6 100%);
+  color: #fff;
+  padding: 48px 40px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 40px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.hero-tag {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+  position: relative;
+}
+
+.hero h1 {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+  position: relative;
+}
+
+.hero-subtitle {
+  font-size: 17px;
+  opacity: 0.92;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  position: relative;
+}
+
+.hero-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  opacity: 0.95;
+}
+
+.hero-meta-item strong {
+  font-weight: 600;
+}
+
+/* ============== SECTION ============== */
+.section {
+  margin-bottom: 48px;
+  scroll-margin-top: 24px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--border);
+}
+
+.section-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 0 10px;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.section-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.section-intro {
+  background: var(--bg-card);
+  border-left: 4px solid var(--accent-1);
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 24px;
+  color: var(--text-secondary);
+  font-size: 14.5px;
+  line-height: 1.75;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============== CARD ============== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 22px 24px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--card-accent, var(--accent-1));
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--card-accent, var(--accent-1));
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.card-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  background: var(--card-accent, var(--accent-1));
+  color: #fff;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.card-body {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.card-desc {
+  margin-bottom: 10px;
+}
+
+.card ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 8px;
+}
+
+.card li {
+  position: relative;
+  padding-left: 18px;
+  margin: 6px 0;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+
+.card li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  background: var(--card-accent, var(--accent-1));
+  border-radius: 50%;
+}
+
+/* ============== TAGS ============== */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--code-bg);
+  color: var(--text-primary);
+  font-size: 12px;
+  border-radius: 12px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* ============== CODE ============== */
+.code {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  color: var(--code-text);
+  margin: 10px 0;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+/* ============== HIGHLIGHT ============== */
+.highlight {
+  background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+  color: #78350f;
+}
+
+.note {
+  background: #eff6ff;
+  border-left: 3px solid var(--accent-1);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  margin: 12px 0;
+  font-size: 13.5px;
+  color: #1e40af;
+}
+
+.warning {
+  background: #fef2f2;
+  border-left: 3px solid var(--accent-7);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  margin: 12px 0;
+  font-size: 13.5px;
+  color: #991b1b;
+}
+
+/* ============== INFO BAR ============== */
+.info-bar {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-bar .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent-5);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ============== FOOTER ============== */
+.footer {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+/* ============== SCROLLBAR ============== */
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+/* ============== RESPONSIVE ============== */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 24px 20px; }
+  .hero { padding: 32px 24px; }
+  .hero h1 { font-size: 26px; }
+  .menu-toggle { display: flex; }
+}
+
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 200;
+  width: 42px;
+  height: 42px;
+  background: var(--bg-sidebar);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 18px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+}
+
+/* ============== TOC TOP-LEVEL COLORS ============== */
+.toc-ch1 { --card-accent: #3b82f6; }
+.toc-ch2 { --card-accent: #8b5cf6; }
+.toc-ch3 { --card-accent: #ec4899; }
+.toc-ch4 { --card-accent: #f59e0b; }
+.toc-ch5 { --card-accent: #10b981; }
+.toc-ch6 { --card-accent: #06b6d4; }
+.toc-ch7 { --card-accent: #6366f1; }
+.toc-ch8 { --card-accent: #ef4444; }
+.toc-ch9 { --card-accent: #14b8a6; }
+.toc-ch10 { --card-accent: #f97316; }
+.toc-ch11 { --card-accent: #a855f7; }
+.toc-apx { --card-accent: #64748b; }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<div class="info-bar">
+  <span class="dot"></span>
+  <span>《Linux系统编程(第2版)》知识脑图</span>
+</div>
+
+<div class="app">
+
+  <!-- ========== SIDEBAR NAVIGATION ========== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">📚 知识脑图导航</div>
+      <div class="sidebar-subtitle">Linux系统编程(第2版) · Robert Love</div>
+      <div class="sidebar-actions">
+        <button onclick="expandAll()">全部展开</button>
+        <button onclick="collapseAll()">全部折叠</button>
+        <button onclick="scrollTop()">返回顶部</button>
+      </div>
+    </div>
+    <nav class="nav" id="nav">
+      <ul class="nav-list" id="nav-root"></ul>
+    </nav>
+  </aside>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+      <span class="hero-tag">SYSTEM PROGRAMMING</span>
+      <h1>Linux 系统编程(第2版)</h1>
+      <div class="hero-subtitle">编写系统软件的核心技术与实践指南</div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">👤 <strong>作者：</strong>[美] Robert Love</div>
+        <div class="hero-meta-item">🏢 <strong>出版：</strong>人民邮电出版社</div>
+        <div class="hero-meta-item">📅 <strong>版本：</strong>第2版（基于 Linux 3.9 / gcc 4.8 / glibc 2.17）</div>
+        <div class="hero-meta-item">📖 <strong>章节：</strong>11 章 + 2 附录</div>
+      </div>
+    </div>
+
+    <!-- 章节内容由 JS 注入 -->
+    <div id="content"></div>
+
+    <div class="footer">
+      <p>《Linux系统编程(第2版)》知识脑图 · 基于原书目录结构整理</p>
+      <p style="margin-top:6px;">内容仅供学习参考</p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ============== 知识脑图数据 ==============
+const data = [
+  {
+    id: "ch1", cls: "toc-ch1", num: "第1章", title: "入门和基本概念",
+    intro: "本书的概述章节，介绍系统编程的定义、API/ABI、标准以及 Linux 编程的基础概念。理解 Linux 系统编程的三大基石：系统调用、C 库、C 编译器。",
+    sections: [
+      { id: "ch1-1", num: "1.1", title: "系统编程",
+        desc: "系统编程是为编写系统软件（Shell、编辑器、编译器、守护进程等）所使用的编程方式，与内核和系统核心库直接交互。",
+        points: [
+          "系统编程 vs 应用编程：系统程序必须深入了解硬件与操作系统",
+          "系统编程的 3 大基石：<span class='highlight'>系统调用</span>、<span class='highlight'>C 库 (glibc)</span>、<span class='highlight'>C 编译器 (gcc)</span>",
+          "Linux 系统调用远少于 Windows（x86-64 约 300 个），但 90% 以上跨体系结构通用",
+          "用户空间通过 int 0x80（i386）或 syscall 指令进入内核",
+          "参数通过寄存器传递（i386 上 eax=调用号，ebx/ecx/edx/esi/edi 传参）"
+        ],
+        tags: ["系统调用", "glibc", "gcc", "用户/内核空间"] },
+      { id: "ch1-2", num: "1.2", title: "API 和 ABI",
+        desc: "API 定义源码级接口，ABI 定义二进制级接口。",
+        points: [
+          "<span class='highlight'>API</span>：源代码兼容，例如 C 标准库函数接口",
+          "<span class='highlight'>ABI</span>：二进制兼容，包括调用约定、字节序、寄存器使用、目标格式",
+          "Linux 为每种体系结构（x86-64、ARM、PowerPC 等）定义独立 ABI",
+          "工具链（编译器、链接器）负责实现 ABI"
+        ],
+        tags: ["API", "ABI", "调用约定", "二进制兼容"] },
+      { id: "ch1-3", num: "1.3", title: "标准",
+        desc: "Linux 致力于与 POSIX 和单一 UNIX 规范（SUS）兼容。",
+        points: [
+          "<span class='highlight'>POSIX</span>（IEEE 1003.1）：Portable Operating System Interface，可移植操作系统接口",
+          "<span class='highlight'>SUS</span>（Single UNIX Specification）：The Open Group 维护，合并并扩展 POSIX",
+          "C 语言标准：K&R C → ANSI C → ISO C90/C95/C99/C11",
+          "C++ 标准：ISO C++98/C++03/C++11",
+          "<span class='highlight'>LSB</span>（Linux Standard Base）：跨 Linux 发行版的二进制标准"
+        ],
+        tags: ["POSIX", "SUS", "C99", "C11", "LSB"] },
+      { id: "ch1-4", num: "1.4", title: "Linux 编程的概念",
+        desc: "Linux 系统提供的核心抽象：文件、进程、线程、信号等。",
+        points: [
+          "<span class='highlight'>一切皆文件</span>：设备、管道、socket 都通过文件描述符访问",
+          "普通文件：以字节流组织，无内置结构，文件位置（偏移量）从 0 开始",
+          "inode（索引节点）：存储文件元数据，不含文件名",
+          "硬链接共享同一个 inode，符号链接是特殊文件",
+          "进程是执行中的程序，线程是进程内的执行流"
+        ],
+        tags: ["文件", "inode", "进程", "线程"] }
+    ]
+  },
+
+  {
+    id: "ch2", cls: "toc-ch2", num: "第2章", title: "文件 I/O",
+    intro: "Linux 系统编程的核心主题之一。介绍基本的文件打开、读写、定位、关闭等系统调用，以及内核内部的文件管理机制。",
+    sections: [
+      { id: "ch2-1", num: "2.1", title: "打开文件：open()",
+        desc: "open()/openat() 是 Linux 中打开或创建文件的主要接口。",
+        points: [
+          "<span class='highlight'>open(path, flags, mode)</span>：成功返回文件描述符，失败返回 -1",
+          "flags：O_RDONLY / O_WRONLY / O_RDWR 必选其一",
+          "可选 flags：O_CREAT、O_EXCL、O_TRUNC、O_APPEND、O_NONBLOCK、O_CLOEXEC 等",
+          "mode：仅在 O_CREAT 时使用，定义新文件的权限位"
+        ],
+        tags: ["open()", "flags", "O_CREAT", "文件描述符"] },
+      { id: "ch2-2", num: "2.2", title: "通过 read() 读文件",
+        desc: "read() 是最基本的读取文件的系统调用。",
+        points: [
+          "<span class='highlight'>read(fd, buf, count)</span>：从 fd 读取最多 count 字节到 buf",
+          "返回值：成功读取的字节数，0 表示文件结束，-1 表示出错",
+          "可能返回的 errno：EINTR（被信号中断）、EAGAIN、EBADF、EIO 等"
+        ],
+        tags: ["read()", "EINTR", "短读"] },
+      { id: "ch2-3", num: "2.3", title: "调用 write() 写",
+        desc: "write() 将数据写入已打开的文件。",
+        points: [
+          "<span class='highlight'>write(fd, buf, count)</span>：从 buf 写入 count 字节到 fd",
+          "返回值：成功写入的字节数（可能小于 count，即短写）",
+          "磁盘空间不足、管道破裂（SIGPIPE）、被信号中断都可能造成短写或失败"
+        ],
+        tags: ["write()", "短写", "SIGPIPE"] },
+      { id: "ch2-4", num: "2.4", title: "同步 I/O",
+        desc: "fsync()/fdatasync()/sync() 将内核缓冲区数据刷新到磁盘。",
+        points: [
+          "<span class='highlight'>fsync(fd)</span>：将 fd 关联的文件数据和元数据写入磁盘",
+          "<span class='highlight'>fdatasync(fd)</span>：只刷新数据，不刷新元数据（性能略优）",
+          "<span class='highlight'>sync()</span>：将系统所有文件缓冲区写入磁盘",
+          "sync_file_range()：更精细的控制"
+        ],
+        tags: ["fsync()", "fdatasync()", "sync()"] },
+      { id: "ch2-5", num: "2.5", title: "直接 I/O",
+        desc: "绕过内核缓冲区，直接进行磁盘 I/O。",
+        points: [
+          "设置 <span class='highlight'>O_DIRECT</span> flag 启用直接 I/O",
+          "数据直接在用户缓冲区和磁盘之间传输，绕过页缓存",
+          "要求：缓冲区对齐、数据大小为块大小的整数倍、扇区对齐",
+          "适用于数据库等自己管理缓存的应用"
+        ],
+        tags: ["O_DIRECT", "页缓存旁路", "对齐"] },
+      { id: "ch2-6", num: "2.6", title: "关闭文件：close()",
+        desc: "关闭文件描述符，释放内核资源。",
+        points: [
+          "<span class='highlight'>close(fd)</span>：关闭文件描述符",
+          "关闭后 fd 立即可被后续 open() 复用",
+          "进程终止时内核自动关闭所有打开的文件描述符",
+          "<span class='highlight'>dup() / dup2() / dup3()</span>：复制文件描述符"
+        ],
+        tags: ["close()", "dup()", "dup2()"] },
+      { id: "ch2-7", num: "2.7", title: "用 lseek() 查找",
+        desc: "lseek() 设置文件偏移量。",
+        points: [
+          "<span class='highlight'>lseek(fd, offset, whence)</span>",
+          "whence：SEEK_SET（绝对位置）、SEEK_CUR（当前位置）、SEEK_END（文件末尾）",
+          "允许设置超出文件末尾的偏移量（形成稀疏文件）",
+          "不适用于管道、FIFO、socket、终端等非可定位文件"
+        ],
+        tags: ["lseek()", "文件偏移", "SEEK_SET/CUR/END"] },
+      { id: "ch2-8", num: "2.8", title: "定位读写：pread()/pwrite()",
+        desc: "在指定偏移量进行读写，不修改当前文件偏移。",
+        points: [
+          "<span class='highlight'>pread(fd, buf, count, offset)</span>",
+          "<span class='highlight'>pwrite(fd, buf, count, offset)</span>",
+          "原子操作，常用于多线程共享文件描述符场景"
+        ],
+        tags: ["pread()", "pwrite()", "原子操作"] },
+      { id: "ch2-9", num: "2.9", title: "文件截短：truncate()/ftruncate()",
+        desc: "将文件截断到指定长度。",
+        points: [
+          "<span class='highlight'>truncate(path, length)</span>",
+          "<span class='highlight'>ftruncate(fd, length)</span>",
+          "截断到 length 字节，超出部分被丢弃",
+          "若 length 大于原大小，扩展部分以 0 填充（稀疏文件）"
+        ],
+        tags: ["truncate()", "ftruncate()"] },
+      { id: "ch2-10", num: "2.10", title: "I/O 多路复用",
+        desc: "同时监控多个文件描述符的 I/O 事件。",
+        points: [
+          "<span class='highlight'>select()</span>：古老，可移植，但有 fd 数量限制（FD_SETSIZE）",
+          "<span class='highlight'>poll()</span>：无 fd 数量限制，使用 pollfd 数组",
+          "<span class='highlight'>epoll</span>：Linux 特有，O(1) 性能，适合大量并发连接（详见 4.2）"
+        ],
+        tags: ["select()", "poll()", "epoll"] },
+      { id: "ch2-11", num: "2.11", title: "内核内幕",
+        desc: "理解 VFS、inode、dentry、file 结构体。",
+        points: [
+          "<span class='highlight'>VFS</span>（Virtual File System）：虚拟文件系统层",
+          "每个进程有 <span class='highlight'>files_struct</span>，包含 fd 数组",
+          "每个打开的文件有 <span class='highlight'>struct file</span>",
+          "每个文件有 <span class='highlight'>inode</span>（磁盘元数据）",
+          "路径解析使用 <span class='highlight'>dentry</span>（目录项）缓存"
+        ],
+        tags: ["VFS", "inode", "dentry", "files_struct"] },
+      { id: "ch2-12", num: "2.12", title: "结束语",
+        desc: "本章回顾：基本文件 I/O 是所有 Linux 系统编程的根基。",
+        points: [
+          "open/read/write/close 构成最基础 I/O 模型",
+          "后续章节将介绍缓冲 I/O、异步 I/O、内存映射等高级主题"
+        ],
+        tags: ["总结"] }
+    ]
+  },
+
+  {
+    id: "ch3", cls: "toc-ch3", num: "第3章", title: "缓冲 I/O",
+    intro: "用户空间缓冲 I/O（标准 I/O 库）通过引入用户缓冲区提升性能，同时提供格式化 I/O、行缓冲等便利。本章基于 FILE 流和 stdio。",
+    sections: [
+      { id: "ch3-1", num: "3.1", title: "用户缓冲 I/O",
+        desc: "用户缓冲通过减少系统调用次数提高效率。",
+        points: [
+          "通过 <span class='highlight'>stdio</span> 库实现，提供 FILE* 抽象",
+          "三种缓冲模式：全缓冲、行缓冲、无缓冲"
+        ],
+        tags: ["stdio", "用户缓冲"] },
+      { id: "ch3-2", num: "3.2", title: "标准 I/O",
+        desc: "标准 I/O 库由 C 标准定义，Linux 下由 glibc 实现。",
+        points: [
+          "<span class='highlight'>FILE*</span> 流对象封装了文件描述符和缓冲区",
+          "三个标准流：<span class='highlight'>stdin</span>、<span class='highlight'>stdout</span>、<span class='highlight'>stderr</span>"
+        ],
+        tags: ["FILE", "stdin/stdout/stderr"] },
+      { id: "ch3-3", num: "3.3", title: "打开文件：fopen()",
+        desc: "fopen() 是打开流的标准接口。",
+        points: [
+          "<span class='highlight'>fopen(path, mode)</span>",
+          "mode 字符串：\"r\"、\"w\"、\"a\"、\"r+\"、\"w+\"、\"a+\" 等",
+          "返回 FILE*；失败返回 NULL 并设置 errno",
+          "<span class='highlight'>freopen()</span>：重新打开流"
+        ],
+        tags: ["fopen()", "freopen()", "mode 字符串"] },
+      { id: "ch3-4", num: "3.4", title: "通过文件描述符打开流：fdopen()",
+        desc: "将已存在的文件描述符包装为 FILE 流。",
+        points: [
+          "<span class='highlight'>fdopen(fd, mode)</span>",
+          "常用于包装管道或 socket",
+          "调用 fclose() 时会关闭底层 fd（除非使用 'e' 模式）"
+        ],
+        tags: ["fdopen()", "包装 fd"] },
+      { id: "ch3-5", num: "3.5", title: "关闭流：fclose()",
+        desc: "关闭流，刷新缓冲区。",
+        points: [
+          "<span class='highlight'>fclose(stream)</span>",
+          "关闭前会隐式调用 fflush() 刷新缓冲区",
+          "程序退出时应调用 <span class='highlight'>fcloseall()</span> 或确保每个流都关闭"
+        ],
+        tags: ["fclose()", "刷新"] },
+      { id: "ch3-6", num: "3.6", title: "从流中读数据",
+        desc: "stdio 提供丰富的读取函数。",
+        points: [
+          "<span class='highlight'>fread(ptr, size, nmemb, stream)</span>：二进制读",
+          "<span class='highlight'>fgets(buf, size, stream)</span>：读一行",
+          "<span class='highlight'>fgetc(stream) / getc(stream) / getchar()</span>：读一个字符",
+          "<span class='highlight'>scanf() / fscanf() / sscanf()</span>：格式化读"
+        ],
+        tags: ["fread()", "fgets()", "scanf()"] },
+      { id: "ch3-7", num: "3.7", title: "向流中写数据",
+        desc: "stdio 的写入函数。",
+        points: [
+          "<span class='highlight'>fwrite(ptr, size, nmemb, stream)</span>",
+          "<span class='highlight'>fputs(str, stream) / puts(str)</span>",
+          "<span class='highlight'>fputc(c, stream) / putchar(c)</span>",
+          "<span class='highlight'>printf() / fprintf() / sprintf() / snprintf()</span>"
+        ],
+        tags: ["fwrite()", "printf()", "snprintf()"] },
+      { id: "ch3-8", num: "3.8", title: "示例程序：cp 的 stdio 实现",
+        desc: "用标准 I/O 实现文件复制。",
+        points: [
+          "使用 fopen()/fread()/fwrite()/fclose()",
+          "展示缓冲 I/O 的简洁性"
+        ],
+        tags: ["示例", "cp"] },
+      { id: "ch3-9", num: "3.9", title: "定位流：fseek()/ftell()/fgetpos()/fsetpos()/rewind()",
+        desc: "在流中移动读写位置。",
+        points: [
+          "<span class='highlight'>fseek(stream, offset, whence)</span>",
+          "<span class='highlight'>ftell(stream)</span>",
+          "<span class='highlight'>fgetpos()/fsetpos()</span>：可移植，处理大文件",
+          "<span class='highlight'>rewind(stream)</span>：重置到开头"
+        ],
+        tags: ["fseek()", "ftell()", "rewind()"] },
+      { id: "ch3-10", num: "3.10", title: "刷新流：fflush()",
+        desc: "强制将缓冲区数据写入底层 fd。",
+        points: [
+          "<span class='highlight'>fflush(stream)</span>",
+          "常用在 fork() 之前或关键输出之前",
+          "fflush(NULL) 刷新所有输出流"
+        ],
+        tags: ["fflush()"] },
+      { id: "ch3-11", num: "3.11", title: "错误和文件结束",
+        desc: "ferror() 和 feof() 检查流状态。",
+        points: [
+          "<span class='highlight'>ferror(stream)</span>：是否出错",
+          "<span class='highlight'>feof(stream)</span>：是否到达 EOF",
+          "<span class='highlight'>clearerr(stream)</span>：清除错误和 EOF 标志"
+        ],
+        tags: ["ferror()", "feof()", "EOF"] },
+      { id: "ch3-12", num: "3.12", title: "获取关联的文件描述符：fileno()",
+        desc: "获取 FILE* 背后的文件描述符。",
+        points: [
+          "<span class='highlight'>fileno(stream)</span>",
+          "常用于混合使用 stdio 和系统调用",
+          "需包含 &lt;stdio.h&gt;"
+        ],
+        tags: ["fileno()"] },
+      { id: "ch3-13", num: "3.13", title: "控制缓冲",
+        desc: "设置流的缓冲模式和缓冲区。",
+        points: [
+          "<span class='highlight'>setvbuf(stream, buf, mode, size)</span>",
+          "mode：_IOFBF（全缓冲）、_IOLBF（行缓冲）、_IONBF（无缓冲）",
+          "<span class='highlight'>setbuf(stream, buf)</span>：简化版"
+        ],
+        tags: ["setvbuf()", "setbuf()", "缓冲控制"] },
+      { id: "ch3-14", num: "3.14", title: "线程安全",
+        desc: "stdio 函数的线程安全特性。",
+        points: [
+          "每个 FILE 操作是原子的（通过内部锁）",
+          "但多个操作组合不是原子的（需自行加锁）",
+          "<span class='highlight'>flockfile() / funlockfile() / ftrylockfile()</span>：显式加锁"
+        ],
+        tags: ["线程安全", "flockfile()"] },
+      { id: "ch3-15", num: "3.15", title: "对标准 I/O 的批评",
+        desc: "stdIO 的局限：额外的内存拷贝、二进制数据问题、信号安全等。",
+        points: [
+          "二次拷贝：用户缓冲 + 内核缓冲",
+          "二进制 I/O 的 fread/fwrite 不适合消息协议",
+          "对信号处理不友好（printf 不是 async-signal-safe）"
+        ],
+        tags: ["批评", "性能"] },
+      { id: "ch3-16", num: "3.16", title: "结束语",
+        desc: "标准 I/O 适合大多数用户态程序；性能敏感场景用直接 I/O。",
+        points: [
+          "默认使用 stdio 提高开发效率",
+          "关键路径可绕过 stdio 使用系统调用"
+        ],
+        tags: ["总结"] }
+    ]
+  },
+
+  {
+    id: "ch4", cls: "toc-ch4", num: "第4章", title: "高级文件 I/O",
+    intro: "本章介绍分散/聚集 I/O、epoll、内存映射、I/O 提示及同步/异步操作等高级主题，用于构建高性能 I/O 程序。",
+    sections: [
+      { id: "ch4-1", num: "4.1", title: "分散/聚集 I/O：readv()/writev()",
+        desc: "在一次系统调用中读写多个非连续缓冲区。",
+        points: [
+          "<span class='highlight'>readv(fd, iov, iovcnt)</span>",
+          "<span class='highlight'>writev(fd, iov, iovcnt)</span>",
+          "使用 struct iovec 数组，iovec.iov_base/iov_len",
+          "减少系统调用次数，提升性能"
+        ],
+        tags: ["readv()", "writev()", "iovec"] },
+      { id: "ch4-2", num: "4.2", title: "Event Poll：epoll",
+        desc: "Linux 高性能 I/O 多路复用机制。",
+        points: [
+          "<span class='highlight'>epoll_create() / epoll_create1()</span>：创建 epoll 实例",
+          "<span class='highlight'>epoll_ctl(epfd, op, fd, event)</span>：注册/修改/删除 fd",
+          "<span class='highlight'>epoll_wait(epfd, events, max, timeout)</span>：等待事件",
+          "边沿触发（ET）与水平触发（LT）",
+          "对比 select/poll：O(1) 复杂度，无 fd 数量上限"
+        ],
+        tags: ["epoll", "ET/LT", "高性能"] },
+      { id: "ch4-3", num: "4.3", title: "存储映射：mmap()",
+        desc: "将文件映射到进程地址空间。",
+        points: [
+          "<span class='highlight'>mmap(addr, length, prot, flags, fd, offset)</span>",
+          "<span class='highlight'>munmap(addr, length)</span>",
+          "prot：PROT_READ/PROT_WRITE/PROT_EXEC",
+          "flags：MAP_SHARED / MAP_PRIVATE / MAP_ANONYMOUS",
+          "msync() 强制同步映射数据到磁盘"
+        ],
+        tags: ["mmap()", "munmap()", "msync()"] },
+      { id: "ch4-4", num: "4.4", title: "普通文件 I/O 提示：posix_fadvise()",
+        desc: "提示内核文件的访问模式。",
+        points: [
+          "<span class='highlight'>posix_fadvise(fd, offset, len, advice)</span>",
+          "advice：POSIX_FADV_NORMAL/RANDOM/SEQUENTIAL/WILLNEED/DONTNEED/NOREUSE",
+          "帮助内核优化预读和缓存策略"
+        ],
+        tags: ["posix_fadvise()", "I/O 提示"] },
+      { id: "ch4-5", num: "4.5", title: "同步（Synchronized）/同步（Synchronous）/异步（Asynchronous）操作",
+        desc: "POSIX 异步 I/O 接口。",
+        points: [
+          "<span class='highlight'>aio_read() / aio_write()</span>",
+          "<span class='highlight'>aio_error() / aio_return() / aio_suspend()</span>",
+          "使用 aiocb 结构体描述异步操作",
+          "实际生产中更多使用 epoll + 直接 I/O 实现"
+        ],
+        tags: ["aio", "异步 I/O"] },
+      { id: "ch4-6", num: "4.6", title: "I/O 调度器和 I/O 性能",
+        desc: "内核的 I/O 调度器影响磁盘性能。",
+        points: [
+          "调度器：CFQ、Deadline、NOOP、BFQ",
+          "电梯算法减少磁盘寻道",
+          "合并相邻 I/O 请求"
+        ],
+        tags: ["I/O 调度器", "CFQ", "Deadline"] },
+      { id: "ch4-7", num: "4.7", title: "结束语",
+        desc: "高级 I/O 是构建高性能服务器的基石。",
+        points: [
+          "epoll + mmap + 直接 I/O 是现代 Linux 高性能服务的标准组合"
+        ],
+        tags: ["总结"] }
+    ]
+  },
+
+  {
+    id: "ch5", cls: "toc-ch5", num: "第5章", title: "进程管理",
+    intro: "进程是 Linux 中最基本的执行单位。本章介绍进程的创建、执行、终止，以及用户/组、会话、守护进程等概念。",
+    sections: [
+      { id: "ch5-1", num: "5.1", title: "程序、进程和线程",
+        desc: "区分程序（二进制文件）、进程（执行实例）和线程（执行流）。",
+        points: [
+          "程序是存储在磁盘上的可执行文件",
+          "进程是程序的执行实例，拥有独立地址空间",
+          "线程是进程内的执行流，共享地址空间"
+        ],
+        tags: ["程序", "进程", "线程"] },
+      { id: "ch5-2", num: "5.2", title: "进程 ID",
+        desc: "每个进程有唯一的 PID。",
+        points: [
+          "<span class='highlight'>getpid()</span>：返回进程 PID",
+          "<span class='highlight'>getppid()</span>：返回父进程 PID",
+          "PID 命名空间：容器中 PID 可重复",
+          "PID 0：调度进程（idle）；PID 1：init 进程"
+        ],
+        tags: ["PID", "getpid()", "init"] },
+      { id: "ch5-3", num: "5.3", title: "运行新进程",
+        desc: "fork()、exec() 系列系统调用。",
+        points: [
+          "<span class='highlight'>fork()</span>：创建子进程，父进程返回子 PID，子进程返回 0",
+          "<span class='highlight'>execve(path, argv, envp)</span>：替换进程映像",
+          "exec 家族：execl、execle、execlp、execv、execvp、execvpe",
+          "vfork()：与父进程共享内存，效率更高但危险"
+        ],
+        tags: ["fork()", "execve()", "exec 家族"] },
+      { id: "ch5-4", num: "5.4", title: "终止进程",
+        desc: "进程的正常与异常退出。",
+        points: [
+          "<span class='highlight'>exit(status)</span>：触发正常退出流程",
+          "atexit() 注册退出处理函数",
+          "异常终止：abort()、信号",
+          "_exit(status)：直接内核退出，不调用 atexit 处理器"
+        ],
+        tags: ["exit()", "_exit()", "atexit()"] },
+      { id: "ch5-5", num: "5.5", title: "等待子进程终止：wait()",
+        desc: "父进程等待子进程结束并收集状态。",
+        points: [
+          "<span class='highlight'>wait(int *status)</span>：阻塞等待任一子进程",
+          "<span class='highlight'>waitpid(pid, status, options)</span>：等待指定子进程",
+          "WIFEXITED/WEXITSTATUS 等宏解析 status",
+          "WNOHANG 选项：非阻塞"
+        ],
+        tags: ["wait()", "waitpid()"] },
+      { id: "ch5-6", num: "5.6", title: "用户和组",
+        desc: "进程的凭证信息：UID、GID 等。",
+        points: [
+          "<span class='highlight'>getuid()/geteuid()/getgid()/getegid()</span>",
+          "实际 UID/有效 UID/保存 set-UID",
+          "setuid()/setgid() 切换用户身份",
+          "/etc/passwd、/etc/shadow、/etc/group"
+        ],
+        tags: ["UID", "GID", "setuid()"] },
+      { id: "ch5-7", num: "5.7", title: "会话（Session）和进程组",
+        desc: "管理相关进程的集合。",
+        points: [
+          "<span class='highlight'>setsid()</span>：创建新会话",
+          "每个会话有首领进程（session leader）",
+          "进程组：信号传递的单位",
+          "前台进程组与作业控制"
+        ],
+        tags: ["会话", "进程组", "setsid()"] },
+      { id: "ch5-8", num: "5.8", title: "守护进程（Daemon）",
+        desc: "后台运行的服务进程。",
+        points: [
+          "通过 fork() + setsid() 创建",
+          "关闭/重定向标准输入/输出/错误到 /dev/null",
+          "chdir(\"/\") 切换根目录",
+          "umask(0) 重设文件权限掩码"
+        ],
+        tags: ["守护进程", "daemon", "后台服务"] },
+      { id: "ch5-9", num: "5.9", title: "结束语",
+        desc: "进程管理是 Linux 系统编程的核心。",
+        points: [
+          "fork/exec/wait 是 Unix 进程模型的核心"
+        ],
+        tags: ["总结"] }
+    ]
+  },
+
+  {
+    id: "ch6", cls: "toc-ch6", num: "第6章", title: "高级进程管理",
+    intro: "深入了解 Linux 进程调度、优先级、处理器亲和力、实时系统以及进程资源限制。",
+    sections: [
+      { id: "ch6-1", num: "6.1", title: "进程调度",
+        desc: "Linux 调度器决定下一个运行的进程。",
+        points: [
+          "经典 O(1) 调度器 → CFS（完全公平调度器）",
+          "优先级：实时优先级（0-99）和 nice 值（-20~19）",
+          "时间片分配策略"
+        ],
+        tags: ["调度器", "CFS"] },
+      { id: "ch6-2", num: "6.2", title: "完全公平调度器（CFS）",
+        desc: "Linux 2.6.23+ 的默认调度器。",
+        points: [
+          "使用红黑树管理可运行进程",
+          "虚拟运行时间（vruntime）",
+          "目标：每个进程获得公平的 CPU 时间"
+        ],
+        tags: ["CFS", "红黑树", "vruntime"] },
+      { id: "ch6-3", num: "6.3", title: "让出处理器：sched_yield()",
+        desc: "进程主动放弃 CPU。",
+        points: [
+          "<span class='highlight'>sched_yield()</span>",
+          "将当前进程移到运行队列末尾",
+          "应当谨慎使用"
+        ],
+        tags: ["sched_yield()"] },
+      { id: "ch6-4", num: "6.4", title: "进程优先级：nice",
+        desc: "通过 nice 值调整非实时进程优先级。",
+        points: [
+          "<span class='highlight'>nice() / setpriority() / getpriority()</span>",
+          "nice 值范围：-20（最高）~ 19（最低）",
+          "需要 CAP_SYS_NICE 权限才能降低 nice 值"
+        ],
+        tags: ["nice", "优先级"] },
+      { id: "ch6-5", num: "6.5", title: "处理器亲和力（Affinity）",
+        desc: "将进程绑定到特定 CPU 核。",
+        points: [
+          "<span class='highlight'>sched_setaffinity() / sched_getaffinity()</span>",
+          "通过 cpu_set_t 描述 CPU 集合",
+          "提升缓存局部性、避免跨核迁移"
+        ],
+        tags: ["亲和力", "CPU 绑定"] },
+      { id: "ch6-6", num: "6.6", title: "实时系统",
+        desc: "Linux 实时调度策略。",
+        points: [
+          "实时策略：<span class='highlight'>SCHED_FIFO</span>、<span class='highlight'>SCHED_RR</span>、<span class='highlight'>SCHED_DEADLINE</span>",
+          "实时优先级：1-99（数值越大优先级越高）",
+          "需要 root 权限",
+          "危险：实时进程可饿死普通进程"
+        ],
+        tags: ["实时", "SCHED_FIFO", "SCHED_RR"] },
+      { id: "ch6-7", num: "6.7", title: "资源限制：getrlimit()/setrlimit()/prlimit()",
+        desc: "限制进程资源使用。",
+        points: [
+          "<span class='highlight'>getrlimit(resource, rlim)</span>",
+          "<span class='highlight'>setrlimit(resource, rlim)</span>",
+          "资源类型：RLIMIT_CPU、RLIMIT_AS、RLIMIT_NOFILE、RLIMIT_NPROC 等",
+          "struct rlimit：rlim_cur（软限制）、rlim_max（硬限制）"
+        ],
+        tags: ["rlimit", "prlimit()", "资源限制"] }
+    ]
+  },
+
+  {
+    id: "ch7", cls: "toc-ch7", num: "第7章", title: "线程",
+    intro: "线程是进程内的执行流，共享地址空间但拥有独立的栈和寄存器。线程使得程序可以并行执行任务。",
+    sections: [
+      { id: "ch7-1", num: "7.1", title: "二进制程序、进程和线程",
+        desc: "多线程程序在内存中的组织。",
+        points: [
+          "线程共享：代码段、数据段、堆、文件描述符",
+          "线程独占：栈、寄存器、线程局部存储（TLS）",
+          "POSIX 线程标准（pthread）"
+        ],
+        tags: ["线程模型", "TLS"] },
+      { id: "ch7-2", num: "7.2", title: "多线程",
+        desc: "使用多线程的优势与挑战。",
+        points: [
+          "优势：提升吞吐、简化程序结构、共享数据方便",
+          "挑战：同步、竞争、死锁"
+        ],
+        tags: ["多线程"] },
+      { id: "ch7-3", num: "7.3", title: "线程模型",
+        desc: "用户线程、内核线程、混合模型。",
+        points: [
+          "N:1 用户线程（协程）：N 个用户线程映射到 1 个内核线程",
+          "1:1 内核线程：Linux pthread 采用",
+          "M:N 混合模型：Go 语言的 GMP"
+        ],
+        tags: ["线程模型", "协程", "goroutine"] },
+      { id: "ch7-4", num: "7.4", title: "线程模式",
+        desc: "常见的线程使用模式。",
+        points: [
+          "主从模式：主线程分配工作给从线程",
+          "对等模式：所有线程平等",
+          "流水线模式：每个线程负责一个阶段",
+          "工作线程池：固定数量的工作线程处理任务队列"
+        ],
+        tags: ["线程模式", "线程池"] },
+      { id: "ch7-5", num: "7.5", title: "并发性、并行性和竞争",
+        desc: "区分并发与并行。",
+        points: [
+          "并发：多个任务交替执行",
+          "并行：多个任务同时执行（多核）",
+          "竞争条件：结果依赖于执行顺序",
+          "需要同步原语保护共享数据"
+        ],
+        tags: ["并发", "并行", "竞争条件"] },
+      { id: "ch7-6", num: "7.6", title: "同步",
+        desc: "线程间同步机制。",
+        points: [
+          "<span class='highlight'>互斥锁（mutex）</span>：pthread_mutex_lock/unlock",
+          "<span class='highlight'>条件变量</span>：pthread_cond_wait/signal",
+          "<span class='highlight'>读写锁</span>：pthread_rwlock_rdlock/wrlock",
+          "<span class='highlight'>自旋锁</span>：短临界区",
+          "屏障（barrier）：等待所有线程到达",
+          "原子操作：__sync_* 或 C11 stdatomic"
+        ],
+        tags: ["互斥锁", "条件变量", "读写锁", "原子操作"] },
+      { id: "ch7-7", num: "7.7", title: "Pthreads API",
+        desc: "POSIX 线程编程接口。",
+        points: [
+          "<span class='highlight'>pthread_create()</span>：创建线程",
+          "<span class='highlight'>pthread_exit()</span>：线程退出",
+          "<span class='highlight'>pthread_join()</span>：等待线程结束",
+          "<span class='highlight'>pthread_detach()</span>：分离线程",
+          "线程特定数据（TSD）：pthread_key_create",
+          "线程取消：pthread_cancel"
+        ],
+        tags: ["pthread", "创建/退出/等待"] },
+      { id: "ch7-8", num: "7.8", title: "进一步研究",
+        desc: "深入学习线程的方向。",
+        points: [
+          "无锁编程、C11 内存模型、事务内存",
+          "性能分析：perf、helgrind、TSan"
+        ],
+        tags: ["进一步学习"] }
+    ]
+  },
+
+  {
+    id: "ch8", cls: "toc-ch8", num: "第8章", title: "文件和目录管理",
+    intro: "本章专注于文件系统的元数据操作：stat 系列、权限、所有权、链接、目录操作、设备节点以及文件事件监控。",
+    sections: [
+      { id: "ch8-1", num: "8.1", title: "文件及其元数据：stat()",
+        desc: "获取和操作文件元数据。",
+        points: [
+          "<span class='highlight'>stat() / fstat() / lstat()</span>",
+          "struct stat：st_mode、st_uid、st_gid、st_size、st_atime、st_mtime、st_ctime、st_ino、st_nlink 等",
+          "<span class='highlight'>chmod() / fchmod()</span>：修改权限",
+          "<span class='highlight'>chown() / fchown() / lchown()</span>：修改所有权",
+          "utime() / utimes()：修改时间戳"
+        ],
+        tags: ["stat", "chmod", "chown", "元数据"] },
+      { id: "ch8-2", num: "8.2", title: "目录",
+        desc: "目录的创建、读取、删除。",
+        points: [
+          "<span class='highlight'>opendir() / readdir() / closedir()</span>",
+          "struct dirent：d_ino、d_name、d_type",
+          "<span class='highlight'>mkdir() / rmdir()</span>",
+          "<span class='highlight'>chdir() / getcwd()</span>",
+          "getdents() 系统调用（更高效）"
+        ],
+        tags: ["目录", "opendir", "readdir", "mkdir"] },
+      { id: "ch8-3", num: "8.3", title: "链接",
+        desc: "硬链接与软链接（符号链接）。",
+        points: [
+          "<span class='highlight'>link() / linkat()</span>：创建硬链接",
+          "<span class='highlight'>symlink() / symlinkat()</span>：创建符号链接",
+          "<span class='highlight'>readlink() / readlinkat()</span>：读取符号链接",
+          "<span class='highlight'>unlink() / unlinkat()</span>：删除链接",
+          "硬链接 vs 软链接：inode 共享 vs 路径名"
+        ],
+        tags: ["硬链接", "软链接", "symlink"] },
+      { id: "ch8-4", num: "8.4", title: "拷贝和移动文件",
+        desc: "实现 cp 和 mv。",
+        points: [
+          "拷贝：open + read + write（或 sendfile）",
+          "移动：rename() 跨同一文件系统（原子操作）",
+          "<span class='highlight'>rename() / renameat() / renameat2()</span>"
+        ],
+        tags: ["rename()", "cp", "mv"] },
+      { id: "ch8-5", num: "8.5", title: "设备节点",
+        desc: "设备文件 /dev。",
+        points: [
+          "字符设备：c（按字节访问）",
+          "块设备：b（按块访问）",
+          "<span class='highlight'>mknod() / mknodat()</span>",
+          "udev：动态管理设备节点"
+        ],
+        tags: ["设备节点", "mknod"] },
+      { id: "ch8-6", num: "8.6", title: "带外通信（Out-of-Band Communication）",
+        desc: "使用文件描述符传递特殊数据。",
+        points: [
+          "Unix 域套接字可发送文件描述符（SCM_RIGHTS）",
+          "使用 sendmsg() / recvmsg() 配合 CMSG 数据"
+        ],
+        tags: ["SCM_RIGHTS", "fd 传递"] },
+      { id: "ch8-7", num: "8.7", title: "监视文件事件：inotify",
+        desc: "监控文件或目录变化。",
+        points: [
+          "<span class='highlight'>inotify_init() / inotify_init1()</span>",
+          "<span class='highlight'>inotify_add_watch()</span>",
+          "事件：IN_CREATE、IN_DELETE、IN_MODIFY、IN_MOVE 等",
+          "通过 read() 读取事件"
+        ],
+        tags: ["inotify", "文件监控"] }
+    ]
+  },
+
+  {
+    id: "ch9", cls: "toc-ch9", num: "第9章", title: "内存管理",
+    intro: "深入进程地址空间、动态内存分配、内存映射、内存操作以及内存锁定等高级主题。",
+    sections: [
+      { id: "ch9-1", num: "9.1", title: "进程地址空间",
+        desc: "Linux 进程的虚拟内存布局。",
+        points: [
+          "段：<span class='highlight'>代码段</span>、<span class='highlight'>数据段</span>、<span class='highlight'>BSS</span>、<span class='highlight'>堆</span>、<span class='highlight'>栈</span>",
+          "/proc/PID/maps 查看内存映射",
+          "栈向下增长，堆向上增长"
+        ],
+        tags: ["地址空间", "段"] },
+      { id: "ch9-2", num: "9.2", title: "动态内存分配：malloc()",
+        desc: "glibc 的 malloc 实现。",
+        points: [
+          "<span class='highlight'>malloc(size) / calloc(n, size) / realloc(ptr, size) / free(ptr)</span>",
+          "glibc malloc 使用 ptmalloc2：bins、arena",
+          "分配错误返回 NULL；free 错误导致崩溃或安全漏洞",
+          "<span class='highlight'>alloca()</span>：栈上分配（自动释放）"
+        ],
+        tags: ["malloc", "free", "calloc", "realloc"] },
+      { id: "ch9-3", num: "9.3", title: "数据段的管理",
+        desc: "BSS、数据段和自定义段。",
+        points: [
+          "<span class='highlight'>brk() / sbrk()</span>：调整数据段边界",
+          "GCC 属性：__attribute__((section(\"name\")))",
+          "现代程序中较少使用 brk"
+        ],
+        tags: ["brk", "sbrk"] },
+      { id: "ch9-4", num: "9.4", title: "匿名内存映射：mmap()",
+        desc: "不基于文件的内存映射。",
+        points: [
+          "<span class='highlight'>mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0)</span>",
+          "大块内存（&gt; 128KB 默认）malloc 使用 mmap",
+          "可用于实现大数组、内存池"
+        ],
+        tags: ["mmap", "MAP_ANONYMOUS"] },
+      { id: "ch9-5", num: "9.5", title: "高级内存分配",
+        desc: "页对齐分配、内存池。",
+        points: [
+          "<span class='highlight'>posix_memalign() / aligned_alloc() / memalign()</span>",
+          "页对齐分配：直接 mmap 整数页",
+          "自定义内存池减少碎片"
+        ],
+        tags: ["posix_memalign", "aligned_alloc"] },
+      { id: "ch9-6", num: "9.6", title: "基于栈的分配",
+        desc: "alloca 和 VLA。",
+        points: [
+          "<span class='highlight'>alloca(size)</span>：在栈帧上分配",
+          "函数返回时自动释放",
+          "C99 VLA（变长数组）：GCC 也支持",
+          "风险：栈溢出"
+        ],
+        tags: ["alloca", "VLA"] },
+      { id: "ch9-7", num: "9.7", title: "选择合适的内存分配机制",
+        desc: "不同分配策略的取舍。",
+        points: [
+          "小对象：malloc",
+          "大对象：mmap",
+          "页对齐：posix_memalign",
+          "短期：alloca"
+        ],
+        tags: ["选择"] },
+      { id: "ch9-8", num: "9.8", title: "内存操作",
+        desc: "底层内存处理函数。",
+        points: [
+          "<span class='highlight'>memcpy() / memmove() / memset() / memcmp() / memchr()</span>",
+          "memmove 处理重叠区域",
+          "现代 CPU 上 memcpy 高度优化（SSE/AVX）"
+        ],
+        tags: ["memcpy", "memset", "memmove"] },
+      { id: "ch9-9", num: "9.9", title: "内存锁定：mlock()/mlockall()",
+        desc: "锁定物理内存，防止换出。",
+        points: [
+          "<span class='highlight'>mlock(addr, len) / munlock(addr, len)</span>",
+          "<span class='highlight'>mlockall() / munlockall()</span>",
+          "MCL_CURRENT 锁定当前页，MCL_FUTURE 锁定未来页",
+          "需要 CAP_IPC_LOCK 权限；用于实时系统"
+        ],
+        tags: ["mlock", "mlockall", "实时"] },
+      { id: "ch9-10", num: "9.10", title: "投机性内存分配策略",
+        desc: "提前分配策略。",
+        points: [
+          "使用 mmap(MAP_POPULATE) 预读页",
+          "madvise(MADV_WILLNEED) 提示预读",
+          "内存预取：减少首次访问延迟"
+        ],
+        tags: ["投机性", "madvise"] }
+    ]
+  },
+
+  {
+    id: "ch10", cls: "toc-ch10", num: "第10章", title: "信号",
+    intro: "信号是 Linux 中进程间通信最古老的方式之一，用于异步事件通知。本章涵盖信号概念、发送、捕获与高级特性。",
+    sections: [
+      { id: "ch10-1", num: "10.1", title: "信号相关的概念",
+        desc: "信号的基本概念和分类。",
+        points: [
+          "信号是发送给进程的软件中断",
+          "标准信号：SIGHUP、SIGINT、SIGKILL、SIGTERM 等",
+          "实时信号：SIGRTMIN ~ SIGRTMAX",
+          "每个信号有默认处理动作：终止、忽略、停止、继续"
+        ],
+        tags: ["信号", "SIGHUP", "SIGINT", "SIGKILL"] },
+      { id: "ch10-2", num: "10.2", title: "基本信号管理",
+        desc: "signal() 和 sigaction()。",
+        points: [
+          "<span class='highlight'>signal(signum, handler)</span>：简单信号注册（历史接口，行为可移植性差）",
+          "<span class='highlight'>sigaction(signum, &act, &oldact)</span>：推荐接口",
+          "struct sigaction：sa_handler / sa_sigaction、sa_mask、sa_flags",
+          "SA_RESTART、SA_NOCLDSTOP、SA_NODEFER 等 flag"
+        ],
+        tags: ["signal", "sigaction"] },
+      { id: "ch10-3", num: "10.3", title: "发送信号",
+        desc: "向进程或进程组发送信号。",
+        points: [
+          "<span class='highlight'>kill(pid, sig)</span>：向进程发送信号",
+          "<span class='highlight'>raise(sig)</span>：向自身发送信号",
+          "<span class='highlight'>killpg(pgrp, sig)</span>：向进程组发送信号",
+          "<span class='highlight'>tgkill(tgid, tid, sig)</span>：向线程发送",
+          "<span class='highlight'>sigqueue()</span>：发送实时信号并附带数据"
+        ],
+        tags: ["kill", "raise", "sigqueue"] },
+      { id: "ch10-4", num: "10.4", title: "重入",
+        desc: "信号处理函数的可重入性。",
+        points: [
+          "信号处理函数可能中断主流程代码",
+          "必须使用 async-signal-safe 函数",
+          "<span class='highlight'>不可在 handler 中调用 printf、malloc</span>",
+          "通过 volatile sig_atomic_t 标志传递简单状态"
+        ],
+        tags: ["重入", "async-signal-safe"] },
+      { id: "ch10-5", num: "10.5", title: "信号集",
+        desc: "sigset_t 和相关操作。",
+        points: [
+          "<span class='highlight'>sigemptyset() / sigfillset() / sigaddset() / sigdelset() / sigismember()</span>",
+          "<span class='highlight'>sigprocmask()</span>：阻塞/解除阻塞信号",
+          "<span class='highlight'>sigpending()</span>：获取待处理信号集"
+        ],
+        tags: ["信号集", "sigprocmask"] },
+      { id: "ch10-6", num: "10.6", title: "高级信号管理",
+        desc: "signalfd、sigwaitinfo 等高级接口。",
+        points: [
+          "<span class='highlight'>signalfd()</span>：将信号转为文件描述符事件（与 epoll 配合）",
+          "<span class='highlight'>sigwaitinfo() / sigtimedwait()</span>：同步等待信号",
+          "<span class='highlight'>signalfd_siginfo</span>：传递信号详细信息",
+          "实时信号可携带数据"
+        ],
+        tags: ["signalfd", "sigwaitinfo"] },
+      { id: "ch10-7", num: "10.7", title: "信号是个 UNIX \"瑕疵\" 吗",
+        desc: "对信号机制的批判性思考。",
+        points: [
+          "信号在多线程下行为复杂",
+          "可重入性问题难以调试",
+          "现代程序倾向于 event loop + signalfd"
+        ],
+        tags: ["思考", "批评"] }
+    ]
+  },
+
+  {
+    id: "ch11", cls: "toc-ch11", num: "第11章", title: "时间",
+    intro: "Linux 中的时间表示、获取、设置及定时机制。本章涵盖从 gettimeofday 到 timerfd 的多种时间相关接口。",
+    sections: [
+      { id: "ch11-1", num: "11.1", title: "时间的数据结构",
+        desc: "time_t、struct timeval、struct timespec。",
+        points: [
+          "<span class='highlight'>time_t</span>：自 1970-01-01 起的秒数",
+          "struct timeval：秒 + 微秒",
+          "struct timespec：秒 + 纳秒（POSIX 推荐）"
+        ],
+        tags: ["time_t", "timeval", "timespec"] },
+      { id: "ch11-2", num: "11.2", title: "POSIX 时钟",
+        desc: "不同精度的时间源。",
+        points: [
+          "<span class='highlight'>CLOCK_REALTIME</span>：系统墙钟，可设置",
+          "<span class='highlight'>CLOCK_MONOTONIC</span>：单调递增，不受系统时间调整影响",
+          "CLOCK_PROCESS_CPUTIME_ID、CLOCK_THREAD_CPUTIME_ID",
+          "CLOCK_BOOTTIME、CLOCK_MONOTONIC_RAW 等"
+        ],
+        tags: ["POSIX 时钟", "CLOCK_MONOTONIC"] },
+      { id: "ch11-3", num: "11.3", title: "时间源精度",
+        desc: "系统时钟精度及获取。",
+        points: [
+          "<span class='highlight'>clock_getres()</span>：获取时钟分辨率",
+          "TSC、HPET、acpi_pm 等硬件时钟源",
+          "高分辨率定时器（hrtimer）"
+        ],
+        tags: ["精度", "clock_getres"] },
+      { id: "ch11-4", num: "11.4", title: "取得当前时间",
+        desc: "time()、gettimeofday()、clock_gettime()。",
+        points: [
+          "<span class='highlight'>time(time_t *t)</span>",
+          "<span class='highlight'>gettimeofday(struct timeval *tv, struct timezone *tz)</span>（已过时）",
+          "<span class='highlight'>clock_gettime(clockid_t clk, struct timespec *ts)</span>"
+        ],
+        tags: ["time", "gettimeofday", "clock_gettime"] },
+      { id: "ch11-5", num: "11.5", title: "设置当前时间",
+        desc: "需要 root 权限。",
+        points: [
+          "<span class='highlight'>stime() / settimeofday()</span>",
+          "<span class='highlight'>clock_settime()</span>",
+          "影响整个系统时间"
+        ],
+        tags: ["设置时间", "settimeofday"] },
+      { id: "ch11-6", num: "11.6", title: "玩转时间",
+        desc: "时间转换和格式化。",
+        points: [
+          "<span class='highlight'>gmtime() / localtime()</span>",
+          "<span class='highlight'>mktime() / timegm()</span>",
+          "<span class='highlight'>strftime() / strptime()</span>",
+          "<span class='highlight'>asctime() / ctime()</span>"
+        ],
+        tags: ["时间转换", "strftime"] },
+      { id: "ch11-7", num: "11.7", title: "睡眠和等待",
+        desc: "sleep()、nanosleep()、clock_nanosleep()。",
+        points: [
+          "<span class='highlight'>sleep(unsigned int seconds)</span>",
+          "<span class='highlight'>usleep(useconds_t usec)</span>（已过时）",
+          "<span class='highlight'>nanosleep(const struct timespec *req, rem)</span>",
+          "<span class='highlight'>clock_nanosleep()</span>：可指定时钟"
+        ],
+        tags: ["sleep", "nanosleep"] },
+      { id: "ch11-8", num: "11.8", title: "定时器",
+        desc: "间隔定时器、POSIX 定时器、timerfd。",
+        points: [
+          "<span class='highlight'>alarm(seconds)</span>：简单定时",
+          "setitimer()：间隔定时器（ITIMER_REAL、ITIMER_VIRTUAL、ITIMER_PROF）",
+          "<span class='highlight'>timer_create() / timer_settime() / timer_delete()</span>",
+          "<span class='highlight'>timerfd_create() / timerfd_settime() / timerfd_gettime()</span>：与 epoll 配合"
+        ],
+        tags: ["定时器", "timerfd", "alarm"] }
+    ]
+  },
+
+  {
+    id: "apxA", cls: "toc-apx", num: "附录A", title: "C 语言的 GCC 扩展",
+    intro: "GNU C 是 gcc 编译器对 C 语言的扩展集合，是 Linux 内核和大量系统软件所使用的方言。",
+    sections: [
+      { id: "apxA-1", num: "A.1", title: "GNU C 简介",
+        desc: "gcc 提供的非标准但实用的扩展。",
+        points: [
+          "Linux 内核完全依赖 GNU C 扩展",
+          "其他编译器（clang、icc）大多兼容"
+        ],
+        tags: ["GNU C"] },
+      { id: "apxA-2", num: "A.2", title: "常用扩展",
+        desc: "本章涵盖的 GCC 扩展（见目录子项）。",
+        points: [
+          "<span class='highlight'>内联函数</span>：static inline / extern inline",
+          "纯函数（pure）、常函数（const）",
+          "__attribute__((noreturn))、__attribute__((malloc))",
+          "__attribute__((warn_unused_result))",
+          "__attribute__((deprecated))、__attribute__((used))、__attribute__((unused))",
+          "结构体紧凑：__attribute__((packed))",
+          "对齐：__attribute__((aligned(n)))",
+          "把全局变量放入寄存器：register / asm",
+          "分支标注：__builtin_expect / likely() / unlikely()",
+          "__builtin_types_compatible_p、__builtin_alignof、offsetof",
+          "__builtin_return_address、__builtin_frame_address",
+          "条件范围：if (x &gt;= 0 &amp;&amp; x &lt; 10)",
+          "空指针和函数指针：((void(*)())0)()",
+          "可移植技巧"
+        ],
+        tags: ["GCC 扩展", "__attribute__", "likely/unlikely"] }
+    ]
+  },
+
+  {
+    id: "apxB", cls: "toc-apx", num: "附录B", title: "参考书目",
+    intro: "作者推荐的延伸阅读，覆盖 C 语言、Linux 编程、内核、操作系统设计等多个层面。",
+    sections: [
+      { id: "apxB-1", num: "B.1", title: "关于 C 编程语言的书",
+        desc: "经典 C 语言参考。",
+        points: [
+          "《C 程序设计语言》（K&R）",
+          "《C 陷阱与缺陷》",
+          "《C 专家编程》"
+        ],
+        tags: ["C 语言", "K&R"] },
+      { id: "apxB-2", num: "B.2", title: "关于 Linux 编程的书籍",
+        desc: "深入 Linux 编程主题。",
+        points: [
+          "《Advanced Programming in the UNIX Environment》（APUE）",
+          "《The Linux Programming Interface》（TLPI）",
+          "《Unix Network Programming》（UNP）"
+        ],
+        tags: ["APUE", "TLPI", "UNP"] },
+      { id: "apxB-3", num: "B.3", title: "关于 Linux 内核的书籍",
+        desc: "Linux 内核相关参考。",
+        points: [
+          "《Linux Kernel Development》",
+          "《Understanding the Linux Kernel》",
+          "《Linux Device Drivers》"
+        ],
+        tags: ["内核"] },
+      { id: "apxB-4", num: "B.4", title: "关于操作系统设计的书籍",
+        desc: "OS 设计理论参考。",
+        points: [
+          "《Operating Systems: Three Easy Pieces》",
+          "《Modern Operating Systems》",
+          "《The Design of the UNIX Operating System》"
+        ],
+        tags: ["操作系统", "OSTEP"] }
+    ]
+  }
+];
+
+// ============== 渲染导航 ==============
+const navRoot = document.getElementById('nav-root');
+data.forEach(ch => {
+  const li = document.createElement('li');
+  li.className = 'nav-item';
+  const hasSub = ch.sections && ch.sections.length > 0;
+  const toggleCls = hasSub ? '' : 'empty';
+  const expanded = false;
+  li.innerHTML = `
+    <div class="nav-link" data-target="${ch.id}">
+      <span class="nav-toggle ${toggleCls}"></span>
+      <span class="nav-text"><strong>${ch.num}</strong> · ${ch.title}</span>
+    </div>
+    ${hasSub ? `<ul class="nav-sub-list" data-parent="${ch.id}">
+      ${ch.sections.map(s => `<li class="nav-item">
+        <div class="nav-link" data-target="${s.id}">
+          <span class="nav-toggle empty"></span>
+          <span class="nav-text">${s.num} ${s.title}</span>
+        </div>
+      </li>`).join('')}
+    </ul>` : ''}
+  `;
+  navRoot.appendChild(li);
+});
+
+// 事件委托
+document.getElementById('nav').addEventListener('click', (e) => {
+  const link = e.target.closest('.nav-link');
+  if (!link) return;
+  const target = link.dataset.target;
+  if (!target) return;
+
+  // 如果点击的是带 toggle 的，切换子列表
+  const toggle = link.querySelector('.nav-toggle');
+  if (toggle && !toggle.classList.contains('empty')) {
+    const subList = link.parentElement.querySelector(`.nav-sub-list[data-parent="${target}"]`);
+    if (subList) {
+      subList.classList.toggle('expanded');
+      toggle.classList.toggle('expanded');
+    }
+  }
+
+  // 高亮当前
+  document.querySelectorAll('.nav-link.active').forEach(el => el.classList.remove('active'));
+  link.classList.add('active');
+
+  // 平滑滚动
+  const el = document.getElementById(target);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+function expandAll() {
+  document.querySelectorAll('.nav-sub-list').forEach(el => el.classList.add('expanded'));
+  document.querySelectorAll('.nav-toggle').forEach(el => el.classList.add('expanded'));
+}
+function collapseAll() {
+  document.querySelectorAll('.nav-sub-list').forEach(el => el.classList.remove('expanded'));
+  document.querySelectorAll('.nav-toggle').forEach(el => el.classList.remove('expanded'));
+  document.querySelectorAll('.nav-link.active').forEach(el => el.classList.remove('active'));
+}
+function scrollTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============== 渲染内容 ==============
+const contentEl = document.getElementById('content');
+data.forEach(ch => {
+  const section = document.createElement('section');
+  section.className = 'section';
+  section.id = ch.id;
+  let html = `
+    <div class="section-header">
+      <span class="section-num" style="background: var(--card-accent); --card-accent: ${getComputedStyle(document.documentElement).getPropertyValue('--card-accent').trim() || '#3b82f6'}">${ch.num}</span>
+      <div>
+        <div class="section-title ${ch.cls}">${ch.title}</div>
+        <div class="section-subtitle">${ch.sections.length} 个小节</div>
+      </div>
+    </div>
+    <div class="section-intro">${ch.intro}</div>
+    <div class="cards">
+  `;
+  // 简单映射颜色
+  const colorMap = {
+    'toc-ch1': '#3b82f6', 'toc-ch2': '#8b5cf6', 'toc-ch3': '#ec4899',
+    'toc-ch4': '#f59e0b', 'toc-ch5': '#10b981', 'toc-ch6': '#06b6d4',
+    'toc-ch7': '#6366f1', 'toc-ch8': '#ef4444', 'toc-ch9': '#14b8a6',
+    'toc-ch10': '#f97316', 'toc-ch11': '#a855f7', 'toc-apx': '#64748b'
+  };
+  const c = colorMap[ch.cls] || '#3b82f6';
+  ch.sections.forEach(s => {
+    html += `
+      <div class="card" id="${s.id}" style="--card-accent: ${c}">
+        <div class="card-header">
+          <span class="card-num">${s.num}</span>
+          <div class="card-title">${s.title}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-desc">${s.desc}</div>
+          <ul>
+            ${s.points.map(p => `<li>${p}</li>`).join('')}
+          </ul>
+          <div class="tags">
+            ${s.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  html += `</div>`;
+  section.innerHTML = html;
+  contentEl.appendChild(section);
+});
+</script>
+</body>
+</html>

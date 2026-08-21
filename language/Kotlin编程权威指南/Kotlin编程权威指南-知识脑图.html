@@ -1,0 +1,2823 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《Kotlin编程权威指南》知识脑图</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg-page: #f6f7fb;
+  --bg-side: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f0f4ff;
+  --bg-chapter: #eef2ff;
+  --bg-section: #f8fafc;
+  --text-main: #1e293b;
+  --text-mute: #64748b;
+  --text-soft: #94a3b8;
+  --border-soft: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --accent: #4f46e5;
+  --accent-soft: #eef2ff;
+  --accent-strong: #4338ca;
+  --tag-1: #4f46e5;
+  --tag-2: #0891b2;
+  --tag-3: #059669;
+  --tag-4: #d97706;
+  --tag-5: #dc2626;
+  --tag-6: #7c3aed;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --radius: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.65;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+.sidebar {
+  background: var(--bg-side);
+  border-right: 1px solid var(--border-soft);
+  overflow-y: auto;
+  padding: 24px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 8px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px 18px 8px;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 14px;
+}
+.brand-logo {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  box-shadow: var(--shadow-md);
+}
+.brand-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.brand-sub {
+  font-size: 11px;
+  color: var(--text-mute);
+  margin-top: 2px;
+}
+.search-box {
+  position: relative;
+  margin: 0 0 14px 0;
+}
+.search-box input {
+  width: 100%;
+  padding: 8px 12px 8px 32px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--bg-page);
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.search-box input:focus { border-color: var(--accent); background: #fff; }
+.search-box::before {
+  content: "🔍";
+  position: absolute;
+  left: 10px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  opacity: 0.6;
+}
+.nav-tree { list-style: none; }
+.nav-group { margin-bottom: 4px; }
+.nav-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-main);
+  font-weight: 600;
+  text-align: left;
+  transition: background 0.12s;
+}
+.nav-toggle:hover { background: var(--accent-soft); }
+.nav-toggle .arrow {
+  display: inline-block;
+  transition: transform 0.2s;
+  color: var(--text-mute);
+  font-size: 10px;
+  width: 12px;
+}
+.nav-group.open > .nav-toggle .arrow { transform: rotate(90deg); }
+.nav-toggle .index {
+  font-size: 11px;
+  color: var(--text-soft);
+  font-weight: 500;
+  min-width: 30px;
+}
+.nav-children {
+  list-style: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+  padding-left: 24px;
+}
+.nav-group.open > .nav-children { max-height: 2000px; }
+.nav-leaf {
+  display: block;
+  padding: 6px 10px;
+  font-size: 12.5px;
+  color: var(--text-mute);
+  text-decoration: none;
+  border-radius: 5px;
+  border-left: 2px solid transparent;
+  transition: all 0.12s;
+  cursor: pointer;
+}
+.nav-leaf:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
+.nav-leaf.active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border-left-color: var(--accent);
+  font-weight: 600;
+}
+.main {
+  overflow-y: auto;
+  padding: 32px 40px 80px;
+  scroll-behavior: smooth;
+}
+.main::-webkit-scrollbar { width: 10px; }
+.main::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 5px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.hero {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #fff;
+  padding: 28px 32px;
+  border-radius: var(--radius);
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-md);
+}
+.hero h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.hero p { font-size: 13px; opacity: 0.92; line-height: 1.7; }
+.hero .meta {
+  display: flex; gap: 18px;
+  margin-top: 14px;
+  font-size: 12px;
+  opacity: 0.88;
+}
+.hero .meta span { display: inline-flex; align-items: center; gap: 4px; }
+.chapter {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-soft);
+}
+.chapter-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+  border-bottom: 2px solid var(--accent-soft);
+}
+.chapter-tag {
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.4px;
+}
+.chapter-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.chapter-goal {
+  background: var(--bg-chapter);
+  border-left: 3px solid var(--accent);
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--text-mute);
+}
+.chapter-goal strong { color: var(--accent-strong); }
+.section { margin-bottom: 18px; }
+.section-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+.section-h .num {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.subsection { margin-left: 12px; margin-bottom: 12px; }
+.sub-h {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sub-h::before {
+  content: "▸";
+  color: var(--accent);
+  font-size: 12px;
+}
+.sub-h .num {
+  color: var(--text-soft);
+  font-weight: 500;
+  font-size: 12px;
+  margin-left: 4px;
+}
+.points { list-style: none; padding-left: 0; }
+.points li {
+  position: relative;
+  padding: 6px 0 6px 18px;
+  font-size: 13px;
+  color: var(--text-main);
+  line-height: 1.7;
+}
+.points li::before {
+  content: "";
+  position: absolute;
+  left: 4px; top: 14px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.55;
+}
+.points li strong { color: var(--accent-strong); font-weight: 600; }
+.points li code {
+  font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  border: 1px solid #e0e7ff;
+}
+.sub-points { list-style: none; padding-left: 0; }
+.sub-points li {
+  position: relative;
+  padding: 4px 0 4px 16px;
+  font-size: 12.5px;
+  color: var(--text-mute);
+}
+.sub-points li::before {
+  content: "–";
+  position: absolute;
+  left: 4px; top: 4px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.callout {
+  margin: 10px 0 14px 0;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.callout.tip { background: #ecfdf5; color: #065f46; border-left: 3px solid #059669; }
+.callout.warn { background: #fffbeb; color: #92400e; border-left: 3px solid #d97706; }
+.callout.info { background: var(--accent-soft); color: var(--accent-strong); border-left: 3px solid var(--accent); }
+.callout strong { font-weight: 700; }
+.callout .icon { font-size: 14px; line-height: 1; flex-shrink: 0; }
+.code-block {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 8px 0 12px 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+.code-block .k { color: #f472b6; }
+.code-block .s { color: #86efac; }
+.code-block .c { color: #94a3b8; font-style: italic; }
+.code-block .n { color: #fbbf24; }
+.code-block .t { color: #67e8f9; }
+.tag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin: 10px 0 14px 0;
+}
+.tag-card {
+  background: var(--bg-section);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+}
+.tag-card .name { font-weight: 700; color: var(--accent-strong); margin-bottom: 3px; }
+.tag-card .desc { color: var(--text-mute); font-size: 12px; line-height: 1.55; }
+.tag-card.c1 .name { color: var(--tag-1); }
+.tag-card.c2 .name { color: var(--tag-2); }
+.tag-card.c3 .name { color: var(--tag-3); }
+.tag-card.c4 .name { color: var(--tag-4); }
+.tag-card.c5 .name { color: var(--tag-5); }
+.tag-card.c6 .name { color: var(--tag-6); }
+.divider {
+  height: 1px;
+  background: var(--border-soft);
+  margin: 18px 0;
+  border: none;
+}
+.challenge {
+  background: linear-gradient(90deg, #fef3c7 0%, #fffbeb 100%);
+  border-left: 3px solid var(--tag-4);
+  padding: 8px 14px;
+  margin: 8px 0 10px 0;
+  border-radius: 4px;
+  font-size: 12.5px;
+  color: #92400e;
+}
+.challenge strong { color: #78350f; }
+footer {
+  margin-top: 30px;
+  padding: 18px 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-soft);
+  border-top: 1px solid var(--border-soft);
+}
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { max-height: 280px; }
+  .main { padding: 22px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">K</div>
+      <div>
+        <div class="brand-title">Kotlin 知识脑图</div>
+        <div class="brand-sub">《Kotlin编程权威指南》</div>
+      </div>
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="搜索章节或知识点...">
+    </div>
+    <ul class="nav-tree" id="navTree">
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">前言</span>
+          <span>开篇导读</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch00">版权 · 致谢 · 前言</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 1 章</span>
+          <span>Kotlin应用开发初体验</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch01">1.1 安装 IntelliJ IDEA</a></li>
+          <li><a class="nav-leaf" data-target="ch01">1.2 第一个Kotlin项目</a></li>
+          <li><a class="nav-leaf" data-target="ch01">1.3 Kotlin REPL</a></li>
+          <li><a class="nav-leaf" data-target="ch01">1.4 为什么要用IntelliJ</a></li>
+          <li><a class="nav-leaf" data-target="ch01">1.5 面向JVM</a></li>
+          <li><a class="nav-leaf" data-target="ch01">1.6 挑战练习</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 2 章</span>
+          <span>变量、常量和类型</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch02">2.1 数据类型</a></li>
+          <li><a class="nav-leaf" data-target="ch02">2.2 声明变量 var</a></li>
+          <li><a class="nav-leaf" data-target="ch02">2.3 内置数据类型</a></li>
+          <li><a class="nav-leaf" data-target="ch02">2.4 只读变量 val</a></li>
+          <li><a class="nav-leaf" data-target="ch02">2.5 类型推断</a></li>
+          <li><a class="nav-leaf" data-target="ch02">2.6 编译时常量 const</a></li>
+          <li><a class="nav-leaf" data-target="ch02">2.7 查看Kotlin字节码</a></li>
+          <li><a class="nav-leaf" data-target="ch02">2.8 挑战练习</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 3 章</span>
+          <span>条件语句</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch03">3.1 if / else 语句</a></li>
+          <li><a class="nav-leaf" data-target="ch03">3.2 range 区间</a></li>
+          <li><a class="nav-leaf" data-target="ch03">3.3 when 表达式</a></li>
+          <li><a class="nav-leaf" data-target="ch03">3.4 string 模板</a></li>
+          <li><a class="nav-leaf" data-target="ch03">3.5 挑战练习</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 4 章</span>
+          <span>函数</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch04">4.1 使用函数重构</a></li>
+          <li><a class="nav-leaf" data-target="ch04">4.2 函数结构</a></li>
+          <li><a class="nav-leaf" data-target="ch04">4.3 调用函数</a></li>
+          <li><a class="nav-leaf" data-target="ch04">4.4 默认值参</a></li>
+          <li><a class="nav-leaf" data-target="ch04">4.5 单表达式函数</a></li>
+          <li><a class="nav-leaf" data-target="ch04">4.6 Unit 函数</a></li>
+          <li><a class="nav-leaf" data-target="ch04">4.7 具名函数参数</a></li>
+          <li><a class="nav-leaf" data-target="ch04">4.8 深入学习</a></li>
+          <li><a class="nav-leaf" data-target="ch04">4.9 挑战练习</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 5 章</span>
+          <span>匿名函数与函数类型</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch05">5.1 匿名函数</a></li>
+          <li><a class="nav-leaf" data-target="ch05">5.2 函数类型</a></li>
+          <li><a class="nav-leaf" data-target="ch05">5.3 lambda 关键字 it</a></li>
+          <li><a class="nav-leaf" data-target="ch05">5.4 类型推断</a></li>
+          <li><a class="nav-leaf" data-target="ch05">5.5 函数参数 / 简略语法</a></li>
+          <li><a class="nav-leaf" data-target="ch05">5.6 函数内联 inline</a></li>
+          <li><a class="nav-leaf" data-target="ch05">5.7 函数引用 ::</a></li>
+          <li><a class="nav-leaf" data-target="ch05">5.8 函数类型作为返回类型</a></li>
+          <li><a class="nav-leaf" data-target="ch05">5.9 闭包与匿名内部类</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 6 章</span>
+          <span>null 安全与异常</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch06">6.1 可空性</a></li>
+          <li><a class="nav-leaf" data-target="ch06">6.2 Kotlin 的 null 类型</a></li>
+          <li><a class="nav-leaf" data-target="ch06">6.3 编译期/运行期</a></li>
+          <li><a class="nav-leaf" data-target="ch06">6.4 null 安全调用 ?.  !!.</a></li>
+          <li><a class="nav-leaf" data-target="ch06">6.5 异常处理</a></li>
+          <li><a class="nav-leaf" data-target="ch06">6.6 先决条件函数</a></li>
+          <li><a class="nav-leaf" data-target="ch06">6.7 已检查/未检查异常</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 7 章</span>
+          <span>字符串</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch07">7.1 字符串截取 substring / split</a></li>
+          <li><a class="nav-leaf" data-target="ch07">7.2 字符串操作</a></li>
+          <li><a class="nav-leaf" data-target="ch07">7.3 字符串比较</a></li>
+          <li><a class="nav-leaf" data-target="ch07">7.4 Unicode 与字符遍历</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 8 章</span>
+          <span>数</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch08">8.1 数字类型</a></li>
+          <li><a class="nav-leaf" data-target="ch08">8.2 整数 Long / Int / Short / Byte</a></li>
+          <li><a class="nav-leaf" data-target="ch08">8.3 小数 Double / Float</a></li>
+          <li><a class="nav-leaf" data-target="ch08">8.4 字符串转数值</a></li>
+          <li><a class="nav-leaf" data-target="ch08">8.5 Int 转 Double</a></li>
+          <li><a class="nav-leaf" data-target="ch08">8.6 Double 格式化</a></li>
+          <li><a class="nav-leaf" data-target="ch08">8.7 Double 转 Int</a></li>
+          <li><a class="nav-leaf" data-target="ch08">8.8 位运算</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 9 章</span>
+          <span>标准库函数</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch09">9.1 apply</a></li>
+          <li><a class="nav-leaf" data-target="ch09">9.2 let</a></li>
+          <li><a class="nav-leaf" data-target="ch09">9.3 run</a></li>
+          <li><a class="nav-leaf" data-target="ch09">9.4 with</a></li>
+          <li><a class="nav-leaf" data-target="ch09">9.5 also</a></li>
+          <li><a class="nav-leaf" data-target="ch09">9.6 takeIf / takeUnless</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 10 章</span>
+          <span>List 与 Set</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch10">10.1 List</a></li>
+          <li><a class="nav-leaf" data-target="ch10">10.2 遍历</a></li>
+          <li><a class="nav-leaf" data-target="ch10">10.3 文件读取到列表</a></li>
+          <li><a class="nav-leaf" data-target="ch10">10.4 解构</a></li>
+          <li><a class="nav-leaf" data-target="ch10">10.5 Set</a></li>
+          <li><a class="nav-leaf" data-target="ch10">10.6 while 循环</a></li>
+          <li><a class="nav-leaf" data-target="ch10">10.7 break</a></li>
+          <li><a class="nav-leaf" data-target="ch10">10.8 集合转换</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 11 章</span>
+          <span>Map</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch11">11.1 创建 Map</a></li>
+          <li><a class="nav-leaf" data-target="ch11">11.2 读取值</a></li>
+          <li><a class="nav-leaf" data-target="ch11">11.3 添加项</a></li>
+          <li><a class="nav-leaf" data-target="ch11">11.4 修改值</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 12 章</span>
+          <span>定义类</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch12">12.1 定义类</a></li>
+          <li><a class="nav-leaf" data-target="ch12">12.2 构造实例</a></li>
+          <li><a class="nav-leaf" data-target="ch12">12.3 类函数</a></li>
+          <li><a class="nav-leaf" data-target="ch12">12.4 可见性与封装</a></li>
+          <li><a class="nav-leaf" data-target="ch12">12.5 类属性</a></li>
+          <li><a class="nav-leaf" data-target="ch12">12.6 重构 NyetHack</a></li>
+          <li><a class="nav-leaf" data-target="ch12">12.7 使用包</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 13 章</span>
+          <span>初始化</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch13">13.1 构造函数</a></li>
+          <li><a class="nav-leaf" data-target="ch13">13.2 初始化块 init</a></li>
+          <li><a class="nav-leaf" data-target="ch13">13.3 属性初始化</a></li>
+          <li><a class="nav-leaf" data-target="ch13">13.4 初始化顺序</a></li>
+          <li><a class="nav-leaf" data-target="ch13">13.5 延迟初始化 lateinit / lazy</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 14 章</span>
+          <span>继承</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch14">14.1 定义 Room 类</a></li>
+          <li><a class="nav-leaf" data-target="ch14">14.2 创建子类</a></li>
+          <li><a class="nav-leaf" data-target="ch14">14.3 类型检测 is / !is</a></li>
+          <li><a class="nav-leaf" data-target="ch14">14.4 类型转换 / 智能转换</a></li>
+          <li><a class="nav-leaf" data-target="ch14">14.5 Any 类型</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 15 章</span>
+          <span>对象</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch15">15.1 object 关键字</a></li>
+          <li><a class="nav-leaf" data-target="ch15">15.2 嵌套类</a></li>
+          <li><a class="nav-leaf" data-target="ch15">15.3 数据类 data class</a></li>
+          <li><a class="nav-leaf" data-target="ch15">15.4 枚举类 enum class</a></li>
+          <li><a class="nav-leaf" data-target="ch15">15.5 运算符重载 operator</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 16 章</span>
+          <span>接口与抽象类</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch16">16.1 定义接口 interface</a></li>
+          <li><a class="nav-leaf" data-target="ch16">16.2 实现接口</a></li>
+          <li><a class="nav-leaf" data-target="ch16">16.3 默认实现</a></li>
+          <li><a class="nav-leaf" data-target="ch16">16.4 抽象类 abstract class</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 17 章</span>
+          <span>泛型</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch17">17.1 泛型类</a></li>
+          <li><a class="nav-leaf" data-target="ch17">17.2 泛型函数</a></li>
+          <li><a class="nav-leaf" data-target="ch17">17.3 多泛型参数</a></li>
+          <li><a class="nav-leaf" data-target="ch17">17.4 泛型约束</a></li>
+          <li><a class="nav-leaf" data-target="ch17">17.5 vararg 与 get 函数</a></li>
+          <li><a class="nav-leaf" data-target="ch17">17.6 in 与 out</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 18 章</span>
+          <span>扩展</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch18">18.1 定义扩展函数</a></li>
+          <li><a class="nav-leaf" data-target="ch18">18.2 泛型扩展函数</a></li>
+          <li><a class="nav-leaf" data-target="ch18">18.3 扩展属性</a></li>
+          <li><a class="nav-leaf" data-target="ch18">18.4 可空类扩展</a></li>
+          <li><a class="nav-leaf" data-target="ch18">18.5 重命名扩展 as</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 19 章</span>
+          <span>函数式编程基础</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch19">19.1 三大函数类别</a></li>
+          <li><a class="nav-leaf" data-target="ch19">19.2 为什么要学函数式</a></li>
+          <li><a class="nav-leaf" data-target="ch19">19.3 序列 sequence</a></li>
+          <li><a class="nav-leaf" data-target="ch19">19.4 Arrow.kt</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 20 章</span>
+          <span>Kotlin 与 Java 互操作</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch20">20.1 与 Java 类互操作</a></li>
+          <li><a class="nav-leaf" data-target="ch20">20.2 互操作性与可空性</a></li>
+          <li><a class="nav-leaf" data-target="ch20">20.3 类型映射</a></li>
+          <li><a class="nav-leaf" data-target="ch20">20.4 getter / setter 互操作</a></li>
+          <li><a class="nav-leaf" data-target="ch20">20.5 类之外</a></li>
+          <li><a class="nav-leaf" data-target="ch20">20.6 异常与互操作性</a></li>
+          <li><a class="nav-leaf" data-target="ch20">20.7 Java 中的函数类型</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 21 章</span>
+          <span>用 Kotlin 开发首个 Android 应用</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch21">21.1 Android Studio</a></li>
+          <li><a class="nav-leaf" data-target="ch21">21.2 定义 UI</a></li>
+          <li><a class="nav-leaf" data-target="ch21">21.3 模拟器运行</a></li>
+          <li><a class="nav-leaf" data-target="ch21">21.4 生成角色</a></li>
+          <li><a class="nav-leaf" data-target="ch21">21.5 Activity 类</a></li>
+          <li><a class="nav-leaf" data-target="ch21">21.6 实例化视图</a></li>
+          <li><a class="nav-leaf" data-target="ch21">21.7 Kotlin Android 扩展</a></li>
+          <li><a class="nav-leaf" data-target="ch21">21.8 单击事件监听器</a></li>
+          <li><a class="nav-leaf" data-target="ch21">21.9 保存实例状态</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">第 22 章</span>
+          <span>Kotlin 协程简介</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch22">22.1 解析角色数据</a></li>
+          <li><a class="nav-leaf" data-target="ch22">22.2 获取动态数据</a></li>
+          <li><a class="nav-leaf" data-target="ch22">22.3 Android 主线程</a></li>
+          <li><a class="nav-leaf" data-target="ch22">22.4 启用协程</a></li>
+          <li><a class="nav-leaf" data-target="ch22">22.5 async / await</a></li>
+          <li><a class="nav-leaf" data-target="ch22">22.6 launch vs async</a></li>
+          <li><a class="nav-leaf" data-target="ch22">22.7 挂起函数 suspend</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-group">
+        <button class="nav-toggle">
+          <span class="arrow">▶</span>
+          <span class="index">尾篇</span>
+          <span>编后语 / 附录 / 术语表</span>
+        </button>
+        <ul class="nav-children">
+          <li><a class="nav-leaf" data-target="ch23">编后语 · 前方的路</a></li>
+          <li><a class="nav-leaf" data-target="ch23">附录 A 补充挑战练习</a></li>
+          <li><a class="nav-leaf" data-target="ch23">术语表</a></li>
+        </ul>
+      </li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="hero">
+      <h1>《Kotlin 编程权威指南》知识脑图</h1>
+      <p>基于 Big Nerd Ranch 经典教程整理 · 涵盖 23 章核心内容 + 附录 + 术语表 · 适合系统化学习 Kotlin 编程语言</p>
+      <div class="meta">
+        <span>📘 23 个章节</span>
+        <span>🧠 200+ 知识点</span>
+        <span>💡 配套挑战练习</span>
+        <span>🎮 贯穿项目 NyetHack</span>
+      </div>
+    </div>
+
+    <!-- 0. 前言 -->
+    <section class="chapter" id="ch00">
+      <div class="chapter-header">
+        <span class="chapter-tag">开篇</span>
+        <h2 class="chapter-title">前言 · 关于这本书</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>了解 Kotlin 的诞生背景、为什么值得学、适合谁读以及如何使用本书</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">★</span>为什么学 Kotlin</h3>
+        <ul class="points">
+          <li><strong>2011 年</strong> JetBrains 启动 Kotlin 开发，2017 年获 Google 官方支持用于 Android</li>
+          <li>语法简洁、具备现代高级语言特性、与 Java 遗留代码无缝互操作</li>
+          <li>已被 Google、Uber、Netflix、Capital One、Amazon 等公司采用</li>
+          <li><strong>跨平台通用</strong>：JVM、Android、macOS、Windows、JavaScript、原生应用皆可</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">★</span>本书读者对象</h3>
+        <ul class="points">
+          <li>有经验的 Android 开发者，需要 Java 之外的现代特性</li>
+          <li>对 Kotlin 感兴趣的后端开发者</li>
+          <li>想学一门高性能编译型语言的新手</li>
+          <li>已掌握 Java 想了解 Kotlin 的开发者</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">★</span>如何使用本书</h3>
+        <ul class="points">
+          <li>不是参考指南，而是<strong>循序渐进的学习教程</strong></li>
+          <li>建议<strong>边读边输入</strong>测试代码示例，形成肌肉记忆</li>
+          <li>每章基于上一章编排，<strong>不建议跳读</strong></li>
+          <li>先介绍变量、集合，再学面向对象、函数式编程</li>
+          <li>每章包含 <strong>深入学习</strong> 与 <strong>挑战练习</strong>，先掌握主线再深入</li>
+        </ul>
+        <div class="callout info">
+          <span class="icon">🔗</span>
+          <span>官方文档：<strong>kotlinlang.org/docs/reference</strong> — 遇到新知识点随时查阅并动手实践</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1. Kotlin应用开发初体验 -->
+    <section class="chapter" id="ch01">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 1 章</span>
+        <h2 class="chapter-title">Kotlin 应用开发初体验</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>安装 IntelliJ IDEA · 创建第一个 Kotlin/JVM 项目 · 编写运行 Kotlin 代码 · 熟悉 REPL</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">1.1</span>安装 IntelliJ IDEA</h3>
+        <ul class="points">
+          <li>IntelliJ IDEA 是 JetBrains 公司打造的 Kotlin 集成开发环境</li>
+          <li>下载<strong>社区开发版</strong>：jetbrains.com/idea/download</li>
+          <li>内建工具支持：编写、运行、调试、检查、重构一体化</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">1.2</span>第一个 Kotlin 项目</h3>
+        <ul class="points">
+          <li>创建项目时选择 <code>Kotlin → Kotlin/JVM</code> — 告诉 IntelliJ 用 Kotlin 编写运行在 JVM 上的代码</li>
+          <li>项目名 <code>Sandbox</code>，关联 <code>JDK 8</code>，项目根目录为项目文件夹</li>
+          <li>在 <code>src</code> 文件夹新建 Kotlin File/Class，例如 <code>Hello.kt</code></li>
+        </ul>
+        <div class="subsection">
+          <div class="sub-h">1.2.1 创建首个 Kotlin 文件 <span class="num">main 入口</span></div>
+          <div class="code-block"><span class="c">// 应用程序入口函数</span>
+<span class="k">fun</span> <span class="t">main</span>(args: <span class="t">Array</span>&lt;<span class="t">String</span>&gt;) {
+    <span class="t">println</span>(<span class="s">"Hello, World!"</span>)
+}</div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">1.2.2 运行 Kotlin 文件</div>
+          <ul class="points">
+            <li>输入 <code>main</code> 按 <strong>Tab 键</strong>，IntelliJ 自动补全函数结构</li>
+            <li>右击编辑区 → Run，或使用工具栏绿色三角</li>
+            <li>底部 Run 窗口显示输出结果</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">1.3</span>Kotlin REPL</h3>
+        <ul class="points">
+          <li>REPL = <strong>Read-Eval-Print Loop</strong>（读取-执行-打印-循环）</li>
+          <li>Tools → Kotlin → Kotlin REPL，无须创建文件即可快速测试代码片段</li>
+          <li>非常适合验证语法、试验 API</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">1.4</span>深入学习：为什么用 IntelliJ</h3>
+        <ul class="points">
+          <li>JetBrains 既是 Kotlin 的创造者也是 IntelliJ 的开发方，<strong>工具与语言深度协同</strong></li>
+          <li>代码补全、智能提示、重构、调试能力一流</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">1.5</span>深入学习：面向 JVM</h3>
+        <ul class="points">
+          <li>Kotlin 编译产物是 <strong>Java 字节码</strong>（<code>.class</code>），运行在 JVM 上</li>
+          <li>因此 Kotlin 可直接调用 Java 类库，Java 也可调用 Kotlin</li>
+          <li>面向 JVM 的语言还包括 Java、Scala、Groovy 等</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">1.6</span>挑战练习</h3>
+        <div class="challenge">🎯 在 REPL 中研究 Kotlin 的算术运算符：<code>+ - * / %</code>，并尝试整数除法与小数除法的差异</div>
+      </div>
+    </section>
+
+    <!-- 2. 变量、常量和类型 -->
+    <section class="chapter" id="ch02">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 2 章</span>
+        <h2 class="chapter-title">变量、常量和类型</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握 Kotlin 基本数据类型 · 声明 var/val · 理解类型推断与编译时常量</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">2.1</span>数据类型</h3>
+        <ul class="points">
+          <li>类型描述常量或变量中保存的数据</li>
+          <li>告诉编译器如何进行<strong>类型检查</strong>（type checking）</li>
+          <li>类型检查能避免类型不匹配赋值，是 Kotlin 的重要特色</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">2.2</span>声明变量 <code>var</code></h3>
+        <div class="code-block"><span class="c">// 玩家经验值，可变</span>
+<span class="k">var</span> experiencePoints: <span class="t">Int</span> = <span class="n">5</span>
+experiencePoints = <span class="n">10</span>  <span class="c">// var 可重新赋值</span></div>
+        <ul class="points">
+          <li><code>var</code> 关键字声明<strong>可变</strong>变量</li>
+          <li>声明格式：<code>var 变量名: 类型 = 初值</code></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">2.3</span>Kotlin 的内置数据类型</h3>
+        <div class="tag-grid">
+          <div class="tag-card c1"><div class="name">Int / Long</div><div class="desc">整数，默认 Int 32 位；Long 64 位，加 L 后缀</div></div>
+          <div class="tag-card c2"><div class="name">Double / Float</div><div class="desc">小数，Double 64 位默认；Float 加 f 后缀</div></div>
+          <div class="tag-card c3"><div class="name">Boolean</div><div class="desc">true / false 布尔值</div></div>
+          <div class="tag-card c4"><div class="name">Char</div><div class="desc">单字符，用单引号 'a'</div></div>
+          <div class="tag-card c5"><div class="name">String</div><div class="desc">字符串，双引号包裹</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">2.4</span>只读变量 <code>val</code></h3>
+        <div class="code-block"><span class="k">val</span> name: <span class="t">String</span> = <span class="s">"Madrigal"</span>
+<span class="c">// name = "Ario"  ❌ 编译错误：val 不可重新赋值</span></div>
+        <ul class="points">
+          <li><code>val</code> = value，<strong>只读</strong>，初始化后不可重新赋值</li>
+          <li><strong>优先使用 val</strong>，只在确实需要变化时才用 var</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">2.5</span>类型推断</h3>
+        <div class="code-block"><span class="k">val</span> name = <span class="s">"Madrigal"</span>          <span class="c">// 推断为 String</span>
+<span class="k">val</span> healthPoints = <span class="n">89</span>          <span class="c">// 推断为 Int</span>
+<span class="k">val</span> isBlessed = <span class="k">true</span>             <span class="c">// 推断为 Boolean</span></div>
+        <ul class="points">
+          <li>声明变量时可省略类型，编译器根据初始值自动推断</li>
+          <li>推断后类型<strong>不可更改</strong></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">2.6</span>编译时常量 <code>const val</code></h3>
+        <div class="code-block"><span class="k">const val</span> MAX_EXPERIENCE: <span class="t">Int</span> = <span class="n">5000</span></div>
+        <ul class="points">
+          <li><code>const val</code> 用于<strong>编译期就已知</strong>且不会改变的值</li>
+          <li>只能修饰 <code>val</code>，且只能用于顶层或 <code>object</code> 成员</li>
+          <li>必须是基本类型或 String</li>
+        </ul>
+        <div class="callout warn">
+          <span class="icon">⚠️</span>
+          <span><strong>val vs const val：</strong><code>val</code> 是运行时常量（只读），<code>const val</code> 才是编译时常量</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">2.7</span>查看 Kotlin 字节码</h3>
+        <ul class="points">
+          <li>Tools → Kotlin → Show Kotlin Bytecode，可以看到 Kotlin 编译后的字节码</li>
+          <li>点击 <strong>Decompile</strong> 还能反编译为等效 Java 代码，加深理解</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">2.8</span>深入学习：Kotlin 中的 Java 基本数据类型</h3>
+        <ul class="points">
+          <li>Kotlin 的 <code>Int</code> 在 JVM 上映射为 Java 的 <code>int</code> 原生类型</li>
+          <li>Kotlin 没有"基本数据类型 vs 包装类型"的区分，<code>Int?</code> 等才是 Java 的包装类型</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">2.9</span>挑战练习</h3>
+        <div class="challenge">🎯 定义 <code>hasSteed</code> 变量（布尔型，是否有坐骑）</div>
+        <div class="challenge">🎯 独角兽之角：定义 <code>horns</code> 变量保存独角兽角数</div>
+        <div class="challenge">🎯 魔镜：定义 <code>name</code> 和 <code>isImmortal</code> 描述"魔镜"角色</div>
+      </div>
+    </section>
+
+    <!-- 3. 条件语句 -->
+    <section class="chapter" id="ch03">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 3 章</span>
+        <h2 class="chapter-title">条件语句</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握 if/else、when 表达式、range 区间、string 模板 · 引入贯穿项目 <strong>NyetHack</strong></div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">3.1</span>if / else 语句</h3>
+        <div class="code-block"><span class="k">if</span> (healthPoints == <span class="n">100</span>) {
+    <span class="t">println</span>(<span class="s">"状况极佳"</span>)
+} <span class="k">else</span> {
+    <span class="t">println</span>(<span class="s">"有受伤"</span>)
+}</div>
+        <div class="subsection">
+          <div class="sub-h">3.1.1 添加更多条件</div>
+          <ul class="points">
+            <li>用 <code>else if</code> 分支处理多种情况</li>
+            <li>条件必须是 <code>Boolean</code> 表达式</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">3.1.2 if/else 嵌套语句</div>
+          <ul class="points">
+            <li>if 内部可嵌套另一个 if，但层级过深会<strong>降低可读性</strong></li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">3.1.3 更优雅的条件语句</div>
+          <ul class="points">
+            <li>Kotlin 中 <strong>if 也是表达式</strong>，可以赋值给变量</li>
+            <li>表达式形式更简洁：<code>val status = if (hp == 100) "极佳" else "受伤"</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">3.2</span>range 区间</h3>
+        <div class="code-block"><span class="k">val</span> health = <span class="n">85</span>
+<span class="k">if</span> (health <span class="k">in</span> <span class="n">1</span>..<span class="n">100</span>) {
+    <span class="t">println</span>(<span class="s">"有效健康值"</span>)
+}
+<span class="k">if</span> (health <span class="k">!in</span> <span class="n">0</span>..<span class="n">0</span>) <span class="t">println</span>(<span class="s">"活着"</span>)</div>
+        <ul class="points">
+          <li><code>1..10</code> 表示闭区间 [1, 10]</li>
+          <li><code>1 until 10</code> 表示半开区间 [1, 10)</li>
+          <li>使用 <code>in</code> / <code>!in</code> 判断是否在区间内</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">3.3</span>when 表达式</h3>
+        <div class="code-block"><span class="k">val</span> mood = <span class="k">when</span> {
+    healthPoints == <span class="n">100</span> -> <span class="s">"极佳"</span>
+    healthPoints <span class="k">in</span> <span class="n">90</span>..<span class="n">99</span> -> <span class="s">"良好"</span>
+    healthPoints <span class="k">in</span> <span class="n">75</span>..<span class="n">89</span> -> <span class="k">if</span> (isBlessed) <span class="s">"受祝福"</span> <span class="k">else</span> <span class="s">"尚可"</span>
+    <span class="k">else</span> -> <span class="s">"危险"</span>
+}</div>
+        <ul class="points">
+          <li><code>when</code> 是 Kotlin 的多分支表达式，<strong>比 switch 强大</strong></li>
+          <li>支持任意表达式作为分支条件</li>
+          <li>类似 <code>if</code>，<code>when</code> 也是表达式可赋值</li>
+          <li>无匹配时执行 <code>else</code> 分支</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">3.4</span>string 模板</h3>
+        <div class="code-block"><span class="k">val</span> name = <span class="s">"Madrigal"</span>
+<span class="k">val</span> hp = <span class="n">89</span>
+<span class="t">println</span>(<span class="s">"玩家 $name 当前血量 $hp"</span>)
+<span class="t">println</span>(<span class="s">"是否为受祝福: ${isBlessed}"</span>)
+<span class="t">println</span>(<span class="s">"光环颜色: ${auraColor(isBlessed, hp, isImmortal)}"</span>)</div>
+        <ul class="points">
+          <li>用 <code>$变量名</code> 嵌入变量</li>
+          <li>用 <code>${表达式}</code> 嵌入复杂表达式</li>
+          <li>字符串里要使用 <code>$</code> 字面量需转义：<code>\$</code></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">3.5</span>挑战练习</h3>
+        <div class="challenge">🎯 range 研究：探索 <code>1..10</code> / <code>1 until 10</code> / <code>10 downTo 1</code> / <code>1..10 step 2</code></div>
+        <div class="challenge">🎯 优化玩家光环展示</div>
+        <div class="challenge">🎯 可配置的玩家状况报告格式（使用 string 模板 + when）</div>
+      </div>
+    </section>
+
+    <!-- 4. 函数 -->
+    <section class="chapter" id="ch04">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 4 章</span>
+        <h2 class="chapter-title">函数</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>理解函数结构 · 重构 NyetHack · 自定义函数 · 默认参数 / 具名参数 / 单表达式函数</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">4.1</span>使用函数重构代码</h3>
+        <ul class="points">
+          <li>用函数封装 NyetHack 中的部分逻辑</li>
+          <li>为后续添加 Fireball 魔法等新功能打基础</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">4.2</span>函数结构剖析</h3>
+        <div class="code-block"><span class="k">fun</span> <span class="t">auraColor</span>(isBlessed: <span class="t">Boolean</span>, healthPoints: <span class="t">Int</span>, isImmortal: <span class="t">Boolean</span>): <span class="t">String</span> {
+    <span class="k">val</span> auraVisible = isBlessed &amp;&amp; healthPoints &gt; <span class="n">50</span> || isImmortal
+    <span class="k">return if</span> (auraVisible) <span class="s">"绿色"</span> <span class="k">else</span> <span class="s">"无"</span>
+}</div>
+        <div class="subsection">
+          <div class="sub-h">4.2.1 函数头</div>
+          <ul class="points">
+            <li>格式：<code>fun 函数名(参数列表): 返回类型</code></li>
+            <li><code>fun</code> = function 关键字</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">4.2.2 函数体</div>
+          <ul class="points">
+            <li>用 <code>{ }</code> 包裹函数体</li>
+            <li>使用 <code>return</code> 返回值；无返回值时使用 <code>Unit</code> 或省略</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">4.2.3 函数作用域</div>
+          <ul class="points">
+            <li>顶层函数默认 <code>public</code></li>
+            <li>文件私有用 <code>private</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">4.3</span>调用函数</h3>
+        <ul class="points">
+          <li>使用 <code>函数名(参数)</code> 调用</li>
+          <li>传参按<strong>位置</strong>匹配；可使用具名参数改变顺序</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">4.4</span>以函数重构代码</h3>
+        <div class="code-block"><span class="k">fun</span> <span class="t">formatHealthStatus</span>(healthPoints: <span class="t">Int</span>, isBlessed: <span class="t">Boolean</span>) =
+    <span class="k">when</span> (healthPoints) {
+        <span class="n">100</span> -> <span class="s">"极佳"</span>
+        <span class="k">in</span> <span class="n">90</span>..<span class="n">99</span> -> <span class="s">"良好"</span>
+        <span class="k">in</span> <span class="n">75</span>..<span class="n">89</span> <span class="k">-> if</span> (isBlessed) <span class="s">"受祝福"</span> <span class="k">else</span> <span class="s">"尚可"</span>
+        <span class="k">else</span> -> <span class="s">"危险"</span>
+    }</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">4.5</span>自定义函数 — Fireball</h3>
+        <div class="code-block"><span class="k">fun</span> <span class="t">castFireball</span>(numFireballs: <span class="t">Int</span> = <span class="n">2</span>) =
+    <span class="t">println</span>(<span class="s">"一团火球凭空出现 (x$numFireballs)"</span>)</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">4.6</span>默认值参</h3>
+        <ul class="points">
+          <li>参数后可使用 <code>= 默认值</code> 指定默认值</li>
+          <li>调用时可省略该参数，简化调用</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">4.7</span>单表达式函数</h3>
+        <ul class="points">
+          <li>函数体只有单个表达式时，可使用 <code>=</code> 简写，省略花括号和 return</li>
+          <li>编译器可自动推断返回类型</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">4.8</span>Unit 函数</h3>
+        <ul class="points">
+          <li><code>Unit</code> 相当于 Java 的 <code>void</code>，表示无返回值</li>
+          <li>Kotlin 中 <code>Unit</code> 默认可省略</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">4.9</span>具名函数参数</h3>
+        <div class="code-block"><span class="t">castFireball</span>(numFireballs = <span class="n">3</span>)
+<span class="t">printPlayerStatus</span>(auraColor = <span class="s">"红"</span>, name = <span class="s">"Madrigal"</span>, healthStatus = ..., isBlessed = ...)</div>
+        <ul class="points">
+          <li>调用时用 <code>参数名 = 值</code>，可任意顺序</li>
+          <li>提高可读性，避免布尔/同型参数误传</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">4.10</span>深入学习</h3>
+        <ul class="points">
+          <li><strong>Nothing 类型</strong>：函数永远不会正常返回（如 <code>throw</code>、无限循环）</li>
+          <li>Java 中的<strong>文件级函数</strong>：编译为对应类中的 static 方法</li>
+          <li><strong>函数重载</strong>：同名函数参数不同</li>
+          <li><strong>反引号中的函数名</strong>：用 `` ` `` 包裹可使用任意名字（含空格/关键字）</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">4.11</span>挑战练习</h3>
+        <div class="challenge">🎯 将玩家状态函数改写为单表达式函数</div>
+        <div class="challenge">🎯 Fireball 醉酒程度：通过参数控制效果描述</div>
+        <div class="challenge">🎯 醉酒状态报告：组合 string 模板输出完整报告</div>
+      </div>
+    </section>
+
+    <!-- 5. 匿名函数与函数类型 -->
+    <section class="chapter" id="ch05">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 5 章</span>
+        <h2 class="chapter-title">匿名函数与函数类型</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握 lambda 表达式 · 函数类型 · it 关键字 · 内联函数 · 函数引用</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">5.1</span>匿名函数</h3>
+        <div class="code-block"><span class="c">// 匿名函数：没有名字的函数</span>
+<span class="k">val</span> greet = <span class="k">fun</span>(name: <span class="t">String</span>): <span class="t">String</span> = <span class="s">"Hi, $name!"</span>
+<span class="t">println</span>(greet(<span class="s">"Madrigal"</span>))</div>
+        <ul class="points">
+          <li>匿名函数也称 <strong>lambda</strong>，是定义时不取名字的函数</li>
+          <li>通常作为值传递给其他函数</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">5.2</span>函数类型</h3>
+        <div class="code-block"><span class="c">// (参数类型) -> 返回类型</span>
+<span class="k">val</span> myFunc: (<span class="t">String</span>) -&gt; <span class="t">String</span> = { name -&gt; <span class="s">"Hi, $name"</span> }</div>
+        <ul class="points">
+          <li>函数也是一种<strong>类型</strong>：<code>(参数) -> 返回值</code></li>
+          <li>可作为变量类型、参数类型、返回类型</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">5.3</span>lambda 关键字 — <code>it</code></h3>
+        <div class="code-block"><span class="k">val</span> greet: (<span class="t">String</span>) -&gt; <span class="t">String</span> = { <span class="k">it</span>.<span class="t">uppercase</span>() }
+<span class="c">// 只有一个参数时可省略 -&gt;，用 it 指代</span></div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">5.4</span>类型推断</h3>
+        <ul class="points">
+          <li>lambda 形参类型可省略（从上下文推断）</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">5.5</span>函数参数 / 简略语法</h3>
+        <div class="code-block"><span class="c">// 完整</span>
+<span class="k">val</span> list = listOf(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>)
+<span class="k">val</span> doubled = list.<span class="t">map</span> { n: <span class="t">Int</span> -&gt; n * <span class="n">2</span> }
+<span class="c">// 简略（带 it）</span>
+<span class="k">val</span> doubled2 = list.<span class="t">map</span> { <span class="k">it</span> * <span class="n">2</span> }</div>
+        <ul class="points">
+          <li>参数是函数的函数叫<strong>高阶函数</strong></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">5.6</span>函数内联 <code>inline</code></h3>
+        <ul class="points">
+          <li><code>inline</code> 关键字修饰函数：将函数体在调用处展开</li>
+          <li>减少 lambda 对象分配，提升性能</li>
+          <li>适合与 lambda 配合的高阶函数</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">5.7</span>函数引用 <code>::</code></h3>
+        <div class="code-block"><span class="k">fun</span> <span class="t">double</span>(x: <span class="t">Int</span>) = x * <span class="n">2</span>
+<span class="k">val</span> list = listOf(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>)
+<span class="k">val</span> doubled = list.<span class="t">map</span>(::<span class="t">double</span>)   <span class="c">// 函数引用</span></div>
+        <ul class="points">
+          <li><code>::函数名</code> 引用已定义的具名函数作为函数类型值</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">5.8</span>函数类型作为返回类型</h3>
+        <div class="code-block"><span class="k">fun</span> <span class="t">getGreetingFunction</span>(): (<span class="t">String</span>) -&gt; <span class="t">String</span> {
+    <span class="k">return</span> { name -&gt; <span class="s">"Hello, $name!"</span> }
+}</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">5.9</span>深入学习</h3>
+        <ul class="points">
+          <li><strong>lambda 是闭包</strong>：可捕获外部变量</li>
+          <li>lambda 与<strong>匿名内部类</strong>的区别：更轻量、可捕获、自动转换 SAM</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. null安全与异常 -->
+    <section class="chapter" id="ch06">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 6 章</span>
+        <h2 class="chapter-title">null 安全与异常</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>理解 Kotlin null 安全机制 · 处理可空类型 · 抛出/捕获异常 · 使用先决条件函数</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">6.1</span>可空性</h3>
+        <ul class="points">
+          <li>Kotlin 区分<strong>可空</strong>（nullable）与<strong>不可空</strong>（non-nullable）类型</li>
+          <li>默认类型<strong>不可为空</strong>，需要可空必须显式声明</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">6.2</span>Kotlin 的 null 类型</h3>
+        <div class="code-block"><span class="k">var</span> s1: <span class="t">String</span> = <span class="s">"hi"</span>      <span class="c">// 不可空</span>
+<span class="k">var</span> s2: <span class="t">String</span>? = <span class="s">"hi"</span>   <span class="c">// 可空</span>
+s2 = <span class="k">null</span>                   <span class="c">// 合法</span></div>
+        <ul class="points">
+          <li>类型后加 <code>?</code> 即可为可空</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">6.3</span>编译时间与运行时间</h3>
+        <ul class="points">
+          <li>Kotlin 把大量<strong>运行期</strong>的 NullPointerException 风险前移到<strong>编译期</strong></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">6.4</span>null 安全</h3>
+        <div class="subsection">
+          <div class="sub-h">6.4.1 选项一：安全调用操作符 <code>?.</code></div>
+          <div class="code-block"><span class="k">val</span> len = s2?.<span class="t">length</span>  <span class="c">// s2 为 null 时整个表达式返回 null</span></div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">6.4.2 选项二：<code>!!.</code> 操作符</div>
+          <div class="code-block"><span class="k">val</span> len = s2!!.<span class="t">length</span>  <span class="c">// 断言非空，否则抛 NPE</span></div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">6.4.3 选项三：使用 if 判断 null</div>
+          <div class="code-block"><span class="k">val</span> len = <span class="k">if</span> (s2 != <span class="k">null</span>) s2.<span class="t">length</span> <span class="k">else</span> <span class="n">0</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">6.5</span>异常</h3>
+        <div class="subsection">
+          <div class="sub-h">6.5.1 抛出异常</div>
+          <div class="code-block"><span class="k">throw</span> <span class="t">IllegalStateException</span>(<span class="s">"客栈已满"</span>)</div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">6.5.2 自定义异常</div>
+          <ul class="points">
+            <li>继承 <code>Exception</code>（已检查）或 <code>RuntimeException</code>（未检查）</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">6.5.3 处理异常</div>
+          <div class="code-block"><span class="k">try</span> {
+    <span class="t">readTavernMenu</span>()
+} <span class="k">catch</span> (e: <span class="t">Exception</span>) {
+    <span class="t">println</span>(<span class="s">"出错了: ${e.message}"</span>)
+}</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">6.6</span>先决条件函数</h3>
+        <ul class="points">
+          <li>Kotlin 标准库的 <code>checkNotNull</code> / <code>requireNotNull</code> / <code>error</code> / <code>require</code> / <code>check</code></li>
+          <li>用一行代码在条件不满足时抛出异常</li>
+        </ul>
+        <div class="code-block"><span class="k">val</span> name = <span class="t">requireNotNull</span>(inputName) { <span class="s">"名字不能为空"</span> }</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">6.7</span>深入学习</h3>
+        <ul class="points">
+          <li>Java 有<strong>已检查</strong>（checked）与<strong>未检查</strong>（unchecked）异常之分；Kotlin 只有<strong>未检查</strong>异常</li>
+          <li>可空性如何保证：类型系统 + 编译期检查 + 显式可空声明</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 7. 字符串 -->
+    <section class="chapter" id="ch07">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 7 章</span>
+        <h2 class="chapter-title">字符串</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握字符串截取、字符串操作、字符串比较</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">7.1</span>字符串截取</h3>
+        <div class="subsection">
+          <div class="sub-h">7.1.1 <code>substring</code></div>
+          <div class="code-block"><span class="k">val</span> str = <span class="s">"Madrigal"</span>
+<span class="k">val</span> sub = str.<span class="t">substring</span>(<span class="n">0</span>, <span class="n">3</span>)   <span class="c">// "Mad"</span></div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">7.1.2 <code>split</code></div>
+          <div class="code-block"><span class="k">val</span> order = <span class="s">"wine,cheese,bread"</span>
+<span class="k">val</span> items = order.<span class="t">split</span>(<span class="s">","</span>)  <span class="c">// [wine, cheese, bread]</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">7.2</span>字符串操作</h3>
+        <ul class="points">
+          <li><code>replace</code>、<code>toUpperCase</code>、<code>toLowerCase</code>、<code>trim</code> 等</li>
+          <li><strong>不可变字符串</strong>：所有"修改"操作都返回新字符串，原串不变</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">7.3</span>字符串比较</h3>
+        <ul class="points">
+          <li><code>==</code> 比较内容相等；<code>===</code> 比较引用相等</li>
+          <li>Kotlin 的 <code>==</code> 已重载为 equals，比 Java 直观</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">7.4</span>深入学习</h3>
+        <ul class="points">
+          <li><strong>Unicode</strong>：Kotlin String 内部以 UTF-16 存储</li>
+          <li>遍历字符：<code>for (c in str) { ... }</code></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">7.5</span>挑战练习</h3>
+        <div class="challenge">🎯 改进 <code>toDragonSpeak</code> 函数：将输入字符串中的元音替换为特定字符</div>
+      </div>
+    </section>
+
+    <!-- 8. 数 -->
+    <section class="chapter" id="ch08">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 8 章</span>
+        <h2 class="chapter-title">数</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握各种数字类型 · 类型转换 · Double 格式化</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">8.1</span>数字类型</h3>
+        <p>所有数字类型都是<strong>有符号</strong>的（可正可负）。除是否支持小数外，区别在所占位数。</p>
+        <div class="tag-grid">
+          <div class="tag-card c1"><div class="name">Byte</div><div class="desc">8 位，-128 ~ 127</div></div>
+          <div class="tag-card c1"><div class="name">Short</div><div class="desc">16 位，-32768 ~ 32767</div></div>
+          <div class="tag-card c2"><div class="name">Int</div><div class="desc">32 位，最常用整数类型</div></div>
+          <div class="tag-card c2"><div class="name">Long</div><div class="desc">64 位，加 L 后缀</div></div>
+          <div class="tag-card c3"><div class="name">Float</div><div class="desc">32 位单精度，加 f 后缀</div></div>
+          <div class="tag-card c3"><div class="name">Double</div><div class="desc">64 位双精度，默认小数类型</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">8.2</span>整数</h3>
+        <div class="code-block"><span class="k">val</span> a: <span class="t">Int</span> = <span class="n">100</span>
+<span class="k">val</span> b: <span class="t">Long</span> = <span class="n">100L</span>
+<span class="k">val</span> c: <span class="t">Byte</span> = <span class="n">100</span>
+<span class="k">val</span> d: <span class="t">Short</span> = <span class="n">100</span></div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">8.3</span>小数数字</h3>
+        <div class="code-block"><span class="k">val</span> pi: <span class="t">Double</span> = <span class="n">3.14</span>
+<span class="k">val</span> e: <span class="t">Float</span> = <span class="n">2.71828f</span></div>
+        <ul class="points">
+          <li>默认字面量是 <code>Double</code></li>
+          <li><code>Float</code> 精度较低但节省内存</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">8.4</span>字符串转数值类型</h3>
+        <div class="code-block"><span class="k">val</span> num = <span class="s">"42"</span>.<span class="t">toInt</span>()    <span class="c">// 42</span>
+<span class="k">val</span> dbl = <span class="s">"3.14"</span>.<span class="t">toDouble</span>()</div>
+        <ul class="points">
+          <li><code>toInt()</code>、<code>toDouble()</code>、<code>toLong()</code> 等</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">8.5</span>Int 转 Double</h3>
+        <ul class="points">
+          <li><code>val d: Double = i.toDouble()</code></li>
+          <li>Int 转 Double 是<strong>隐式</strong>的（Kotlin 中需要显式调用方法）</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">8.6</span>Double 类型格式化</h3>
+        <div class="code-block"><span class="k">val</span> pi = <span class="n">3.1415926</span>
+<span class="t">println</span>(<span class="s">"Pi ≈ %.2f"</span>.<span class="t">format</span>(pi))   <span class="c">// Pi ≈ 3.14</span></div>
+        <ul class="points">
+          <li>用 Java 的 <code>String.format</code>，如 <code>"%.2f"</code> 保留 2 位小数</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">8.7</span>Double 转 Int</h3>
+        <ul class="points">
+          <li><code>val i: Int = d.toInt()</code> — <strong>截断</strong>小数部分（不四舍五入）</li>
+          <li>需四舍五入：<code>Math.round(d)</code></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">8.8</span>深入学习：位运算</h3>
+        <ul class="points">
+          <li>中缀函数 <code>shl</code>（左移）、<code>shr</code>（右移）、<code>ushr</code>、<code>and</code>、<code>or</code>、<code>xor</code>、<code>inv</code></li>
+          <li><code>1 shl 3</code> 表示 <code>1 &lt;&lt; 3</code> = 8</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">8.9</span>挑战练习</h3>
+        <div class="challenge">🎯 还剩多少酒：玩家购买 5 瓶酒后酒馆库存还剩多少</div>
+        <div class="challenge">🎯 解决负数余额问题（使用先决条件函数）</div>
+        <div class="challenge">🎯 龙币：把金币换算成"龙、银、铜币"</div>
+      </div>
+    </section>
+
+    <!-- 9. 标准库函数 -->
+    <section class="chapter" id="ch09">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 9 章</span>
+        <h2 class="chapter-title">标准库函数</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握 6 个常用标准库函数：apply、let、run、with、also、takeIf</div>
+
+      <p>这些函数都是<strong>接收者</strong>（receiver）上的<strong>扩展函数</strong>，可以极大简化代码。</p>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">9.1</span>apply</h3>
+        <div class="code-block"><span class="k">val</span> menuFile = <span class="t">File</span>(<span class="s">"menu.txt"</span>).<span class="t">apply</span> {
+    <span class="t">setReadable</span>(<span class="k">true</span>)
+    <span class="t">setWritable</span>(<span class="k">true</span>)
+}
+<span class="c">// 返回对象本身</span></div>
+        <ul class="points">
+          <li>上下文对象为 <code>this</code>（可省略），返回值是<strong>接收者</strong>本身</li>
+          <li>用于对象<strong>配置</strong>：链式设置属性</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">9.2</span>let</h3>
+        <div class="code-block"><span class="k">val</span> name: <span class="t">String</span>? = <span class="s">"Madrigal"</span>
+<span class="k">val</span> len = name?.<span class="t">let</span> { <span class="t">println</span>(<span class="s">"长度: ${it.length}"</span>) }</div>
+        <ul class="points">
+          <li>上下文对象为 <code>it</code>，返回值是 lambda 的结果</li>
+          <li>常与 <code>?.</code> 配合处理可空对象</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">9.3</span>run</h3>
+        <div class="code-block"><span class="k">val</span> result = <span class="s">"Madrigal"</span>.<span class="t">run</span> { <span class="t">length</span> }   <span class="c">// 8</span></div>
+        <ul class="points">
+          <li>结合了 <code>let</code> 和 <code>apply</code>：上下文是 <code>this</code>，返回 lambda 结果</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">9.4</span>with</h3>
+        <div class="code-block"><span class="k">val</span> result = <span class="t">with</span>(<span class="s">"Madrigal"</span>) {
+    <span class="t">println</span>(<span class="s">"长度: $length"</span>)
+    <span class="t">length</span>   <span class="c">// 最后一行作为返回值</span>
+}</div>
+        <ul class="points">
+          <li>非扩展函数，需把接收者作为参数传入</li>
+          <li>适用于对同一对象<strong>多次调用</strong></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">9.5</span>also</h3>
+        <div class="code-block"><span class="k">val</span> file = <span class="t">File</span>(<span class="s">"/tmp/x"</span>).<span class="t">also</span> { <span class="t">println</span>(<span class="s">"创建文件: ${it.name}"</span>) }</div>
+        <ul class="points">
+          <li>上下文为 <code>it</code>，<strong>返回接收者本身</strong></li>
+          <li>类似 apply，但 lambda 中用 it 而非 this</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">9.6</span>takeIf / takeUnless</h3>
+        <div class="code-block"><span class="k">val</span> file = <span class="t">File</span>(<span class="s">"/tmp/x"</span>)
+<span class="k">val</span> readable = file.<span class="t">takeIf</span> { <span class="t">canRead</span>() }   <span class="c">// 可读时返回 file，否则 null</span>
+<span class="k">val</span> unreadable = file.<span class="t">takeUnless</span> { <span class="t">canRead</span>() }</div>
+        <ul class="points">
+          <li><code>takeIf</code>：满足条件返回接收者，否则 null</li>
+          <li><code>takeUnless</code>：不满足条件返回接收者</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">9.7</span>对比速查</h3>
+        <div class="tag-grid">
+          <div class="tag-card c1"><div class="name">apply</div><div class="desc">上下文 this，返回接收者 → 初始化配置</div></div>
+          <div class="tag-card c2"><div class="name">let</div><div class="desc">上下文 it，返回 lambda 结果 → 空安全调用</div></div>
+          <div class="tag-card c3"><div class="name">run</div><div class="desc">上下文 this，返回 lambda 结果 → 转换</div></div>
+          <div class="tag-card c4"><div class="name">with</div><div class="desc">上下文 this，非扩展 → 多个调用</div></div>
+          <div class="tag-card c5"><div class="name">also</div><div class="desc">上下文 it，返回接收者 → 副作用</div></div>
+          <div class="tag-card c6"><div class="name">takeIf</div><div class="desc">满足条件返回接收者，否则 null</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. List与Set -->
+    <section class="chapter" id="ch10">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 10 章</span>
+        <h2 class="chapter-title">List 与 Set</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握 List 和 Set 的创建、遍历、操作 · 引入 while 循环和 break</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">10.1</span>List</h3>
+        <div class="subsection">
+          <div class="sub-h">10.1.1 获取列表元素</div>
+          <div class="code-block"><span class="k">val</span> list = <span class="t">listOf</span>(<span class="s">"a"</span>, <span class="s">"b"</span>, <span class="s">"c"</span>)
+<span class="k">val</span> first = list[<span class="n">0</span>]   <span class="c">// "a"</span>
+<span class="k">val</span> firstOrNull = list.<span class="t">firstOrNull</span>()</div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">10.1.2 更改列表内容</div>
+          <ul class="points">
+            <li><code>listOf</code> 创建<strong>只读</strong> List</li>
+            <li><code>mutableListOf</code> 创建<strong>可变</strong> List，支持 add/remove/clear</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">10.2</span>遍历</h3>
+        <div class="code-block"><span class="k">val</span> list = <span class="t">listOf</span>(<span class="s">"a"</span>, <span class="s">"b"</span>, <span class="s">"c"</span>)
+<span class="k">for</span> (item <span class="k">in</span> list) <span class="t">println</span>(item)
+list.<span class="t">forEach</span> { <span class="t">println</span>(<span class="k">it</span>) }
+list.<span class="t">forEachIndexed</span> { i, e -&gt; <span class="t">println</span>(<span class="s">"$i: $e"</span>) }</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">10.3</span>将文件数据读取到列表</h3>
+        <div class="code-block"><span class="k">val</span> lines = <span class="t">File</span>(<span class="s">"menu.txt"</span>).<span class="t">readLines</span>()
+<span class="k">val</span> text = <span class="t">File</span>(<span class="s">"menu.txt"</span>).<span class="t">readText</span>()</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">10.4</span>解构</h3>
+        <div class="code-block"><span class="k">val</span> (first, second) = <span class="t">listOf</span>(<span class="s">"a"</span>, <span class="s">"b"</span>, <span class="s">"c"</span>)
+<span class="c">// first="a", second="b"</span></div>
+        <ul class="points">
+          <li>用 <code>Pair</code> / <code>Triple</code> 也能解构</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">10.5</span>Set</h3>
+        <ul class="points">
+          <li>元素<strong>唯一</strong>、<strong>无序</strong>的集合</li>
+          <li><code>setOf</code> 创建只读 Set；<code>mutableSetOf</code> 可变</li>
+        </ul>
+        <div class="subsection">
+          <div class="sub-h">10.5.1 创建一个 Set 集合</div>
+          <div class="code-block"><span class="k">val</span> set = <span class="t">setOf</span>(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">2</span>)  <span class="c">// [1, 2, 3]</span></div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">10.5.2 向 Set 集合中添加元素</div>
+          <div class="code-block"><span class="k">val</span> set = <span class="t">mutableSetOf</span>(<span class="n">1</span>, <span class="n">2</span>)
+set.<span class="t">add</span>(<span class="n">3</span>)</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">10.6</span>while 循环</h3>
+        <div class="code-block"><span class="k">var</span> hp = <span class="n">100</span>
+<span class="k">while</span> (hp &gt; <span class="n">0</span>) {
+    <span class="t">println</span>(<span class="s">"HP: $hp"</span>)
+    hp -= <span class="n">10</span>
+}</div>
+        <ul class="points">
+          <li><code>while</code> 条件为 true 时循环</li>
+          <li><code>do { } while (cond)</code> 至少执行一次</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">10.7</span>break 表达式</h3>
+        <div class="code-block"><span class="k">for</span> (i <span class="k">in</span> <span class="n">1</span>..<span class="n">10</span>) {
+    <span class="k">if</span> (i == <span class="n">5</span>) <span class="k">break</span>
+    <span class="t">println</span>(i)
+}</div>
+        <ul class="points">
+          <li><code>break</code> 跳出最近循环；带标签可跳出外层循环</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">10.8</span>集合转换</h3>
+        <div class="code-block"><span class="k">val</span> numbers = (<span class="n">1</span>..<span class="n">5</span>).<span class="t">toList</span>()
+<span class="k">val</span> set = numbers.<span class="t">toSet</span>()
+<span class="k">val</span> map = numbers.<span class="t">map</span> { <span class="k">it</span> * <span class="k">it</span> }</div>
+        <ul class="points">
+          <li>用 <code>.toList</code>、<code>.toSet</code>、<code>.toMap</code> 在集合间转换</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">10.9</span>深入学习</h3>
+        <ul class="points">
+          <li><strong>数组类型</strong>：<code>Array&lt;T&gt;</code>，与 List 区别：大小固定、可放基本类型</li>
+          <li><strong>只读与不可变</strong>：<code>val list = listOf(...)</code> 是只读引用，但若对象本身可变仍可被修改</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">10.10</span>挑战练习</h3>
+        <div class="challenge">🎯 美化酒水单：使用 string 模板 + 字符串重复 <code>String.repeat</code></div>
+        <div class="challenge">🎯 进一步美化酒水单：居中对齐、动态宽度</div>
+      </div>
+    </section>
+
+    <!-- 11. Map -->
+    <section class="chapter" id="ch11">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 11 章</span>
+        <h2 class="chapter-title">Map</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握 Map 的创建、读取、添加、修改</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">11.1</span>创建 Map</h3>
+        <div class="code-block"><span class="k">val</span> map = <span class="t">mapOf</span>(
+    <span class="s">"Mad"</span> to <span class="n">89</span>,
+    <span class="s">"Ario"</span> to <span class="n">95</span>
+)</div>
+        <ul class="points">
+          <li><code>mapOf</code> 创建只读 Map；<code>mutableMapOf</code> 可变 Map</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">11.2</span>读取 Map 集合的值</h3>
+        <div class="code-block"><span class="k">val</span> hp = map[<span class="s">"Mad"</span>]            <span class="c">// 89</span>
+<span class="k">val</span> hp2 = map.<span class="t">getValue</span>(<span class="s">"Mad"</span>) <span class="c">// 89，不存在抛异常</span>
+<span class="k">val</span> hp3 = map.<span class="t">getOrDefault</span>(<span class="s">"Nox"</span>, <span class="n">0</span>)</div>
+        <ul class="points">
+          <li>键具有<strong>唯一性</strong>，值可重复</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">11.3</span>向 Map 集合添加项</h3>
+        <div class="code-block"><span class="k">val</span> map = <span class="t">mutableMapOf</span>&lt;<span class="t">String</span>, <span class="t">Int</span>&gt;()
+map[<span class="s">"Mad"</span>] = <span class="n">89</span>
+map.<span class="t">put</span>(<span class="s">"Ario"</span>, <span class="n">95</span>)</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">11.4</span>修改 Map 集合值</h3>
+        <div class="code-block">map[<span class="s">"Mad"</span>] = <span class="n">100</span>   <span class="c">// 直接赋值覆盖</span></div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">11.5</span>挑战练习</h3>
+        <div class="challenge">🎯 守卫小客栈：用 Map 维护玩家余额、库存等信息</div>
+      </div>
+    </section>
+
+    <!-- 12. 定义类 -->
+    <section class="chapter" id="ch12">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 12 章</span>
+        <h2 class="chapter-title">定义类</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>理解面向对象编程 · 定义 Player 类 · 掌握类函数、属性、可见性</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">12.1</span>定义一个类</h3>
+        <div class="code-block"><span class="c">// Player.kt</span>
+<span class="k">class</span> <span class="t">Player</span></div>
+        <ul class="points">
+          <li><code>class</code> 关键字定义类</li>
+          <li>通常定义在与类同名的独立文件中</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">12.2</span>构造实例</h3>
+        <div class="code-block"><span class="k">val</span> player = <span class="t">Player</span>()  <span class="c">// 调用主构造函数</span></div>
+        <ul class="points">
+          <li>类定义是"蓝图"，实例化才产生具体对象</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">12.3</span>类函数</h3>
+        <div class="code-block"><span class="k">class</span> <span class="t">Player</span> {
+    <span class="k">fun</span> <span class="t">castFireball</span>(numFireballs: <span class="t">Int</span> = <span class="n">2</span>) =
+        <span class="t">println</span>(<span class="s">"一团火球 (x$numFireballs)"</span>)
+}</div>
+        <ul class="points">
+          <li>用花括号 <code>{ }</code> 定义类结构体</li>
+          <li>类函数访问字段时用 <code>this</code></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">12.4</span>可见性与封装</h3>
+        <div class="tag-grid">
+          <div class="tag-card c1"><div class="name">public</div><div class="desc">默认，对所有可见</div></div>
+          <div class="tag-card c2"><div class="name">private</div><div class="desc">仅当前文件/类可见</div></div>
+          <div class="tag-card c3"><div class="name">internal</div><div class="desc">同一模块可见</div></div>
+          <div class="tag-card c4"><div class="name">protected</div><div class="desc">仅子类可见</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">12.5</span>类属性</h3>
+        <div class="code-block"><span class="k">class</span> <span class="t">Player</span> {
+    <span class="k">var</span> name: <span class="t">String</span> = <span class="s">"Madrigal"</span>
+        <span class="k">get</span>() = <span class="t">field</span>.<span class="t">capitalize</span>()  <span class="c">// 自定义 getter</span>
+        <span class="k">set</span>(value) { <span class="t">field</span> = value.<span class="t">trim</span>() }
+    <span class="k">val</span> isImmortal: <span class="t">Boolean</span> = <span class="k">false</span>
+}</div>
+        <ul class="points">
+          <li><code>var</code> 属性有 getter 和 setter；<code>val</code> 只有 getter</li>
+          <li><code>field</code> 关键字指代幕后字段</li>
+          <li><strong>计算属性</strong>：自定义 getter / setter，每次访问都计算</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">12.6</span>重构 NyetHack</h3>
+        <ul class="points">
+          <li>把玩家相关数据与行为整合到 <code>Player</code> 类</li>
+          <li>让代码结构更清晰、复用更容易</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">12.7</span>使用包</h3>
+        <div class="code-block"><span class="k">package</span> com.bignerdranch.nyethack
+<span class="k">import</span> java.io.<span class="t">File</span></div>
+        <ul class="points">
+          <li>用 <code>package</code> 声明包名，避免命名冲突</li>
+          <li>用 <code>import</code> 导入其他包</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">12.8</span>深入学习</h3>
+        <ul class="points">
+          <li>细看 <code>var</code> 与 <code>val</code> 属性：val 也可自定义 getter</li>
+          <li><strong>防范竞态条件</strong>：多线程下属性访问需同步或用 <code>@Volatile</code></li>
+          <li><strong>私有包</strong>：使用 internal 限制模块内可见</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 13. 初始化 -->
+    <section class="chapter" id="ch13">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 13 章</span>
+        <h2 class="chapter-title">初始化</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握主构造函数、次构造函数、初始化块、延迟初始化</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">13.1</span>构造函数</h3>
+        <div class="subsection">
+          <div class="sub-h">13.1.1 主构造函数</div>
+          <div class="code-block"><span class="k">class</span> <span class="t">Player</span>(<span class="k">val</span> name: <span class="t">String</span>, <span class="k">var</span> health: <span class="t">Int</span>)</div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">13.1.2 在主构造函数里定义属性</div>
+          <ul class="points">
+            <li>参数前加 <code>val/var</code> 直接成为属性</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">13.1.3 次构造函数</div>
+          <div class="code-block"><span class="k">class</span> <span class="t">Player</span> {
+    <span class="k">constructor</span>(name: <span class="t">String</span>) : <span class="k">this</span>(name, <span class="n">100</span>)
+}</div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">13.1.4 默认参数</div>
+          <div class="code-block"><span class="k">class</span> <span class="t">Player</span>(<span class="k">val</span> name: <span class="t">String</span>, <span class="k">var</span> health: <span class="t">Int</span> = <span class="n">100</span>)</div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">13.1.5 命名参数</div>
+          <div class="code-block"><span class="k">val</span> p = <span class="t">Player</span>(name = <span class="s">"Mad"</span>, health = <span class="n">90</span>)</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">13.2</span>初始化块 <code>init</code></h3>
+        <div class="code-block"><span class="k">class</span> <span class="t">Player</span>(<span class="k">val</span> name: <span class="t">String</span>) {
+    <span class="k">val</span> fullName: <span class="t">String</span>
+    <span class="k">init</span> {
+        <span class="t">require</span>(name.<span class="t">isNotBlank</span>()) { <span class="s">"名字不能为空"</span> }
+        fullName = name.<span class="t">uppercase</span>()
+    }
+}</div>
+        <ul class="points">
+          <li><code>init</code> 块在主构造期间执行，可放置初始化逻辑</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">13.3</span>属性初始化</h3>
+        <ul class="points">
+          <li>可以在声明时初始化，也可以在 <code>init</code> 块中初始化</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">13.4</span>初始化顺序</h3>
+        <ol class="points" style="list-style: decimal inside;">
+          <li>主构造函数参数赋值</li>
+          <li>属性初始化与 init 块<strong>按出现顺序</strong>执行</li>
+          <li>次构造函数（最后）</li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">13.5</span>延迟初始化</h3>
+        <div class="subsection">
+          <div class="sub-h">13.5.1 <code>lateinit var</code> 延迟初始化</div>
+          <div class="code-block"><span class="k">class</span> <span class="t">Game</span> {
+    <span class="k">lateinit var</span> player: <span class="t">Player</span>
+}</div>
+          <ul class="points">
+            <li>只用于 <code>var</code>，且必须是非空类型</li>
+            <li>访问未初始化的属性会抛 <code>UninitializedPropertyAccessException</code></li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">13.5.2 <code>by lazy</code> 惰性初始化</div>
+          <div class="code-block"><span class="k">val</span> config: <span class="t">Config</span> <span class="k">by</span> <span class="t">lazy</span> { <span class="t">loadConfig</span>() }</div>
+          <ul class="points">
+            <li>第一次访问时才执行 lambda，之后缓存</li>
+            <li>线程安全（默认 <code>SYNCHRONIZED</code> 模式）</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">13.6</span>挑战练习</h3>
+        <div class="challenge">🎯 圣剑之谜：构造一个 <code>Sword</code> 类，包含名字、伤害值等属性，名字长度超过一定值时使用随机生成的名字</div>
+      </div>
+    </section>
+
+    <!-- 14. 继承 -->
+    <section class="chapter" id="ch14">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 14 章</span>
+        <h2 class="chapter-title">继承</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握类继承 · open 关键字 · 类型检测与转换</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">14.1</span>定义 Room 类</h3>
+        <div class="code-block"><span class="k">open class</span> <span class="t">Room</span>(<span class="k">val</span> name: <span class="t">String</span>) {
+    <span class="k">open fun</span> <span class="t">description</span>() = <span class="s">"Room: $name"</span>
+    <span class="k">fun</span> <span class="t">load</span>() = <span class="s">"Nothing much to see here..."</span>
+}</div>
+        <ul class="points">
+          <li>Kotlin 类默认 <strong>final</strong>，需要 <code>open</code> 才能被继承</li>
+          <li>函数默认 final，需 <code>open fun</code> 才能被重写</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">14.2</span>创建子类</h3>
+        <div class="code-block"><span class="k">class</span> <span class="t">TownSquare</span> : <span class="t">Room</span>(<span class="s">"Town Square"</span>) {
+    <span class="k">override fun</span> <span class="t">description</span>() = <span class="s">"喧嚣的广场"</span>
+}</div>
+        <ul class="points">
+          <li>子类用 <code>: Parent(...)</code> 继承并调用父类构造函数</li>
+          <li>用 <code>override</code> 重写父类方法（必须标记 open 的）</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">14.3</span>类型检测 <code>is</code> / <code>!is</code></h3>
+        <div class="code-block"><span class="k">if</span> (room <span class="k">is</span> <span class="t">TownSquare</span>) {
+    <span class="t">println</span>(<span class="s">"这是广场"</span>)
+}</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">14.4</span>Kotlin 类层次</h3>
+        <div class="subsection">
+          <div class="sub-h">14.4.1 类型转换 <code>as</code></div>
+          <div class="code-block"><span class="k">val</span> ts = room <span class="k">as</span> <span class="t">TownSquare</span>
+<span class="k">val</span> ts2 = room <span class="k">as?</span> <span class="t">TownSquare</span>  <span class="c">// 转换失败返回 null</span></div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">14.4.2 智能类型转换</div>
+          <ul class="points">
+            <li>使用 <code>is</code> 检测后，编译器自动转为该类型</li>
+            <li>无需显式 <code>as</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">14.5</span>深入学习：Any</h3>
+        <ul class="points">
+          <li>Kotlin 所有类的超类是 <code>Any</code>（类似 Java 的 Object）</li>
+          <li>任何类都继承了 <code>toString</code>、<code>equals</code>、<code>hashCode</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 15. 对象 -->
+    <section class="chapter" id="ch15">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 15 章</span>
+        <h2 class="chapter-title">对象</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握 object 关键字 · 嵌套类 · 数据类 · 枚举类 · 运算符重载</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">15.1</span>object 关键字</h3>
+        <div class="subsection">
+          <div class="sub-h">15.1.1 对象声明（单例）</div>
+          <div class="code-block"><span class="k">object</span> <span class="t">GameSettings</span> {
+    <span class="k">val</span> difficulty = <span class="s">"Normal"</span>
+}
+<span class="t">println</span>(<span class="t">GameSettings</span>.difficulty)</div>
+          <ul class="points">
+            <li><code>object</code> 声明一个<strong>单例</strong>对象，整个程序只有一个实例</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">15.1.2 对象表达式（匿名对象）</div>
+          <div class="code-block"><span class="k">val</span> obj = <span class="k">object</span> {
+    <span class="k">val</span> x = <span class="n">1</span>
+    <span class="k">fun</span> <span class="t">greet</span>() = <span class="s">"Hi"</span>
+}</div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">15.1.3 伴生对象 <code>companion object</code></div>
+          <div class="code-block"><span class="k">class</span> <span class="t">Player</span> {
+    <span class="k">companion object</span> {
+        <span class="k">val</span> MAX_HEALTH = <span class="n">100</span>
+    }
+}
+<span class="t">println</span>(<span class="t">Player</span>.MAX_HEALTH)</div>
+          <ul class="points">
+            <li>伴生对象相当于"类级别"的成员，类似 Java 的 <code>static</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">15.2</span>嵌套类</h3>
+        <div class="code-block"><span class="k">class</span> <span class="t">Player</span> {
+    <span class="k">class</span> <span class="t">Inventory</span>  <span class="c">// 默认是嵌套类（static）</span>
+    <span class="k">inner class</span> <span class="t">Bag</span>  <span class="c">// inner 才持有外部引用</span>
+}</div>
+        <ul class="points">
+          <li>普通嵌套类不持有外部引用</li>
+          <li>用 <code>inner class</code> 才能访问外部类的成员</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">15.3</span>数据类 <code>data class</code></h3>
+        <div class="code-block"><span class="k">data class</span> <span class="t">Coordinate</span>(<span class="k">val</span> x: <span class="t">Int</span>, <span class="k">val</span> y: <span class="t">Int</span>)</div>
+        <p>编译器自动生成：<code>toString</code>、<code>equals</code>、<code>hashCode</code>、<code>copy</code>、<code>componentN</code></p>
+        <div class="subsection">
+          <div class="sub-h">15.3.1 toString / 15.3.2 equals / 15.3.3 copy</div>
+          <ul class="points">
+            <li>数据类自动实现结构相等的 <code>equals</code></li>
+            <li><code>copy()</code> 可基于现有对象创建副本，可修改部分属性</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">15.3.4 解构声明</div>
+          <div class="code-block"><span class="k">val</span> (x, y) = <span class="t">Coordinate</span>(<span class="n">1</span>, <span class="n">2</span>)</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">15.4</span>枚举类 <code>enum class</code></h3>
+        <div class="code-block"><span class="k">enum class</span> <span class="t">Direction</span>(<span class="k">val</span> coordinate: <span class="t">Int</span>) {
+    <span class="t">NORTH</span>(<span class="n">1</span>), <span class="t">SOUTH</span>(-<span class="n">1</span>), <span class="t">EAST</span>(<span class="n">1</span>), <span class="t">WEST</span>(-<span class="n">1</span>);
+}</div>
+        <ul class="points">
+          <li>枚举值本质上也是对象，可带属性和函数</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">15.5</span>运算符重载 <code>operator</code></h3>
+        <div class="code-block"><span class="k">data class</span> <span class="t">Coordinate</span>(<span class="k">val</span> x: <span class="t">Int</span>, <span class="k">val</span> y: <span class="t">Int</span>) {
+    <span class="k">operator fun</span> <span class="t">plus</span>(other: <span class="t">Coordinate</span>) = <span class="t">Coordinate</span>(x + other.x, y + other.y)
+}
+<span class="k">val</span> c = <span class="t">Coordinate</span>(<span class="n">1</span>, <span class="n">2</span>) + <span class="t">Coordinate</span>(<span class="n">3</span>, <span class="n">4</span>)  <span class="c">// (4, 6)</span></div>
+      </div>
+    </section>
+
+    <!-- 16. 接口与抽象类 -->
+    <section class="chapter" id="ch16">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 16 章</span>
+        <h2 class="chapter-title">接口与抽象类</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握 interface 与 abstract class 的定义与使用</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">16.1</span>定义接口 <code>interface</code></h3>
+        <div class="code-block"><span class="k">interface</span> <span class="t">Fightable</span> {
+    <span class="k">val</span> healthPoints: <span class="t">Int</span>
+    <span class="k">fun</span> <span class="t">attack</span>(opponent: <span class="t">Fightable</span>)
+    <span class="k">fun</span> <span class="t">takeDamage</span>(damage: <span class="t">Int</span>)
+}</div>
+        <ul class="points">
+          <li>接口只定义<strong>行为契约</strong>，不实现</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">16.2</span>实现接口</h3>
+        <div class="code-block"><span class="k">class</span> <span class="t">Monster</span> : <span class="t">Fightable</span> {
+    <span class="k">override val</span> healthPoints = <span class="n">50</span>
+    <span class="k">override fun</span> <span class="t">attack</span>(opponent: <span class="t">Fightable</span>) { ... }
+    <span class="k">override fun</span> <span class="t">takeDamage</span>(damage: <span class="t">Int</span>) { ... }
+}</div>
+        <ul class="points">
+          <li>类可实现多个接口（用逗号分隔）</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">16.3</span>默认实现</h3>
+        <div class="code-block"><span class="k">interface</span> <span class="t">Fightable</span> {
+    <span class="k">fun</span> <span class="t">attack</span>(opponent: <span class="t">Fightable</span>) {
+        <span class="t">println</span>(<span class="s">"Attacking ${opponent}"</span>)
+    }
+}</div>
+        <ul class="points">
+          <li>接口可以提供<strong>默认实现</strong>，实现类可选择重写</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">16.4</span>抽象类 <code>abstract class</code></h3>
+        <div class="code-block"><span class="k">abstract class</span> <span class="t">Enemy</span>(<span class="k">val</span> name: <span class="t">String</span>, <span class="k">val</span> healthPoints: <span class="t">Int</span>) : <span class="t">Fightable</span> {
+    <span class="k">abstract override fun</span> <span class="t">attack</span>(opponent: <span class="t">Fightable</span>)
+}</div>
+        <ul class="points">
+          <li>抽象类既可定义抽象方法（无实现），也可定义已实现方法</li>
+          <li>可声明构造函数、字段、状态</li>
+          <li>不能直接实例化</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">16.5</span>接口 vs 抽象类</h3>
+        <div class="tag-grid">
+          <div class="tag-card c1"><div class="name">interface</div><div class="desc">多实现，无状态，只能有 open 行为（Java 8+ 可有默认实现）</div></div>
+          <div class="tag-card c2"><div class="name">abstract class</div><div class="desc">单一继承，可有状态，单继承体系下共享代码</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 17. 泛型 -->
+    <section class="chapter" id="ch17">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 17 章</span>
+        <h2 class="chapter-title">泛型</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握泛型类、泛型函数、泛型约束、in/out</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">17.1</span>定义泛型类</h3>
+        <div class="code-block"><span class="k">class</span> <span class="t">LootBox</span>&lt;<span class="t">T</span>&gt;(<span class="k">val</span> item: <span class="t">T</span>)
+<span class="k">val</span> box = <span class="t">LootBox</span>&lt;<span class="t">Sword</span>&gt;(<span class="t">Sword</span>())</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">17.2</span>泛型函数</h3>
+        <div class="code-block"><span class="k">fun</span> &lt;<span class="t">T</span>&gt; <span class="t">randomItem</span>(list: <span class="t">List</span>&lt;<span class="t">T</span>&gt;): <span class="t">T</span> = list.<span class="t">random</span>()</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">17.3</span>多泛型参数</h3>
+        <div class="code-block"><span class="k">class</span> <span class="t">Pair</span>&lt;<span class="t">A</span>, <span class="t">B</span>&gt;(<span class="k">val</span> first: <span class="t">A</span>, <span class="k">val</span> second: <span class="t">B</span>)</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">17.4</span>泛型约束</h3>
+        <div class="code-block"><span class="k">fun</span> &lt;<span class="t">T</span> : <span class="t">Fightable</span>&gt; <span class="t">fight</span>(a: <span class="t">T</span>, b: <span class="t">T</span>) { ... }</div>
+        <ul class="points">
+          <li>用 <code>:</code> 指定上界，确保 T 是某类型或其子类</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">17.5</span>vararg 关键字与 get 函数</h3>
+        <div class="code-block"><span class="k">fun</span> <span class="t">listAll</span>(<span class="k">vararg</span> items: <span class="t">String</span>) {
+    items.<span class="t">forEach</span> { <span class="t">println</span>(<span class="k">it</span>) }
+}
+<span class="t">listAll</span>(<span class="s">"a"</span>, <span class="s">"b"</span>, <span class="s">"c"</span>)
+<span class="t">listAll</span>(*arrayOf(<span class="s">"a"</span>, <span class="s">"b"</span>))   <span class="c">// 展开运算符 *</span></div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">17.6</span><code>in</code> 与 <code>out</code></h3>
+        <ul class="points">
+          <li><code>out T</code>：T 只在<strong>输出</strong>位置（协变）— 生产者</li>
+          <li><code>in T</code>：T 只在<strong>输入</strong>位置（逆变）— 消费者</li>
+          <li>实现类型安全的泛型协变</li>
+        </ul>
+        <div class="code-block"><span class="k">interface</span> <span class="t">Producer</span>&lt;<span class="k">out</span> <span class="t">T</span>&gt; { <span class="k">fun</span> <span class="t">produce</span>(): <span class="t">T</span> }
+<span class="k">interface</span> <span class="t">Consumer</span>&lt;<span class="k">in</span> <span class="t">T</span>&gt; { <span class="k">fun</span> <span class="t">consume</span>(item: <span class="t">T</span>) }</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">17.7</span>深入学习：<code>reified</code> 关键字</h3>
+        <ul class="points">
+          <li>配合 <code>inline</code> 使用，可在泛型函数里访问类型信息（如 <code>is</code>、<code>as</code>）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 18. 扩展 -->
+    <section class="chapter" id="ch18">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 18 章</span>
+        <h2 class="chapter-title">扩展</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握扩展函数、扩展属性、可空类扩展</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">18.1</span>定义扩展函数</h3>
+        <div class="code-block"><span class="k">fun</span> <span class="t">String</span>.<span class="t">addEnthusiasm</span>() = <span class="k">this</span> + <span class="s">"!"</span>
+<span class="c">// 调用</span>
+<span class="t">println</span>(<span class="s">"Hello"</span>.<span class="t">addEnthusiasm</span>())   <span class="c">// Hello!</span></div>
+        <ul class="points">
+          <li>用 <code>接收者类型.函数名()</code> 语法定义</li>
+          <li>不修改原类即可增加功能</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">18.2</span>泛型扩展函数</h3>
+        <div class="code-block"><span class="k">fun</span> &lt;<span class="t">T</span>&gt; <span class="t">List</span>&lt;<span class="t">T</span>&gt;.<span class="t">secondOrNull</span>(): <span class="t">T</span>? = <span class="k">this</span>.<span class="t">getOrNull</span>(<span class="n">1</span>)</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">18.3</span>扩展属性</h3>
+        <div class="code-block"><span class="k">val</span> <span class="t">String</span>.<span class="t">lastChar</span>: <span class="t">Char</span>
+    <span class="k">get</span>() = <span class="k">this</span>[<span class="k">this</span>.<span class="t">length</span> - <span class="n">1</span>]</div>
+        <ul class="points">
+          <li>扩展属性不能有幕后字段（<code>field</code>），必须自定义 getter</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">18.4</span>可空类扩展</h3>
+        <div class="code-block"><span class="k">fun</span> <span class="t">String</span>?.<span class="t">isNullOrBlank</span>(): <span class="t">Boolean</span> = <span class="k">this</span> == <span class="k">null</span> || <span class="k">this</span>.<span class="t">isBlank</span>()</div>
+        <ul class="points">
+          <li>可空接收者的扩展，函数体内可处理 null</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">18.5</span>扩展实现揭秘</h3>
+        <ul class="points">
+          <li>编译为静态方法，分发不依赖对象类型</li>
+          <li>不能访问 private / protected 成员</li>
+          <li>若成员函数与扩展同名，<strong>成员函数优先</strong></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">18.6</span>用扩展封装代码</h3>
+        <ul class="points">
+          <li>扩展是组织工具函数的好方法</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">18.7</span>定义扩展文件</h3>
+        <div class="code-block"><span class="c">// Extensions.kt</span>
+<span class="k">package</span> com.bignerdranch.nyethack
+<span class="k">fun</span> <span class="t">String</span>.<span class="t">toDragonSpeak</span>() = ...</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">18.8</span>重命名扩展 <code>as</code></h3>
+        <div class="code-block"><span class="k">import</span> com.bignerdranch.nyethack.<span class="t">toDragonSpeak</span> <span class="k">as</span> <span class="t">dragonize</span>
+<span class="t">println</span>(<span class="s">"hello"</span>.<span class="t">dragonize</span>())</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">18.9</span>Kotlin 标准库中的扩展</h3>
+        <ul class="points">
+          <li>第 9 章的 <code>apply</code>、<code>let</code>、<code>run</code> 等都是扩展函数</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">18.10</span>挑战练习</h3>
+        <div class="challenge">🎯 <code>toDragonSpeak</code> 扩展</div>
+        <div class="challenge">🎯 <code>frame</code> 扩展：给字符串加边框</div>
+      </div>
+    </section>
+
+    <!-- 19. 函数式编程基础 -->
+    <section class="chapter" id="ch19">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 19 章</span>
+        <h2 class="chapter-title">函数式编程基础</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>理解函数式编程三大函数类别 · 序列 · 函数链式调用</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">19.1</span>三大函数类别</h3>
+        <div class="subsection">
+          <div class="sub-h">19.1.1 变换 <code>map</code></div>
+          <div class="code-block"><span class="k">val</span> list = <span class="t">listOf</span>(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>).<span class="t">map</span> { <span class="k">it</span> * <span class="n">2</span> }  <span class="c">// [2,4,6]</span></div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">19.1.2 过滤 <code>filter</code></div>
+          <div class="code-block"><span class="t">listOf</span>(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>).<span class="t">filter</span> { <span class="k">it</span> % <span class="n">2</span> == <span class="n">0</span> }  <span class="c">// [2,4]</span></div>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">19.1.3 合并 <code>reduce</code> / <code>fold</code> / <code>zip</code></div>
+          <div class="code-block"><span class="t">listOf</span>(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>).<span class="t">reduce</span> { acc, i -&gt; acc + i }   <span class="c">// 6</span>
+<span class="t">listOf</span>(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>).<span class="t">fold</span>(<span class="n">0</span>) { acc, i -&gt; acc + i }  <span class="c">// 6 (有初值)</span>
+<span class="t">listOf</span>(<span class="n">1</span>, <span class="n">2</span>).<span class="t">zip</span>(<span class="t">listOf</span>(<span class="s">"a"</span>, <span class="s">"b"</span>))  <span class="c">// [(1,a), (2,b)]</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">19.2</span>为什么要学习函数式编程</h3>
+        <ul class="points">
+          <li>代码更<strong>声明式</strong>，表达"做什么"而非"怎么做"</li>
+          <li>易于<strong>组合</strong>，链式调用构建复杂逻辑</li>
+          <li>更易推理、测试</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">19.3</span>序列 <code>sequence</code></h3>
+        <div class="code-block"><span class="k">val</span> result = <span class="t">sequenceOf</span>(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>)
+    .<span class="t">filter</span> { <span class="k">it</span> % <span class="n">2</span> == <span class="n">0</span> }
+    .<span class="t">map</span> { <span class="k">it</span> * <span class="k">it</span> }
+    .<span class="t">toList</span>()</div>
+        <ul class="points">
+          <li>序列是<strong>惰性</strong>的，元素按需计算</li>
+          <li>适合大数据集和长链式操作（避免每步生成中间集合）</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">19.4</span>深入学习</h3>
+        <ul class="points">
+          <li>评估代码性能：理解 List 与 Sequence 的差异</li>
+          <li>Arrow.kt：Kotlin 函数式编程库</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">19.5</span>挑战练习</h3>
+        <div class="challenge">🎯 Map 值反转：把 <code>{a:1, b:2}</code> 变为 <code>{1:a, 2:b}</code></div>
+        <div class="challenge">🎯 应用函数式编程：用 map/filter/fold 处理数据</div>
+        <div class="challenge">🎯 滑窗算法：使用 sequence 实现</div>
+      </div>
+    </section>
+
+    <!-- 20. Kotlin与Java互操作 -->
+    <section class="chapter" id="ch20">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 20 章</span>
+        <h2 class="chapter-title">Kotlin 与 Java 互操作</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>掌握 Kotlin 调用 Java 与 Java 调用 Kotlin</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">20.1</span>与 Java 类互操作</h3>
+        <ul class="points">
+          <li>Kotlin 可直接调用 Java 类、方法和字段</li>
+          <li>Java 也可调用 Kotlin 类、属性（自动生成 getter/setter）</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">20.2</span>互操作性与可空性</h3>
+        <ul class="points">
+          <li>Java 类型在 Kotlin 中默认是<strong>可空平台类型</strong>（<code>T!</code>）</li>
+          <li>需自行保证非空，否则 NPE</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">20.3</span>类型映射</h3>
+        <div class="tag-grid">
+          <div class="tag-card c1"><div class="name">int → Int</div><div class="desc">Kotlin 的 Int 映射 Java 的 int</div></div>
+          <div class="tag-card c2"><div class="name">Integer → Int!</div><div class="desc">平台类型</div></div>
+          <div class="tag-card c3"><div class="name">Object → Any!</div><div class="desc">平台类型</div></div>
+          <div class="tag-card c4"><div class="name">Object → Any</div><div class="desc">非空场景</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">20.4</span>getter 和 setter 方法与互操作性</h3>
+        <div class="code-block"><span class="c">// Kotlin</span>
+<span class="k">class</span> <span class="t">Hero</span> {
+    <span class="k">var</span> name: <span class="t">String</span> = <span class="s">"Madrigal"</span>
+}
+<span class="c">// Java 看到的方法：getName(), setName(String)</span></div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">20.5</span>类之外</h3>
+        <ul class="points">
+          <li>顶层函数在 Java 中是 <code>FileNameKt.methodName()</code></li>
+          <li>用 <code>@file:JvmName("CustomName")</code> 可重命名</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">20.6</span>异常与互操作性</h3>
+        <ul class="points">
+          <li>Kotlin 没有 checked 异常，Java 互操作时 @Throws 标注</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">20.7</span>Java 中的函数类型</h3>
+        <ul class="points">
+          <li>lambda 编译为 <code>FunctionN&lt;P1, ..., R&gt;</code> 接口</li>
+          <li>SAM（单一抽象方法）可自动转换</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 21. Android开发 -->
+    <section class="chapter" id="ch21">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 21 章</span>
+        <h2 class="chapter-title">用 Kotlin 开发首个 Android 应用</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>创建 <strong>Samodelkin</strong> Android 应用 · 掌握 Activity、View、事件监听</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">21.1</span>Android Studio</h3>
+        <ul class="points">
+          <li>基于 IntelliJ，集成 Android 开发工具链</li>
+          <li>下载 developer.android.com/studio</li>
+        </ul>
+        <div class="subsection">
+          <div class="sub-h">21.1.1 Gradle 配置</div>
+          <ul class="points">
+            <li>Android 使用 Gradle 构建系统</li>
+            <li>build.gradle 中声明 kotlin-android 插件</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="sub-h">21.1.2 项目组织</div>
+          <ul class="points">
+            <li>app/src/main/java — 源代码</li>
+            <li>app/src/main/res — 资源（布局、图片、字符串）</li>
+            <li>app/src/main/AndroidManifest.xml — 清单</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">21.2</span>定义 UI</h3>
+        <ul class="points">
+          <li>XML 布局文件 + ConstraintLayout</li>
+          <li>常用组件：TextView、Button、ImageView、EditText</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">21.3</span>用模拟器运行应用</h3>
+        <ul class="points">
+          <li>Tools → AVD Manager 创建虚拟设备</li>
+          <li>Run 应用，Android Emulator 启动</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">21.4</span>生成角色</h3>
+        <div class="code-block"><span class="k">class</span> <span class="t">CharacterGenerator</span> {
+    <span class="k">fun</span> <span class="t">generate</span>(): <span class="t">Character</span> {
+        <span class="k">return</span> <span class="t">Character</span>(
+            race = <span class="t">FantasyRace</span>.<span class="t">values</span>().<span class="t">random</span>(),
+            name = <span class="t">FantasyName</span>.<span class="t">values</span>().<span class="t">random</span>().<span class="t">fullName</span>
+        )
+    }
+}</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">21.5</span>Activity 类</h3>
+        <ul class="points">
+          <li>Activity 是 Android 中表示"屏幕"的组件</li>
+          <li>继承 <code>AppCompatActivity</code></li>
+          <li>生命周期：onCreate、onStart、onResume、onPause、onStop、onDestroy</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">21.6</span>实例化视图</h3>
+        <div class="code-block"><span class="k">val</span> generateButton = <span class="t">findViewById</span>&lt;<span class="t">Button</span>&gt;(<span class="t">R</span>.id.generateButton)
+<span class="k">val</span> nameText = <span class="t">findViewById</span>&lt;<span class="t">TextView</span>&gt;(<span class="t">R</span>.id.nameText)</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">21.7</span>Kotlin Android 扩展</h3>
+        <ul class="points">
+          <li>用 <code>import kotlinx.android.synthetic.main.activity_main.*</code></li>
+          <li>可直接用 ID 访问 View，省去 findViewById</li>
+          <li>新版本推荐使用 ViewBinding</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">21.8</span>设置单击事件监听器</h3>
+        <div class="code-block">generateButton.<span class="t">setOnClickListener</span> {
+    <span class="k">val</span> character = <span class="t">CharacterGenerator</span>().<span class="t">generate</span>()
+    nameText.<span class="t">text</span> = character.name
+}</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">21.9</span>保存实例状态</h3>
+        <ul class="points">
+          <li>横竖屏切换时 Activity 重建，需要保存数据</li>
+          <li>在 <code>onSaveInstanceState(outState: Bundle)</code> 中保存</li>
+        </ul>
+        <div class="code-block"><span class="k">override fun</span> <span class="t">onSaveInstanceState</span>(outState: <span class="t">Bundle</span>) {
+    <span class="k">super</span>.<span class="t">onSaveInstanceState</span>(outState)
+    outState.<span class="t">putString</span>(<span class="s">"nameKey"</span>, nameText.<span class="t">text</span>.<span class="t">toString</span>())
+}</div>
+        <div class="subsection">
+          <div class="sub-h">读取保存的实例状态</div>
+          <div class="code-block"><span class="k">val</span> savedName = savedInstanceState?.<span class="t">getString</span>(<span class="s">"nameKey"</span>)
+<span class="k">if</span> (savedName != <span class="k">null</span>) nameText.<span class="t">text</span> = savedName</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">21.10</span>使用扩展重构代码</h3>
+        <ul class="points">
+          <li>把 Activity 中逻辑提取到扩展函数，提高复用</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">21.11</span>深入学习</h3>
+        <ul class="points">
+          <li><strong>Android KTX</strong>：Kotlin 扩展库，让 Android 代码更简洁</li>
+          <li><strong>Anko 库</strong>：已废弃，可作历史了解</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 22. 协程 -->
+    <section class="chapter" id="ch22">
+      <div class="chapter-header">
+        <span class="chapter-tag">第 22 章</span>
+        <h2 class="chapter-title">Kotlin 协程简介</h2>
+      </div>
+      <div class="chapter-goal"><strong>本章目标：</strong>理解协程概念 · 使用 coroutine 异步处理 · suspend 函数</div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">22.1</span>解析角色数据</h3>
+        <ul class="points">
+          <li>Web API：chargen-api.herokuapp.com（用 Ktor 框架开发）</li>
+          <li>JSON 数据：Gson / kotlinx.serialization</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">22.2</span>获取动态数据</h3>
+        <ul class="points">
+          <li>网络请求耗时，必须放在后台线程</li>
+          <li>UI 更新必须在主线程</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">22.3</span>Android 主线程</h3>
+        <ul class="points">
+          <li>主线程负责 UI，长时间操作会<strong>卡顿</strong>甚至 ANR</li>
+          <li>网络、数据库等应在 IO 线程</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">22.4</span>启用协程</h3>
+        <div class="code-block"><span class="c">// 引入 kotlinx-coroutines-android</span>
+<span class="k">import</span> kotlinx.coroutines.*
+<span class="t">GlobalScope</span>.<span class="t">launch</span> {
+    <span class="c">// 协程体</span>
+}</div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">22.5</span>async / await</h3>
+        <div class="code-block"><span class="k">val</span> deferred = <span class="t">GlobalScope</span>.<span class="t">async</span> {
+    <span class="t">fetchCharacterData</span>()
+}
+<span class="k">val</span> character = deferred.<span class="t">await</span>()</div>
+        <ul class="points">
+          <li><code>async</code> 返回 <code>Deferred&lt;T&gt;</code>，可通过 <code>await()</code> 拿到结果</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">22.6</span>launch vs async</h3>
+        <div class="tag-grid">
+          <div class="tag-card c1"><div class="name">launch</div><div class="desc">不返回结果，类似 fire-and-forget</div></div>
+          <div class="tag-card c2"><div class="name">async / await</div><div class="desc">返回 Deferred&lt;T&gt;，可通过 await 取结果</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">22.7</span>挂起函数 <code>suspend</code></h3>
+        <div class="code-block"><span class="k">suspend fun</span> <span class="t">fetchCharacter</span>(): <span class="t">Character</span> {
+    <span class="k">return</span> <span class="t">withContext</span>(<span class="t">Dispatchers</span>.IO) {
+        <span class="c">// 网络请求</span>
+    }
+}</div>
+        <ul class="points">
+          <li><code>suspend</code> 标记的函数可在协程中<strong>挂起</strong>而不阻塞线程</li>
+          <li>可用 <code>withContext(Dispatchers.IO)</code> 切换调度器</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">22.8</span>挑战练习</h3>
+        <div class="challenge">🎯 动态数据：调用 API 加载真实角色</div>
+        <div class="challenge">🎯 最小力量值：保证角色 strength 属性 ≥ 某值</div>
+      </div>
+    </section>
+
+    <!-- 23. 编后语 + 附录 + 术语表 -->
+    <section class="chapter" id="ch23">
+      <div class="chapter-header">
+        <span class="chapter-tag">尾篇</span>
+        <h2 class="chapter-title">编后语 · 附录 · 术语表</h2>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">★</span>第 23 章 · 编后语 — 前方的路</h3>
+        <ul class="points">
+          <li>学完本书，你已初步掌握 Kotlin 编程语言</li>
+          <li>可尝试：替代现有语言开发后端、Android 新应用、跨平台项目</li>
+          <li>深入资源：<strong>kotlinlang.org</strong>、《Kotlin 实战》</li>
+          <li>Kotlin 是开源语言，可到 <strong>github.com/jetbrains/kotlin</strong> 参与贡献</li>
+          <li>加入本地 Kotlin 用户组，与社区共同成长</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">★</span>附录 A · 补充挑战练习（Exercism）</h3>
+        <ul class="points">
+          <li>Exercism 是练习 30+ 编程语言的好项目</li>
+          <li>需要安装：Exercism CLI、Gradle、GitHub 账号</li>
+          <li>常用命令：<code>exercism fetch kotlin</code>、<code>exercism submit</code></li>
+          <li>提交解答后接受社区代码审查，循序渐进提升</li>
+        </ul>
+        <div class="callout info">
+          <span class="icon">🚀</span>
+          <span>推荐站点：<strong>exercism.io</strong> · <strong>gradle.org/install</strong> · <strong>github.com</strong></span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">★</span>术语表（精选）</h3>
+        <div class="tag-grid">
+          <div class="tag-card c1"><div class="name">getter</div><div class="desc">属性如何被读取的函数定义</div></div>
+          <div class="tag-card c2"><div class="name">Kotlin 标准库函数</div><div class="desc">一组支持任意 Kotlin 类型的扩展函数</div></div>
+          <div class="tag-card c3"><div class="name">Kotlin REPL</div><div class="desc">Read-Eval-Print Loop，无须文件即可测试代码</div></div>
+          <div class="tag-card c4"><div class="name">lambda</div><div class="desc">匿名函数，可作为值传递</div></div>
+          <div class="tag-card c5"><div class="name">receiver</div><div class="desc">扩展函数所作用的对象</div></div>
+          <div class="tag-card c6"><div class="name">coroutine</div><div class="desc">协程，可挂起不阻塞线程的并发单元</div></div>
+          <div class="tag-card c1"><div class="name">companion object</div><div class="desc">类级别的单例对象</div></div>
+          <div class="tag-card c2"><div class="name">data class</div><div class="desc">自动实现 toString/equals/copy 的类</div></div>
+          <div class="tag-card c3"><div class="name">sealed class</div><div class="desc">密封类，受限的类继承结构</div></div>
+          <div class="tag-card c4"><div class="name">inline</div><div class="desc">内联，编译期将函数体展开</div></div>
+          <div class="tag-card c5"><div class="name">reified</div><div class="desc">具体化，配合 inline 保留泛型类型信息</div></div>
+          <div class="tag-card c6"><div class="name">variance</div><div class="desc">协变 out / 逆变 in</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">★</span>贯穿项目回顾 — NyetHack</h3>
+        <ul class="points">
+          <li>第 3 章首次创建 NyetHack 项目，跟踪玩家健康值</li>
+          <li>第 4 章加入 Fireball 魔法</li>
+          <li>第 6 章添加小客栈，引入异常处理与 null 安全</li>
+          <li>第 7 章丰富客栈功能（字符串）</li>
+          <li>第 8 章增加玩家钱包（数字）</li>
+          <li>第 10-11 章用 List / Map 管理酒水单与菜单</li>
+          <li>第 12-14 章定义 Player、Room 等类，引入继承</li>
+          <li>第 15-16 章加入对象、数据类、接口、怪物系统</li>
+          <li>第 18 章用扩展重构代码</li>
+          <li>第 19 章应用函数式编程</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h"><span class="num">★</span>项目回顾 — Samodelkin (Android)</h3>
+        <ul class="points">
+          <li>第 21 章：使用 Android Studio 开发 Samodelkin 角色生成器</li>
+          <li>第 22 章：使用 Kotlin 协程从 Web API 动态获取角色数据</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      《Kotlin 编程权威指南》 知识脑图 · 由 Big Nerd Ranch 经典教程整理 · 适合系统化学习 Kotlin
+    </footer>
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // 默认折叠：所有 .nav-group 都不带 .open
+  const groups = document.querySelectorAll('.nav-group');
+  groups.forEach(g => g.classList.remove('open'));
+
+  // 点击展开/折叠
+  document.querySelectorAll('.nav-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.parentElement.classList.toggle('open');
+    });
+  });
+
+  // 点击导航项 → 跳转 + 高亮
+  document.querySelectorAll('.nav-leaf').forEach(leaf => {
+    leaf.addEventListener('click', e => {
+      e.preventDefault();
+      const target = leaf.getAttribute('data-target');
+      const el = document.getElementById(target);
+      if (el) {
+        // 自动展开包含此 id 的所有祖先组
+        const group = leaf.closest('.nav-group');
+        if (group) group.classList.add('open');
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      // 高亮
+      document.querySelectorAll('.nav-leaf').forEach(l => l.classList.remove('active'));
+      leaf.classList.add('active');
+    });
+  });
+
+  // 搜索过滤
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    document.querySelectorAll('.nav-leaf').forEach(leaf => {
+      const txt = leaf.textContent.toLowerCase();
+      const match = q === '' || txt.includes(q);
+      leaf.style.display = match ? '' : 'none';
+      if (q && match) {
+        // 自动展开
+        const group = leaf.closest('.nav-group');
+        if (group) group.classList.add('open');
+      }
+    });
+    document.querySelectorAll('.nav-toggle').forEach(btn => {
+      const group = btn.parentElement;
+      const hasVisible = group.querySelector('.nav-leaf:not([style*="display: none"])');
+      if (q && hasVisible) {
+        group.classList.add('open');
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

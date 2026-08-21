@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kotlin实战 - 知识脑图</title>
+<style>
+:root { color-scheme: light; --primary: #1a73e8; --primary-light: #e8f0fe; --secondary: #6c5ce7; --accent: #16a085; --danger: #c0392b; --bg: #f5f6fa; --text: #2c3e50; --muted: #7f8c8d; --border: #e1e4e8; --code-bg: #1e2a3a; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 320px; background: #fff; border-right: 1px solid var(--border); padding: 20px 14px; overflow-y: auto; position: fixed; top: 0; left: 0; bottom: 0; box-shadow: 2px 0 8px rgba(0,0,0,0.03); }
+.sidebar h1 { font-size: 17px; color: var(--primary); margin-bottom: 6px; padding-bottom: 10px; border-bottom: 2px solid var(--primary); }
+.sidebar .subtitle { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.sidebar .actions { margin-bottom: 14px; display: flex; gap: 6px; }
+.sidebar .actions button { flex: 1; border: 1px solid var(--primary); background: #fff; color: var(--primary); padding: 6px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: all .15s; }
+.sidebar .actions button:hover { background: var(--primary); color: #fff; }
+.nav, .nav ul { list-style: none; }
+.nav ul { padding-left: 0; max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+.nav ul.open { max-height: 6000px; }
+.nav .toggle { cursor: pointer; user-select: none; display: flex; align-items: center; padding: 5px 8px; border-radius: 4px; font-size: 13px; color: #34495e; transition: background .15s; }
+.nav .toggle:hover { background: #f0f4f8; }
+.nav .toggle .arrow { display: inline-block; width: 14px; text-align: center; font-size: 10px; margin-right: 4px; transition: transform .2s; color: var(--muted); }
+.nav .toggle.open .arrow { transform: rotate(90deg); }
+.nav .toggle .icon { margin-right: 4px; font-size: 13px; }
+.nav .toggle.part { font-weight: 700; color: var(--primary); font-size: 13.5px; margin-top: 10px; padding: 7px 8px; background: var(--primary-light); }
+.nav .toggle.chapter { font-weight: 600; color: var(--text); padding-left: 22px; font-size: 13px; }
+.nav .toggle.section { color: #5a6c7d; padding-left: 36px; font-size: 12.5px; }
+.nav .toggle.subsection { color: var(--muted); padding-left: 50px; font-size: 12px; }
+.nav .toggle.appendix { font-weight: 600; color: var(--accent); padding-left: 22px; }
+.main { margin-left: 320px; flex: 1; padding: 28px 36px 60px 36px; max-width: 100%; }
+.header { background: linear-gradient(135deg, #1a73e8 0%, #6c5ce7 100%); color: #fff; padding: 26px 32px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 4px 16px rgba(26,115,232,0.2); }
+.header h1 { font-size: 26px; margin-bottom: 6px; }
+.header .meta { font-size: 13.5px; opacity: 0.92; }
+.part-title { font-size: 22px; color: var(--primary); border-left: 4px solid var(--primary); padding: 6px 14px; margin: 32px 0 18px 0; background: #f5f9ff; border-radius: 0 6px 6px 0; }
+.chapter-card { background: #fff; border-radius: 10px; padding: 22px 26px; margin-bottom: 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #ecf0f3; scroll-margin-top: 20px; }
+.chapter-card h2 { font-size: 20px; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.chapter-card h2 .badge { background: var(--primary); color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+.chapter-card .summary { background: #f8f9fa; border-left: 3px solid var(--primary); padding: 10px 14px; margin: 12px 0 16px 0; border-radius: 0 4px 4px 0; font-size: 13.5px; color: #555; }
+.section-block { margin: 16px 0; padding: 14px 18px; background: #fcfdfe; border-radius: 8px; border: 1px solid #eef2f5; scroll-margin-top: 20px; }
+.section-block h3 { font-size: 16px; color: var(--primary); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed #d6e0eb; }
+.subsection-block { margin: 10px 0 10px 12px; padding-left: 14px; border-left: 2px solid #e1e9f2; scroll-margin-top: 20px; }
+.subsection-block h4 { font-size: 14.5px; color: var(--accent); margin-bottom: 6px; font-weight: 600; }
+.concept { margin: 6px 0; padding: 8px 12px; background: #fff; border-radius: 6px; border: 1px solid #ecf0f3; transition: box-shadow .15s; }
+.concept:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+.concept .term { font-weight: 600; color: var(--danger); margin-bottom: 3px; font-size: 13.5px; }
+.concept .desc { font-size: 13px; color: #555; }
+.bullet-list { list-style: none; padding: 0; margin: 6px 0; }
+.bullet-list li { position: relative; padding: 3px 0 3px 20px; font-size: 13px; color: #4a5b6e; }
+.bullet-list li::before { content: "▸"; position: absolute; left: 4px; color: var(--primary); font-weight: bold; }
+.code-block { background: var(--code-bg); color: #e0e6ed; padding: 10px 14px; border-radius: 6px; font-family: "SFMono-Regular","Consolas","Liberation Mono",monospace; font-size: 12.5px; margin: 6px 0; overflow-x: auto; white-space: pre; }
+.note { background: #fff7e6; border-left: 3px solid #ffa940; padding: 8px 12px; margin: 8px 0; font-size: 12.5px; color: #5d4037; border-radius: 0 4px 4px 0; }
+.note::before { content: "💡 "; }
+.tag { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 1px 8px; border-radius: 10px; font-size: 11px; margin-right: 4px; font-weight: 500; }
+.tag-blue { background: #e3f2fd; color: #1565c0; }
+.tag-purple { background: #f3e5f5; color: #6a1b9a; }
+.tag-orange { background: #fff3e0; color: #e65100; }
+footer { margin-top: 40px; text-align: center; color: var(--muted); font-size: 12px; padding: 16px; border-top: 1px solid var(--border); }
+@media (max-width: 768px) { .layout { flex-direction: column; } .sidebar { position: relative; width: 100%; height: auto; max-height: 320px; } .main { margin-left: 0; padding: 16px 12px; } }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+<h1>📘 Kotlin实战</h1>
+<div class="subtitle">Kotlin in Action · 知识脑图</div>
+<div class="actions">
+<button onclick="expandAll()">全部展开</button>
+<button onclick="collapseAll()">全部折叠</button>
+</div>
+<ul class="nav">
+<li><div class="toggle part" data-target="frontmatter"><span class="arrow">▶</span><span class="icon">📖</span>前言部分</div>
+<ul>
+<li><div class="toggle section" data-target="translator_foreword"><span class="arrow">▶</span><span class="icon">•</span><a href="#translator_foreword" style="color:inherit;text-decoration:none;">译者序</a></div></li>
+<li><div class="toggle section" data-target="foreword"><span class="arrow">▶</span><span class="icon">•</span><a href="#foreword" style="color:inherit;text-decoration:none;">序</a></div></li>
+<li><div class="toggle section" data-target="preface"><span class="arrow">▶</span><span class="icon">•</span><a href="#preface" style="color:inherit;text-decoration:none;">前言</a></div></li>
+<li><div class="toggle section" data-target="acknowledgements"><span class="arrow">▶</span><span class="icon">•</span><a href="#acknowledgements" style="color:inherit;text-decoration:none;">致谢</a></div></li>
+</ul></li>
+<li><div class="toggle part" data-target="part0"><span class="arrow">▶</span><span class="icon">📚</span>第1部分 Kotlin简介</div>
+<ul>
+<li><div class="toggle chapter" data-target="ch1"><span class="arrow">▶</span><span class="icon">📘</span><a href="#ch1" style="color:inherit;text-decoration:none;">第1章 Kotlin：定义和目的</a></div>
+<ul>
+<li><div class="toggle section" data-target="ch1_1"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch1_1" style="color:inherit;text-decoration:none;">1.1 Kotlin初体验</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch1_1_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_1_1" style="color:inherit;text-decoration:none;">代码示例：Person与maxBy</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch1_2"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch1_2" style="color:inherit;text-decoration:none;">1.2 Kotlin的主要特征</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch1_2_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_2_1" style="color:inherit;text-decoration:none;">1.2.1 目标平台</a></div></li>
+<li><div class="toggle subsection" data-target="ch1_2_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_2_2" style="color:inherit;text-decoration:none;">1.2.2 静态类型</a></div></li>
+<li><div class="toggle subsection" data-target="ch1_2_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_2_3" style="color:inherit;text-decoration:none;">1.2.3 函数式与面向对象</a></div></li>
+<li><div class="toggle subsection" data-target="ch1_2_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_2_4" style="color:inherit;text-decoration:none;">1.2.4 免费开源 + IDE支持</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch1_3"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch1_3" style="color:inherit;text-decoration:none;">1.3 Kotlin应用</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch1_3_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_3_1" style="color:inherit;text-decoration:none;">1.3.1 服务器端Kotlin</a></div></li>
+<li><div class="toggle subsection" data-target="ch1_3_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_3_2" style="color:inherit;text-decoration:none;">1.3.2 Android上的Kotlin</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch1_4"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch1_4" style="color:inherit;text-decoration:none;">1.4 Kotlin的设计哲学</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch1_4_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_4_1" style="color:inherit;text-decoration:none;">核心理念</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch1_5"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch1_5" style="color:inherit;text-decoration:none;">1.5 使用Kotlin工具</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch1_5_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_5_1" style="color:inherit;text-decoration:none;">1.5.1 编译与运行</a></div></li>
+<li><div class="toggle subsection" data-target="ch1_5_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_5_2" style="color:inherit;text-decoration:none;">1.5.2 编译Kotlin代码</a></div></li>
+<li><div class="toggle subsection" data-target="ch1_5_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_5_3" style="color:inherit;text-decoration:none;">1.5.6 Java到Kotlin的转换器</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch1_6"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch1_6" style="color:inherit;text-decoration:none;">1.6 小结</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch1_6_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch1_6_1" style="color:inherit;text-decoration:none;">本章要点回顾</a></div></li>
+</ul>
+</li>
+</ul></li>
+<li><div class="toggle chapter" data-target="ch2"><span class="arrow">▶</span><span class="icon">📘</span><a href="#ch2" style="color:inherit;text-decoration:none;">第2章 Kotlin基础</a></div>
+<ul>
+<li><div class="toggle section" data-target="ch2_1"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch2_1" style="color:inherit;text-decoration:none;">2.1 基本要素：函数和变量</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch2_1_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_1_1" style="color:inherit;text-decoration:none;">2.1.1 Hello, world!</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_1_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_1_2" style="color:inherit;text-decoration:none;">2.1.2 函数</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_1_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_1_3" style="color:inherit;text-decoration:none;">2.1.3 变量</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_1_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_1_4" style="color:inherit;text-decoration:none;">2.1.4 字符串模板</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch2_2"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch2_2" style="color:inherit;text-decoration:none;">2.2 类和属性</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch2_2_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_2_1" style="color:inherit;text-decoration:none;">2.2.1 属性</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_2_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_2_2" style="color:inherit;text-decoration:none;">2.2.2 自定义访问器</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_2_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_2_3" style="color:inherit;text-decoration:none;">2.2.3 Kotlin源码布局</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch2_3"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch2_3" style="color:inherit;text-decoration:none;">2.3 表示和处理选择：枚举和when</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch2_3_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_3_1" style="color:inherit;text-decoration:none;">2.3.1 声明枚举类</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_3_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_3_2" style="color:inherit;text-decoration:none;">2.3.2 使用when处理枚举</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_3_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_3_3" style="color:inherit;text-decoration:none;">2.3.3 在when中使用任意对象</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_3_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_3_4" style="color:inherit;text-decoration:none;">2.3.4 使用不带参数的when</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_3_5"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_3_5" style="color:inherit;text-decoration:none;">2.3.5 智能转换</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_3_6"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_3_6" style="color:inherit;text-decoration:none;">2.3.6 用if替换when</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch2_4"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch2_4" style="color:inherit;text-decoration:none;">2.4 迭代事物：while循环和for循环</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch2_4_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_4_1" style="color:inherit;text-decoration:none;">2.4.1 while循环</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_4_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_4_2" style="color:inherit;text-decoration:none;">2.4.2 数字区间</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_4_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_4_3" style="color:inherit;text-decoration:none;">2.4.3 迭代Map</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_4_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_4_4" style="color:inherit;text-decoration:none;">2.4.4 使用in检查成员</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch2_5"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch2_5" style="color:inherit;text-decoration:none;">2.5 Kotlin中的异常</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch2_5_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_5_1" style="color:inherit;text-decoration:none;">2.5.1 try、catch、finally</a></div></li>
+<li><div class="toggle subsection" data-target="ch2_5_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_5_2" style="color:inherit;text-decoration:none;">2.5.2 try作为表达式</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch2_6"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch2_6" style="color:inherit;text-decoration:none;">2.6 小结</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch2_6_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch2_6_1" style="color:inherit;text-decoration:none;">本章要点</a></div></li>
+</ul>
+</li>
+</ul></li>
+<li><div class="toggle chapter" data-target="ch3"><span class="arrow">▶</span><span class="icon">📘</span><a href="#ch3" style="color:inherit;text-decoration:none;">第3章 函数的定义与调用</a></div>
+<ul>
+<li><div class="toggle section" data-target="ch3_1"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch3_1" style="color:inherit;text-decoration:none;">3.1 在Kotlin中创建集合</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch3_1_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_1_1" style="color:inherit;text-decoration:none;">集合创建函数</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch3_2"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch3_2" style="color:inherit;text-decoration:none;">3.2 让函数更好调用</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch3_2_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_2_1" style="color:inherit;text-decoration:none;">3.2.1 命名参数</a></div></li>
+<li><div class="toggle subsection" data-target="ch3_2_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_2_2" style="color:inherit;text-decoration:none;">3.2.2 默认参数值</a></div></li>
+<li><div class="toggle subsection" data-target="ch3_2_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_2_3" style="color:inherit;text-decoration:none;">3.2.3 顶层函数和属性</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch3_3"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch3_3" style="color:inherit;text-decoration:none;">3.3 给别人的类添加方法：扩展函数和属性</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch3_3_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_3_1" style="color:inherit;text-decoration:none;">3.3.1 扩展函数</a></div></li>
+<li><div class="toggle subsection" data-target="ch3_3_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_3_2" style="color:inherit;text-decoration:none;">3.3.2 扩展不能访问私有成员</a></div></li>
+<li><div class="toggle subsection" data-target="ch3_3_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_3_3" style="color:inherit;text-decoration:none;">3.3.3 扩展属性</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch3_4"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch3_4" style="color:inherit;text-decoration:none;">3.4 处理集合：可变参数、中缀调用和库支持</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch3_4_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_4_1" style="color:inherit;text-decoration:none;">3.4.1 展开运算符</a></div></li>
+<li><div class="toggle subsection" data-target="ch3_4_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_4_2" style="color:inherit;text-decoration:none;">3.4.2 中缀调用</a></div></li>
+<li><div class="toggle subsection" data-target="ch3_4_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_4_3" style="color:inherit;text-decoration:none;">3.4.3 库支持</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch3_5"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch3_5" style="color:inherit;text-decoration:none;">3.5 字符串和正则表达式的处理</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch3_5_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_5_1" style="color:inherit;text-decoration:none;">3.5.1 分割字符串</a></div></li>
+<li><div class="toggle subsection" data-target="ch3_5_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_5_2" style="color:inherit;text-decoration:none;">3.5.2 正则表达式</a></div></li>
+<li><div class="toggle subsection" data-target="ch3_5_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_5_3" style="color:inherit;text-decoration:none;">3.5.3 多行字符串</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch3_6"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch3_6" style="color:inherit;text-decoration:none;">3.6 让你的代码更整洁：局部函数和扩展</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch3_6_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch3_6_1" style="color:inherit;text-decoration:none;">局部函数</a></div></li>
+</ul>
+</li>
+</ul></li>
+<li><div class="toggle chapter" data-target="ch4"><span class="arrow">▶</span><span class="icon">📘</span><a href="#ch4" style="color:inherit;text-decoration:none;">第4章 类、对象和接口</a></div>
+<ul>
+<li><div class="toggle section" data-target="ch4_1"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch4_1" style="color:inherit;text-decoration:none;">4.1 定义类继承结构</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch4_1_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_1_1" style="color:inherit;text-decoration:none;">4.1.1 Kotlin中的接口</a></div></li>
+<li><div class="toggle subsection" data-target="ch4_1_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_1_2" style="color:inherit;text-decoration:none;">4.1.2 open、final和abstract</a></div></li>
+<li><div class="toggle subsection" data-target="ch4_1_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_1_3" style="color:inherit;text-decoration:none;">4.1.3 可见性修饰符</a></div></li>
+<li><div class="toggle subsection" data-target="ch4_1_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_1_4" style="color:inherit;text-decoration:none;">4.1.4 内部类和嵌套类</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch4_2"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch4_2" style="color:inherit;text-decoration:none;">4.2 声明带非默认构造方法或属性的类</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch4_2_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_2_1" style="color:inherit;text-decoration:none;">4.2.1 主构造方法和初始化块</a></div></li>
+<li><div class="toggle subsection" data-target="ch4_2_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_2_2" style="color:inherit;text-decoration:none;">4.2.2 副构造方法</a></div></li>
+<li><div class="toggle subsection" data-target="ch4_2_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_2_3" style="color:inherit;text-decoration:none;">4.2.3 接口中的属性</a></div></li>
+<li><div class="toggle subsection" data-target="ch4_2_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_2_4" style="color:inherit;text-decoration:none;">4.2.4 getter/setter访问支持字段</a></div></li>
+<li><div class="toggle subsection" data-target="ch4_2_5"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_2_5" style="color:inherit;text-decoration:none;">4.2.5 修改访问器可见性</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch4_3"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch4_3" style="color:inherit;text-decoration:none;">4.3 编译器生成的方法：数据类和类委托</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch4_3_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_3_1" style="color:inherit;text-decoration:none;">4.3.1 通用对象方法</a></div></li>
+<li><div class="toggle subsection" data-target="ch4_3_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_3_2" style="color:inherit;text-decoration:none;">4.3.2 数据类</a></div></li>
+<li><div class="toggle subsection" data-target="ch4_3_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_3_3" style="color:inherit;text-decoration:none;">4.3.3 类委托</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch4_4"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch4_4" style="color:inherit;text-decoration:none;">4.4 object关键字</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch4_4_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_4_1" style="color:inherit;text-decoration:none;">4.4.1 对象声明：单例</a></div></li>
+<li><div class="toggle subsection" data-target="ch4_4_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_4_2" style="color:inherit;text-decoration:none;">4.4.2 伴生对象</a></div></li>
+<li><div class="toggle subsection" data-target="ch4_4_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch4_4_3" style="color:inherit;text-decoration:none;">4.4.3 对象表达式：匿名内部类</a></div></li>
+</ul>
+</li>
+</ul></li>
+<li><div class="toggle chapter" data-target="ch5"><span class="arrow">▶</span><span class="icon">📘</span><a href="#ch5" style="color:inherit;text-decoration:none;">第5章 Lambda编程</a></div>
+<ul>
+<li><div class="toggle section" data-target="ch5_1"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch5_1" style="color:inherit;text-decoration:none;">5.1 Lambda表达式和成员引用</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch5_1_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_1_1" style="color:inherit;text-decoration:none;">5.1.1 Lambda简介</a></div></li>
+<li><div class="toggle subsection" data-target="ch5_1_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_1_2" style="color:inherit;text-decoration:none;">5.1.2 集合的lambda</a></div></li>
+<li><div class="toggle subsection" data-target="ch5_1_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_1_3" style="color:inherit;text-decoration:none;">5.1.3 lambda语法细节</a></div></li>
+<li><div class="toggle subsection" data-target="ch5_1_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_1_4" style="color:inherit;text-decoration:none;">5.1.4 变量捕获 vs Java</a></div></li>
+<li><div class="toggle subsection" data-target="ch5_1_5"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_1_5" style="color:inherit;text-decoration:none;">5.1.5 成员引用</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch5_2"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch5_2" style="color:inherit;text-decoration:none;">5.2 集合的函数式API</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch5_2_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_2_1" style="color:inherit;text-decoration:none;">filter、map等基础操作</a></div></li>
+<li><div class="toggle subsection" data-target="ch5_2_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_2_2" style="color:inherit;text-decoration:none;">5.2.2 flatMap与flatten</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch5_3"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch5_3" style="color:inherit;text-decoration:none;">5.3 惰性集合操作：序列</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch5_3_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_3_1" style="color:inherit;text-decoration:none;">5.3.1 中间和末端操作</a></div></li>
+<li><div class="toggle subsection" data-target="ch5_3_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_3_2" style="color:inherit;text-decoration:none;">5.3.2 创建序列</a></div></li>
+<li><div class="toggle subsection" data-target="ch5_3_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_3_3" style="color:inherit;text-decoration:none;">5.3.3 序列 vs 集合</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch5_4"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch5_4" style="color:inherit;text-decoration:none;">5.4 使用Java函数式接口</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch5_4_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_4_1" style="color:inherit;text-decoration:none;">5.4.1 函数式接口SAM</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch5_5"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch5_5" style="color:inherit;text-decoration:none;">5.5 带接收者的lambda</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch5_5_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_5_1" style="color:inherit;text-decoration:none;">5.5.1 with函数</a></div></li>
+<li><div class="toggle subsection" data-target="ch5_5_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch5_5_2" style="color:inherit;text-decoration:none;">5.5.2 apply函数</a></div></li>
+</ul>
+</li>
+</ul></li>
+<li><div class="toggle chapter" data-target="ch6"><span class="arrow">▶</span><span class="icon">📘</span><a href="#ch6" style="color:inherit;text-decoration:none;">第6章 Kotlin的类型系统</a></div>
+<ul>
+<li><div class="toggle section" data-target="ch6_1"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch6_1" style="color:inherit;text-decoration:none;">6.1 可空性</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch6_1_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_1_1" style="color:inherit;text-decoration:none;">6.1.1 可空类型</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_1_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_1_2" style="color:inherit;text-decoration:none;">6.1.2 类型的含义</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_1_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_1_3" style="color:inherit;text-decoration:none;">6.1.3 安全调用?. </a></div></li>
+<li><div class="toggle subsection" data-target="ch6_1_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_1_4" style="color:inherit;text-decoration:none;">6.1.4 Elvis运算符?:</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_1_5"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_1_5" style="color:inherit;text-decoration:none;">6.1.5 安全转换as?</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_1_6"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_1_6" style="color:inherit;text-decoration:none;">6.1.6 非空断言!!</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_1_7"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_1_7" style="color:inherit;text-decoration:none;">6.1.7 let函数</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_1_8"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_1_8" style="color:inherit;text-decoration:none;">6.1.8 可空类型的扩展</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_1_9"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_1_9" style="color:inherit;text-decoration:none;">6.1.9 平台类型</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch6_2"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch6_2" style="color:inherit;text-decoration:none;">6.2 基本数据类型</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch6_2_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_2_1" style="color:inherit;text-decoration:none;">6.2.1 基本数据类型</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_2_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_2_2" style="color:inherit;text-decoration:none;">6.2.2 数字转换</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_2_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_2_3" style="color:inherit;text-decoration:none;">6.2.3 根类型Any和Any?</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_2_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_2_4" style="color:inherit;text-decoration:none;">6.2.4 Unit类型</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_2_5"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_2_5" style="color:inherit;text-decoration:none;">6.2.5 Nothing类型</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch6_3"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch6_3" style="color:inherit;text-decoration:none;">6.3 集合与数组</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch6_3_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_3_1" style="color:inherit;text-decoration:none;">6.3.1 可空性和集合</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_3_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_3_2" style="color:inherit;text-decoration:none;">6.3.2 只读集合与可变集合</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_3_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_3_3" style="color:inherit;text-decoration:none;">6.3.3 与Java的互操作</a></div></li>
+<li><div class="toggle subsection" data-target="ch6_3_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch6_3_4" style="color:inherit;text-decoration:none;">6.3.4 数组</a></div></li>
+</ul>
+</li>
+</ul></li>
+</ul></li>
+<li><div class="toggle part" data-target="part1"><span class="arrow">▶</span><span class="icon">📚</span>第2部分 拥抱Kotlin</div>
+<ul>
+<li><div class="toggle chapter" data-target="ch7"><span class="arrow">▶</span><span class="icon">📘</span><a href="#ch7" style="color:inherit;text-decoration:none;">第7章 运算符重载及其他约定</a></div>
+<ul>
+<li><div class="toggle section" data-target="ch7_1"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch7_1" style="color:inherit;text-decoration:none;">7.1 重载算术运算符</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch7_1_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_1_1" style="color:inherit;text-decoration:none;">7.1.1 重载二元算术运算</a></div></li>
+<li><div class="toggle subsection" data-target="ch7_1_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_1_2" style="color:inherit;text-decoration:none;">7.1.2 重载复合赋值运算符</a></div></li>
+<li><div class="toggle subsection" data-target="ch7_1_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_1_3" style="color:inherit;text-decoration:none;">7.1.3 重载一元运算符</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch7_2"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch7_2" style="color:inherit;text-decoration:none;">7.2 重载比较运算符</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch7_2_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_2_1" style="color:inherit;text-decoration:none;">7.2.1 等号运算符</a></div></li>
+<li><div class="toggle subsection" data-target="ch7_2_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_2_2" style="color:inherit;text-decoration:none;">7.2.2 排序运算符</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch7_3"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch7_3" style="color:inherit;text-decoration:none;">7.3 集合与区间的约定</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch7_3_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_3_1" style="color:inherit;text-decoration:none;">7.3.1 通过下标访问元素:get</a></div></li>
+<li><div class="toggle subsection" data-target="ch7_3_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_3_2" style="color:inherit;text-decoration:none;">7.3.2 in约定</a></div></li>
+<li><div class="toggle subsection" data-target="ch7_3_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_3_3" style="color:inherit;text-decoration:none;">7.3.3 rangeTo约定</a></div></li>
+<li><div class="toggle subsection" data-target="ch7_3_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_3_4" style="color:inherit;text-decoration:none;">7.3.4 在for循环中使用iterator</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch7_4"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch7_4" style="color:inherit;text-decoration:none;">7.4 解构声明和组件函数</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch7_4_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_4_1" style="color:inherit;text-decoration:none;">7.4.1 解构声明</a></div></li>
+<li><div class="toggle subsection" data-target="ch7_4_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_4_2" style="color:inherit;text-decoration:none;">7.4.2 集合的元素访问</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch7_5"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch7_5" style="color:inherit;text-decoration:none;">7.5 重用属性访问的逻辑：委托属性</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch7_5_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_5_1" style="color:inherit;text-decoration:none;">7.5.1 委托属性</a></div></li>
+<li><div class="toggle subsection" data-target="ch7_5_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_5_2" style="color:inherit;text-decoration:none;">7.5.2 自定义委托</a></div></li>
+<li><div class="toggle subsection" data-target="ch7_5_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch7_5_3" style="color:inherit;text-decoration:none;">7.5.3 Map作为委托属性</a></div></li>
+</ul>
+</li>
+</ul></li>
+<li><div class="toggle chapter" data-target="ch8"><span class="arrow">▶</span><span class="icon">📘</span><a href="#ch8" style="color:inherit;text-decoration:none;">第8章 高阶函数</a></div>
+<ul>
+<li><div class="toggle section" data-target="ch8_1"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch8_1" style="color:inherit;text-decoration:none;">8.1 声明高阶函数</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch8_1_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch8_1_1" style="color:inherit;text-decoration:none;">8.1.1 函数类型</a></div></li>
+<li><div class="toggle subsection" data-target="ch8_1_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch8_1_2" style="color:inherit;text-decoration:none;">8.1.2 调用作为参数的函数</a></div></li>
+<li><div class="toggle subsection" data-target="ch8_1_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch8_1_3" style="color:inherit;text-decoration:none;">8.1.3 在Java中使用函数类型</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch8_2"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch8_2" style="color:inherit;text-decoration:none;">8.2 内联函数</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch8_2_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch8_2_1" style="color:inherit;text-decoration:none;">8.2.1 内联函数如何运作</a></div></li>
+<li><div class="toggle subsection" data-target="ch8_2_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch8_2_2" style="color:inherit;text-decoration:none;">8.2.2 内联函数的限制</a></div></li>
+<li><div class="toggle subsection" data-target="ch8_2_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch8_2_3" style="color:inherit;text-decoration:none;">8.2.3 内联函数与资源管理</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch8_3"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch8_3" style="color:inherit;text-decoration:none;">8.3 高阶函数中的控制流</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch8_3_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch8_3_1" style="color:inherit;text-decoration:none;">8.3.1 lambda中的返回</a></div></li>
+<li><div class="toggle subsection" data-target="ch8_3_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch8_3_2" style="color:inherit;text-decoration:none;">8.3.2 标签</a></div></li>
+<li><div class="toggle subsection" data-target="ch8_3_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch8_3_3" style="color:inherit;text-decoration:none;">8.3.3 匿名函数</a></div></li>
+</ul>
+</li>
+</ul></li>
+<li><div class="toggle chapter" data-target="ch9"><span class="arrow">▶</span><span class="icon">📘</span><a href="#ch9" style="color:inherit;text-decoration:none;">第9章 泛型</a></div>
+<ul>
+<li><div class="toggle section" data-target="ch9_1"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch9_1" style="color:inherit;text-decoration:none;">9.1 泛型类型参数</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch9_1_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch9_1_1" style="color:inherit;text-decoration:none;">9.1.1 泛型函数和属性</a></div></li>
+<li><div class="toggle subsection" data-target="ch9_1_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch9_1_2" style="color:inherit;text-decoration:none;">9.1.2 泛型类</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch9_2"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch9_2" style="color:inherit;text-decoration:none;">9.2 运行时的泛型：擦除和实化类型参数</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch9_2_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch9_2_1" style="color:inherit;text-decoration:none;">9.2.1 运行时的泛型擦除</a></div></li>
+<li><div class="toggle subsection" data-target="ch9_2_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch9_2_2" style="color:inherit;text-decoration:none;">9.2.2 实化类型参数</a></div></li>
+<li><div class="toggle subsection" data-target="ch9_2_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch9_2_3" style="color:inherit;text-decoration:none;">9.2.3 实化类型参数的限制</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch9_3"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch9_3" style="color:inherit;text-decoration:none;">9.3 变型：泛型和子类型化</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch9_3_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch9_3_1" style="color:inherit;text-decoration:none;">9.3.1 为什么会有变型：给函数传递实参</a></div></li>
+<li><div class="toggle subsection" data-target="ch9_3_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch9_3_2" style="color:inherit;text-decoration:none;">9.3.2 类、类型和子类型</a></div></li>
+<li><div class="toggle subsection" data-target="ch9_3_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch9_3_3" style="color:inherit;text-decoration:none;">9.3.3 协变：保留子类型化关系</a></div></li>
+<li><div class="toggle subsection" data-target="ch9_3_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch9_3_4" style="color:inherit;text-decoration:none;">9.3.4 逆变：反转子类型化关系</a></div></li>
+<li><div class="toggle subsection" data-target="ch9_3_5"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch9_3_5" style="color:inherit;text-decoration:none;">9.3.5 使用点变型：在类型出现的地方指定</a></div></li>
+<li><div class="toggle subsection" data-target="ch9_3_6"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch9_3_6" style="color:inherit;text-decoration:none;">9.3.6 *投影：让类型参数都为Nothing</a></div></li>
+</ul>
+</li>
+</ul></li>
+<li><div class="toggle chapter" data-target="ch10"><span class="arrow">▶</span><span class="icon">📘</span><a href="#ch10" style="color:inherit;text-decoration:none;">第10章 注解与反射</a></div>
+<ul>
+<li><div class="toggle section" data-target="ch10_1"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch10_1" style="color:inherit;text-decoration:none;">10.1 声明并应用注解</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch10_1_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch10_1_1" style="color:inherit;text-decoration:none;">10.1.1 应用注解</a></div></li>
+<li><div class="toggle subsection" data-target="ch10_1_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch10_1_2" style="color:inherit;text-decoration:none;">10.1.2 注解目标</a></div></li>
+<li><div class="toggle subsection" data-target="ch10_1_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch10_1_3" style="color:inherit;text-decoration:none;">10.1.3 用注解控制Java API</a></div></li>
+<li><div class="toggle subsection" data-target="ch10_1_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch10_1_4" style="color:inherit;text-decoration:none;">10.1.4 注解定制JSON序列化</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch10_2"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch10_2" style="color:inherit;text-decoration:none;">10.2 反射：在运行时对Kotlin对象进行自省</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch10_2_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch10_2_1" style="color:inherit;text-decoration:none;">10.2.1 Kotlin反射API</a></div></li>
+<li><div class="toggle subsection" data-target="ch10_2_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch10_2_2" style="color:inherit;text-decoration:none;">10.2.2 反射实现对象序列化</a></div></li>
+</ul>
+</li>
+</ul></li>
+<li><div class="toggle chapter" data-target="ch11"><span class="arrow">▶</span><span class="icon">📘</span><a href="#ch11" style="color:inherit;text-decoration:none;">第11章 DSL构建</a></div>
+<ul>
+<li><div class="toggle section" data-target="ch11_1"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch11_1" style="color:inherit;text-decoration:none;">11.1 从API到DSL</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch11_1_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch11_1_1" style="color:inherit;text-decoration:none;">11.1.1 DSL概念</a></div></li>
+<li><div class="toggle subsection" data-target="ch11_1_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch11_1_2" style="color:inherit;text-decoration:none;">11.1.2 内部DSL</a></div></li>
+<li><div class="toggle subsection" data-target="ch11_1_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch11_1_3" style="color:inherit;text-decoration:none;">11.1.3 DSL的结构</a></div></li>
+<li><div class="toggle subsection" data-target="ch11_1_4"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch11_1_4" style="color:inherit;text-decoration:none;">11.1.4 HTML DSL示例</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch11_2"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch11_2" style="color:inherit;text-decoration:none;">11.2 构建结构化的API：带接收者的lambda</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch11_2_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch11_2_1" style="color:inherit;text-decoration:none;">11.2.1 带接收者的lambda和类型安全的构建器</a></div></li>
+<li><div class="toggle subsection" data-target="ch11_2_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch11_2_2" style="color:inherit;text-decoration:none;">11.2.2 scope control：apply与also</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch11_3"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch11_3" style="color:inherit;text-decoration:none;">11.3 使用invoke约定构建更灵活的代码块嵌套</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch11_3_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch11_3_1" style="color:inherit;text-decoration:none;">11.3.1 invoke约定</a></div></li>
+<li><div class="toggle subsection" data-target="ch11_3_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch11_3_2" style="color:inherit;text-decoration:none;">11.3.2 invoke的多种用法</a></div></li>
+</ul>
+</li>
+<li><div class="toggle section" data-target="ch11_4"><span class="arrow">▶</span><span class="icon">•</span><a href="#ch11_4" style="color:inherit;text-decoration:none;">11.4 实践中的Kotlin DSL</a></div>
+<ul>
+<li><div class="toggle subsection" data-target="ch11_4_1"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch11_4_1" style="color:inherit;text-decoration:none;">11.4.1 测试框架中的DSL</a></div></li>
+<li><div class="toggle subsection" data-target="ch11_4_2"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch11_4_2" style="color:inherit;text-decoration:none;">11.4.2 Gradle构建脚本</a></div></li>
+<li><div class="toggle subsection" data-target="ch11_4_3"><span class="arrow">▶</span><span class="icon">·</span><a href="#ch11_4_3" style="color:inherit;text-decoration:none;">11.4.3 HTML和数据库</a></div></li>
+</ul>
+</li>
+</ul></li>
+</ul></li>
+<li><div class="toggle part" data-target="appendices"><span class="arrow">▶</span><span class="icon">📋</span>附录</div>
+<ul>
+<li><div class="toggle appendix" data-target="appA"><span class="arrow">▶</span><span class="icon">📋</span><a href="#appA" style="color:inherit;text-decoration:none;">附录A 构建Kotlin项目</a></div></li>
+<li><div class="toggle appendix" data-target="appB"><span class="arrow">▶</span><span class="icon">📋</span><a href="#appB" style="color:inherit;text-decoration:none;">附录B Kotlin代码的文档化</a></div></li>
+<li><div class="toggle appendix" data-target="appC"><span class="arrow">▶</span><span class="icon">📋</span><a href="#appC" style="color:inherit;text-decoration:none;">附录C Kotlin生态系统</a></div></li>
+</ul></li>
+</ul>
+</aside>
+<main class="main">
+<div class="header">
+<h1>📘 Kotlin实战 · 知识脑图</h1>
+<div class="meta">Kotlin in Action · 系统掌握Kotlin语言核心与高级特性 · 共11章 + 3附录</div>
+</div>
+<div class="part-title" id="frontmatter">📖 前言部分</div>
+<div class="chapter-card" id="translator_foreword">
+<h2><span class="badge" style="background:var(--accent)">译者序</span></h2>
+<div class="summary" style="border-left-color:var(--accent);white-space:pre-wrap;">这本书是一本系统讲解Kotlin语言的实战指南，由JetBrains的两位核心开发者Dmitry Jemerov和Svetlana Isakova撰写。本书不仅介绍Kotlin的基础语法，更深入探讨类型系统、集合与函数式编程、高阶函数与Lambda、泛型与反射、DSL构建等高级主题。译者希望读者通过本书理解Kotlin的设计哲学——务实、简洁、安全、互操作。</div>
+</div>
+<div class="chapter-card" id="foreword">
+<h2><span class="badge" style="background:var(--accent)">序</span></h2>
+<div class="summary" style="border-left-color:var(--accent);white-space:pre-wrap;">Kotlin是JetBrains打造的现代编程语言，目标是让Java开发者能够写出更简洁、更安全、更具表现力的代码。Kotlin运行在JVM上，与Java完全互操作，现已广泛应用于服务器端、Android开发等领域。本书是Kotlin团队核心成员亲自撰写的权威指南。</div>
+</div>
+<div class="chapter-card" id="preface">
+<h2><span class="badge" style="background:var(--accent)">前言</span></h2>
+<div class="summary" style="border-left-color:var(--accent);white-space:pre-wrap;">本书面向有Java或类似JVM语言经验的开发者。读者应熟悉面向对象编程的基本概念，了解Java的核心特性如类、接口、泛型、Lambda等。阅读本书后，你将能够熟练使用Kotlin进行日常开发，理解其设计哲学，并能在实际项目中应用Lambda、高阶函数、DSL等高级特性。</div>
+</div>
+<div class="chapter-card" id="acknowledgements">
+<h2><span class="badge" style="background:var(--accent)">致谢</span></h2>
+<div class="summary" style="border-left-color:var(--accent);white-space:pre-wrap;">感谢JetBrains团队对Kotlin语言的卓越贡献，特别是Andrey Breslav作为Kotlin首席语言设计师的领导。感谢参与本书翻译、审校和出版的每一位工作人员，他们的细致工作让本书以中文呈现给更广泛的技术读者。</div>
+</div>
+<div class="part-title" id="part0">📚 第1部分 Kotlin简介</div>
+<div class="chapter-card" id="ch1">
+<h2><span class="badge">第1章</span>Kotlin：定义和目的</h2>
+<div class="summary">本章介绍Kotlin的定位、目标平台、设计哲学和工具链，建立对Kotlin的整体认知。Kotlin是针对Java平台的新编程语言，简洁、安全、务实，专注于与Java代码的互操作性。</div>
+<div class="section-block" id="ch1_1">
+<h3>1.1 Kotlin初体验</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">通过一个完整的例子：Person数据类 + maxBy函数 + Elvis运算符，看Kotlin的简洁与安全。</p>
+<div class="subsection-block" id="ch1_1_1">
+<h4>代码示例：Person与maxBy</h4>
+<div class="concept"><div class="term">Person数据类</div><div class="desc">用 data class 一行声明一个包含name和age的实体类，age默认为null。</div></div>
+<div class="concept"><div class="term">maxBy函数</div><div class="desc">查找集合中满足条件的最大元素，接收lambda参数。</div></div>
+<div class="concept"><div class="term">Elvis运算符(?:)</div><div class="desc">age为null时返回零，让缺失值处理更优雅。</div></div>
+<div class="concept"><div class="term">try.kotl.in</div><div class="desc">在线Playground，输入代码即可运行，是上手Kotlin的最快方式。</div></div>
+<div class="code-block">data class Person(val name: String, val age: Int? = null)
+
+val people = listOf(Person(&quot;Alice&quot;), Person(&quot;Bob&quot;, 29))
+val oldest = people.maxBy { it.age ?: 0 }
+println(oldest) // Person(name=Bob, age=29)</div>
+</div>
+</div>
+<div class="section-block" id="ch1_2">
+<h3>1.2 Kotlin的主要特征</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">深入Kotlin关键属性：目标平台广泛、静态类型+类型推导、函数式+面向对象、开源、IDE支持。</p>
+<div class="subsection-block" id="ch1_2_1">
+<h4>1.2.1 目标平台</h4>
+<div class="concept"><div class="term">服务器端</div><div class="desc">编写Web应用后端，Spring 5.0+原生支持。</div></div>
+<div class="concept"><div class="term">Android</div><div class="desc">Google官方推荐语言，Android Studio 3.0+支持。</div></div>
+<div class="concept"><div class="term">iOS</div><div class="desc">通过Intel Multi-OS Engine让Kotlin运行在iOS设备上。</div></div>
+<div class="concept"><div class="term">桌面应用</div><div class="desc">Kotlin+TornadoFX+JavaFX可构建桌面应用。</div></div>
+<div class="concept"><div class="term">JavaScript</div><div class="desc">可编译成JavaScript运行在浏览器中。</div></div>
+</div>
+<div class="subsection-block" id="ch1_2_2">
+<h4>1.2.2 静态类型</h4>
+<div class="concept"><div class="term">静态类型优势</div><div class="desc">性能更好、方法调用快；可靠性高、编译期检查；可维护性；IDE支持重构。</div></div>
+<div class="concept"><div class="term">类型推导</div><div class="desc">编译器从上下文自动推断变量类型，兼顾静态类型与简洁。</div></div>
+<div class="concept"><div class="term">智能转换</div><div class="desc">编译器跟踪is检查，自动在后续代码中转换类型。</div></div>
+<div class="concept"><div class="term">函数类型</div><div class="desc">Kotlin原生支持函数类型，让函数式编程更自然。</div></div>
+</div>
+<div class="subsection-block" id="ch1_2_3">
+<h4>1.2.3 函数式与面向对象</h4>
+<div class="concept"><div class="term">头等函数</div><div class="desc">把函数当作值：保存、传参、返回。</div></div>
+<div class="concept"><div class="term">不可变性</div><div class="desc">使用不可变对象，状态创建后不能变化。</div></div>
+<div class="concept"><div class="term">无副作用</div><div class="desc">纯函数输入相同时产生同样结果，不修改外部状态。</div></div>
+<div class="concept"><div class="term">多线程安全</div><div class="desc">不可变数据+纯函数天然避免竞争问题。</div></div>
+<div class="concept"><div class="term">易测试</div><div class="desc">无副作用的函数可独立测试，无需复杂环境。</div></div>
+</div>
+<div class="subsection-block" id="ch1_2_4">
+<h4>1.2.4 免费开源 + IDE支持</h4>
+<div class="concept"><div class="term">Apache 2许可</div><div class="desc">Kotlin完全开源，源码在GitHub公开。</div></div>
+<div class="concept"><div class="term">IntelliJ IDEA</div><div class="desc">IDE对Kotlin提供完整的代码补全、重构和调试支持。</div></div>
+<div class="concept"><div class="term">Android Studio</div><div class="desc">基于IntelliJ，Android开发的官方推荐IDE。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch1_3">
+<h3>1.3 Kotlin应用</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin主要应用场景：服务器端与Android，以及其他新兴领域。</p>
+<div class="subsection-block" id="ch1_3_1">
+<h4>1.3.1 服务器端Kotlin</h4>
+<div class="concept"><div class="term">Spring Framework</div><div class="desc">Spring 5.0起原生支持Kotlin，提供扩展和惯用API。</div></div>
+<div class="concept"><div class="term">Vert.x</div><div class="desc">构建响应式Web应用的工具集。</div></div>
+<div class="concept"><div class="term">Ktor</div><div class="desc">JetBrains官方推出的Kotlin Web框架，纯Kotlin实现。</div></div>
+<div class="concept"><div class="term">kotlinx.html</div><div class="desc">DSL风格的HTML构建器，类型安全。</div></div>
+</div>
+<div class="subsection-block" id="ch1_3_2">
+<h4>1.3.2 Android上的Kotlin</h4>
+<div class="concept"><div class="term">Anko库</div><div class="desc">简化Android开发的Kotlin库，DSL风格UI。</div></div>
+<div class="concept"><div class="term">Android KTX</div><div class="desc">让Kotlin代码更符合语言习惯的扩展库。</div></div>
+<div class="concept"><div class="term">官方支持</div><div class="desc">Google在2017年宣布Kotlin为Android官方开发语言。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch1_4">
+<h3>1.4 Kotlin的设计哲学</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">务实、简洁、安全、互操作是Kotlin的四大设计哲学。</p>
+<div class="subsection-block" id="ch1_4_1">
+<h4>核心理念</h4>
+<div class="concept"><div class="term">务实</div><div class="desc">Kotlin不是学术性语言，旨在解决真实工程问题。</div></div>
+<div class="concept"><div class="term">简洁</div><div class="desc">减少样板代码，让代码表达意图而非实现细节。</div></div>
+<div class="concept"><div class="term">安全</div><div class="desc">通过类型系统把运行时错误提前到编译期。</div></div>
+<div class="concept"><div class="term">互操作性</div><div class="desc">与Java无缝互调，可逐步迁移到Kotlin。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch1_5">
+<h3>1.5 使用Kotlin工具</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">编译、运行Kotlin代码，使用IntelliJ IDEA，以及Java到Kotlin的转换器。</p>
+<div class="subsection-block" id="ch1_5_1">
+<h4>1.5.1 编译与运行</h4>
+<div class="concept"><div class="term">kotlinc命令</div><div class="desc">Kotlin命令行编译器，类似于javac。</div></div>
+<div class="concept"><div class="term">REPL交互</div><div class="desc">通过 kotlinc 启动交互式解释器。</div></div>
+<div class="concept"><div class="term">.kts脚本</div><div class="desc">用 .kts 后缀编写Kotlin脚本文件直接运行。</div></div>
+</div>
+<div class="subsection-block" id="ch1_5_2">
+<h4>1.5.2 编译Kotlin代码</h4>
+<div class="concept"><div class="term">Kotlin运行时库</div><div class="desc">Kotlin标准库需要被打包到最终产物中。</div></div>
+<div class="concept"><div class="term">Java字节码</div><div class="desc">Kotlin编译产物是.class文件，运行在JVM上。</div></div>
+</div>
+<div class="subsection-block" id="ch1_5_3">
+<h4>1.5.6 Java到Kotlin的转换器</h4>
+<div class="concept"><div class="term">IntelliJ转换</div><div class="desc">IntelliJ IDEA可一键把Java代码转成Kotlin等价代码。</div></div>
+<div class="concept"><div class="term">Code→Convert</div><div class="desc">菜单中Code → Convert Java File to Kotlin File。</div></div>
+<div class="concept"><div class="term">注意事项</div><div class="desc">转换结果可能不完美，需要人工review。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch1_6">
+<h3>1.6 小结</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin是一门面向JVM的静态类型语言，专注于实用性和与Java的互操作性。</p>
+<div class="subsection-block" id="ch1_6_1">
+<h4>本章要点回顾</h4>
+<div class="concept"><div class="term">语言定位</div><div class="desc">Kotlin是务实、简洁、安全、互操作的现代JVM语言。</div></div>
+<div class="concept"><div class="term">学习路径</div><div class="desc">通过后续章节系统掌握语法、特性、抽象和工程实践。</div></div>
+</div>
+</div>
+</div>
+<div class="chapter-card" id="ch2">
+<h2><span class="badge">第2章</span>Kotlin基础</h2>
+<div class="summary">本章学习Kotlin的基本要素：函数、变量、类、属性、控制结构、智能转换和异常处理。这些是编写任何Kotlin程序的基础。</div>
+<div class="section-block" id="ch2_1">
+<h3>2.1 基本要素：函数和变量</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">函数和变量是组成每个Kotlin程序的基本要素。</p>
+<div class="subsection-block" id="ch2_1_1">
+<h4>2.1.1 Hello, world!</h4>
+<div class="concept"><div class="term">fun关键字</div><div class="desc">声明函数的关键字(fun有乐趣的双关)。</div></div>
+<div class="concept"><div class="term">参数类型位置</div><div class="desc">类型写在参数名后面(冒号分隔)。</div></div>
+<div class="concept"><div class="term">顶层函数</div><div class="desc">函数可定义在文件最外层，不需放在类中。</div></div>
+<div class="concept"><div class="term">数组是类</div><div class="desc">Kotlin没有特殊数组语法，使用Array&lt;T&gt;。</div></div>
+<div class="concept"><div class="term">println</div><div class="desc">Kotlin标准库对System.out.println的简洁包装。</div></div>
+<div class="concept"><div class="term">省略分号</div><div class="desc">和许多现代语言一样，行尾分号可省略。</div></div>
+<div class="code-block">fun main(args: Array&lt;String&gt;) {
+    println(&quot;Hello, world!&quot;)
+}</div>
+</div>
+<div class="subsection-block" id="ch2_1_2">
+<h4>2.1.2 函数</h4>
+<div class="concept"><div class="term">表达式与语句</div><div class="desc">Kotlin中if是表达式有值，赋值是语句无值。</div></div>
+<div class="concept"><div class="term">表达式函数体</div><div class="desc">单表达式函数可省略花括号和return。</div></div>
+<div class="concept"><div class="term">代码块体</div><div class="desc">多语句函数必须用花括号并显式return。</div></div>
+<div class="concept"><div class="term">类型推导</div><div class="desc">表达式体函数可省略返回类型，编译器自动推断。</div></div>
+<div class="concept"><div class="term">Unit类型</div><div class="desc">无返回值时使用Unit（类似Java的void）。</div></div>
+<div class="code-block">// 表达式体
+fun max(a: Int, b: Int) = if (a &gt; b) a else b
+
+// 代码块体
+fun max(a: Int, b: Int): Int {
+    return if (a &gt; b) a else b
+}</div>
+</div>
+<div class="subsection-block" id="ch2_1_3">
+<h4>2.1.3 变量</h4>
+<div class="concept"><div class="term">val</div><div class="desc">不可变引用，对应Java的final变量，优先使用。</div></div>
+<div class="concept"><div class="term">var</div><div class="desc">可变引用，对应Java普通变量，必要时使用。</div></div>
+<div class="concept"><div class="term">val可条件初始化</div><div class="desc">val只能赋值一次，但可通过if在不同分支初始化。</div></div>
+<div class="concept"><div class="term">val引用不可变但对象可变</div><div class="desc">val只保证引用不变，对象内容仍可修改。</div></div>
+<div class="concept"><div class="term">优先使用val</div><div class="desc">默认使用val，必要时才换var，使代码更接近函数式风格。</div></div>
+<div class="code-block">val name = &quot;Alice&quot;  // 不可变引用
+var age = 29       // 可变引用
+
+val result: String = if (true) &quot;yes&quot; else &quot;no&quot;</div>
+</div>
+<div class="subsection-block" id="ch2_1_4">
+<h4>2.1.4 字符串模板</h4>
+<div class="concept"><div class="term">$变量</div><div class="desc">用$前缀在字符串中引用局部变量。</div></div>
+<div class="concept"><div class="term">${表达式}</div><div class="desc">用${}在字符串中嵌入任意表达式。</div></div>
+<div class="concept"><div class="term">$转义</div><div class="desc">需要显示美元符号时用\$转义。</div></div>
+<div class="concept"><div class="term">嵌套双引号</div><div class="desc">在${}内可直接使用双引号。</div></div>
+<div class="code-block">val name = &quot;Alice&quot;
+println(&quot;Hello, $name!&quot;)        // Hello, Alice!
+println(&quot;1 + 1 = ${1 + 1}&quot;)     // 1 + 1 = 2</div>
+</div>
+</div>
+<div class="section-block" id="ch2_2">
+<h3>2.2 类和属性</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">面向对象基础：如何在Kotlin中声明类和属性。</p>
+<div class="subsection-block" id="ch2_2_1">
+<h4>2.2.1 属性</h4>
+<div class="concept"><div class="term">属性头等公民</div><div class="desc">Kotlin用val/var声明属性，自动生成getter/setter。</div></div>
+<div class="concept"><div class="term">val只读</div><div class="desc">只生成getter，无setter。</div></div>
+<div class="concept"><div class="term">var可写</div><div class="desc">生成getter和setter。</div></div>
+<div class="concept"><div class="term">is前缀特例</div><div class="desc">布尔属性名以is开头，getter不带get前缀。</div></div>
+<div class="concept"><div class="term">支持字段</div><div class="desc">属性背后自动生成一个支持字段保存值。</div></div>
+<div class="code-block">class Person(val name: String, var age: Int)
+
+// Java/Kotlin调用
+val p = Person(&quot;Bob&quot;, 29)
+println(p.name)   // getter
+p.age = 30        // setter</div>
+</div>
+<div class="subsection-block" id="ch2_2_2">
+<h4>2.2.2 自定义访问器</h4>
+<div class="concept"><div class="term">自定义getter</div><div class="desc">用get() = ...实现计算属性，无字段。</div></div>
+<div class="concept"><div class="term">isSquare示例</div><div class="desc">矩形是否正方形由长宽是否相等即时计算。</div></div>
+<div class="concept"><div class="term">属性vs函数</div><div class="desc">描述特征用属性，描述动作用函数。</div></div>
+<div class="code-block">class Rectangle(val height: Int, val width: Int) {
+    val isSquare: Boolean
+        get() = height == width
+}</div>
+</div>
+<div class="subsection-block" id="ch2_2_3">
+<h4>2.2.3 Kotlin源码布局</h4>
+<div class="concept"><div class="term">package声明</div><div class="desc">Kotlin文件以package语句开头。</div></div>
+<div class="concept"><div class="term">import任意声明</div><div class="desc">Kotlin不区分导入类还是函数。</div></div>
+<div class="concept"><div class="term">顶层函数</div><div class="desc">可导入顶层函数名直接使用。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch2_3">
+<h3>2.3 表示和处理选择：枚举和when</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin用enum class声明枚举，when作为表达式处理多分支。</p>
+<div class="subsection-block" id="ch2_3_1">
+<h4>2.3.1 声明枚举类</h4>
+<div class="concept"><div class="term">enum class</div><div class="desc">Kotlin用enum class声明枚举（软关键字）。</div></div>
+<div class="concept"><div class="term">枚举属性</div><div class="desc">可在枚举常量上加构造方法参数。</div></div>
+<div class="concept"><div class="term">枚举方法</div><div class="desc">可在枚举类中声明方法。</div></div>
+<div class="code-block">enum class Color(val r: Int, val g: Int, val b: Int) {
+    RED(255, 0, 0),
+    GREEN(0, 255, 0),
+    BLUE(0, 0, 255);
+
+    fun rgb() = (r * 256 + g) * 256 + b
+}</div>
+</div>
+<div class="subsection-block" id="ch2_3_2">
+<h4>2.3.2 使用when处理枚举</h4>
+<div class="concept"><div class="term">when表达式</div><div class="desc">Kotlin的when是表达式，有返回值。</div></div>
+<div class="concept"><div class="term">when无break</div><div class="desc">Kotlin的when默认只匹配一个分支，不需要break。</div></div>
+<div class="concept"><div class="term">合并分支</div><div class="desc">多个值用逗号分隔表示合并分支。</div></div>
+<div class="code-block">fun getColorName(color: Color) = when (color) {
+    Color.RED -&gt; &quot;Red&quot;
+    Color.GREEN, Color.BLUE -&gt; &quot;Not Red&quot;
+}</div>
+</div>
+<div class="subsection-block" id="ch2_3_3">
+<h4>2.3.3 在when中使用任意对象</h4>
+<div class="concept"><div class="term">when任意表达式</div><div class="desc">when分支条件可以是任意表达式，不限于常量。</div></div>
+</div>
+<div class="subsection-block" id="ch2_3_4">
+<h4>2.3.4 使用不带参数的when</h4>
+<div class="concept"><div class="term">无参when</div><div class="desc">when分支条件可以重复使用变量/表达式，不写参数。</div></div>
+<div class="concept"><div class="term">链式判断</div><div class="desc">适合一系列布尔表达式判断。</div></div>
+</div>
+<div class="subsection-block" id="ch2_3_5">
+<h4>2.3.5 智能转换</h4>
+<div class="concept"><div class="term">is检查</div><div class="desc">用is运算符检查类型，编译器自动转换。</div></div>
+<div class="concept"><div class="term">智能转换合并</div><div class="desc">is检查和转换合并为一次操作。</div></div>
+<div class="concept"><div class="term">val才能智能转换</div><div class="desc">只有val变量才能智能转换，var不行。</div></div>
+<div class="concept"><div class="term">!is反向</div><div class="desc">用!is检查不属于某类型。</div></div>
+<div class="code-block">fun demo(x: Any) {
+    if (x is String) {
+        println(x.length)  // 自动转换为String
+    }
+}</div>
+</div>
+<div class="subsection-block" id="ch2_3_6">
+<h4>2.3.6 用if替换when</h4>
+<div class="concept"><div class="term">if表达式</div><div class="desc">Kotlin的if也是表达式，可直接返回值。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch2_4">
+<h3>2.4 迭代事物：while循环和for循环</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin的while与Java相同，for则通过区间来迭代。</p>
+<div class="subsection-block" id="ch2_4_1">
+<h4>2.4.1 while循环</h4>
+<div class="concept"><div class="term">while</div><div class="desc">Kotlin的while与Java相同。</div></div>
+<div class="concept"><div class="term">do-while</div><div class="desc">先执行后判断的循环。</div></div>
+</div>
+<div class="subsection-block" id="ch2_4_2">
+<h4>2.4.2 数字区间</h4>
+<div class="concept"><div class="term">区间..</div><div class="desc">用..表示闭区间，如1..10。</div></div>
+<div class="concept"><div class="term">步长step</div><div class="desc">用step指定步长。</div></div>
+<div class="concept"><div class="term">downTo</div><div class="desc">反向迭代用downTo函数。</div></div>
+<div class="concept"><div class="term">until</div><div class="desc">半开区间用until函数。</div></div>
+<div class="concept"><div class="term">字符区间</div><div class="desc">&#x27;a&#x27;..&#x27;z&#x27;迭代字符。</div></div>
+<div class="code-block">for (i in 1..10) print(i)         // 1到10
+for (i in 1 until 10) print(i)   // 1到9
+for (i in 10 downTo 1) print(i)  // 10到1
+for (i in 0..100 step 10) print(i) // 步长10</div>
+</div>
+<div class="subsection-block" id="ch2_4_3">
+<h4>2.4.3 迭代Map</h4>
+<div class="concept"><div class="term">map迭代</div><div class="desc">用for ((k, v) in map)解构遍历Map。</div></div>
+</div>
+<div class="subsection-block" id="ch2_4_4">
+<h4>2.4.4 使用in检查成员</h4>
+<div class="concept"><div class="term">in运算符</div><div class="desc">用in检查元素是否在集合或区间中。</div></div>
+<div class="concept"><div class="term">!in</div><div class="desc">用!in检查元素不在。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch2_5">
+<h3>2.5 Kotlin中的异常</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin的try是表达式，且不区分受检和非受检异常。</p>
+<div class="subsection-block" id="ch2_5_1">
+<h4>2.5.1 try、catch、finally</h4>
+<div class="concept"><div class="term">try表达式</div><div class="desc">Kotlin的try是表达式，可以有返回值。</div></div>
+<div class="concept"><div class="term">无受检异常</div><div class="desc">Kotlin不区分受检和非受检异常，不强制声明。</div></div>
+</div>
+<div class="subsection-block" id="ch2_5_2">
+<h4>2.5.2 try作为表达式</h4>
+<div class="concept"><div class="term">try返回值</div><div class="desc">try块最后一个表达式或catch块最后一个表达式作为值。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch2_6">
+<h3>2.6 小结</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">本章要点回顾。</p>
+<div class="subsection-block" id="ch2_6_1">
+<h4>本章要点</h4>
+<div class="concept"><div class="term">核心语法</div><div class="desc">掌握fun、val/var、类、when、区间、try这些基本要素。</div></div>
+</div>
+</div>
+</div>
+<div class="chapter-card" id="ch3">
+<h2><span class="badge">第3章</span>函数的定义与调用</h2>
+<div class="summary">本章深入函数：集合创建、参数处理（命名参数、默认参数、顶层函数）、扩展函数、字符串处理和局部函数。</div>
+<div class="section-block" id="ch3_1">
+<h3>3.1 在Kotlin中创建集合</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin标准库提供setOf、listOf、mapOf等函数创建集合。</p>
+<div class="subsection-block" id="ch3_1_1">
+<h4>集合创建函数</h4>
+<div class="concept"><div class="term">setOf</div><div class="desc">创建Set集合的函数。</div></div>
+<div class="concept"><div class="term">listOf</div><div class="desc">创建List列表的函数。</div></div>
+<div class="concept"><div class="term">mapOf</div><div class="desc">创建Map映射的函数。</div></div>
+<div class="concept"><div class="term">可变集合</div><div class="desc">用mutableSetOf、mutableListOf、mutableMapOf创建可变集合。</div></div>
+<div class="code-block">val set = setOf(1, 2, 3)
+val list = listOf(&quot;a&quot;, &quot;b&quot;)
+val map = mapOf(1 to &quot;one&quot;, 2 to &quot;two&quot;)
+val mlist = mutableListOf(1, 2, 3)</div>
+</div>
+</div>
+<div class="section-block" id="ch3_2">
+<h3>3.2 让函数更好调用</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">通过命名参数、默认参数值、顶层函数让函数调用更灵活可读。</p>
+<div class="subsection-block" id="ch3_2_1">
+<h4>3.2.1 命名参数</h4>
+<div class="concept"><div class="term">命名参数</div><div class="desc">调用函数时使用参数名=值，提高可读性。</div></div>
+<div class="concept"><div class="term">位置无关</div><div class="desc">使用命名参数后顺序可任意。</div></div>
+</div>
+<div class="subsection-block" id="ch3_2_2">
+<h4>3.2.2 默认参数值</h4>
+<div class="concept"><div class="term">默认参数</div><div class="desc">函数参数可以设默认值，避免重载。</div></div>
+<div class="concept"><div class="term">@JvmOverloads</div><div class="desc">注解让Java调用方看到多个重载。</div></div>
+</div>
+<div class="subsection-block" id="ch3_2_3">
+<h4>3.2.3 顶层函数和属性</h4>
+<div class="concept"><div class="term">顶层函数</div><div class="desc">Kotlin函数可放在文件顶层，不需类包装。</div></div>
+<div class="concept"><div class="term">@JvmName</div><div class="desc">改变编译成Java类时的名称。</div></div>
+<div class="concept"><div class="term">顶层属性</div><div class="desc">用val/var在文件顶层声明属性，生成静态字段。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch3_3">
+<h3>3.3 给别人的类添加方法：扩展函数和属性</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">扩展函数/属性是Kotlin最强大的特性之一，让你无需继承或装饰器就能为类添加新功能。</p>
+<div class="subsection-block" id="ch3_3_1">
+<h4>3.3.1 扩展函数</h4>
+<div class="concept"><div class="term">扩展函数</div><div class="desc">为已存在的类添加新方法，无需继承或装饰器。</div></div>
+<div class="concept"><div class="term">接收者对象</div><div class="desc">扩展函数内部用this引用被扩展的实例。</div></div>
+<div class="concept"><div class="term">导入扩展</div><div class="desc">使用扩展函数需先import。</div></div>
+<div class="concept"><div class="term">Java中调用</div><div class="desc">扩展函数编译成静态方法，第一个参数是接收者。</div></div>
+<div class="code-block">fun String.lastChar(): Char = this[this.length - 1]
+
+println(&quot;Kotlin&quot;.lastChar()) // &#x27;n&#x27;</div>
+</div>
+<div class="subsection-block" id="ch3_3_2">
+<h4>3.3.2 扩展不能访问私有成员</h4>
+<div class="concept"><div class="term">访问限制</div><div class="desc">扩展函数和类的普通成员访问权限相同，不能访问private成员。</div></div>
+</div>
+<div class="subsection-block" id="ch3_3_3">
+<h4>3.3.3 扩展属性</h4>
+<div class="concept"><div class="term">扩展属性</div><div class="desc">为已存在的类添加属性，必须自定义getter，无字段。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch3_4">
+<h3>3.4 处理集合：可变参数、中缀调用和库支持</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin用vararg、可变参数展开运算符*、infix中缀调用让集合处理更自然。</p>
+<div class="subsection-block" id="ch3_4_1">
+<h4>3.4.1 展开运算符</h4>
+<div class="concept"><div class="term">vararg</div><div class="desc">用vararg关键字声明可变参数。</div></div>
+<div class="concept"><div class="term">展开运算符*</div><div class="desc">用*前缀把数组展开为可变参数。</div></div>
+</div>
+<div class="subsection-block" id="ch3_4_2">
+<h4>3.4.2 中缀调用</h4>
+<div class="concept"><div class="term">infix函数</div><div class="desc">用infix关键字声明中缀函数，调用时可省略点和括号。</div></div>
+<div class="concept"><div class="term">to函数</div><div class="desc">to实际上是一个中缀函数，mapOf内部用它构建Map。</div></div>
+<div class="code-block">1 to &quot;one&quot;  // 等同于 1.to(&quot;one&quot;)
+
+infix fun Any.to(other: Any) = Pair(this, other)</div>
+</div>
+<div class="subsection-block" id="ch3_4_3">
+<h4>3.4.3 库支持</h4>
+<div class="concept"><div class="term">标准库</div><div class="desc">Kotlin标准库用扩展函数给Java集合API补充了大量函数。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch3_5">
+<h3>3.5 字符串和正则表达式的处理</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin的字符串处理：split支持多分隔符、三重引号字符串、trimMargin。</p>
+<div class="subsection-block" id="ch3_5_1">
+<h4>3.5.1 分割字符串</h4>
+<div class="concept"><div class="term">split函数</div><div class="desc">Kotlin的split接受任意数量分隔符，返回List。</div></div>
+<div class="concept"><div class="term">正则表达式</div><div class="desc">Kotlin中使用Regex类处理正则。</div></div>
+</div>
+<div class="subsection-block" id="ch3_5_2">
+<h4>3.5.2 正则表达式</h4>
+<div class="concept"><div class="term">Regex类</div><div class="desc">用Regex(&quot;pattern&quot;)创建正则对象。</div></div>
+<div class="concept"><div class="term">正则三引号</div><div class="desc">三重引号字符串无需转义反斜杠。</div></div>
+</div>
+<div class="subsection-block" id="ch3_5_3">
+<h4>3.5.3 多行字符串</h4>
+<div class="concept"><div class="term">三引号字符串</div><div class="desc">用&quot;&quot;&quot;..&quot;&quot;&quot;表示多行字符串。</div></div>
+<div class="concept"><div class="term">trimMargin</div><div class="desc">用trimMargin去掉前导空白对齐内容。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch3_6">
+<h3>3.6 让你的代码更整洁：局部函数和扩展</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">局部函数嵌套在函数内部，减少重复代码。</p>
+<div class="subsection-block" id="ch3_6_1">
+<h4>局部函数</h4>
+<div class="concept"><div class="term">局部函数</div><div class="desc">在函数内部嵌套声明函数，减少重复代码。</div></div>
+<div class="concept"><div class="term">访问外层参数</div><div class="desc">局部函数可访问外层函数的参数，避免重复。</div></div>
+</div>
+</div>
+</div>
+<div class="chapter-card" id="ch4">
+<h2><span class="badge">第4章</span>类、对象和接口</h2>
+<div class="summary">本章深入Kotlin的面向对象：接口与默认实现、open/final/abstract修饰符、可见性、嵌套类与内部类、主/副构造方法、数据类、object关键字。</div>
+<div class="section-block" id="ch4_1">
+<h3>4.1 定义类继承结构</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin的类继承结构与Java相似但有关键区别。</p>
+<div class="subsection-block" id="ch4_1_1">
+<h4>4.1.1 Kotlin中的接口</h4>
+<div class="concept"><div class="term">interface关键字</div><div class="desc">用interface声明接口。</div></div>
+<div class="concept"><div class="term">抽象方法</div><div class="desc">接口可包含抽象方法定义。</div></div>
+<div class="concept"><div class="term">默认实现</div><div class="desc">接口方法可以有默认实现(Kotlin无default关键字)。</div></div>
+<div class="concept"><div class="term">属性声明</div><div class="desc">接口可以包含属性声明。</div></div>
+<div class="concept"><div class="term">冒号语法</div><div class="desc">Kotlin用冒号代替Java的extends和implements。</div></div>
+<div class="concept"><div class="term">override强制</div><div class="desc">Kotlin的override修饰符是必须的。</div></div>
+<div class="code-block">interface Clickable {
+    fun click()
+    fun showOff() = println(&quot;Clickable!&quot;)
+}</div>
+</div>
+<div class="subsection-block" id="ch4_1_2">
+<h4>4.1.2 open、final和abstract</h4>
+<div class="concept"><div class="term">默认final</div><div class="desc">Kotlin的类和方法默认是final的，不能被继承或重写。</div></div>
+<div class="concept"><div class="term">open关键字</div><div class="desc">用open修饰符允许类被继承或方法被重写。</div></div>
+<div class="concept"><div class="term">abstract</div><div class="desc">abstract类必须被继承，abstract方法必须被重写。</div></div>
+<div class="concept"><div class="term">设计哲学</div><div class="desc">默认final鼓励组合而非继承，符合Effective Java的建议。</div></div>
+</div>
+<div class="subsection-block" id="ch4_1_3">
+<h4>4.1.3 可见性修饰符</h4>
+<div class="concept"><div class="term">public默认</div><div class="desc">Kotlin默认public，可省略。</div></div>
+<div class="concept"><div class="term">internal</div><div class="desc">模块内可见。</div></div>
+<div class="concept"><div class="term">protected</div><div class="desc">子类可见(注意：Kotlin的protected不允许Java包内访问)。</div></div>
+<div class="concept"><div class="term">private</div><div class="desc">类内可见。</div></div>
+</div>
+<div class="subsection-block" id="ch4_1_4">
+<h4>4.1.4 内部类和嵌套类</h4>
+<div class="concept"><div class="term">嵌套类默认</div><div class="desc">Kotlin的嵌套类默认是静态的(无外部引用)。</div></div>
+<div class="concept"><div class="term">inner修饰符</div><div class="desc">用inner修饰符让嵌套类成为内部类(持有外部引用)。</div></div>
+<div class="concept"><div class="term">sealed类</div><div class="desc">用sealed修饰符限制类的继承层级，2.15+改为sealed interface。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch4_2">
+<h3>4.2 声明带非默认构造方法或属性的类</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">主构造方法、init块、副构造方法、属性初始化逻辑。</p>
+<div class="subsection-block" id="ch4_2_1">
+<h4>4.2.1 主构造方法和初始化块</h4>
+<div class="concept"><div class="term">主构造方法</div><div class="desc">类头中类名后的参数列表是主构造方法。</div></div>
+<div class="concept"><div class="term">init块</div><div class="desc">init块包含主构造方法的初始化逻辑。</div></div>
+<div class="concept"><div class="term">属性声明在主构造方法</div><div class="desc">val/var关键字直接声明构造方法参数为属性。</div></div>
+</div>
+<div class="subsection-block" id="ch4_2_2">
+<h4>4.2.2 副构造方法</h4>
+<div class="concept"><div class="term">constructor关键字</div><div class="desc">在类中用constructor声明副构造方法。</div></div>
+<div class="concept"><div class="term">委托调用</div><div class="desc">副构造方法用this(...)委托给主构造方法。</div></div>
+</div>
+<div class="subsection-block" id="ch4_2_3">
+<h4>4.2.3 接口中的属性</h4>
+<div class="concept"><div class="term">接口属性</div><div class="desc">接口中声明的属性要么抽象要么提供访问器实现。</div></div>
+</div>
+<div class="subsection-block" id="ch4_2_4">
+<h4>4.2.4 getter/setter访问支持字段</h4>
+<div class="concept"><div class="term">field标识符</div><div class="desc">在自定义getter/setter中用field引用支持字段。</div></div>
+<div class="concept"><div class="term">后备字段</div><div class="desc">val必须有后备字段，var的setter也必须有后备字段。</div></div>
+</div>
+<div class="subsection-block" id="ch4_2_5">
+<h4>4.2.5 修改访问器可见性</h4>
+<div class="concept"><div class="term">访问器可见性</div><div class="desc">可单独设置getter/setter的可见性，如private set。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch4_3">
+<h3>4.3 编译器生成的方法：数据类和类委托</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin编译器自动生成equals/hashCode/toString，类委托简化装饰器模式。</p>
+<div class="subsection-block" id="ch4_3_1">
+<h4>4.3.1 通用对象方法</h4>
+<div class="concept"><div class="term">toString</div><div class="desc">默认返回类的字符串表示。</div></div>
+<div class="concept"><div class="term">equals</div><div class="desc">比较对象内容。</div></div>
+<div class="concept"><div class="term">hashCode</div><div class="desc">与equals一致的哈希码。</div></div>
+</div>
+<div class="subsection-block" id="ch4_3_2">
+<h4>4.3.2 数据类</h4>
+<div class="concept"><div class="term">data class</div><div class="desc">用data class声明数据类，自动生成equals/hashCode/toString/copy。</div></div>
+<div class="concept"><div class="term">copy方法</div><div class="desc">数据类自动生成copy方法，可复制时修改部分属性。</div></div>
+<div class="concept"><div class="term">主构造方法限制</div><div class="desc">数据类的主构造方法至少有一个参数。</div></div>
+<div class="concept"><div class="term">val属性</div><div class="desc">数据类的主构造方法参数推荐用val声明。</div></div>
+<div class="code-block">data class User(val name: String, val age: Int)
+
+val u1 = User(&quot;Alice&quot;, 29)
+val u2 = u1.copy(age = 30)</div>
+</div>
+<div class="subsection-block" id="ch4_3_3">
+<h4>4.3.3 类委托</h4>
+<div class="concept"><div class="term">by关键字</div><div class="desc">用by关键字实现接口委托给另一个对象。</div></div>
+<div class="concept"><div class="term">装饰器模式</div><div class="desc">类委托避免手写装饰器模式的样板代码。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch4_4">
+<h3>4.4 object关键字</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">object关键字统一处理单例、伴生对象和匿名对象。</p>
+<div class="subsection-block" id="ch4_4_1">
+<h4>4.4.1 对象声明：单例</h4>
+<div class="concept"><div class="term">object声明</div><div class="desc">用object关键字声明单例对象。</div></div>
+<div class="concept"><div class="term">对象名访问</div><div class="desc">通过对象名直接访问其属性和方法。</div></div>
+<div class="concept"><div class="term">无new关键字</div><div class="desc">Kotlin无new关键字，对象声明同时创建实例。</div></div>
+</div>
+<div class="subsection-block" id="ch4_4_2">
+<h4>4.4.2 伴生对象</h4>
+<div class="concept"><div class="term">companion object</div><div class="desc">用companion object声明伴生对象，类加载时初始化。</div></div>
+<div class="concept"><div class="term">静态成员</div><div class="desc">Kotlin用伴生对象模拟Java的静态成员。</div></div>
+<div class="concept"><div class="term">@JvmStatic</div><div class="desc">让Java调用方把它当静态方法调用。</div></div>
+<div class="concept"><div class="term">实现接口</div><div class="desc">伴生对象可实现接口，让外部对象也能调用。</div></div>
+</div>
+<div class="subsection-block" id="ch4_4_3">
+<h4>4.4.3 对象表达式：匿名内部类</h4>
+<div class="concept"><div class="term">object表达式</div><div class="desc">object: Interface { ... }是匿名对象的简写。</div></div>
+<div class="concept"><div class="term">多个接口实现</div><div class="desc">可同时实现多个接口或继承类。</div></div>
+<div class="concept"><div class="term">访问外层变量</div><div class="desc">匿名对象可访问闭包内的变量(不像Java的final限制)。</div></div>
+</div>
+</div>
+</div>
+<div class="chapter-card" id="ch5">
+<h2><span class="badge">第5章</span>Lambda编程</h2>
+<div class="summary">本章系统讲解Kotlin的函数式编程核心：lambda语法、集合的函数式API、序列惰性求值、Java函数式接口互操作、带接收者的lambda（with/apply）。</div>
+<div class="section-block" id="ch5_1">
+<h3>5.1 Lambda表达式和成员引用</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Lambda是Kotlin函数式编程的基础。</p>
+<div class="subsection-block" id="ch5_1_1">
+<h4>5.1.1 Lambda简介</h4>
+<div class="concept"><div class="term">Lambda语法</div><div class="desc">{ x: Int, y: Int -&gt; x + y }。</div></div>
+<div class="concept"><div class="term">it约定</div><div class="desc">单参数lambda默认参数名是it。</div></div>
+<div class="concept"><div class="term">末尾lambda约定</div><div class="desc">函数最后一个参数是lambda时可移到括号外。</div></div>
+<div class="concept"><div class="term">类型推导</div><div class="desc">lambda参数类型可省略，编译器自动推断。</div></div>
+<div class="code-block">val sum = { x: Int, y: Int -&gt; x + y }
+val list = listOf(1, 2, 3)
+list.maxByOrNull { it }  // 末尾lambda调用</div>
+</div>
+<div class="subsection-block" id="ch5_1_2">
+<h4>5.1.2 集合的lambda</h4>
+<div class="concept"><div class="term">filter</div><div class="desc">返回满足条件的元素集合。</div></div>
+<div class="concept"><div class="term">map</div><div class="desc">对每个元素应用函数，返回新集合。</div></div>
+<div class="concept"><div class="term">all/any/count/find</div><div class="desc">集合的判断与查找函数。</div></div>
+</div>
+<div class="subsection-block" id="ch5_1_3">
+<h4>5.1.3 lambda语法细节</h4>
+<div class="concept"><div class="term">类型标注</div><div class="desc">lambda参数可有可无类型标注。</div></div>
+<div class="concept"><div class="term">变量捕获</div><div class="desc">lambda可访问闭包中的变量。</div></div>
+</div>
+<div class="subsection-block" id="ch5_1_4">
+<h4>5.1.4 变量捕获 vs Java</h4>
+<div class="concept"><div class="term">变量捕获</div><div class="desc">Kotlin lambda无final限制，可修改捕获变量。</div></div>
+</div>
+<div class="subsection-block" id="ch5_1_5">
+<h4>5.1.5 成员引用</h4>
+<div class="concept"><div class="term">::双冒号</div><div class="desc">用::把函数转换成一个值(成员引用)。</div></div>
+<div class="concept"><div class="term">::构造函数</div><div class="desc">用::ClassName引用构造函数。</div></div>
+<div class="code-block">val getAge = Person::age
+val createPerson = ::Person</div>
+</div>
+</div>
+<div class="section-block" id="ch5_2">
+<h3>5.2 集合的函数式API</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">filter、map、all、any、count、find、flatMap等函数式API。</p>
+<div class="subsection-block" id="ch5_2_1">
+<h4>filter、map等基础操作</h4>
+<div class="concept"><div class="term">filter</div><div class="desc">过滤满足条件的元素。</div></div>
+<div class="concept"><div class="term">map</div><div class="desc">对每个元素做转换。</div></div>
+<div class="concept"><div class="term">all</div><div class="desc">判断所有元素都满足条件。</div></div>
+<div class="concept"><div class="term">any</div><div class="desc">判断存在元素满足条件。</div></div>
+<div class="concept"><div class="term">count</div><div class="desc">统计满足条件的元素个数。</div></div>
+<div class="concept"><div class="term">find</div><div class="desc">查找第一个满足条件的元素。</div></div>
+</div>
+<div class="subsection-block" id="ch5_2_2">
+<h4>5.2.2 flatMap与flatten</h4>
+<div class="concept"><div class="term">flatMap</div><div class="desc">先map再flatten，把嵌套集合拍平。</div></div>
+<div class="concept"><div class="term">flatten</div><div class="desc">把嵌套集合拍平。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch5_3">
+<h3>5.3 惰性集合操作：序列</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">序列(Sequence)是惰性求值集合，避免创建中间集合。</p>
+<div class="subsection-block" id="ch5_3_1">
+<h4>5.3.1 中间和末端操作</h4>
+<div class="concept"><div class="term">Sequence</div><div class="desc">用asSequence把集合转为序列，惰性求值。</div></div>
+<div class="concept"><div class="term">中间操作</div><div class="desc">返回序列的操作是中间操作(惰性)。</div></div>
+<div class="concept"><div class="term">末端操作</div><div class="desc">返回具体结果的操作触发求值(急切)。</div></div>
+<div class="concept"><div class="term">顺序保证</div><div class="desc">序列保证每元素依次经过所有操作后再处理下一个。</div></div>
+</div>
+<div class="subsection-block" id="ch5_3_2">
+<h4>5.3.2 创建序列</h4>
+<div class="concept"><div class="term">generateSequence</div><div class="desc">通过seed函数无限生成序列。</div></div>
+<div class="concept"><div class="term">sequenceOf</div><div class="desc">用已知元素创建序列。</div></div>
+<div class="concept"><div class="term">asSequence</div><div class="desc">把现有集合转为序列。</div></div>
+</div>
+<div class="subsection-block" id="ch5_3_3">
+<h4>5.3.3 序列 vs 集合</h4>
+<div class="concept"><div class="term">急切vs惰性</div><div class="desc">集合操作急切求值创建中间集合，序列操作惰性避免中间集合。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch5_4">
+<h3>5.4 使用Java函数式接口</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin lambda与Java SAM接口的互操作。</p>
+<div class="subsection-block" id="ch5_4_1">
+<h4>5.4.1 函数式接口SAM</h4>
+<div class="concept"><div class="term">SAM</div><div class="desc">Single Abstract Method函数式接口。</div></div>
+<div class="concept"><div class="term">SAM转换</div><div class="desc">Kotlin lambda可自动转成SAM接口实例。</div></div>
+<div class="concept"><div class="term">显式转换</div><div class="desc">用object表达式显式实现SAM避免歧义。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch5_5">
+<h3>5.5 带接收者的lambda</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">with和apply让代码更整洁，是Kotlin DSL的基础。</p>
+<div class="subsection-block" id="ch5_5_1">
+<h4>5.5.1 with函数</h4>
+<div class="concept"><div class="term">with</div><div class="desc">对同一对象多次调用时省略对象名。</div></div>
+<div class="concept"><div class="term">返回值</div><div class="desc">with返回lambda最后一个表达式的值。</div></div>
+</div>
+<div class="subsection-block" id="ch5_5_2">
+<h4>5.5.2 apply函数</h4>
+<div class="concept"><div class="term">apply</div><div class="desc">总是返回接收者对象本身，常用于对象初始化。</div></div>
+<div class="concept"><div class="term">apply vs with</div><div class="desc">apply返回接收者，with返回lambda值。</div></div>
+</div>
+</div>
+</div>
+<div class="chapter-card" id="ch6">
+<h2><span class="badge">第6章</span>Kotlin的类型系统</h2>
+<div class="summary">本章深入Kotlin类型系统的核心：可空性（?、?.、?:、!!、as?、let）、基本数据类型（Int/Long/Any/Unit/Nothing）、集合与数组（可空性、只读/可变、与Java互操作）。</div>
+<div class="section-block" id="ch6_1">
+<h3>6.1 可空性</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin通过类型系统区分可空与非空，从编译期消除NPE。</p>
+<div class="subsection-block" id="ch6_1_1">
+<h4>6.1.1 可空类型</h4>
+<div class="concept"><div class="term">?后缀</div><div class="desc">类型后加?表示可空，如String?。</div></div>
+<div class="concept"><div class="term">默认非空</div><div class="desc">无问号的类型默认不能为null。</div></div>
+<div class="concept"><div class="term">编译期检查</div><div class="desc">可空类型的限制在编译期执行，无运行时开销。</div></div>
+</div>
+<div class="subsection-block" id="ch6_1_2">
+<h4>6.1.2 类型的含义</h4>
+<div class="concept"><div class="term">NPE根源</div><div class="desc">Java类型系统不区分null和真实值，运行时才报错。</div></div>
+<div class="concept"><div class="term">Kotlin解决</div><div class="desc">可空类型让错误在编译期就被发现。</div></div>
+</div>
+<div class="subsection-block" id="ch6_1_3">
+<h4>6.1.3 安全调用?. </h4>
+<div class="concept"><div class="term">?.运算符</div><div class="desc">s?.toUpperCase()等价于if(s!=null) s.toUpperCase() else null。</div></div>
+<div class="concept"><div class="term">链式安全调用</div><div class="desc">可连续使用?.访问嵌套可空属性。</div></div>
+<div class="code-block">val s: String? = null
+println(s?.length)  // null</div>
+</div>
+<div class="subsection-block" id="ch6_1_4">
+<h4>6.1.4 Elvis运算符?:</h4>
+<div class="concept"><div class="term">?:运算符</div><div class="desc">左边非空用左边，左边为空用右边。</div></div>
+<div class="concept"><div class="term">配合return/throw</div><div class="desc">Elvis右边可以是return或throw表达式。</div></div>
+</div>
+<div class="subsection-block" id="ch6_1_5">
+<h4>6.1.5 安全转换as?</h4>
+<div class="concept"><div class="term">as?运算符</div><div class="desc">转换失败返回null而不抛异常。</div></div>
+<div class="concept"><div class="term">配合Elvis</div><div class="desc">常与Elvis一起用做类型检查+默认值。</div></div>
+</div>
+<div class="subsection-block" id="ch6_1_6">
+<h4>6.1.6 非空断言!!</h4>
+<div class="concept"><div class="term">!!运算符</div><div class="desc">把可空值强转为非空，null时抛NPE。</div></div>
+<div class="concept"><div class="term">慎用</div><div class="desc">滥用会绕过Kotlin的空安全保护。</div></div>
+</div>
+<div class="subsection-block" id="ch6_1_7">
+<h4>6.1.7 let函数</h4>
+<div class="concept"><div class="term">let</div><div class="desc">把可空值传入lambda，lambda内可视为非空。</div></div>
+<div class="concept"><div class="term">Elvis+let</div><div class="desc">用Elvis提供默认值后再用let处理。</div></div>
+</div>
+<div class="subsection-block" id="ch6_1_8">
+<h4>6.1.8 可空类型的扩展</h4>
+<div class="concept"><div class="term">为可空类型定义扩展</div><div class="desc">扩展函数可定义为可空接收者，null也可调用。</div></div>
+</div>
+<div class="subsection-block" id="ch6_1_9">
+<h4>6.1.9 平台类型</h4>
+<div class="concept"><div class="term">平台类型T!</div><div class="desc">来自Java的类型被Kotlin视为平台类型，可空性未定义。</div></div>
+<div class="concept"><div class="term">T!表示法</div><div class="desc">可当作可空也可当作非空，调用方负责。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch6_2">
+<h3>6.2 基本数据类型</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin基本类型在JVM编译为对应的Java基本类型，无装箱开销。</p>
+<div class="subsection-block" id="ch6_2_1">
+<h4>6.2.1 基本数据类型</h4>
+<div class="concept"><div class="term">基本类型</div><div class="desc">Int、Long、Float、Double、Boolean、Char、Byte、Short。</div></div>
+<div class="concept"><div class="term">底层映射</div><div class="desc">在JVM上编译为对应的Java基本类型(无装箱开销)。</div></div>
+<div class="concept"><div class="term">可空Int</div><div class="desc">Int?编译成Integer对象(装箱)。</div></div>
+</div>
+<div class="subsection-block" id="ch6_2_2">
+<h4>6.2.2 数字转换</h4>
+<div class="concept"><div class="term">不会自动转换</div><div class="desc">Kotlin不会自动把Int转Long，需显式调用toLong()。</div></div>
+<div class="concept"><div class="term">显式转换</div><div class="desc">toByte/toShort/toInt/toLong/toFloat/toDouble/toChar。</div></div>
+</div>
+<div class="subsection-block" id="ch6_2_3">
+<h4>6.2.3 根类型Any和Any?</h4>
+<div class="concept"><div class="term">Any</div><div class="desc">Kotlin所有非空类型的根类型，类似Java的Object。</div></div>
+<div class="concept"><div class="term">Any?</div><div class="desc">Kotlin所有类型(包括可空)的根类型。</div></div>
+<div class="concept"><div class="term">成员差异</div><div class="desc">Any只包含toString/equals/hashCode，Java的Object还有wait/notify等。</div></div>
+</div>
+<div class="subsection-block" id="ch6_2_4">
+<h4>6.2.4 Unit类型</h4>
+<div class="concept"><div class="term">Unit</div><div class="desc">函数无返回值时的类型，是Object的子类，单例。</div></div>
+<div class="concept"><div class="term">Unit vs void</div><div class="desc">Unit可作为类型参数，void不行。</div></div>
+</div>
+<div class="subsection-block" id="ch6_2_5">
+<h4>6.2.5 Nothing类型</h4>
+<div class="concept"><div class="term">Nothing</div><div class="desc">函数永不正常返回(总是抛异常)时的返回类型。</div></div>
+<div class="concept"><div class="term">Nothing作为类型参数</div><div class="desc">Nothing是任何类型的子类型，可作为List&lt;Nothing&gt;等。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch6_3">
+<h3>6.3 集合与数组</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin区分只读与可变集合，与Java集合互操作有平台类型。</p>
+<div class="subsection-block" id="ch6_3_1">
+<h4>6.3.1 可空性和集合</h4>
+<div class="concept"><div class="term">List&lt;Int&gt;?</div><div class="desc">整个列表可空。</div></div>
+<div class="concept"><div class="term">List&lt;Int?&gt;</div><div class="desc">列表本身非空但元素可空。</div></div>
+<div class="concept"><div class="term">List&lt;Int?&gt;?</div><div class="desc">列表和元素都可空。</div></div>
+</div>
+<div class="subsection-block" id="ch6_3_2">
+<h4>6.3.2 只读集合与可变集合</h4>
+<div class="concept"><div class="term">只读集合</div><div class="desc">Collection/Set/List接口只暴露读操作。</div></div>
+<div class="concept"><div class="term">可变集合</div><div class="desc">MutableCollection/MutableSet/MutableList额外暴露写操作。</div></div>
+<div class="concept"><div class="term">Kotlin vs Java</div><div class="desc">Kotlin区分read-only view和mutable view，让意图更清晰。</div></div>
+</div>
+<div class="subsection-block" id="ch6_3_3">
+<h4>6.3.3 与Java的互操作</h4>
+<div class="concept"><div class="term">Java集合</div><div class="desc">Kotlin把Java的List/MutableList等接口看作可变集合。</div></div>
+<div class="concept"><div class="term">平台类型</div><div class="desc">Java返回的集合被视为平台类型，可空性未定义。</div></div>
+<div class="concept"><div class="term">@JvmName</div><div class="desc">用注解为Java调用方区分只读/可变集合名。</div></div>
+</div>
+<div class="subsection-block" id="ch6_3_4">
+<h4>6.3.4 数组</h4>
+<div class="concept"><div class="term">Array&lt;T&gt;</div><div class="desc">Kotlin中数组用Array&lt;T&gt;类表示。</div></div>
+<div class="concept"><div class="term">arrayOf</div><div class="desc">用arrayOf创建数组。</div></div>
+<div class="concept"><div class="term">基本类型数组</div><div class="desc">IntArray/ByteArray等避免装箱。</div></div>
+</div>
+</div>
+</div>
+<div class="part-title" id="part1">📚 第2部分 拥抱Kotlin</div>
+<div class="chapter-card" id="ch7">
+<h2><span class="badge">第7章</span>运算符重载及其他约定</h2>
+<div class="summary">本章学习Kotlin的约定：通过特殊命名函数实现运算符、集合、区间、组件函数和委托属性。</div>
+<div class="section-block" id="ch7_1">
+<h3>7.1 重载算术运算符</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">通过operator关键字重载算术运算符，实现+、-、*、/、%等。</p>
+<div class="subsection-block" id="ch7_1_1">
+<h4>7.1.1 重载二元算术运算</h4>
+<div class="concept"><div class="term">operator关键字</div><div class="desc">用operator修饰函数表示它重载了运算符。</div></div>
+<div class="concept"><div class="term">plus函数</div><div class="desc">定义operator fun plus(other)即可使用+运算符。</div></div>
+<div class="concept"><div class="term">运算符优先级</div><div class="desc">自定义运算符与标准数字运算符有相同优先级。</div></div>
+<div class="concept"><div class="term">Java中调用</div><div class="desc">Kotlin运算符编译成普通函数，Java可像调用函数一样使用。</div></div>
+<div class="code-block">data class Point(val x: Int, val y: Int) {
+    operator fun plus(other: Point) = Point(x + other.x, y + other.y)
+}
+
+val p1 = Point(1, 2) + Point(3, 4)</div>
+</div>
+<div class="subsection-block" id="ch7_1_2">
+<h4>7.1.2 重载复合赋值运算符</h4>
+<div class="concept"><div class="term">plusAssign (+=)</div><div class="desc">定义operator plusAssign函数使用+=运算符。</div></div>
+<div class="concept"><div class="term">可变参数</div><div class="desc">plusAssign只对可变变量(var)有意义。</div></div>
+</div>
+<div class="subsection-block" id="ch7_1_3">
+<h4>7.1.3 重载一元运算符</h4>
+<div class="concept"><div class="term">unary前缀</div><div class="desc">unaryMinus、unaryPlus、not等。</div></div>
+<div class="concept"><div class="term">自增自减</div><div class="desc">inc和dec函数实现++和--。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch7_2">
+<h3>7.2 重载比较运算符</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin中==调用equals，!=调用!equals，比较运算符转换为compareTo。</p>
+<div class="subsection-block" id="ch7_2_1">
+<h4>7.2.1 等号运算符</h4>
+<div class="concept"><div class="term">==</div><div class="desc">Kotlin中==调用equals，自动处理null。</div></div>
+<div class="concept"><div class="term">!=</div><div class="desc">!=-调用!equals，恒等于!=(a,b)。</div></div>
+<div class="concept"><div class="term">恒等</div><div class="desc">===比较引用相等性，等同Java的==。</div></div>
+</div>
+<div class="subsection-block" id="ch7_2_2">
+<h4>7.2.2 排序运算符</h4>
+<div class="concept"><div class="term">compareTo</div><div class="desc">实现Comparable的compareTo函数即可使用&lt; &gt; &lt;= &gt;=。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch7_3">
+<h3>7.3 集合与区间的约定</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">通过get/set/contains/iterator等约定，让运算符用于集合。</p>
+<div class="subsection-block" id="ch7_3_1">
+<h4>7.3.1 通过下标访问元素:get</h4>
+<div class="concept"><div class="term">operator get</div><div class="desc">定义operator fun get(index: Int)即可用[]访问元素。</div></div>
+</div>
+<div class="subsection-block" id="ch7_3_2">
+<h4>7.3.2 in约定</h4>
+<div class="concept"><div class="term">operator contains</div><div class="desc">定义operator fun contains(o: Any)即可用in检查成员。</div></div>
+</div>
+<div class="subsection-block" id="ch7_3_3">
+<h4>7.3.3 rangeTo约定</h4>
+<div class="concept"><div class="term">operator rangeTo</div><div class="desc">定义rangeTo函数即可使用..创建区间。</div></div>
+</div>
+<div class="subsection-block" id="ch7_3_4">
+<h4>7.3.4 在for循环中使用iterator</h4>
+<div class="concept"><div class="term">iterator()</div><div class="desc">for循环调用iterator()获取迭代器。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch7_4">
+<h3>7.4 解构声明和组件函数</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">用componentN函数实现解构声明，方便地从数据中提取多个属性。</p>
+<div class="subsection-block" id="ch7_4_1">
+<h4>7.4.1 解构声明</h4>
+<div class="concept"><div class="term">解构</div><div class="desc">val (a, b) = pair一次声明多个变量。</div></div>
+<div class="concept"><div class="term">componentN</div><div class="desc">数据类自动生成component1、component2等。</div></div>
+<div class="concept"><div class="term">Lambda参数</div><div class="desc">map.forEach { (k, v) -&gt; ... }支持解构。</div></div>
+<div class="code-block">data class User(val name: String, val age: Int)
+val (n, a) = User(&quot;Alice&quot;, 29)</div>
+</div>
+<div class="subsection-block" id="ch7_4_2">
+<h4>7.4.2 集合的元素访问</h4>
+<div class="concept"><div class="term">Pair</div><div class="desc">Kotlin的Pair类支持解构。</div></div>
+<div class="concept"><div class="term">Map迭代</div><div class="desc">for ((k, v) in map)解构遍历Map。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch7_5">
+<h3>7.5 重用属性访问的逻辑：委托属性</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">委托属性让你能把属性的getter/setter逻辑委托给另一个对象。</p>
+<div class="subsection-block" id="ch7_5_1">
+<h4>7.5.1 委托属性</h4>
+<div class="concept"><div class="term">by关键字</div><div class="desc">class Foo { var p: Type by Delegate() }。</div></div>
+<div class="concept"><div class="term">延迟属性</div><div class="desc">lazy()函数实现属性的延迟初始化。</div></div>
+<div class="concept"><div class="term">可观察属性</div><div class="desc">Delegates.observable实现属性变化监听。</div></div>
+</div>
+<div class="subsection-block" id="ch7_5_2">
+<h4>7.5.2 自定义委托</h4>
+<div class="concept"><div class="term">getValue/setValue</div><div class="desc">实现ReadOnlyProperty或ReadWriteProperty接口。</div></div>
+<div class="concept"><div class="term">operator fun</div><div class="desc">自定义委托也通过operator getValue和setValue实现。</div></div>
+</div>
+<div class="subsection-block" id="ch7_5_3">
+<h4>7.5.3 Map作为委托属性</h4>
+<div class="concept"><div class="term">Map委托</div><div class="desc">把属性值存储在Map中，常用于动态属性对象(如JSON)。</div></div>
+</div>
+</div>
+</div>
+<div class="chapter-card" id="ch8">
+<h2><span class="badge">第8章</span>高阶函数</h2>
+<div class="summary">本章深入高阶函数：函数类型、声明高阶函数、内联函数消除lambda开销、非局部返回和标签。</div>
+<div class="section-block" id="ch8_1">
+<h3>8.1 声明高阶函数</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">高阶函数：以另一个函数作为参数或返回值的函数。</p>
+<div class="subsection-block" id="ch8_1_1">
+<h4>8.1.1 函数类型</h4>
+<div class="concept"><div class="term">函数类型语法</div><div class="desc">(参数类型) -&gt; 返回类型，如 (Int, Int) -&gt; Int。</div></div>
+<div class="concept"><div class="term">可空函数类型</div><div class="desc">((Int, Int) -&gt; Int)? 表示整个函数类型可空。</div></div>
+<div class="concept"><div class="term">可空返回</div><div class="desc">(Int) -&gt; Int? 表示返回类型可空。</div></div>
+<div class="concept"><div class="term">参数名</div><div class="desc">函数类型可声明参数名，提升可读性。</div></div>
+<div class="code-block">val sum: (Int, Int) -&gt; Int = { x, y -&gt; x + y }
+val action: () -&gt; Unit = { println(&quot;action&quot;) }</div>
+</div>
+<div class="subsection-block" id="ch8_1_2">
+<h4>8.1.2 调用作为参数的函数</h4>
+<div class="concept"><div class="term">调用方式</div><div class="desc">在函数体中用括号调用函数类型参数。</div></div>
+<div class="concept"><div class="term">filter实现</div><div class="desc">通过参数调用实现类似filter的高阶函数。</div></div>
+</div>
+<div class="subsection-block" id="ch8_1_3">
+<h4>8.1.3 在Java中使用函数类型</h4>
+<div class="concept"><div class="term">FunctionN接口</div><div class="desc">函数类型编译成Function0/Function1/...等接口。</div></div>
+<div class="concept"><div class="term">invoke方法</div><div class="desc">每个FunctionN接口有invoke方法。</div></div>
+<div class="concept"><div class="term">Java 8 lambda</div><div class="desc">Java 8 lambda自动转Kotlin函数类型。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch8_2">
+<h3>8.2 内联函数</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">inline关键字消除lambda带来的运行时开销。</p>
+<div class="subsection-block" id="ch8_2_1">
+<h4>8.2.1 内联函数如何运作</h4>
+<div class="concept"><div class="term">inline关键字</div><div class="desc">用inline修饰函数，编译器把函数体和lambda内联到调用处。</div></div>
+<div class="concept"><div class="term">性能</div><div class="desc">消除lambda的对象创建和函数调用开销。</div></div>
+<div class="concept"><div class="term">限制</div><div class="desc">内联函数的lambda参数不能存储在变量中。</div></div>
+</div>
+<div class="subsection-block" id="ch8_2_2">
+<h4>8.2.2 内联函数的限制</h4>
+<div class="concept"><div class="term">不能内联</div><div class="desc">函数体内调用lambda的次数未确定时不能inline。</div></div>
+<div class="concept"><div class="term">noinline</div><div class="desc">noinline标记不内联的lambda参数。</div></div>
+</div>
+<div class="subsection-block" id="ch8_2_3">
+<h4>8.2.3 内联函数与资源管理</h4>
+<div class="concept"><div class="term">use函数</div><div class="desc">Kotlin标准库的use函数实现try-with-resources。</div></div>
+<div class="concept"><div class="term">Closeable</div><div class="desc">use要求资源实现Closeable接口。</div></div>
+<div class="code-block">fun readFile(path: String) {
+    BufferedReader(FileReader(path)).use { println(it.readLine()) }
+}</div>
+</div>
+</div>
+<div class="section-block" id="ch8_3">
+<h3>8.3 高阶函数中的控制流</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">lambda中的return是非局部返回，需要inline支持。</p>
+<div class="subsection-block" id="ch8_3_1">
+<h4>8.3.1 lambda中的返回</h4>
+<div class="concept"><div class="term">非局部返回</div><div class="desc">lambda中的return返回外层函数。</div></div>
+<div class="concept"><div class="term">inline支持</div><div class="desc">非局部返回只在inline函数中有效。</div></div>
+<div class="concept"><div class="term">标签返回</div><div class="desc">用标签@label和return@label返回lambda本身。</div></div>
+<div class="code-block">fun foo() {
+    listOf(1, 2, 3).forEach {
+        if (it == 2) return  // 返回foo()
+    }
+    println(&quot;done&quot;)  // 不会执行
+}</div>
+</div>
+<div class="subsection-block" id="ch8_3_2">
+<h4>8.3.2 标签</h4>
+<div class="concept"><div class="term">标签</div><div class="desc">用label@声明标签，return@label从lambda返回。</div></div>
+<div class="concept"><div class="term">隐式标签</div><div class="desc">lambda作为函数参数时，函数名可作标签。</div></div>
+</div>
+<div class="subsection-block" id="ch8_3_3">
+<h4>8.3.3 匿名函数</h4>
+<div class="concept"><div class="term">匿名函数</div><div class="desc">fun(x: Int): Int { return x * 2 }是显式lambda。</div></div>
+<div class="concept"><div class="term">局部返回</div><div class="desc">匿名函数中的return只返回匿名函数本身。</div></div>
+</div>
+</div>
+</div>
+<div class="chapter-card" id="ch9">
+<h2><span class="badge">第9章</span>泛型</h2>
+<div class="summary">本章深入Kotlin泛型：泛型函数/类、类型擦除与实化类型参数、变型（声明点/使用点）。</div>
+<div class="section-block" id="ch9_1">
+<h3>9.1 泛型类型参数</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin泛型与Java类似但有重要区别。</p>
+<div class="subsection-block" id="ch9_1_1">
+<h4>9.1.1 泛型函数和属性</h4>
+<div class="concept"><div class="term">泛型函数</div><div class="desc">fun &lt;T&gt; List&lt;T&gt;.slice(indices: IntRange): List&lt;T&gt;。</div></div>
+<div class="concept"><div class="term">类型推导</div><div class="desc">调用泛型函数时类型实参通常可省略。</div></div>
+<div class="concept"><div class="term">泛型属性</div><div class="desc">val &lt;T&gt; List&lt;T&gt;.penultimate: T? 声明泛型扩展属性。</div></div>
+</div>
+<div class="subsection-block" id="ch9_1_2">
+<h4>9.1.2 泛型类</h4>
+<div class="concept"><div class="term">泛型类</div><div class="desc">class Box&lt;T&gt;(val value: T)。</div></div>
+<div class="concept"><div class="term">无原生态类型</div><div class="desc">Kotlin不允许List这样的原生态类型，必须有类型实参。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch9_2">
+<h3>9.2 运行时的泛型：擦除和实化类型参数</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">JVM上泛型会被擦除，但Kotlin的reified关键字可以在inline函数中保留类型信息。</p>
+<div class="subsection-block" id="ch9_2_1">
+<h4>9.2.1 运行时的泛型擦除</h4>
+<div class="concept"><div class="term">类型擦除</div><div class="desc">JVM泛型在运行时被擦除，List&lt;String&gt;和List&lt;Int&gt;都是List。</div></div>
+<div class="concept"><div class="term">is检查受限</div><div class="desc">运行时不能做x is List&lt;String&gt;检查。</div></div>
+<div class="concept"><div class="term">cast擦除</div><div class="desc">List&lt;String&gt;强转时不检查类型，可能造成运行时错误。</div></div>
+</div>
+<div class="subsection-block" id="ch9_2_2">
+<h4>9.2.2 实化类型参数</h4>
+<div class="concept"><div class="term">reified关键字</div><div class="desc">inline fun &lt;reified T&gt; isA(value: Any) = value is T。</div></div>
+<div class="concept"><div class="term">配合inline</div><div class="desc">reified必须与inline一起使用。</div></div>
+<div class="concept"><div class="term">标准库</div><div class="desc">filterIsInstance、singletonList等使用reified。</div></div>
+<div class="code-block">inline fun &lt;reified T&gt; isA(value: Any) = value is T
+
+val items = listOf(&quot;one&quot;, 2, &quot;three&quot;)
+items.filterIsInstance&lt;String&gt;()  // [&quot;one&quot;, &quot;three&quot;]</div>
+</div>
+<div class="subsection-block" id="ch9_2_3">
+<h4>9.2.3 实化类型参数的限制</h4>
+<div class="concept"><div class="term">检查实例</div><div class="desc">可以用is检查、as转换、获取class。</div></div>
+<div class="concept"><div class="term">不能实例化</div><div class="desc">不能创建T的实例(无构造函数引用)。</div></div>
+<div class="concept"><div class="term">不能调用伴生</div><div class="desc">不能调用T的伴生对象方法。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch9_3">
+<h3>9.3 变型：泛型和子类型化</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">变型描述带类型参数的泛型类型之间的子类型关系。</p>
+<div class="subsection-block" id="ch9_3_1">
+<h4>9.3.1 为什么会有变型：给函数传递实参</h4>
+<div class="concept"><div class="term">协变问题</div><div class="desc">List&lt;Any&gt;能接受List&lt;String&gt;吗？</div></div>
+<div class="concept"><div class="term">协变</div><div class="desc">Consumer&lt;out T&gt; 允许Consumer&lt;Cat&gt;赋值给Consumer&lt;Animal&gt;。</div></div>
+<div class="concept"><div class="term">逆变</div><div class="desc">Producer&lt;in T&gt; 允许Producer&lt;Animal&gt;赋值给Producer&lt;Cat&gt;。</div></div>
+</div>
+<div class="subsection-block" id="ch9_3_2">
+<h4>9.3.2 类、类型和子类型</h4>
+<div class="concept"><div class="term">子类型</div><div class="desc">A是B的子类型意味着A值可以用在需要B值的地方。</div></div>
+<div class="concept"><div class="term">不变型</div><div class="desc">默认泛型类是不变型的，如MutableList&lt;T&gt;。</div></div>
+</div>
+<div class="subsection-block" id="ch9_3_3">
+<h4>9.3.3 协变：保留子类型化关系</h4>
+<div class="concept"><div class="term">out关键字</div><div class="desc">class Producer&lt;out T&gt;，T只出现在输出位置。</div></div>
+<div class="concept"><div class="term">只读List</div><div class="desc">List&lt;out T&gt;是协变的，所以List&lt;String&gt;是List&lt;Any&gt;的子类型。</div></div>
+</div>
+<div class="subsection-block" id="ch9_3_4">
+<h4>9.3.4 逆变：反转子类型化关系</h4>
+<div class="concept"><div class="term">in关键字</div><div class="desc">class Consumer&lt;in T&gt;，T只出现在输入位置。</div></div>
+<div class="concept"><div class="term">Function类型</div><div class="desc">(Animal) -&gt; Int是(String) -&gt; Int的超类型。</div></div>
+</div>
+<div class="subsection-block" id="ch9_3_5">
+<h4>9.3.5 使用点变型：在类型出现的地方指定</h4>
+<div class="concept"><div class="term">使用点变型</div><div class="desc">在具体使用泛型时指定out/in，等同Java通配符? extends / ? super。</div></div>
+<div class="concept"><div class="term">声明点变型</div><div class="desc">在类声明时指定out/in，更彻底。</div></div>
+</div>
+<div class="subsection-block" id="ch9_3_6">
+<h4>9.3.6 *投影：让类型参数都为Nothing</h4>
+<div class="concept"><div class="term">*星号投影</div><div class="desc">MutableList&lt;*&gt;等于MutableList&lt;out Any&gt;，元素类型未知。</div></div>
+<div class="concept"><div class="term">安全</div><div class="desc">不能往MutableList&lt;*&gt;写入(只有Nothing是它子类型)。</div></div>
+</div>
+</div>
+</div>
+<div class="chapter-card" id="ch10">
+<h2><span class="badge">第10章</span>注解与反射</h2>
+<div class="summary">本章讲解注解与反射：声明/应用注解、注解目标、定制JSON序列化（JKid库）、反射API。</div>
+<div class="section-block" id="ch10_1">
+<h3>10.1 声明并应用注解</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin的注解语法与Java类似但有关键区别。</p>
+<div class="subsection-block" id="ch10_1_1">
+<h4>10.1.1 应用注解</h4>
+<div class="concept"><div class="term">@注解</div><div class="desc">以@开头的注解放在声明前。</div></div>
+<div class="concept"><div class="term">实参语法</div><div class="desc">注解实参类似函数调用：@Deprecated(message=&quot;...&quot;)。</div></div>
+<div class="concept"><div class="term">实参类型</div><div class="desc">基本类型、String、枚举、类引用、其他注解、数组。</div></div>
+<div class="concept"><div class="term">const属性</div><div class="desc">用const val标记的属性才能作为注解实参。</div></div>
+</div>
+<div class="subsection-block" id="ch10_1_2">
+<h4>10.1.2 注解目标</h4>
+<div class="concept"><div class="term">使用点目标</div><div class="desc">指定注解应用到哪个元素，如@field:Rule、@get:Rule。</div></div>
+<div class="concept"><div class="term">目标列表</div><div class="desc">property/field/get/set/receiver/param/setparam/delegate/file。</div></div>
+<div class="concept"><div class="term">file目标</div><div class="desc">应用到文件的注解必须放在package指令之前。</div></div>
+</div>
+<div class="subsection-block" id="ch10_1_3">
+<h4>10.1.3 用注解控制Java API</h4>
+<div class="concept"><div class="term">@JvmName</div><div class="desc">改变Kotlin生成的Java方法/字段名。</div></div>
+<div class="concept"><div class="term">@JvmStatic</div><div class="desc">把伴生对象方法暴露成Java静态方法。</div></div>
+<div class="concept"><div class="term">@JvmOverloads</div><div class="desc">为带默认参数的函数生成多个重载。</div></div>
+<div class="concept"><div class="term">@JvmField</div><div class="desc">把属性暴露成没有访问器的Java字段。</div></div>
+</div>
+<div class="subsection-block" id="ch10_1_4">
+<h4>10.1.4 注解定制JSON序列化</h4>
+<div class="concept"><div class="term">@JsonExclude</div><div class="desc">标记不参与序列化的属性。</div></div>
+<div class="concept"><div class="term">@JsonName</div><div class="desc">自定义序列化时的属性名。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch10_2">
+<h3>10.2 反射：在运行时对Kotlin对象进行自省</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin反射API：KClass、KFunction、KProperty等。</p>
+<div class="subsection-block" id="ch10_2_1">
+<h4>10.2.1 Kotlin反射API</h4>
+<div class="concept"><div class="term">KClass</div><div class="desc">对应Java的Class，包含Kotlin特有信息。</div></div>
+<div class="concept"><div class="term">::class</div><div class="desc">用::class获取类的KClass。</div></div>
+<div class="concept"><div class="term">KFunction</div><div class="desc">函数引用。</div></div>
+<div class="concept"><div class="term">KProperty</div><div class="desc">属性引用。</div></div>
+<div class="code-block">val c = Person::class
+println(c.simpleName)  // Person
+val age = Person::age</div>
+</div>
+<div class="subsection-block" id="ch10_2_2">
+<h4>10.2.2 反射实现对象序列化</h4>
+<div class="concept"><div class="term">JKid库</div><div class="desc">本章示例：用反射实现JSON序列化/反序列化。</div></div>
+<div class="concept"><div class="term">KCallable.call</div><div class="desc">通过反射调用函数/构造函数。</div></div>
+</div>
+</div>
+</div>
+<div class="chapter-card" id="ch11">
+<h2><span class="badge">第11章</span>DSL构建</h2>
+<div class="summary">本章学习用Kotlin构建领域特定语言：DSL概念、带接收者的lambda、invoke约定、HTML/Gradle/Ktor等实例。</div>
+<div class="section-block" id="ch11_1">
+<h3>11.1 从API到DSL</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">DSL让API更具表现力，更符合语言习惯。</p>
+<div class="subsection-block" id="ch11_1_1">
+<h4>11.1.1 DSL概念</h4>
+<div class="concept"><div class="term">通用语言</div><div class="desc">解决各类问题，能力全面。</div></div>
+<div class="concept"><div class="term">领域特定语言</div><div class="desc">专注特定任务，DSL更简洁。</div></div>
+<div class="concept"><div class="term">声明式</div><div class="desc">DSL更趋向声明式而非命令式。</div></div>
+<div class="concept"><div class="term">典型例子</div><div class="desc">SQL、正则表达式。</div></div>
+</div>
+<div class="subsection-block" id="ch11_1_2">
+<h4>11.1.2 内部DSL</h4>
+<div class="concept"><div class="term">内部DSL</div><div class="desc">用宿主语言实现的DSL，Kotlin/Java都可。</div></div>
+<div class="concept"><div class="term">外部DSL</div><div class="desc">独立语法的DSL，如SQL。</div></div>
+<div class="concept"><div class="term">Exposed</div><div class="desc">Kotlin实现的SQL内部DSL。</div></div>
+</div>
+<div class="subsection-block" id="ch11_1_3">
+<h4>11.1.3 DSL的结构</h4>
+<div class="concept"><div class="term">结构化API</div><div class="desc">DSL通过lambda嵌套或链式调用形成结构。</div></div>
+<div class="concept"><div class="term">组合查询</div><div class="desc">把多个操作组合成更大结构。</div></div>
+<div class="concept"><div class="term">复用上下文</div><div class="desc">在多个调用间共享上下文。</div></div>
+</div>
+<div class="subsection-block" id="ch11_1_4">
+<h4>11.1.4 HTML DSL示例</h4>
+<div class="concept"><div class="term">kotlinx.html</div><div class="desc">类型安全的HTML构建器。</div></div>
+<div class="concept"><div class="term">动态生成</div><div class="desc">可在DSL中使用任意Kotlin代码。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch11_2">
+<h3>11.2 构建结构化的API：带接收者的lambda</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">带接收者的lambda是Kotlin DSL的核心。</p>
+<div class="subsection-block" id="ch11_2_1">
+<h4>11.2.1 带接收者的lambda和类型安全的构建器</h4>
+<div class="concept"><div class="term">带接收者类型</div><div class="desc">类型.() -&gt; Unit形式的lambda。</div></div>
+<div class="concept"><div class="term">this引用</div><div class="desc">lambda内用this引用接收者。</div></div>
+<div class="concept"><div class="term">嵌套结构</div><div class="desc">通过外层lambda的this在内层访问外层上下文。</div></div>
+</div>
+<div class="subsection-block" id="ch11_2_2">
+<h4>11.2.2 scope control：apply与also</h4>
+<div class="concept"><div class="term">apply</div><div class="desc">返回接收者，用于配置。</div></div>
+<div class="concept"><div class="term">also</div><div class="desc">返回接收者，用于副作用。</div></div>
+<div class="concept"><div class="term">run</div><div class="desc">返回lambda结果。</div></div>
+<div class="concept"><div class="term">let</div><div class="desc">返回lambda结果，可空值处理。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch11_3">
+<h3>11.3 使用invoke约定构建更灵活的代码块嵌套</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">invoke约定让对象可以像函数一样被调用。</p>
+<div class="subsection-block" id="ch11_3_1">
+<h4>11.3.1 invoke约定</h4>
+<div class="concept"><div class="term">operator invoke</div><div class="desc">定义operator fun invoke(...)让对象可像函数调用。</div></div>
+<div class="concept"><div class="term">对象当函数</div><div class="desc">任何对象都可以通过invoke变成可调用。</div></div>
+</div>
+<div class="subsection-block" id="ch11_3_2">
+<h4>11.3.2 invoke的多种用法</h4>
+<div class="concept"><div class="term">可调用引用</div><div class="desc">对象像函数一样被调用。</div></div>
+<div class="concept"><div class="term">DSL嵌套</div><div class="desc">通过invoke实现DSL的复杂嵌套。</div></div>
+</div>
+</div>
+<div class="section-block" id="ch11_4">
+<h3>11.4 实践中的Kotlin DSL</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin生态中的DSL实例：测试框架、HTML、Gradle构建脚本等。</p>
+<div class="subsection-block" id="ch11_4_1">
+<h4>11.4.1 测试框架中的DSL</h4>
+<div class="concept"><div class="term">kotlintest</div><div class="desc">Kotlin的第三方测试框架，DSL风格断言。</div></div>
+<div class="concept"><div class="term">中缀调用</div><div class="desc">string should startWith(&quot;foo&quot;)用中缀更易读。</div></div>
+</div>
+<div class="subsection-block" id="ch11_4_2">
+<h4>11.4.2 Gradle构建脚本</h4>
+<div class="concept"><div class="term">gradle-script-kotlin</div><div class="desc">用Kotlin DSL写Gradle脚本。</div></div>
+<div class="concept"><div class="term">依赖DSL</div><div class="desc">dependencies { implementation(&quot;...&quot;) }。</div></div>
+</div>
+<div class="subsection-block" id="ch11_4_3">
+<h4>11.4.3 HTML和数据库</h4>
+<div class="concept"><div class="term">kotlinx.html</div><div class="desc">HTML构建DSL。</div></div>
+<div class="concept"><div class="term">Exposed</div><div class="desc">Kotlin SQL DSL和ORM框架。</div></div>
+</div>
+</div>
+</div>
+<div class="part-title" id="appendices">📋 附录</div>
+<div class="chapter-card" id="appA">
+<h2><span class="badge" style="background:var(--accent)">附录A</span>构建Kotlin项目</h2>
+<div class="summary" style="border-left-color:var(--accent)">Kotlin项目的构建工具：Maven、Gradle及IntelliJ IDEA项目配置。</div>
+<div class="section-block" id="appA_1">
+<h3>A.1 用Maven构建</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Maven插件配置Kotlin项目。</p>
+<div class="subsection-block" id="appA_1_1">
+<h4>Maven插件</h4>
+<div class="concept"><div class="term">kotlin-maven-plugin</div><div class="desc">Kotlin官方Maven插件，配置sourceDirectory编译Kotlin源码。</div></div>
+<div class="concept"><div class="term">Maven生命周期</div><div class="desc">Kotlin编译绑定到compile阶段。</div></div>
+<div class="concept"><div class="term">kotlin-stdlib依赖</div><div class="desc">项目需要依赖kotlin-stdlib才能运行。</div></div>
+<div class="code-block">&lt;build&gt;
+  &lt;sourceDirectory&gt;${project.basedir}/src/main/kotlin&lt;/sourceDirectory&gt;
+  &lt;plugins&gt;
+    &lt;plugin&gt;
+      &lt;groupId&gt;org.jetbrains.kotlin&lt;/groupId&gt;
+      &lt;artifactId&gt;kotlin-maven-plugin&lt;/artifactId&gt;
+    &lt;/plugin&gt;
+  &lt;/plugins&gt;
+&lt;/build&gt;</div>
+</div>
+</div>
+<div class="section-block" id="appA_2">
+<h3>A.2 用Gradle构建</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Gradle脚本配置Kotlin项目，是Kotlin生态的推荐方式。</p>
+<div class="subsection-block" id="appA_2_1">
+<h4>Gradle插件</h4>
+<div class="concept"><div class="term">kotlin(&quot;jvm&quot;)插件</div><div class="desc">Gradle中声明Kotlin JVM插件。</div></div>
+<div class="concept"><div class="term">kotlin-stdlib</div><div class="desc">apply kotlin(&quot;jvm&quot;)自动添加stdlib依赖。</div></div>
+<div class="concept"><div class="term">Kotlin DSL</div><div class="desc">build.gradle.kts用Kotlin DSL写Gradle脚本。</div></div>
+<div class="code-block">plugins {
+    kotlin(&quot;jvm&quot;) version &quot;1.6.0&quot;
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+    implementation(kotlin(&quot;stdlib&quot;))
+}</div>
+</div>
+</div>
+</div>
+<div class="chapter-card" id="appB">
+<h2><span class="badge" style="background:var(--accent)">附录B</span>Kotlin代码的文档化</h2>
+<div class="summary" style="border-left-color:var(--accent)">KDoc是Kotlin的文档注释语法，类似JavaDoc。</div>
+<div class="section-block" id="appB_1">
+<h3>B.1 KDoc语法</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">/** ... */是KDoc注释，Markdown风格。</p>
+<div class="subsection-block" id="appB_1_1">
+<h4>KDoc基本语法</h4>
+<div class="concept"><div class="term">KDoc注释</div><div class="desc">用 /** 开头 */ 结尾的注释。</div></div>
+<div class="concept"><div class="term">Markdown</div><div class="desc">KDoc支持Markdown语法。</div></div>
+<div class="concept"><div class="term">@param</div><div class="desc">标记函数参数。</div></div>
+<div class="concept"><div class="term">@return</div><div class="desc">标记函数返回值。</div></div>
+<div class="concept"><div class="term">@throws</div><div class="desc">标记抛出的异常。</div></div>
+<div class="concept"><div class="term">@see</div><div class="desc">参考链接。</div></div>
+<div class="concept"><div class="term">@receiver</div><div class="desc">扩展函数接收者说明。</div></div>
+<div class="concept"><div class="term">@sample</div><div class="desc">示例代码引用。</div></div>
+<div class="code-block">/**
+ * 计算两个数的和。
+ *
+ * @param x 第一个数
+ * @param y 第二个数
+ * @return x和y的和
+ * @sample samples.Sum.sum
+ */
+fun sum(x: Int, y: Int) = x + y</div>
+</div>
+</div>
+</div>
+<div class="chapter-card" id="appC">
+<h2><span class="badge" style="background:var(--accent)">附录C</span>Kotlin生态系统</h2>
+<div class="summary" style="border-left-color:var(--accent)">Kotlin生态：测试框架、依赖注入、JSON、HTTP客户端、协程等。</div>
+<div class="section-block" id="appC_1">
+<h3>C.1 测试框架</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin生态中的测试工具。</p>
+<div class="subsection-block" id="appC_1_1">
+<h4>主要测试框架</h4>
+<div class="concept"><div class="term">JUnit 5</div><div class="desc">Java生态主流测试框架，与Kotlin完全兼容。</div></div>
+<div class="concept"><div class="term">Kotlin Test</div><div class="desc">kotlin.test包提供Kotlin风格的测试API。</div></div>
+<div class="concept"><div class="term">kotlintest/Kotest</div><div class="desc">Kotlin原生测试框架，DSL风格断言。</div></div>
+<div class="concept"><div class="term">MockK</div><div class="desc">Kotlin的Mock框架，简化final类的mock。</div></div>
+</div>
+</div>
+<div class="section-block" id="appC_2">
+<h3>C.2 依赖注入</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin生态中的依赖注入框架。</p>
+<div class="subsection-block" id="appC_2_1">
+<h4>主要DI框架</h4>
+<div class="concept"><div class="term">Koin</div><div class="desc">纯Kotlin的轻量DI框架，DSL风格。</div></div>
+<div class="concept"><div class="term">Dagger</div><div class="desc">Google的DI框架，与Kotlin兼容。</div></div>
+<div class="concept"><div class="term">Kodein</div><div class="desc">Kotlin的简单DI容器。</div></div>
+</div>
+</div>
+<div class="section-block" id="appC_3">
+<h3>C.3 JSON序列化</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin的JSON处理库。</p>
+<div class="subsection-block" id="appC_3_1">
+<h4>主要JSON库</h4>
+<div class="concept"><div class="term">kotlinx.serialization</div><div class="desc">JetBrains官方Kotlin序列化库。</div></div>
+<div class="concept"><div class="term">Jackson</div><div class="desc">Java生态主流JSON库，与Kotlin兼容。</div></div>
+<div class="concept"><div class="term">Gson</div><div class="desc">Google的JSON库。</div></div>
+<div class="concept"><div class="term">moshi</div><div class="desc">Square的JSON库。</div></div>
+</div>
+</div>
+<div class="section-block" id="appC_4">
+<h3>C.4 HTTP客户端</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin的HTTP客户端。</p>
+<div class="subsection-block" id="appC_4_1">
+<h4>主要HTTP库</h4>
+<div class="concept"><div class="term">Ktor client</div><div class="desc">JetBrains官方Kotlin异步HTTP客户端。</div></div>
+<div class="concept"><div class="term">OkHttp + Retrofit</div><div class="desc">Java生态主流HTTP栈。</div></div>
+<div class="concept"><div class="term">Fuel</div><div class="desc">Kotlin网络库。</div></div>
+</div>
+</div>
+<div class="section-block" id="appC_5">
+<h3>C.5 协程</h3>
+<p style="font-size:13.5px;color:#555;margin:6px 0;">Kotlin协程是异步编程的核心。</p>
+<div class="subsection-block" id="appC_5_1">
+<h4>kotlinx.coroutines</h4>
+<div class="concept"><div class="term">协程</div><div class="desc">Kotlin协程是轻量级线程，结构化并发。</div></div>
+<div class="concept"><div class="term">suspend函数</div><div class="desc">用suspend修饰可挂起的函数。</div></div>
+<div class="concept"><div class="term">协程构建器</div><div class="desc">launch、async、runBlocking。</div></div>
+<div class="concept"><div class="term">Flow</div><div class="desc">冷流，用于异步数据流。</div></div>
+</div>
+</div>
+</div>
+<footer>由 Claude 基于《Kotlin实战》(Dmitry Jemerov & Svetlana Isakova 著) 整理生成 · 知识脑图 v1.0</footer>
+</main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Toggle nav
+  document.querySelectorAll('.nav .toggle').forEach(function(t) {
+    t.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var ul = t.nextElementSibling;
+      if (ul && ul.tagName === 'UL') {
+        var isOpen = ul.classList.toggle('open');
+        t.classList.toggle('open', isOpen);
+      }
+    });
+  });
+  // Expand all
+  window.expandAll = function() {
+    document.querySelectorAll('.nav ul').forEach(function(u){ u.classList.add('open'); });
+    document.querySelectorAll('.nav .toggle').forEach(function(t){ t.classList.add('open'); });
+  };
+  // Collapse all
+  window.collapseAll = function() {
+    document.querySelectorAll('.nav ul').forEach(function(u){ u.classList.remove('open'); });
+    document.querySelectorAll('.nav .toggle').forEach(function(t){ t.classList.remove('open'); });
+  };
+  // Auto-expand ancestor of target on anchor click
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (!target) return;
+      e.preventDefault();
+      // expand all parents in nav
+      var navToggle = document.querySelector('.nav .toggle[data-target="' + id + '"]');
+      if (navToggle) {
+        var parent = navToggle.parentElement;
+        while (parent && parent !== document) {
+          if (parent.tagName === 'UL') {
+            parent.classList.add('open');
+            var prev = parent.previousElementSibling;
+            if (prev && prev.classList.contains('toggle')) prev.classList.add('open');
+          }
+          parent = parent.parentElement;
+        }
+      }
+      target.scrollIntoView({behavior: 'smooth', block: 'start'});
+    });
+  });
+});
+</script>
+</body>
+</html>
