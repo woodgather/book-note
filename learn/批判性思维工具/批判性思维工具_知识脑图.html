@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>批判性思维工具 · 30天知识脑图</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --panel-2: #fafbff;
+    --text: #1f2937;
+    --text-soft: #4b5563;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --line-soft: #eef0f4;
+    --accent: #4f46e5;
+    --accent-soft: #eef2ff;
+    --accent-2: #0ea5e9;
+    --accent-2-soft: #e0f2fe;
+    --warn: #f59e0b;
+    --warn-soft: #fff7ed;
+    --ok: #10b981;
+    --ok-soft: #ecfdf5;
+    --shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 4px 14px rgba(15, 23, 42, .06);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Top header */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0ea5e9 100%);
+    color: #fff;
+    padding: 14px 22px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  }
+  .topbar .brand {
+    font-weight: 700; letter-spacing: .5px; font-size: 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .topbar .brand .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #fde68a; box-shadow: 0 0 0 3px rgba(253,230,138,.35);
+  }
+  .topbar .meta { color: rgba(255,255,255,.85); font-size: 13px; }
+  .topbar .spacer { flex: 1; }
+  .topbar .actions { display: flex; gap: 8px; }
+  .topbar button {
+    border: 1px solid rgba(255,255,255,.35);
+    background: rgba(255,255,255,.12);
+    color: #fff; padding: 6px 12px;
+    border-radius: 999px; cursor: pointer; font-size: 13px;
+    transition: all .2s;
+  }
+  .topbar button:hover { background: rgba(255,255,255,.22); }
+
+  /* Layout */
+  .layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 56px);
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: relative; height: auto !important; }
+  }
+
+  /* Sidebar (vertical, collapsible) */
+  .sidebar {
+    background: var(--panel);
+    border-right: 1px solid var(--line);
+    padding: 18px 14px 28px 14px;
+    overflow-y: auto;
+    height: calc(100vh - 56px);
+    position: sticky; top: 56px;
+  }
+  .sidebar h2 {
+    font-size: 13px; letter-spacing: 1.5px; color: var(--muted);
+    text-transform: uppercase;
+    margin: 0 6px 12px 6px; font-weight: 700;
+  }
+  .nav-group { margin-bottom: 6px; }
+  .nav-toggle {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 14px;
+    display: flex; align-items: center; gap: 8px;
+    transition: background .15s;
+  }
+  .nav-toggle:hover { background: var(--line-soft); }
+  .nav-toggle .arrow {
+    display: inline-block; transition: transform .2s;
+    color: var(--muted); font-size: 12px;
+  }
+  .nav-toggle[aria-expanded="true"] .arrow { transform: rotate(90deg); }
+  .nav-toggle .tag {
+    margin-left: auto; font-size: 11px;
+    background: var(--accent-soft); color: var(--accent);
+    padding: 2px 8px; border-radius: 999px; font-weight: 600;
+  }
+  .nav-children {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .25s ease;
+    padding-left: 14px;
+    border-left: 2px solid var(--line-soft);
+    margin-left: 14px;
+  }
+  .nav-children.open { max-height: 1200px; }
+  .nav-children a {
+    display: block;
+    padding: 6px 10px;
+    color: var(--text-soft);
+    font-size: 13px;
+    border-radius: 6px;
+    margin: 2px 0;
+    transition: all .15s;
+  }
+  .nav-children a:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .nav-children a.active {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+  .nav-children a .day-tag {
+    display: inline-block; width: 22px; text-align: center;
+    color: var(--muted); font-size: 11px; margin-right: 4px;
+  }
+
+  /* Main content */
+  .content {
+    padding: 28px 36px 80px 36px;
+    max-width: 980px;
+  }
+  .breadcrumb {
+    color: var(--muted); font-size: 13px; margin-bottom: 12px;
+  }
+  .breadcrumb a { color: var(--muted); }
+  .breadcrumb a:hover { color: var(--accent); }
+
+  .cover {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 36px 36px 40px 36px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+    position: relative; overflow: hidden;
+  }
+  .cover::before {
+    content: ""; position: absolute; right: -60px; top: -60px;
+    width: 240px; height: 240px;
+    background: rgba(255,255,255,.08);
+    border-radius: 50%;
+  }
+  .cover h1 {
+    font-size: 30px; margin: 0 0 8px 0; font-weight: 800; letter-spacing: 1px;
+  }
+  .cover .sub { font-size: 15px; opacity: .92; margin-bottom: 16px; }
+  .cover .authors { font-size: 13px; opacity: .82; }
+  .cover .quick {
+    margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .cover .chip {
+    background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.3);
+    padding: 4px 10px; border-radius: 999px; font-size: 12px;
+  }
+
+  h2.section {
+    font-size: 22px; color: var(--text);
+    margin: 32px 0 14px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--line);
+    display: flex; align-items: center; gap: 10px;
+  }
+  h2.section .badge {
+    display: inline-block; background: var(--accent-soft); color: var(--accent);
+    padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+  }
+  h3 { font-size: 17px; color: var(--text); margin: 22px 0 10px 0; }
+  h4 { font-size: 15px; color: var(--text-soft); margin: 18px 0 8px 0; }
+
+  p { margin: 8px 0; color: var(--text-soft); }
+  ul, ol { color: var(--text-soft); padding-left: 22px; }
+  li { margin: 4px 0; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin: 14px 0;
+    box-shadow: var(--shadow);
+  }
+  .card.tinted { background: var(--accent-soft); border-color: #c7d2fe; }
+  .card.warn   { background: var(--warn-soft);   border-color: #fed7aa; }
+  .card.ok     { background: var(--ok-soft);     border-color: #a7f3d0; }
+  .card.info   { background: var(--accent-2-soft); border-color: #bae6fd; }
+  .card h4 { margin-top: 0; color: var(--text); }
+  .card .label {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--accent); margin-bottom: 6px;
+  }
+  .card.warn .label { color: #c2410c; }
+  .card.ok .label { color: #047857; }
+  .card.info .label { color: #0369a1; }
+
+  blockquote {
+    margin: 12px 0;
+    padding: 10px 16px;
+    background: var(--panel-2);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    color: var(--text-soft);
+    font-style: italic;
+  }
+  blockquote .by { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; font-style: normal; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .day-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin: 20px 0;
+    box-shadow: var(--shadow);
+  }
+  .day-card .day-num {
+    display: inline-block;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 700; letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .day-card h3 { margin: 4px 0 12px 0; font-size: 20px; }
+
+  .toc-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px; margin: 14px 0 24px 0;
+  }
+  .toc-grid a {
+    display: block;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 13px;
+    transition: all .15s;
+  }
+  .toc-grid a:hover { transform: translateY(-1px); box-shadow: var(--shadow); border-color: var(--accent); text-decoration: none; }
+  .toc-grid a .n {
+    display: inline-block; width: 26px; height: 26px; line-height: 26px;
+    text-align: center; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent);
+    font-weight: 700; font-size: 12px; margin-right: 6px;
+  }
+
+  .vocab-table {
+    width: 100%; border-collapse: collapse; margin: 12px 0;
+    background: var(--panel); border-radius: var(--radius-sm); overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .vocab-table th, .vocab-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    text-align: left; vertical-align: top;
+    font-size: 14px;
+  }
+  .vocab-table th {
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .vocab-table tr:last-child td { border-bottom: none; }
+  .vocab-table td.term { font-weight: 700; color: var(--text); width: 22%; }
+
+  .footer-note {
+    color: var(--muted); font-size: 12px; text-align: center;
+    margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line);
+  }
+  .search-box {
+    width: 100%; padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 13px; margin-bottom: 10px;
+    background: var(--panel-2);
+  }
+  .search-box:focus { outline: 2px solid var(--accent); outline-offset: 0; background: #fff; }
+
+  .print-only { display: none; }
+  @media print {
+    .sidebar, .topbar { display: none; }
+    .layout { grid-template-columns: 1fr; }
+    .content { padding: 0; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span>批判性思维工具 · 知识脑图</div>
+  <div class="meta">理查德·保罗 & 琳达·埃尔德 · 30天改变思维定势</div>
+  <div class="spacer"></div>
+  <div class="actions">
+    <button onclick="document.querySelectorAll('.nav-toggle').forEach(b=>{b.setAttribute('aria-expanded','true'); b.nextElementSibling.classList.add('open')})">全部展开</button>
+    <button onclick="document.querySelectorAll('.nav-toggle').forEach(b=>{b.setAttribute('aria-expanded','false'); b.nextElementSibling.classList.remove('open')})">全部折叠</button>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <h2>目录导航</h2>
+    <input class="search-box" id="navSearch" placeholder="搜索章节、理念…">
+
+    <div class="nav-group">
+      <button class="nav-toggle" aria-expanded="false" onclick="toggleNav(this)">
+        <span class="arrow">▶</span>引言：思维质量决定生活质量<span class="tag">22</span>
+      </button>
+      <div class="nav-children">
+        <a href="#intro-core">核心命题</a>
+        <a href="#intro-think">改善思维，提高生活</a>
+        <a href="#intro-problem">思维带来的麻烦</a>
+        <a href="#intro-abnormal">不要变得不正常</a>
+        <a href="#intro-serious">认真对待思维</a>
+        <a href="#intro-effort">一分耕耘，一分收获</a>
+        <a href="#intro-concept">批判性思维的概念、原则与方法</a>
+        <a href="#intro-why">为什么要培养批判性思维能力</a>
+        <a href="#intro-roadmap">大脑路线图</a>
+        <a href="#intro-analyze">分析思维：推理元素</a>
+        <a href="#intro-evaluate">评价思维：理性标准</a>
+        <a href="#intro-system">系统运用理性标准</a>
+        <a href="#intro-traits">理性特征"星座图"</a>
+        <a href="#intro-brain">人类大脑的三大功能</a>
+        <a href="#intro-key">思维是控制感受与需求的关键</a>
+        <a href="#intro-three">理性 vs 利己主义 vs 社会中心主义</a>
+        <a href="#intro-ego">利己主义思维的问题</a>
+        <a href="#intro-control">利己式控制与顺从</a>
+        <a href="#intro-socio">社会中心主义思维的问题</a>
+        <a href="#intro-method">获得批判性思维的实质性方法</a>
+        <a href="#intro-30days">30天学会批判性思维</a>
+        <a href="#intro-ways">吸收理念小诀窍</a>
+        <a href="#intro-plan">制订计划，记录点滴进步</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <button class="nav-toggle" aria-expanded="false" onclick="toggleNav(this)">
+        <span class="arrow">▶</span>30天学习计划<span class="tag">30</span>
+      </button>
+      <div class="nav-children">
+        <a href="#day01"><span class="day-tag">D1</span>揭露自己的无知</a>
+        <a href="#day02"><span class="day-tag">D2</span>表里如一：揭露虚伪</a>
+        <a href="#day03"><span class="day-tag">D3</span>学会换位思考</a>
+        <a href="#day04"><span class="day-tag">D4</span>仔细锁定目标</a>
+        <a href="#day05"><span class="day-tag">D5</span>不要随波逐流</a>
+        <a href="#day06"><span class="day-tag">D6</span>理清思路</a>
+        <a href="#day07"><span class="day-tag">D7</span>不要跑题</a>
+        <a href="#day08"><span class="day-tag">D8</span>做一个理性的人</a>
+        <a href="#day09"><span class="day-tag">D9</span>学会提问</a>
+        <a href="#day10"><span class="day-tag">D10</span>区分现实、选择和判断</a>
+        <a href="#day11"><span class="day-tag">D11</span>看透行为的意义</a>
+        <a href="#day12"><span class="day-tag">D12</span>区分推理与假设</a>
+        <a href="#day13"><span class="day-tag">D13</span>不要被他人言论蒙骗</a>
+        <a href="#day14"><span class="day-tag">D14</span>不自认为是批判性思考者</a>
+        <a href="#day15"><span class="day-tag">D15</span>公正待人不自私</a>
+        <a href="#day16"><span class="day-tag">D16</span>控制自己的情绪</a>
+        <a href="#day17"><span class="day-tag">D17</span>控制自己的需求</a>
+        <a href="#day18"><span class="day-tag">D18</span>切勿支配他人</a>
+        <a href="#day19"><span class="day-tag">D19</span>切勿一味顺从</a>
+        <a href="#day20"><span class="day-tag">D20</span>不被新闻媒体左右</a>
+        <a href="#day21"><span class="day-tag">D21</span>小心筛选媒体信息</a>
+        <a href="#day22"><span class="day-tag">D22</span>不要被政客迷惑</a>
+        <a href="#day23"><span class="day-tag">D23</span>不要求全责备</a>
+        <a href="#day24"><span class="day-tag">D24</span>道貌岸然不可取</a>
+        <a href="#day25"><span class="day-tag">D25</span>不要自寻烦恼</a>
+        <a href="#day26"><span class="day-tag">D26</span>成为"世界公民"</a>
+        <a href="#day27"><span class="day-tag">D27</span>让世界变得更美好</a>
+        <a href="#day28"><span class="day-tag">D28</span>分阶段发展自己</a>
+        <a href="#day29"><span class="day-tag">D29</span>不要停止自我教育</a>
+        <a href="#day30"><span class="day-tag">D30</span>今后你将何去何从</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <button class="nav-toggle" aria-expanded="false" onclick="toggleNav(this)">
+        <span class="arrow">▶</span>附录<span class="tag">2</span>
+      </button>
+      <div class="nav-children">
+        <a href="#appendix1">附录1：延伸阅读</a>
+        <a href="#appendix2">附录2：批判性思维词汇表</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <!-- ============== Cover ============== -->
+    <section class="cover" id="cover">
+      <h1>批判性思维工具</h1>
+      <div class="sub">30天改变思维定势，学会独立思考（修订扩展版）</div>
+      <div class="authors">[美] 理查德·保罗（Richard Paul） · 琳达·埃尔德（Linda Elder） 著</div>
+      <div class="quick">
+        <span class="chip">思维质量</span>
+        <span class="chip">理性标准</span>
+        <span class="chip">30天计划</span>
+        <span class="chip">理性特征星座图</span>
+        <span class="chip">三脑功能</span>
+        <span class="chip">推理元素</span>
+        <span class="chip">利己 vs 社会中心</span>
+        <span class="chip">词汇表</span>
+      </div>
+    </section>
+
+    <!-- ============== Introduction ============== -->
+    <h2 class="section" id="intro">引言：思维质量决定生活质量<span class="badge">核心内容</span></h2>
+
+    <h3 id="intro-core">核心命题</h3>
+    <div class="card tinted">
+      <div class="label">核心观点</div>
+      <p>人类无论何时都在思考。我们所知道、相信、渴望、惧怕、期待的一切，都是思维告诉我们的。<strong>生活质量基本上由思维质量决定</strong>。</p>
+      <p>思考是一项技术活，思维能力需要通过学习和练习才能获得。头脑未受过训练的人不可能具备清晰、富有逻辑的思维能力——正如未学过的练习过的人无法变成优秀的木匠、高尔夫球手或钢琴家一样。</p>
+    </div>
+
+    <h3 id="intro-think">改善你的思维，提高你的生活</h3>
+    <p>只有通过思维，你才能改变生活中需要改变的部分，才能主宰自己的未来。人类的思维经常出现瑕疵：做过的许多后悔的事都是错误推理造成的，思维瑕疵还会引发冲突、战争、痛苦、沮丧、暴行与苦难。</p>
+    <p>大多数人穷其一生都没有意识到思维在自己生活中扮演着多么举足轻重的作用。本书提供批判性思维的基本模板，系统性地利用这些原则来改善生活。</p>
+
+    <h3 id="intro-problem">你的思维会不会给你制造问题</h3>
+    <div class="card warn">
+      <div class="label">在"正常"情况下，思维天生就是有缺陷的</div>
+      <p>如果我们不进行人为干预，思维就会产生许多问题：</p>
+      <ul>
+        <li>我们经常怀有偏见，用老眼光看待他人；</li>
+        <li>我们喜欢装腔作势；</li>
+        <li>我们有时认为自己偷鸡摸狗、虐待他人甚至滥杀无辜的做法很有道理；</li>
+        <li>我们经常无视那些深思熟虑和下定决心后就可以解决的问题，如饥荒、贫穷和无家可归等。</li>
+      </ul>
+      <p>更严重的是，当我们不理智的时候，我们的行为看起来却很有道理。大脑天生就能将不合理的想法描绘得合情合理——这就是自欺欺人的力量。</p>
+    </div>
+
+    <h3 id="intro-abnormal">千万不要变得不正常</h3>
+    <p>提高思考能力的一种方法是学会创造反面案例，让你清楚意识到应该避免什么。下列不良思维模式请避免：</p>
+    <div class="grid-2">
+      <div class="card warn">
+        <div class="label">自闭型</div>
+        <ol>
+          <li>只和喜欢自己的人混在一起，避免被批评；</li>
+          <li>从不质疑自己的人际关系；</li>
+          <li>被朋友或爱人批评时表现哀伤；</li>
+          <li>不论何时做了任性的事，总能找到借口；</li>
+          <li>只盯着生活的阴暗面；</li>
+        </ol>
+      </div>
+      <div class="card warn">
+        <div class="label">逃避型</div>
+        <ol start="6">
+          <li>把自己的错误归咎在别人身上；</li>
+          <li>别人批评你，你就反唇相讥；</li>
+          <li>随波逐流，不再操心自己的事；</li>
+          <li>一旦得不到想要的东西就大闹一番；</li>
+          <li>专注于自己想要的东西，理由是"如果我不为自己着想，谁会为我着想呢？"。</li>
+        </ol>
+      </div>
+    </div>
+
+    <h3 id="intro-serious">认真对待你的思维</h3>
+    <p>将自己当成一名私人侦探。为了搞清楚在你的精神世界里到底发生了什么而对你的头脑进行一番调查。一旦发现自己的思维由哪些模式主导，就可以让自己的思维更上一层楼。</p>
+
+    <h3 id="intro-effort">一分耕耘，一分收获</h3>
+    <p>大多数人同意锻炼身体需要"一分耕耘，一分收获"，但解决思维问题时，一感觉不舒服就选择了放弃。人的头脑就像人的身体一样，<strong>如果没有一点压力，它不会有所改善</strong>。当吸收本书的观念而感到郁闷、不适或沮丧时，要坚持向前冲——你正在成长。</p>
+
+    <h3 id="intro-concept">批判性思维的概念、原则与方法</h3>
+    <p>迄今为止人类社会普遍的忽视是：应该以训练有素的方式来思考思维。我们需要：</p>
+    <ul>
+      <li>一种理念来帮助克服自私和自吹自擂；</li>
+      <li>关于批判性思维的锐利思想来反抗盲目向他人寻求认可的力量；</li>
+      <li>一种原则来帮助我们活得更理智，并找到衡量思维的合理标准；</li>
+      <li>一种概念来将思维分解开来，逐一检查各部分质量；</li>
+      <li>一种方法来指导建立没有偏见、理性的世界。</li>
+    </ul>
+
+    <h3 id="intro-why">为什么要培养批判性思维能力</h3>
+    <div class="card tinted">
+      <div class="label">批判性思维的定义</div>
+      <p><strong>从广义上讲，批判性思维是指一种训练有素的自导式思维，它意在通过公正的方法使推理的质量达到最高水平。</strong></p>
+      <p>具有批判性思维能力的人一贯努力活得更理智、更合理、更有同理心；强烈意识到人的思维在不加审视时存在着先天缺陷；力图削弱利己主义和社会中心主义倾向的力量；善于利用批判性思维提供的概念与原则分析、评估和改善思维。</p>
+    </div>
+    <h4>有修养的批判性思考者的特征</h4>
+    <ul>
+      <li>能提出关键问题，指出问题所在，并清楚、准确地将问题表达出来；</li>
+      <li>能收集、评估相关信息，并运用抽象概念对其进行解读；</li>
+      <li>能通过充分的推理得出结论、找到问题的解决方法，并根据相关标准对这些结论进行测试；</li>
+      <li>能以开放的头脑进行思考，清晰地了解和评估自己的猜想以及其含义和实际结论；</li>
+      <li>能与他人进行有效的交流，以找出解决复杂问题的办法。</li>
+    </ul>
+    <p><em>简而言之，批判性思维就是自导、自律、自我监督和自我矫正式的思维。</em></p>
+
+    <h3 id="intro-roadmap">大脑路线图</h3>
+    <p>思维训练包含三大板块：</p>
+    <div class="grid-2">
+      <div class="card info">
+        <div class="label">① 分析思维</div>
+        <p>以<strong>推理元素</strong>为重点，将思维分解成八个基本结构，逐一审视。</p>
+      </div>
+      <div class="card info">
+        <div class="label">② 评价思维</div>
+        <p>利用<strong>理性标准</strong>对推理进行评估，确保思维清晰、精准、相关。</p>
+      </div>
+      <div class="card info">
+        <div class="label">③ 培养理性特征</div>
+        <p>系统运用理性标准规范推理元素，培养理性特征"星座图"。</p>
+      </div>
+      <div class="card info">
+        <div class="label">④ 识别非理性障碍</div>
+        <p>揭露利己主义和社会中心主义思维的病态表现。</p>
+      </div>
+    </div>
+
+    <h3 id="intro-analyze">分析你的思维（以推理元素为重点）</h3>
+    <p>一切思维均有<strong>八种基本结构</strong>，无论何时我们都在某种观点范围内有目的地思考：</p>
+    <ol>
+      <li><strong>目的 / 目标</strong>：你努力想要达成的事；</li>
+      <li><strong>疑问 / 问题</strong>：你试图解答的难题；</li>
+      <li><strong>信息 / 数据</strong>：你依据的事实与经验；</li>
+      <li><strong>解释 / 推断</strong>：你得出的结论；</li>
+      <li><strong>概念 / 理论</strong>：你用以理解数据的视角；</li>
+      <li><strong>假设</strong>：你信以为真的前提；</li>
+      <li><strong>含义 / 结果</strong>：你的思考带来的后果；</li>
+      <li><strong>观点</strong>：你观察问题的立足点。</li>
+    </ol>
+    <p>每种结构之间都是相互影响的。改变一个，其他会随之改变。</p>
+
+    <h3 id="intro-evaluate">评价你的思维（利用理性标准）</h3>
+    <p>理智的人会用理性标准来评价推理。这些是经过挑选的核心标准：</p>
+    <table class="vocab-table">
+      <thead><tr><th>标准</th><th>含义</th></tr></thead>
+      <tbody>
+        <tr><td class="term">清晰性</td><td>思想的意义能够被了解和理解。</td></tr>
+        <tr><td class="term">正确性</td><td>没有错误或扭曲，是真实的。</td></tr>
+        <tr><td class="term">精准性</td><td>在必要的细节上非常准确。</td></tr>
+        <tr><td class="term">相关性</td><td>与当下问题有关。</td></tr>
+        <tr><td class="term">深度</td><td>包含复杂的和多方面的关系链。</td></tr>
+        <tr><td class="term">广度</td><td>包括多个观点。</td></tr>
+        <tr><td class="term">逻辑性</td><td>各个组成部分都能整合在一起，相互之间不冲突。</td></tr>
+        <tr><td class="term">重要性</td><td>强调的是重要问题，而非琐事。</td></tr>
+        <tr><td class="term">公正性</td><td>公平、不自私、不偏颇。</td></tr>
+      </tbody>
+    </table>
+    <p>其他理性标准包括可信性、充分性、可靠性和实用性。</p>
+
+    <h3 id="intro-system">系统运用理性标准规范推理元素，培养理性特征</h3>
+    <p>八大推理元素 × 九大理性标准 × 多元理性特征，构成一个完整的批判性思维训练闭环。每个理念都与此密切相关：有的与"思维分析"有关，有的与"思维评估"有关，有的与"理性道德"的培养有关。</p>
+
+    <h3 id="intro-traits">理性特征"星座图"</h3>
+    <p>批判性思考者应同时具备下列成对的理性特征：</p>
+    <table class="vocab-table">
+      <thead><tr><th>理性特征</th><th>对立面</th><th>含义</th></tr></thead>
+      <tbody>
+        <tr><td class="term">理性的谦恭</td><td>理性的自大</td><td>能意识到自身知识有限，承认自己知之不多却自以为懂得不少；对他人的成见、偏见和观点局限性保持敏感。</td></tr>
+        <tr><td class="term">理性的勇气</td><td>理性的怯懦</td><td>哪怕对一些思想、信念有强烈抵触，仍认为有必要公正对待；认识到被灌输的结论有时存在误导性。</td></tr>
+        <tr><td class="term">理性的换位思考</td><td>理性的狭隘</td><td>能意识到自己需要站在别人角度考虑问题；通过他人的前提、假设和观点进行推理。</td></tr>
+        <tr><td class="term">理性的自主</td><td>理性的顺从</td><td>合理掌控自己的信念、价值观和推论；懂得独立思考，以控制自己的思维过程。</td></tr>
+        <tr><td class="term">理性的真诚</td><td>理性的虚伪</td><td>诚实地对待自己的思想；以要求对手的严格标准来要求自己；坦白承认自身思想与行为之间的差异。</td></tr>
+        <tr><td class="term">理性的执着</td><td>理性的懒惰</td><td>即使遇到困难、障碍与挫折，也要运用理性的见解与真理；与困惑和悬而未决的问题做长期斗争。</td></tr>
+        <tr><td class="term">对推理的坚信</td><td>对推理与证据的怀疑</td><td>从长远看，坚信推理可以最大限度地发挥推理的作用，培养人们的推理能力并形成自己的结论。</td></tr>
+        <tr><td class="term">理性的公正</td><td>理性的不公正</td><td>平等对待所有观点，不掺杂个人、他人、群体或国家的情感或利益；凡事依靠理性标准。</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="intro-brain">人类大脑的三大功能</h3>
+    <div class="grid-2">
+      <div class="card info">
+        <div class="label">① 思维</div>
+        <p>大脑产生意义的部分，为生活中的事情赋予意义。它告诉我们眼下是什么情况、正在发生着什么、应当注意什么。</p>
+      </div>
+      <div class="card tinted">
+        <div class="label">② 感受</div>
+        <p>源于思考，通过评价生活中发生的事（积极或消极）来形成。告诉我们"对于生活中发生的事，我就应该有这样的感受"。</p>
+      </div>
+      <div class="card ok">
+        <div class="label">③ 需求</div>
+        <p>为我们的行为提供动力，与我们认为值得拥有和可能拥有的事物保持一致。它告诉我们"这是值得拥有的，去争取吧"。</p>
+      </div>
+      <div class="card warn">
+        <div class="label">基础观点</div>
+        <p>大脑一直向我们传达三点信息：①生活中正在发生着什么；②对这些事有怎样的感受（积极或消极）；③要追求什么，要把精力投入到哪里。</p>
+      </div>
+    </div>
+
+    <h3 id="intro-key">思维是控制感受与需求的关键</h3>
+    <p>思维、感受和需求在大脑中的作用同等重要，并且彼此之间无时无刻不在互相影响着，但<strong>思维却是控制感受与需求的关键</strong>。要改变感受，就要改变引起这种感受的思维；要改变需求，也要先改变产生这种需求的思维。</p>
+    <p>例如，如果孩子对我不尊敬，我就会生气——要改变这种愤怒，就必须改变当下的思维。孩子是在何种影响下做出粗鲁行为的？</p>
+
+    <h3 id="intro-three">理性思维与利己主义思维、社会中心主义思维的区别</h3>
+    <div class="card warn">
+      <div class="label">基本观点</div>
+      <p>所有人生下来就是利己主义和社会中心主义的，同时也有（不太成熟的）理性能力。所有人同时具有这两种形式的非理性思维。利己主义和社会中心主义倾向是自然而然出现的，<strong>而理性能力却要靠培养才能形成</strong>。</p>
+    </div>
+
+    <h3 id="intro-ego">利己主义思维的问题所在</h3>
+    <p>利己主义思维源自一个不幸的事实：人类不是天生就能考虑到他人的权利与需求。在思考时我们也没有运用理性标准，相反还经常利用利己的心理标准来决定相信什么、拒绝什么：</p>
+    <table class="vocab-table">
+      <thead><tr><th>心理标准</th><th>类型</th></tr></thead>
+      <tbody>
+        <tr><td class="term">"因为我相信这是真的，所以这是真的。"</td><td>天生的利己主义</td></tr>
+        <tr><td class="term">"因为我们相信这是真的，所以这是真的。"</td><td>天生的社会中心主义</td></tr>
+        <tr><td class="term">"因为我想要相信这件事是真的，所以这是真的。"</td><td>天生的自我满足</td></tr>
+        <tr><td class="term">"因为我一直相信这件事是真的，所以这是真的。"</td><td>天生的自我肯定</td></tr>
+        <tr><td class="term">"因为相信这件事是真的对我有利，所以这是真的。"</td><td>天生的自私</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="intro-control">利己式控制与利己式顺从</h3>
+    <p>获得和利用权力的两种非理性方式：</p>
+    <ol>
+      <li><strong>控制他人</strong>——一种直接获得私利的方法；</li>
+      <li><strong>顺从他人</strong>——一种间接获得私利的方法。</li>
+    </ol>
+    <p>利己行为不是恃强凌弱就是卑躬屈膝；不是欺负弱小就是对更强大的人屈服；或者以一种微妙的伎俩穿梭于两者之间。</p>
+
+    <h3 id="intro-socio">社会中心主义思维的问题所在</h3>
+    <p>社会学家和人类学家称之为"文化束缚"。其表现包括：</p>
+    <ul>
+      <li>倾向于不加批判地将自己的文化、民族、宗教凌驾于他者之上；</li>
+      <li>倾向于不加批判地、自利地对自己进行正面描述；</li>
+      <li>倾向于不加批判地吸收集体规范和信念；</li>
+      <li>倾向于盲目遵守集体限制（许多都是专制或强制性的）；</li>
+      <li>思维无法超越文化中的传统偏见；</li>
+      <li>无法学习和吸收其他文化中的见解；</li>
+      <li>无法将普遍的道德规范与相对的文化标准和禁忌区分开来；</li>
+      <li>无法意识到大众媒体都是从各自的文化视角制造新闻的；</li>
+      <li>无法从历史和人类学的角度来思考；</li>
+      <li>没有将社会中心主义思维当成理性发展中的一种巨大缺陷。</li>
+    </ul>
+
+    <h3 id="intro-method">获得批判性思维的实质性方法</h3>
+    <p>我们将这些理念以 30 天计划的形式呈现。每天你都会有更加丰富的积累，每天都能为自己的思维增添一个新颖、强有力的理念。</p>
+
+    <h3 id="intro-30days">30天学会批判性思维</h3>
+    <p>本书介绍 30 种关于思维的基本理念，作为 30 天计划的基础。思维的发展是一个动态过程；当你根据这个 30 天计划练习的时候，应该努力将之前的理念和新学到的理念整合在一起。</p>
+    <p>当你完成 30 天计划后，可开始 30 周计划——用一周的时间来学习一个理念，而不是一天。每个重要理念之间都是相互联系的，而理念也是根据其与其他理念之间的重要联系而变得强而有力的。</p>
+
+    <h3 id="intro-ways">吸收理念小诀窍</h3>
+    <ul>
+      <li>在阅读每个章节时，要主动将自己当成参与者而非旁观者；</li>
+      <li>每天抽出固定时间安静地阅读并做笔记；</li>
+      <li>把理念应用到今天的生活情境中，记录下结果；</li>
+      <li>与愿意尝试这些理念的人交流心得。</li>
+    </ul>
+
+    <h3 id="intro-plan">制订计划，记录点滴进步</h3>
+    <p>制订发展批判性思维能力的具体计划。记录自己每天的关注重点、收获的洞见、改变的行动、遇到的困难。日积月累，你就会看到思维质量的提升与生活质量的改善。</p>
+
+    <!-- ============== 30 Days ============== -->
+    <h2 class="section" id="days">30天学习计划<span class="badge">30个理念</span></h2>
+
+    <p>点击左侧目录展开每一天。每个理念都是建立在前面理念基础上的，每天请关注一个核心理念并付诸实践。</p>
+
+    <!-- Day 01 -->
+    <div class="day-card" id="day01">
+      <span class="day-num">第一天</span>
+      <h3>揭露自己的无知</h3>
+      <blockquote>愿意学习自己尚不知晓的事，才能获得知识与智慧。——布莱尔</blockquote>
+      <p>我们大部分人都认为自己相信的事是"正确"的。优秀的思考者却能看出这其中的荒谬之处。揭露自己的无知问题，就能发现自己错误百出。</p>
+      <h4>理性谦恭</h4>
+      <p>理性谦恭是指一种在任何时刻、任何场合下都能分清楚自己知道什么、不知道什么的性情。大脑的自然倾向是：知之不多，却自以为懂得不少，而且自以为是——尽管证据表明真正的事实与它所认为的大相径庭。</p>
+      <h4>苏格拉底的智慧</h4>
+      <p>苏格拉底能够深刻地意识到自己的思想、谈吐和行为中不一致的地方，并且敏锐地怀疑他人身上也存在这种不一致。他总是小心翼翼地避开傲慢的立场。</p>
+      <div class="card warn">
+        <div class="label">今天，你需要留意：理性的无知</div>
+        <p>理性无知 = 一个人自信地断言其并不知晓的东西为真的一种倾向。去质疑权威的声音；去质疑"产生"新闻的源头；无论何时想要大胆定论，都要停下来问问：你对自己声称的事情到底了解多少？</p>
+      </div>
+      <h4>如何培养理性的谦恭（6 步）</h4>
+      <ol>
+        <li>如果没有足够的证据来证明自己的信念为真，可以这样对自己讲："我或许错了，但我的想法是……"</li>
+        <li>在没有证据可以证明的情况下为一些信念辩护时要当心，弄明白自己为何如此。</li>
+        <li>积极质疑那些在你看来明显为真的信念，尤其是根深蒂固的信念。</li>
+        <li>寻找其他信息来源，而不仅仅是自己的固有视角。</li>
+        <li>别害怕"开拓"新的信念，要对新的领悟持开放态度。</li>
+        <li>挑选一个你自认为非常了解的人，列出你对他了如指掌的事 / 认为真实却不能确定为真的事 / 你所不知道的事。</li>
+      </ol>
+      <h4>学会发问，寻找思维弱点</h4>
+      <ul>
+        <li>关于我自己以及他人、关于这种或那种情况，我究竟知道些什么？</li>
+        <li>我的思维在多大程度上受到了偏见或成见的影响？</li>
+        <li>我被灌输了多少有可能是错误的信念？</li>
+        <li>我不加批判地接受的信念是如何阻碍我客观地看待事物的？</li>
+        <li>我还能跳出自己的圈子（文化、民族、宗教）进行思考吗？</li>
+        <li>我的信念是如何被出生年代、成长环境、父母、配偶、宗教、文化和政治塑造出来的？</li>
+      </ul>
+    </div>
+
+    <!-- Day 02 -->
+    <div class="day-card" id="day02">
+      <span class="day-num">第二天</span>
+      <h3>努力做到表里如一：揭露自己虚伪的一面</h3>
+      <blockquote>我们以虚伪为伴。——豪威尔斯</blockquote>
+      <p>虚伪至少有三类表现：</p>
+      <ol>
+        <li>人们容易以较高标准去要求自己不认同的人，而以较低标准来要求自己和朋友；</li>
+        <li>人们时常无法使言行与自己的信念保持一致；</li>
+        <li>人们时常无法看到自己认同的人（尤其是有地位的人）行为中存在的矛盾。</li>
+      </ol>
+      <p>虚伪是一种无关诚实与否的心理状态。大脑生来就是以自我为中心的，所以大脑生来就是虚伪的。看起来真诚对利己主义的大脑来讲非常重要——这就是为什么我们人类总是积极地向自己和他人隐藏自己虚伪的一面。</p>
+      <div class="card warn">
+        <div class="label">今天，你需要留意</div>
+        <p>自己和他人行为中的矛盾与虚伪。发现自己在利用双重标准就不要放过自己。当别人利用双重标准的时候也要留意。因为虚伪是人类的一种自然倾向，所以注意到这些应该比较容易。</p>
+      </div>
+      <h4>如何解决自己虚伪的问题</h4>
+      <ul>
+        <li>留意自己在什么情况下会高标准要求他人、低标准要求自己；</li>
+        <li>找出最严重的方面（通常掺杂着情绪）；</li>
+        <li>列出最重要的信念，再找出行为与这些信念不符之处；</li>
+        <li>思考你的生活方式是否够真诚，动机够纯洁，是否在隐瞒什么重要的事。</li>
+      </ul>
+      <h4>如何解决他人虚伪的问题</h4>
+      <p>观察周围的人，将他们的所言与所为进行比较。注意人们是否经常在背后批评一个人却当面说自己很爱对方——这是不诚实的常见形式。</p>
+    </div>
+
+    <!-- Day 03 -->
+    <div class="day-card" id="day03">
+      <span class="day-num">第三天</span>
+      <h3>学会换位思考</h3>
+      <blockquote>对他人一无所知的人，对自己也一无所知。——佚名</blockquote>
+      <p>理性的换位思考要求我们从他人的角度进行思考，尤其是从我们不赞同的人的角度进行思考。那些与我们想法不同的人有时掌握着真理，而我们却没有发现这一点。</p>
+      <div class="card tinted">
+        <div class="label">今天，你需要重点寻找换位思考的机会</div>
+        <p>请从他人身上寻找换位思考的例子，练习如何换位思考。留意在对方所说的话（比如"我明白"）和他的行为可能暗示出的信息之间是否有不同之处。</p>
+      </div>
+      <h4>如何进行换位思考（3 步）</h4>
+      <ol>
+        <li>与他人观点不同时，学会转换角色："如果你愿意从我的角度讲 10 分钟，我就从你的角度讲 10 分钟。"</li>
+        <li>在讨论过程中总结对方观点——"我认为你说的是……这样理解对吗？"</li>
+        <li>阅读时，对自己陈述一遍作者的观点，然后再向他人解释一遍，最后参照原文检验。</li>
+      </ol>
+    </div>
+
+    <!-- Day 04 -->
+    <div class="day-card" id="day04">
+      <span class="day-num">第四天</span>
+      <h3>仔细锁定目标</h3>
+      <blockquote>在通往成功的道路上必须有清晰、强大的目标。此目标是无可替代的。——芒格</blockquote>
+      <p>思维一直由人类的目标引导。当你的目标不明确、不现实、互相矛盾或者你没有坚持自己的目标时，你的思维就会出错。</p>
+      <p>政客公布的目标通常是为了满足公众的需要，其真实目的则是在竞选中获胜，实现其欲望，满足其贪欲。对引导你如何生活的目标进行审视是非常重要的。</p>
+      <h4>今天，你需要注意的是目标、目的、标的物和计划</h4>
+      <p>你需要弄清楚自己在追求什么以及追求的方式，并判断你的多个目标之间是相互交织、趋同的，还是相互冲突、相互矛盾的。</p>
+      <h4>为了定位目标，你可以问问自己</h4>
+      <ul>
+        <li>在自己的个人目标与社会目标不一致时，我真正的目标是什么？</li>
+        <li>这个目标现实吗？从道德上讲这个目标正确吗？</li>
+        <li>现在我最重要的任务是什么？</li>
+        <li>为了达成目标，我首先要去做什么？</li>
+        <li>我的配偶、子女和朋友的计划是什么？</li>
+        <li>我所宣称的计划就是我真实的计划吗？</li>
+      </ul>
+      <h4>如何锁定目标</h4>
+      <p>开会时记下人们口中所说的目标，并判断人们是否坚持这一目标。一旦离题，就要问："我们的主要目标是什么？这次讨论怎样能帮我们达成目标呢？"</p>
+      <p>注意人们口中所说的目标是否与其真实目的相矛盾。每天都要深入思考主要是什么目标在引导你的行为。</p>
+    </div>
+
+    <!-- Day 05 -->
+    <div class="day-card" id="day05">
+      <span class="day-num">第五天</span>
+      <h3>不要随波逐流，要独立思考</h3>
+      <blockquote>坏蛋赞成的事绝不是好事。——塞内卡</blockquote>
+      <p>人类生活需要人们参与到各种各样的群体中去。我们所属的每个群体都对自身有一个社会性的定义，以及一些不成文的"规则"来指导其成员的行为。成为群体的一员"要求"人们要以正常的方式来生活。</p>
+      <div class="card warn">
+        <div class="label">顺从是人类社会的一种罪恶</div>
+        <p>人们通过顺从，会将专横的社会规则当作好的、正确的规则来对待。专横的社会规则会导致许多不公正的现象。当专制社会习俗被立法时，执行这样的法律会让人痛苦万分。</p>
+      </div>
+      <p>当你已经成为一位技艺娴熟、独立的思考者时，就再也不会随波逐流了。你会认识到社会规则和禁忌的真实面目：它们是没有头脑的大众的主观产物。</p>
+      <h4>今天，你需要留意的是顺从</h4>
+      <p>假设你是一个顺从的人。只有当你承认自己是一个顺从的人时，才能发现自己是在何时何地选择顺从的。请在报纸上、人际关系中、群体中寻找顺从的现象，也要在工作中和他人身上留意这种现象。</p>
+    </div>
+
+    <!-- Day 06 -->
+    <div class="day-card" id="day06">
+      <span class="day-num">第六天</span>
+      <h3>理清思路</h3>
+      <blockquote>思维混乱，人生自然混乱。——佚名</blockquote>
+      <p>即使我们的思维不清晰，我们通常也会认为它是清晰的。模糊、模棱两可、混乱、具有欺骗性或者误导性的思维是人类生活中的严重问题。</p>
+      <h4>今天，你需要注意模糊、糊涂、不明晰的思维</h4>
+      <p>这种思维或许听起来没错，但实际上却没有任何意义。试着分析人们发表的言论的真实含义是什么。</p>
+      <h4>如何理清思路</h4>
+      <p>为了提高你理清思路的能力（如对话或写作），可以使用以下基本策略：</p>
+      <ul>
+        <li>一次只陈述一个观点；</li>
+        <li>详细阐述自己话里的意思；</li>
+        <li>将自己的想法与生活经历联系在一起；</li>
+        <li>运用类比、比喻或举例的方法帮助人们从你的观点联想到自己已知的事物；</li>
+      </ul>
+      <p>你可以利用下面的格式来确保自己在讲话和写作时保持思维清晰：</p>
+      <div class="card info">
+        <p>① <strong>我认为</strong>（陈述你的主要观点）……<br>
+        ② <strong>换句话说</strong>（详细阐述你的主要观点）……<br>
+        ③ <strong>例如</strong>（举例说明你的主要观点）……<br>
+        ④ <strong>给你打个比方</strong>（用比喻说明你的主要观点）……</p>
+      </div>
+      <h4>理清他人思维的问题</h4>
+      <p>"你可以换句话重新陈述一下自己的观点吗？我不明白你的意思。""你可以举例说明吗？""让我陈述一遍我是如何理解你的话……我这样说算是理解到位了吗？"</p>
+    </div>
+
+    <!-- Day 07 -->
+    <div class="day-card" id="day07">
+      <span class="day-num">第七天</span>
+      <h3>不要跑题</h3>
+      <blockquote>如果我们要解决问题，就必须运用理性方面的十八般武艺，找出到底什么可以帮我们解决问题，并将妨碍我们的东西清除掉。——佚名</blockquote>
+      <p>当人的思维具有相关性时，其思维的重点就是这个人目前所面临的主要问题。人的思维会挑选出与手头问题有密切关系的东西，而且还会对一切与问题有关的东西保持敏感。</p>
+      <p>一般来说，引导杂乱无章思维的是联想（"这个让我想起了那个，那个又让我想起了另一个"），而不是逻辑上的联系。当人在胡思乱想时，有序的思维可以对人进行干预，并且将大脑的注意力集中在有助于解决问题的东西上。</p>
+      <h4>今天，你需要注意思维片段</h4>
+      <p>思维片段是指没有逻辑联系的跳跃式思维。当你无法将注意力放在与主题相关的问题上时，就要格外留意。</p>
+      <h4>为确保你的思维关注的是与题有关的事，可以问自己</h4>
+      <ul>
+        <li>我的注意力放在主要问题或任务上了吗？</li>
+        <li>这两件事是如何联系在一起的？或者说它们之间有联系吗？</li>
+        <li>现在提出的问题是如何与我们手头的问题交织在一起的？</li>
+        <li>我正在考虑的信息是否直接与现在的问题或任务有关？</li>
+        <li>我的注意力应该放在哪里？</li>
+        <li>我的观点是如何与我正在解决的问题产生联系的？</li>
+        <li>什么样的事实可以帮助我回答问题？我应该避开什么样的想法？</li>
+      </ul>
+    </div>
+
+    <!-- Day 08 -->
+    <div class="day-card" id="day08">
+      <span class="day-num">第八天</span>
+      <h3>做一个理性的人</h3>
+      <blockquote>我们这样想或许是因为别人也这样想；或许是因为我们确实是这么想的；或许是因为别人让我们这样想……——西季威克</blockquote>
+      <p>批判性思考者的特征之一，即如果有好的理由，他们就会改变自己的思想。人类的大脑并非天生就是理智的——要培养强大的理性能力，就必须积极地思考，在思维中进行培养。</p>
+      <div class="card tinted">
+        <div class="label">思维天生就是刻板的</div>
+        <p>人们经常会拿现成的理由来为自己辩解。我们也经常对非常有道理的言论充耳不闻（当这些言论中的道理与我们的信念相冲突时就会如此）。</p>
+      </div>
+      <p>为了变得更理智，请你敞开心扉来接受这样一种可能：无论何时，你都有可能是错的，而另一个人有可能是对的。</p>
+      <h4>今天，你需要留意</h4>
+      <p>自己和他人身上理智或不理智的行为。当你不愿意听取他人推理出的观点时注意。</p>
+      <h4>如何做一个理性的人</h4>
+      <ul>
+        <li>大声说出："我并不完美。我也会犯错。我经常犯错。"</li>
+        <li>在心里反复练习："我可能是错的。如果有好的理由，我愿意改变自己的想法。"</li>
+        <li>问问自己：上一次因为别人的观点更有道理而改变自己的想法是什么时候？</li>
+        <li>出现以下情况时，你就是不理智的：①不愿意倾听别人的理由；②听到别人的理由就会生气；③在与人讨论时总是非常戒备。</li>
+      </ul>
+    </div>
+
+    <!-- Day 09 -->
+    <div class="day-card" id="day09">
+      <span class="day-num">第九天</span>
+      <h3>学会提问</h3>
+      <blockquote>明智而理性的人会问："你又是怎么知道这么多的呢？"这个问题的答案就是："只要有我不知道的事，我就不害怕也不耻于提问。"——雅培</blockquote>
+      <p>问题是思维的动力。问题的质量决定思维的质量。肤浅的问题会让人的思维变得肤浅，而深刻的问题也会让人的思维变得深刻。</p>
+      <h4>今天，你要注意自己和他人提出的问题</h4>
+      <p>你倾向于提出哪类问题？在什么情况下你提不出重要、相关的问题？你问的问题较深刻还是较肤浅？</p>
+      <h4>如何提高提问的质量</h4>
+      <ul>
+        <li>无论何时有不懂的问题，都要提出问题来准确地澄清自己到底不明白什么；</li>
+        <li>无论何时面对复杂的问题，都要通过多种不同的方式来确切地阐述；</li>
+        <li>无论何时你想讨论一件重要的事情或问题，都要提前将讨论中需要提出的重要问题写下来。</li>
+      </ul>
+      <h4>下列问题可以让你的思维变得更有逻辑</h4>
+      <ul>
+        <li>到底在努力回答什么问题？</li>
+        <li>在目前的情形下，这个问题是最应该问的吗？</li>
+        <li>是否还有更重要的问题需要问？</li>
+        <li>在回答这个问题之前，是否还有问题需要我先回答？</li>
+        <li>为了回答问题，我需要收集哪些信息？</li>
+        <li>根据这些事实，得出什么结论看起来才是有道理的？</li>
+        <li>我的观点是什么？我需要考虑一下其他观点吗？</li>
+        <li>看待这个问题还有其他方式吗？</li>
+        <li>这属于哪一种问题？经济、政治、法律、道德还是涉及领域很广的复杂问题？</li>
+      </ul>
+    </div>
+
+    <!-- Day 10 -->
+    <div class="day-card" id="day10">
+      <span class="day-num">第十天</span>
+      <h3>正确区分现实、选择和判断</h3>
+      <blockquote>任何复杂的问题，都会有一个清晰、简单但是错误的答案。——门肯</blockquote>
+      <p>分析问题的一种方式是着重区分该问题需要哪种推理。</p>
+      <div class="grid-2">
+        <div class="card info">
+          <div class="label">① 程序问题（单一系统问题）</div>
+          <p>可以通过成形的程序或方法找到答案的问题。由事实、定义或两者同时确定下来，在数学与科学方面体现得尤为明显。</p>
+          <p>例：铅的沸点是多少？这间屋子的大小是多少？659 与 979 相加的和是多少？</p>
+        </div>
+        <div class="card warn">
+          <div class="label">② 选择问题（无系统问题）</div>
+          <p>需要根据人的主观选择来得出答案，而且没有"正确"答案。</p>
+          <p>例：你更想去山里度假还是去海边度假？你喜欢听歌剧吗？你最喜欢哪部歌剧？</p>
+        </div>
+        <div class="card tinted">
+          <div class="label">③ 判断问题（各系统相互冲突的问题）</div>
+          <p>需要人们进行推理，但会得出不止一个证据确凿的答案。可以被用来辩论，能够导出有好有坏的答案。</p>
+          <p>例：怎样才能减少对有害药物上瘾的人数？税收系统应该如何改进？死刑是否该被废除？</p>
+        </div>
+        <div class="card ok">
+          <div class="label">如何利用理性标准</div>
+          <p>针对判断问题，我们要在一系列可能的答案中寻找真正的答案，利用普遍的理性标准如清晰性、精准性和相关性来评估答案。</p>
+        </div>
+      </div>
+      <p>今天你需要注意他人思维中对这三种问题的混淆现象，以及自己的思维是否也将这三种问题混为一谈了。</p>
+    </div>
+
+    <!-- Day 11 -->
+    <div class="day-card" id="day11">
+      <span class="day-num">第十一天</span>
+      <h3>看透行为的意义</h3>
+      <blockquote>愚者，先行而后思；智者，三思而后行。——希尔</blockquote>
+      <p>所有的思想都有内部动态。如果人们依照这种内部动态行动，就会带来某些后果。如果你对自己的思维固有的意义茫然无知，就无法成为批判性思考者。</p>
+      <h4>今天，你需要注意</h4>
+      <p>自己和他人的决定有什么意义，从表面寻找显而易见的意义，再深入事物内部寻找不太明显的意义。</p>
+      <p>批判性的、懂得反思的思考者会在行动之前积极思考行动的意义，并对自己的行为做出相应的调整（在出现消极后果之前进行调整）。</p>
+      <h4>如何理解行为的意义</h4>
+      <ul>
+        <li>将自己的生活当作一系列时刻都在变化的选项；</li>
+        <li>每个行为以及每种行为模式都会带来结果；</li>
+        <li>你想要的是什么结果？你必须怎样做才能预见到可能出现的结果？</li>
+        <li>不仅是你所做的决定有其意义，你所说的话也有其意义；</li>
+        <li>请仔细斟酌每个用词，在开口之前认真考虑自己的用词有什么意义。</li>
+      </ul>
+    </div>
+
+    <!-- Day 12 -->
+    <div class="day-card" id="day12">
+      <span class="day-num">第十二天</span>
+      <h3>正确区分推理与假设</h3>
+      <blockquote>明智的人会使自己的信念与证据相符。——休谟</blockquote>
+      <p>人们经常会将推理与假设混为一谈。推理是大脑迈出的重要一步——"此为真，所以彼为真"。所有的推理都基于假设，也就是说基于我们信以为真的信念。</p>
+      <h4>例子</h4>
+      <div class="card warn">
+        <div class="label">例子 1</div>
+        <p>情形：我的祖国与其他国家之间存在冲突。<br>
+        <strong>推理：</strong>我的祖国在这次冲突中是正义的。<br>
+        <strong>假设：</strong>我的祖国在与其他国家的冲突中一直都是正义的。</p>
+      </div>
+      <div class="card warn">
+        <div class="label">例子 2</div>
+        <p>情形：我的妻子与她的异性上司在下班后待在一起的时间很长。<br>
+        <strong>推理：</strong>她有外遇了。<br>
+        <strong>假设：</strong>如果女性员工在下班后和自己的异性上司待在一起的时间很长，就一定是对丈夫不忠。</p>
+      </div>
+      <h4>今天，你需要注意</h4>
+      <p>人们总会将推理与假设混淆在一起。在你自己和他人使用"假设"或"以为"、"推论"或"推理"这些词的时候也要留心，看看这些词用得是否正确。</p>
+    </div>
+
+    <!-- Day 13 -->
+    <div class="day-card" id="day13">
+      <span class="day-num">第十三天</span>
+      <h3>不要被他人的言论蒙骗</h3>
+      <blockquote>我们被囚禁在一幅画中，无法从中挣脱，因为这幅画就存在于我们的语言里。——维特根斯坦</blockquote>
+      <p>很少有人能明白词语在我们感受现实的过程中起到了什么作用。"故弄玄虚"指的就是使用语言来故意掩盖或扭曲词汇的本意，以粉饰自己的观点：</p>
+      <ul>
+        <li>"附带伤害"掩盖了战争期间"死去的无辜平民"这一事实；</li>
+        <li>美国儿童所受的教育是"接受世界本来的样子"，然而其他地方的儿童却被"洗脑"；</li>
+        <li>政客们不是在"花"纳税人的钱，而是在为未来"投资"；</li>
+        <li>我们是"自由的战士"，他们是"恐怖主义者"；</li>
+        <li>我们是"自信的"，而他们（所有反对自己的人）是"无知的"；</li>
+        <li>我们为"正义"而奋斗，他们为的是"压迫"；</li>
+        <li>我们将农场上的动物称为"家畜"，而不是"杀掉用来吃的动物"。</li>
+      </ul>
+      <p>另外，还有常见的口头掩饰式的句子："我爱你"（但行为暗示"在更好的人出现之前我会爱你"）、"没有人是完美的"（但行为暗示"我不只是偶尔犯点小错而已"）。</p>
+      <p>今天你需要注意：人们经常会为了满足一己私利或者为了维护社会中心主义观点而选择用词。</p>
+    </div>
+
+    <!-- Day 14 -->
+    <div class="day-card" id="day14">
+      <span class="day-num">第十四天</span>
+      <h3>不要自认为是批判性思考者</h3>
+      <blockquote>我们所希望拥有的从来就来之不易，因此我们必须先学会勤奋才行。——塞缪尔·约翰逊</blockquote>
+      <p>阻碍公正的批判性社会形成的一大障碍就是，我们所有人都自认为是公正的批判性思考者。每个人都认为自己是终极真理的掌握者。</p>
+      <p>对自己的无知缺乏认识这一倾向是人类大脑的特点——无论理性技能与能力水平有多高，都是如此。</p>
+      <div class="card warn">
+        <div class="label">今天，你需要留意的是"批判性思维"这个词的使用问题</div>
+        <p>请注意人们在自己的信念并不可靠的情况下，通常是如何将这个词与自己的信念联系在一起的。如果你向人询问批判性思维的定义，大多数人都是脑中一片空白。</p>
+      </div>
+      <p>我们应该将批判性思维当成一种自己无法完全理解的东西——因为我们永远也无法成为高超、完美的批判性思考者。</p>
+      <h4>如何成为批判性思考者</h4>
+      <ul>
+        <li>列出自己在生活的哪些领域会自称为批判性思考者，然后寻找在各个领域中自己思维的弱点是什么；</li>
+        <li>列出在哪些领域绝对不会自称为批判性思考者，或者不会像在其他领域中那样是优秀的批判性思考者；</li>
+        <li>养成"思维勤勉"的习惯，把批判性思维当成一项需要长期训练才能精进的技能。</li>
+      </ul>
+    </div>
+
+    <!-- Day 15 -->
+    <div class="day-card" id="day15">
+      <span class="day-num">第十五天</span>
+      <h3>公正待人不自私</h3>
+      <blockquote>自私是一种令人厌恶的恶习。无人可以原谅他人的自私，但没有谁是不自私的。——比彻</blockquote>
+      <p>人类的思维天生就是为了满足自己的目的或者说是自私的。自私是人类天生的倾向，而不是习得的。你不必自私，因为你有可能成为一位公正的人和公正的思考者。</p>
+      <div class="card tinted">
+        <div class="label">今天，你要注意自己和他人的自私问题</div>
+        <p>你要留意人们是否经常为自己的自私找借口，并抗拒他人的自私行为。仔细观察自己在生活中扮演着什么样的角色。</p>
+      </div>
+      <h4>如何成为公正的思考者</h4>
+      <ul>
+        <li>认识到每一天你自己都像其他人一样天生就是以自我为中心的；</li>
+        <li>警惕自己出现自欺欺人的想法——例如对他人的观点熟视无睹；</li>
+        <li>每做出一件自私的事就记录下来；</li>
+        <li>利用一切机会，从多种角度全面地对问题进行思考；</li>
+        <li>假装你的头脑可以在任何情况下接受你的任一观点；</li>
+        <li>强迫自己的头脑去思考看待问题和现状的其他方式。</li>
+      </ul>
+      <h4>多问问题，培养自己的公正思维</h4>
+      <p>"现在，我对……公正吗？""我是不是把自己的欲望放在他人的权利与需求前面了？""我对当下情形中的现实视而不见，是不是为了一己私利？"</p>
+    </div>
+
+    <!-- Day 16 -->
+    <div class="day-card" id="day16">
+      <span class="day-num">第十六天</span>
+      <h3>控制自己的情绪</h3>
+      <blockquote>情绪是一种疯狂的元素，它经常背弃自己，而不是导向思考或行动。——斯特灵</blockquote>
+      <p>在我们的文化中，人们通常将人分为两种：思考者和感受者——这是一个概念性的错误。作为人类，我们都会思考，也都有情绪，每一天都是如此。</p>
+      <p><strong>认知（思维）与情感（感受与欲望）是同一枚硬币的两面。</strong>如果你认为某人对你不公正，你就会对此人感受到一些消极情绪（比如愤怒或愤恨）。</p>
+      <h4>今天，你需要注意</h4>
+      <p>自己和他人的感受和情绪。先从表面上看一看自己容易体会到哪些情绪，找一找自己会否认哪些感受。</p>
+      <h4>如何控制情绪</h4>
+      <ul>
+        <li>留意自己经常出现的情绪；</li>
+        <li>每次出现消极情绪，就问：导致这种情绪的想法是什么？</li>
+        <li>看看自己是否可以找出构成这种情绪的非理性思维；</li>
+        <li>用更好、更合理的思维来驳斥这种思维；</li>
+        <li>一旦你按照新的思维来行事，你的情绪自然会相应地发生转变。</li>
+      </ul>
+    </div>
+
+    <!-- Day 17 -->
+    <div class="day-card" id="day17">
+      <span class="day-num">第十七天</span>
+      <h3>控制自己的需求</h3>
+      <blockquote>不能控制自己欲望的人永远无法获得自由。——毕达哥拉斯</blockquote>
+      <p>如果你想让生活听自己的指挥，就要先让控制行为的需求听话。否则，你很容易追求非理性的需求。</p>
+      <p>当你成为一位能够自我反省的思考者时，就能够将合理与不合理的需求区分开。需求之所以起作用，与人的想法和感受有关——<strong>需求都是由思维引起的</strong>。</p>
+      <div class="card warn">
+        <div class="label">今天，你需要注意</div>
+        <p>自己和他人的需求。留意人们是否经常追求非理性的需求，并找出自己的需求当中有哪些是愿意承认的，又有哪些是想要隐瞒的。</p>
+      </div>
+      <h4>如何控制自己的需求</h4>
+      <ul>
+        <li>认识到你的每一个行动都是目的和欲望驱使的；</li>
+        <li>列出自己的行为中有哪些引起了羞辱感、疼痛或痛苦；</li>
+        <li>对你的动机深入挖掘；</li>
+        <li>对每个解释提出问题：我的动机是什么？</li>
+        <li>认真思考你刚列出的每个行为有什么意义，然后具体写出每一个行为会引起什么后果；</li>
+        <li>将自己的生活简单化，认识到大部分非理性欲望都是在无意识层面发挥作用的。</li>
+      </ul>
+    </div>
+
+    <!-- Day 18 -->
+    <div class="day-card" id="day18">
+      <span class="day-num">第十八天</span>
+      <h3>切勿支配他人：不要当"老大"</h3>
+      <blockquote>威慑众人而非受万众爱戴的人，其权力是可憎的，其生命是可悲的。——尼波斯</blockquote>
+      <p>支配行为包括控制他人和对他人使用权力，以满足自己的利益，置他人的权利和需求于不顾。生活中有许多问题都源自控制他人的人类倾向。</p>
+      <p>人类通过操纵他人来实现自己目的的支配行为，在现代社会中扮演着重要的角色。几乎在任何情况下，那些被控制的人都会受到某种程度的伤害。</p>
+      <div class="card warn">
+        <div class="label">今天，你需要注意自己和他人的支配行为</div>
+        <p>你要注意人们何时会通过话语来支配和控制他人。要学会区分人们所说的话与他们真正的意图。要考察自己的行为，看看自己容易在什么时候支配什么人。</p>
+      </div>
+      <h4>如何减少支配行为</h4>
+      <ul>
+        <li>找出自己在生活的哪些方面会非理性地控制他人——家里？工作？和配偶？和子女？</li>
+        <li>请注意人们是如何将自己支配他人的行为"合理化"的，以及都给出了哪些理由；</li>
+        <li>法律、经济和军事支配在人类历史中极其常见——你要培养自己的辨别能力。</li>
+      </ul>
+    </div>
+
+    <!-- Day 19 -->
+    <div class="day-card" id="day19">
+      <span class="day-num">第十九天</span>
+      <h3>切勿一味顺从：不要当"小弟"</h3>
+      <blockquote>顺从是自由的牢笼，是成长的大敌。——肯尼迪</blockquote>
+      <p>处于顺从地位的人会默许他人的支配行为，目的是为了得到自己重视的东西，比如安全感、被保护的感觉或者前进的机会。他们拿自由当代价。</p>
+      <p>顺从的人，或者说"小弟"，懂得无助的技巧。他们的性格中包含一种奴性或者谄媚，而且常伴有自卑感、不满和怨恨。</p>
+      <div class="card warn">
+        <div class="label">今天，你需要注意自己和他人的顺从行为</div>
+        <p>顺从的一大特点就是妥协，这是人类生活中的一种常见现象。顺从他人的人经常心怀怨恨。你是否在"赞成"他人之后会心怀怨恨？</p>
+      </div>
+      <h4>当与他人在一起时</h4>
+      <p>你要仔细观察自己的行为。你是不是很容易在不思考对方的观点是否合理的情况下就附和连连？事后你是否充满怨恨？你喜欢别人控制你吗？</p>
+      <p>不要因为被他人控制而责怪他们——相反，你要认识到是你允许他们这么做的，并且要找出方法让自己不再顺从。</p>
+    </div>
+
+    <!-- Day 20 -->
+    <div class="day-card" id="day20">
+      <span class="day-num">第二十天</span>
+      <h3>切勿完全被新闻媒体左右</h3>
+      <blockquote>遵守职业道德的记者都是危人听闻的人，而他们正是通过这种方式让自己变得有趣些。——瑞戴尔</blockquote>
+      <p>每个社会和文化都有自己独特的世界观。这种世界观决定了人们去看什么，如何看，塑造了人们的视角和信念。全世界的新闻媒体反映的都是自己所属文化的世界观。</p>
+      <p>一般而言，主流新闻版面都遵循以下准则：</p>
+      <ol>
+        <li>"从我们的观点来看这件事情就是如此，因此，事实就是如此。"</li>
+        <li>"有事实可以支持我们的观点，因此这些事实就是最重要的。"</li>
+        <li>"这些国家对我们很友好，因此这些国家应该得到赞扬。"</li>
+        <li>"这些国家对我们不友好，因此这些国家应该受到批判。"</li>
+        <li>"我们的读者认为这些故事最有趣或最耸人听闻，因此这些故事在新闻中应该是最重要的。"</li>
+      </ol>
+      <div class="card warn">
+        <div class="label">今天，你要留意</div>
+        <p>在一天当中新闻媒体制造出了什么消息。注意报纸头版上发表的不太重要的文章，以及它与被埋没在一堆新闻中的重要文章之间形成的强烈对比。设想你会如何重新改写新闻报道，才能拓宽视野，还它们以公正。</p>
+      </div>
+    </div>
+
+    <!-- Day 21 -->
+    <div class="day-card" id="day21">
+      <span class="day-num">第二十一天</span>
+      <h3>小心筛选电视、电影、广告和网络上的观点</h3>
+      <blockquote>人们既然可以在家免费看糟糕的电视，又何必掏钱去看糟糕的电影呢？——戈尔德温</blockquote>
+      <p>群体规范是通过社会中的组织结构进行传播的，包括主流电视节目、电影、广告和互联网上的信息。电视上的东西大部分都是肤浅的，因为大多数电视节目都是以参与和娱乐大众为目的。</p>
+      <div class="card warn">
+        <div class="label">今天，你要仔细观察</div>
+        <p>自己看电视、电影和上网的习惯。要注意自己在看电视上花了多长时间，要认识到大部分电视节目的目标群体都是只有 11 岁小孩智商的人。</p>
+      </div>
+      <h4>如何批判性地看待电视、电影、广告和网络上的信息</h4>
+      <ul>
+        <li>注意哪些电视节目以暴力为中心；</li>
+        <li>注意大众媒体很少为了创造一个理智的世界而去刻画做理智之事的理智之人；</li>
+        <li>搜寻电视频道，看看是否还有其他质疑现状的节目；</li>
+        <li>记录自己看了多久的电视；</li>
+        <li>仔细挑选要观看的电影，多看一些关注现实、富有洞见的独立电影；</li>
+        <li>记录你每天上网的时间，观察你在网站上看到的信息的质量；</li>
+        <li>监督自己的消费习惯；</li>
+        <li>在互联网上搜索网站或网页时，要判断信息来源是否可靠。</li>
+      </ul>
+    </div>
+
+    <!-- Day 22 -->
+    <div class="day-card" id="day22">
+      <span class="day-num">第二十二天</span>
+      <h3>不要被政客迷惑</h3>
+      <blockquote>要成为药剂师，你必须学习药剂学；要成为律师或医生，你必须学习法律或医学；但是要成为政客，你只需要琢磨自己的利益是什么即可。——奥雷尔</blockquote>
+      <p>政客总是想让我们相信他们是深深地为人民的福祉担忧，但请勿相信他们的说辞。金钱是政治的乳汁。在政治里金钱并不是为大众的利益服务的，而通常是用来保护大笔资金的。</p>
+      <div class="grid-2">
+        <div class="card warn">
+          <div class="label">今天，你需要将政客与政治家进行区分</div>
+          <p>政客是为了增加自己的既得利益而追求权力的人。<br>
+          <strong>政治家</strong>追求的只是大众的利益。他们愿意提出不受欢迎的观点，并站起来反抗强权组织和既得利益。</p>
+        </div>
+        <div class="card info">
+          <div class="label">政客操纵选民的常见手法</div>
+          <p>利用语言强化刻板印象；激起人们不必要的恐惧；过分简化问题；将"真相"与现实相混淆。</p>
+        </div>
+      </div>
+      <h4>如何看穿政客的伎俩</h4>
+      <ul>
+        <li>仔细聆听政客的话，看看他们是如何操纵选民的；</li>
+        <li>你要注意，追求大众利益的政客到底有多么稀少；</li>
+        <li>注意政客是如何反映出大多数人的信仰体系的；</li>
+        <li>记住政客们的既得利益是什么，你就能预测出他们下一步会做什么；</li>
+        <li>学习政治和历史，广泛阅读其他来源的历史。</li>
+      </ul>
+    </div>
+
+    <!-- Day 23 -->
+    <div class="day-card" id="day23">
+      <span class="day-num">第二十三天</span>
+      <h3>不要求全责备</h3>
+      <blockquote>人类的灵魂永远不会强大或高尚到足以放弃报复，敢于原谅他人给自己造成的伤害。——沙潘</blockquote>
+      <p>有些人喜欢在别人身上挑刺，责备他人。人们责备他人的缺点是一种天性。婚姻中的两个人经常会责备对方（"这都是你做的！""不对，是你先那么做的！"）。</p>
+      <p>作为一位思考者，你要对现在的自己和将来想要成为的自己负责。这就要求你要认识到自己的精神包袱是什么，然后摆脱它。终日痛苦万分，责备自己的父母，把自己当成受害者，会带来抑郁和怨恨。</p>
+      <div class="card warn">
+        <div class="label">今天，你需要留意的是自己责备他人的倾向</div>
+        <p>留意哪些人会责备你。他们为什么会责备你？你是否会在被别人责备之前先发制人？这段关系中是否潜藏着什么问题，以致让两个人不理智地责备彼此？</p>
+      </div>
+      <h4>如何掌控自我，不责备他人</h4>
+      <ul>
+        <li>如果你习惯因为一点小事就责备亲近的人，就要问一问自己为什么要责备对方；</li>
+        <li>当你发现自己正在为个人的所作所为责备他人时，一定要阻止自己；</li>
+        <li>如果你真的认为自己责备父母是很有道理的，就要将具体的理由写下来；</li>
+        <li>利用每一个责备他人的瞬间，努力将自己的精力转变为可能带来成功的行动；</li>
+        <li>列出你的父母都为你做过哪些牺牲。</li>
+      </ul>
+    </div>
+
+    <!-- Day 24 -->
+    <div class="day-card" id="day24">
+      <span class="day-num">第二十四天</span>
+      <h3>道貌岸然不可取：要慈悲为怀</h3>
+      <blockquote>我们让上帝来怜悯众生，自己却毫无怜悯之心。——艾略特</blockquote>
+      <p>我们大多数人都认为，如果别人也和自己想的一样，那么这个世界就会更加美好。我们天生就会认为自己的想法是对的，如果别人和自己的想法、举止不同，那么我们就无法容忍。</p>
+      <p>"三振出局"式的法律、将儿童当作成年人来对待的惯例、"罪行同成年人，与成年人同罚"的法律——这些惩罚太极端以至于把人折磨得生不如死。</p>
+      <div class="card tinted">
+        <div class="label">今天，你要留意向他人展示同情心的机会</div>
+        <p>对他人表示理解、怜悯和宽恕。想象一下，一个到处充满理解和慈悲的世界是什么样的。请注意你周围的人在多大程度上赞成做出"离经叛道"行为的人就应受到惩罚和折磨。</p>
+      </div>
+      <h4>如何同情他人、慈悲为怀</h4>
+      <ul>
+        <li>每当你认为某个人应该为自己的行为遭受惩罚时，就要停下来问问自己，采用其他方式是否无法获得更好的效果；</li>
+        <li>每当你认为自己是绝对正确的，就问："我到底有什么证据可以证明自己的观点？我怎么知道自己是对的呢？"</li>
+        <li>仔细研究自己在什么情况下会缺少同情心；</li>
+        <li>想一想社会制约是如何影响你从多种角度看待问题的能力的。</li>
+      </ul>
+    </div>
+
+    <!-- Day 25 -->
+    <div class="day-card" id="day25">
+      <span class="day-num">第二十五天</span>
+      <h3>不要自寻烦恼</h3>
+      <blockquote>烦恼是问题在到期前人们要付出的一种利息。——英奇</blockquote>
+      <p>许多人一辈子都在为一些事烦恼，而从不积极地解决问题。请思考一下《鹅妈妈童谣》中这些话的智慧：</p>
+      <div class="card info">
+        <p>天下问题千千万，解决方法仅一半。<br>一半方法任你找，另外一半莫烦恼。</p>
+      </div>
+      <p>很少有人能够按照这个谚语所教导的去做。当你遇到问题时，就要努力去想有没有可能找到解决问题的办法。如果你判断自己无法解决问题，那么就顺其自然。</p>
+      <h4>今天，你要留意</h4>
+      <p>自己何时会因为问题烦恼不断，却没有行动起来寻找解决问题的办法。</p>
+      <h4>如何远离烦恼</h4>
+      <p>每当遇到难以解决的问题时，就问自己：</p>
+      <ol>
+        <li>问题到底是什么？</li>
+        <li>我有哪些选择？在我的可控范围内有没有解决的办法？</li>
+        <li>如果这个问题我无法解决，我还能顺其自然地面对吗？</li>
+        <li>列出所有你当前所烦恼的问题，然后按照上述顺序依次考虑每一个问题。</li>
+      </ol>
+    </div>
+
+    <!-- Day 26 -->
+    <div class="day-card" id="day26">
+      <span class="day-num">第二十六天</span>
+      <h3>成为"世界公民"</h3>
+      <blockquote>如果爱国是"一帮坏蛋最后的避难所"，这并不是因为他们会以爱国的名义做坏事，而是因为爱国热情会抹杀道德界限。——派瑞</blockquote>
+      <p>在大多数国家，社会化的人们都认为自己要为祖国谋福利，也就是说要成为"民族主义者"。他们认为"我们是最棒的。我们才是第一"。这种病态的想法集中体现在一种文化中时就叫"民族中心主义"或者"社会中心主义"。</p>
+      <p>如果我们想要为绝大多数人创造一个正义的世界，那么我们就必须成为"世界公民"——必须谴责民族主义和民族中心主义；必须放眼全球，目光长远。</p>
+      <div class="card tinted">
+        <div class="label">如何成为"世界公民"</div>
+        <ul>
+          <li>对所有政府的动机和行动提出质疑；</li>
+          <li>不要被煽情的口号打动，要根据正确的价值观做出判断；</li>
+          <li>设想自己是一位"世界公民"，认为世界的利益先于国家利益；</li>
+          <li>从全球的视野和历史的角度来分析问题；</li>
+          <li>找一个全球性的问题，并尽可能地从多种国际资源的角度来对其进行分析。</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 27 -->
+    <div class="day-card" id="day27">
+      <span class="day-num">第二十七天</span>
+      <h3>尽己所能，让世界变得更美好</h3>
+      <blockquote>你会发现，仅仅下定决心不做废人，并真诚地希望帮助他人就能以最快、最微妙的方式让你变得更加优秀。——拉斯金</blockquote>
+      <p>批判性思维的目的是改善我们的思维方式和行为方式，让我们更好地与他人交往、更幸福地生活。从道德的角度讲，我们每一个人都有义务帮助那些无法自助的人。</p>
+      <h4>今天，你需要留意的是提高生活质量的机会</h4>
+      <p>你需要列出自己目前可以为别人的生活做些什么，或者可以为地球环境做些什么。</p>
+      <h4>如何创造一个公正的世界</h4>
+      <ul>
+        <li>仔细挑选出一个以创造更加正义的世界为目标的群体；</li>
+        <li>思考自己能影响哪些人，并利用这种影响力去帮助他人；</li>
+        <li>发掘自己的优势，并通过多种方式利用这种优势去做贡献；</li>
+        <li>最重要的是，要多阅读，要批判性地饱览内容详实的书籍；</li>
+        <li>努力改善具有感觉的生物的生活。</li>
+      </ul>
+    </div>
+
+    <!-- Day 28 -->
+    <div class="day-card" id="day28">
+      <span class="day-num">第二十八天</span>
+      <h3>分阶段发展自己</h3>
+      <blockquote>生活就像演奏小提琴，要一边演奏一边学习。——巴特勒</blockquote>
+      <p>关于批判性思维，很多人认为：你要么是批判性思考者，要么不是——这种观点是有误导性的。我们的思维质量是变动着的；我们每个人都会在生活的某些领域具备更高的思维质量。</p>
+      <h4>批判性思维的发展阶段</h4>
+      <div class="card">
+        <div class="label">① 不自省的思考者</div>
+        <p>意识不到自己的思维是需要指导的。他们只是思考，然后按照自己的思想行事，很少意识到自己的思维可能会造成问题。大多数人终其一生都是不自省的思考者。</p>
+      </div>
+      <div class="card tinted">
+        <div class="label">② 受到挑战的思考者</div>
+        <p>接触到了批判性思维的本质思想，或者不安地认为自己的思维可能存在问题。开始敞开心扉，认识到还有更好的生活方式，但是并不确定该如何迈出第一步。</p>
+      </div>
+      <div class="card info">
+        <div class="label">③ 初级思考者</div>
+        <p>接受挑战，并详尽地审视自己的思维以寻找问题。虽然尚有不足，但开始吸收一些重要的批判性思维的概念和原则。认识到自己在自我发展过程中还有很长的一段路要走。</p>
+      </div>
+      <div class="card warn">
+        <div class="label">④ 实践型思考者</div>
+        <p>创造出一种自我发展计划并严格地遵循它，比如阅读本书并长期实践其中的理念。在他人面前更加坚强，不再需要别人的认可才能获得良好的自我感觉。</p>
+      </div>
+      <div class="card ok">
+        <div class="label">⑤ 高级思考者 / ⑥ 有所成就的思考者</div>
+        <p>这两个阶段的人会用其他阶段的人无法想象的方式来控制自己的决定、掌控自己的生活。他们可以实现自我，过着有道德的生活，他们是公正的思考者。</p>
+      </div>
+      <p>你的目标应该是尽可能到达最高发展阶段。许多人都能到达初级思考者甚至是实践型思考者阶段，但随后又在其生活的许多领域中变回了不自省的思考者。</p>
+    </div>
+
+    <!-- Day 29 -->
+    <div class="day-card" id="day29">
+      <span class="day-num">第二十九天</span>
+      <h3>不要停止自我教育</h3>
+      <blockquote>不论从哪种角度讲，人类只有受到教化才可以称之为人。——曼</blockquote>
+      <p>尽管很多人都完成了多年学业，但真正受到教育的人却少之又少。很少有人学到了如何习得有意义的理念。他们并不是终身学习者。</p>
+      <p>纽曼在《大学的理念》中描述：智者，自律至极，懂得知之为知之，懂得灵活运用推理的力量来改变庞杂的万事万物。富有耐心、镇定自若、庄重肃穆的人，事情伊始便能看出结果。</p>
+      <h4>今天，你要将驯化头脑这件事当成个人价值观的核心</h4>
+      <ul>
+        <li>为毕生的自我发展订立一个计划；</li>
+        <li>研究自己的行为，坦白地展示自己身上的矛盾之处；</li>
+        <li>看透名利与地位，看到盛大典礼与仪式的本质；</li>
+        <li>发誓每天读一些重要的书籍和文章；</li>
+        <li>认识到深入学习新的理念，持续不断地将其与以前学到的理念融会贯通是受教育和理性生活的关键。</li>
+      </ul>
+      <h4>如何进行自我教育</h4>
+      <ul>
+        <li>博览群书，去发现一些新的重要理念；</li>
+        <li>成为你自己的历史学家、社会学家和经济学家；</li>
+        <li>学会批判性思维的原则；</li>
+        <li>请登录批判性思维基金会的网站以获取更多资源和信息（www.criticalthinking.org）。</li>
+      </ul>
+    </div>
+
+    <!-- Day 30 -->
+    <div class="day-card" id="day30">
+      <span class="day-num">第三十天</span>
+      <h3>今后你将何去何从</h3>
+      <blockquote>学习的一大技巧就在于努力与循序渐进。——塞缪尔·约翰逊</blockquote>
+      <p>现在，你已经了解到了 29 个简单却强有力的理念。如果你还想继续成长，那么现在你就要判断出自己要往哪里走——如果不迈出下一步，你永远都不会走出新的一步。</p>
+      <div class="card tinted">
+        <div class="label">今天，你要将精力集中在</div>
+        <p>制订自我发展的下一步计划，列出今后几个月间要读哪些书，琢磨自己如何以此为起点继续培养自己的批判性思维能力。每天记日记，去寻找其他来源来获得新闻和世界观，并形成规律。</p>
+      </div>
+      <h4>关键提示</h4>
+      <ul>
+        <li>头脑只有在可以自我控制的时候才是自由的；</li>
+        <li>当完成了 30 天计划，开始 30 周计划——一周学一个理念；</li>
+        <li>每天都是崭新的，所以每天都是重新开始的好机会；</li>
+        <li>不要让任何事或任何人来阻碍你追求这一目标。</li>
+      </ul>
+      <h4>如何迈向下一个发展阶段</h4>
+      <ul>
+        <li>决心每天（或每周）都学习一个新的重要理念，并付诸实践；</li>
+        <li>继续了解本书的理念，并将自己的感想记录下来；</li>
+        <li>每天留一点时间来培养自己的批判性思维；</li>
+        <li>参与由批判性思维基金会赞助的批判性思维国际会议。</li>
+      </ul>
+    </div>
+
+    <!-- ============== Appendix 1 ============== -->
+    <h2 class="section" id="appendix1">附录 1：批判性思维延伸阅读<span class="badge">书单</span></h2>
+    <p>有一种非常有用的方法，不仅能让你提升自我、开拓眼界，还能让你对抗社会和媒体的影响，那就是阅读古籍——阅读有着数十年、数百年甚至上千年历史的书籍。借助这些古籍提供的批判性视角，你就能跳出当今社会的假设与意识形态，塑造出一种富有见识的世界观。</p>
+    <blockquote>遇到天赋异禀的人，我们应该问他读了什么书。——爱默生</blockquote>
+    <table class="vocab-table">
+      <thead><tr><th>年代</th><th>代表性作者</th></tr></thead>
+      <tbody>
+        <tr><td class="term">2000 多年前</td><td>柏拉图、亚里士多德、埃斯库罗斯、阿里斯托芬</td></tr>
+        <tr><td class="term">13 世纪</td><td>托马斯·阿奎那、但丁</td></tr>
+        <tr><td class="term">14 世纪</td><td>薄伽丘、乔叟</td></tr>
+        <tr><td class="term">15 世纪</td><td>伊拉斯谟、弗朗西斯·培根</td></tr>
+        <tr><td class="term">16 世纪</td><td>马基雅维利、本韦努托·切利尼、塞万提斯、蒙田</td></tr>
+        <tr><td class="term">17 世纪</td><td>弥尔顿、帕斯卡尔、约翰·德莱顿、洛克、约瑟夫·阿狄生</td></tr>
+        <tr><td class="term">18 世纪</td><td>托马斯·潘恩、托马斯·杰斐逊、亚当·斯密、富兰克林、蒲柏、埃德蒙·伯克、塞缪尔·约翰逊、笛福、歌德、卢梭、布莱克</td></tr>
+        <tr><td class="term">19 世纪</td><td>简·奥斯汀、乔治·艾略特、狄更斯、左拉、巴尔扎克、陀思妥耶夫斯基、弗洛伊德、马克思、达尔文、纽曼、托尔斯泰、勃朗特姐妹、弗兰克·诺里斯、托马斯·哈代、爱米尔·涂尔干、埃德蒙·罗斯丹、奥斯卡·王尔德</td></tr>
+        <tr><td class="term">20 世纪至今</td><td>安布罗斯·比尔斯、古斯塔夫斯·迈尔斯、门肯、萨姆纳、奥登、布莱希特、康拉德……（附录原文未列完）</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ============== Appendix 2 ============== -->
+    <h2 class="section" id="appendix2">附录 2：批判性思维词汇表<span class="badge">核心概念</span></h2>
+    <p>下列词汇都是批判性思维的重要概念。仔细阅读它们可以帮助你更深入地理解本书中的理念。词语之间相互联系，是一张概念网。</p>
+    <table class="vocab-table">
+      <thead><tr><th>术语</th><th>释义</th></tr></thead>
+      <tbody>
+        <tr><td class="term">正确性</td><td>是指没有差错、错误或扭曲的问题。正确性是一种基本的理性标准。批判性思考者会努力正确地表达自己和他人的观点。</td></tr>
+        <tr><td class="term">假设</td><td>是人们不经证实或证明就接受或信以为真的一种陈述；是一种未阐明的前提或信仰。人类所有的思想与经验都是建立在假设之上的——但我们却很少质疑自己的假设。</td></tr>
+        <tr><td class="term">清晰 / 清晰性</td><td>是指通过一定方法让理解更为容易；摆脱困惑或模棱两可的情况。澄清的关键点在于：一个人要有能力确切地陈述和描述自己的意思，并有能力举出恰当的具体例子。</td></tr>
+        <tr><td class="term">概念</td><td>一种理念或想法，尤其是指针对某一事物或某一类事物的一种广义理念。概念是能够让我们明确、比较和区分自己的思维与经历的理性结构。</td></tr>
+      </tbody>
+    </table>
+
+    <p class="footer-note">本知识脑图由 Claude 基于《批判性思维工具》（修订扩展版）整理生成，仅供学习使用。</p>
+
+  </main>
+</div>
+
+<script>
+  function toggleNav(btn) {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    const panel = btn.nextElementSibling;
+    if (expanded) { panel.classList.remove('open'); }
+    else { panel.classList.add('open'); }
+  }
+
+  // Sidebar search filter
+  document.getElementById('navSearch').addEventListener('input', function(e) {
+    const q = e.target.value.trim().toLowerCase();
+    const links = document.querySelectorAll('.nav-children a');
+    links.forEach(a => {
+      const text = a.textContent.toLowerCase();
+      if (!q || text.indexOf(q) >= 0) {
+        a.style.display = '';
+      } else {
+        a.style.display = 'none';
+      }
+    });
+    // Auto expand groups with matches
+    if (q) {
+      document.querySelectorAll('.nav-toggle').forEach(btn => {
+        const panel = btn.nextElementSibling;
+        const visible = Array.from(panel.querySelectorAll('a')).some(a => a.style.display !== 'none');
+        if (visible) { btn.setAttribute('aria-expanded', 'true'); panel.classList.add('open'); }
+      });
+    }
+  });
+
+  // Smooth scroll + active link
+  document.querySelectorAll('.nav-children a[href^="#"]').forEach(a => {
+    a.addEventListener('click', function(e) {
+      document.querySelectorAll('.nav-children a').forEach(x => x.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

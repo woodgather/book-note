@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《超级学习者》知识脑图 · Scott H. Young</title>
+<style>
+:root {
+  --bg-page: #f5f1ea;
+  --bg-card: #ffffff;
+  --bg-sidebar: #1f2937;
+  --bg-sidebar-hover: #2d3a4f;
+  --bg-sidebar-active: #3b82f6;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --text-sidebar: #d1d5db;
+  --text-sidebar-active: #ffffff;
+  --accent-primary: #c8553d;
+  --accent-secondary: #588b8b;
+  --accent-gold: #d4a04c;
+  --accent-green: #6b8e4e;
+  --border-color: #e5e0d6;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+  --radius: 10px;
+  --transition: 0.25s ease;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", "Hiragino Sans GB", sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.75;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Header ===== */
+.site-header {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  color: #fff;
+  padding: 38px 40px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(212,160,76,0.18), transparent 50%),
+              radial-gradient(circle at 10% 80%, rgba(200,85,61,0.15), transparent 50%);
+  pointer-events: none;
+}
+.site-header .brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+  position: relative;
+}
+.site-header .brand-mark {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-primary));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700;
+  box-shadow: 0 4px 14px rgba(200,85,61,0.4);
+}
+.site-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.site-header .subtitle {
+  color: #d1d5db;
+  font-size: 14px;
+  letter-spacing: 1px;
+  position: relative;
+}
+.site-header .meta {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 13px;
+  color: #9ca3af;
+  position: relative;
+}
+.site-header .meta span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ===== Layout ===== */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: calc(100vh - 200px);
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  background: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  padding: 22px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.08);
+}
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+
+.sidebar-header {
+  padding: 0 22px 18px;
+  border-bottom: 1px solid #374151;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar-header h2 {
+  font-size: 13px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+.toggle-all {
+  background: rgba(255,255,255,0.06);
+  color: #d1d5db;
+  border: 1px solid #4b5563;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.toggle-all:hover { background: rgba(255,255,255,0.12); }
+
+.nav-list { list-style: none; padding: 12px 0; }
+.nav-item { position: relative; }
+.nav-section {
+  display: flex;
+  align-items: center;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+  font-size: 13.5px;
+  border-left: 3px solid transparent;
+}
+.nav-section:hover { background: var(--bg-sidebar-hover); color: #fff; }
+.nav-section.active {
+  background: rgba(59,130,246,0.18);
+  color: var(--text-sidebar-active);
+  border-left-color: var(--accent-gold);
+}
+.nav-section .icon {
+  width: 18px; height: 18px;
+  margin-right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--accent-gold);
+  font-weight: 700;
+  transition: transform var(--transition);
+}
+.nav-section.collapsed .icon { transform: rotate(-90deg); }
+.nav-section .arrow {
+  margin-left: auto;
+  font-size: 10px;
+  opacity: 0.6;
+  transition: transform var(--transition);
+}
+.nav-section.collapsed .arrow { transform: rotate(-90deg); }
+.nav-children {
+  list-style: none;
+  background: #1a2332;
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+.nav-children.collapsed { max-height: 0; }
+.nav-children li a {
+  display: block;
+  padding: 7px 22px 7px 50px;
+  font-size: 12.5px;
+  color: #9ca3af;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: var(--transition);
+  position: relative;
+}
+.nav-children li a::before {
+  content: "›";
+  position: absolute;
+  left: 32px;
+  opacity: 0.4;
+}
+.nav-children li a:hover {
+  background: #2d3a4f;
+  color: #fff;
+  border-left-color: var(--accent-gold);
+}
+.nav-children li a.active {
+  background: rgba(59,130,246,0.12);
+  color: var(--accent-gold);
+  border-left-color: var(--accent-gold);
+}
+
+/* ===== Main Content ===== */
+.main {
+  padding: 40px 56px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero-card {
+  background: linear-gradient(135deg, #fef7e8 0%, #fce8d6 100%);
+  border-left: 5px solid var(--accent-primary);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-bottom: 36px;
+  box-shadow: var(--shadow-sm);
+}
+.hero-card .eyebrow {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.hero-card h2 {
+  font-size: 22px;
+  color: #7c2d12;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+.hero-card p { color: #5b3a2a; font-size: 14.5px; }
+
+/* ===== Section ===== */
+.section {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 36px 40px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-md);
+  scroll-margin-top: 20px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid var(--border-color);
+}
+.section-number {
+  background: linear-gradient(135deg, var(--accent-primary), #a03a26);
+  color: #fff;
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; font-weight: 700;
+  box-shadow: 0 4px 10px rgba(200,85,61,0.25);
+}
+.section-number.gold { background: linear-gradient(135deg, var(--accent-gold), #b8853a); box-shadow: 0 4px 10px rgba(212,160,76,0.3); }
+.section-number.green { background: linear-gradient(135deg, var(--accent-green), #4a6e36); box-shadow: 0 4px 10px rgba(107,142,78,0.3); }
+.section-number.blue { background: linear-gradient(135deg, var(--accent-secondary), #3d6b6b); box-shadow: 0 4px 10px rgba(88,139,139,0.3); }
+
+.section h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
+}
+.section .section-tagline {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ===== Mindmap Diagram ===== */
+.mindmap {
+  background: linear-gradient(180deg, #fafaf7 0%, #f0ece2 100%);
+  border-radius: var(--radius);
+  padding: 30px 24px;
+  margin: 20px 0 28px;
+  border: 1px solid var(--border-color);
+}
+.mindmap-title {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+.mindmap-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.mindmap-core {
+  background: linear-gradient(135deg, var(--accent-primary), #a03a26);
+  color: #fff;
+  padding: 16px 28px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(200,85,61,0.35);
+  letter-spacing: 0.5px;
+}
+.mindmap-branches {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  width: 100%;
+  margin-top: 6px;
+}
+.mindmap-branch {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--text-primary);
+  font-weight: 600;
+  position: relative;
+  transition: var(--transition);
+}
+.mindmap-branch:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-gold);
+}
+.mindmap-branch .num {
+  display: inline-block;
+  width: 20px; height: 20px;
+  line-height: 20px;
+  border-radius: 50%;
+  background: var(--accent-gold);
+  color: #fff;
+  font-size: 11px;
+  margin-right: 6px;
+  font-weight: 700;
+}
+
+/* ===== Content blocks ===== */
+.content-block { margin-bottom: 22px; }
+.content-block h3 {
+  font-size: 18px;
+  color: #1f2937;
+  margin-bottom: 12px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent-primary);
+  font-weight: 700;
+}
+.content-block h3.green { border-left-color: var(--accent-green); }
+.content-block h3.blue { border-left-color: var(--accent-secondary); }
+.content-block h3.gold { border-left-color: var(--accent-gold); }
+.content-block p {
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  font-size: 14.5px;
+}
+
+/* ===== Lists ===== */
+ul.bullet-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 18px;
+}
+ul.bullet-list li {
+  position: relative;
+  padding: 6px 0 6px 24px;
+  color: var(--text-secondary);
+  font-size: 14.5px;
+}
+ul.bullet-list li::before {
+  content: "";
+  position: absolute;
+  left: 6px; top: 16px;
+  width: 8px; height: 8px;
+  background: var(--accent-gold);
+  border-radius: 50%;
+}
+ul.bullet-list li strong { color: var(--text-primary); }
+
+ol.numbered-list {
+  padding-left: 24px;
+  margin: 10px 0 18px;
+}
+ol.numbered-list li {
+  padding: 4px 0;
+  color: var(--text-secondary);
+  font-size: 14.5px;
+}
+ol.numbered-list li strong { color: var(--text-primary); }
+
+/* ===== Info cards ===== */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.info-card {
+  background: #fafaf7;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 18px 20px;
+  transition: var(--transition);
+}
+.info-card:hover {
+  border-color: var(--accent-gold);
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+.info-card .info-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+  color: var(--accent-primary);
+}
+.info-card h4 {
+  font-size: 14.5px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.info-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ===== Callout ===== */
+.callout {
+  background: linear-gradient(135deg, #fff8ec 0%, #fef3d8 100%);
+  border-left: 4px solid var(--accent-gold);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 18px 0;
+  font-size: 14px;
+  color: #6b4a1c;
+}
+.callout .callout-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  margin-bottom: 4px;
+}
+.callout strong { color: #4a2f0f; }
+
+.callout.primary {
+  background: linear-gradient(135deg, #fef7e8 0%, #fce8d6 100%);
+  border-left-color: var(--accent-primary);
+  color: #7c2d12;
+}
+.callout.primary .callout-title { color: var(--accent-primary); }
+.callout.primary strong { color: #5b1c0a; }
+
+.callout.green {
+  background: linear-gradient(135deg, #f0f5e8 0%, #e2ecd4 100%);
+  border-left-color: var(--accent-green);
+  color: #3d5226;
+}
+.callout.green .callout-title { color: var(--accent-green); }
+.callout.green strong { color: #2a3a18; }
+
+/* ===== Tables ===== */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 14px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.styled-table th {
+  background: var(--bg-sidebar);
+  color: #fff;
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.styled-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.styled-table tr:last-child td { border-bottom: none; }
+.styled-table tr:hover td { background: #fafaf7; }
+.styled-table td:first-child { font-weight: 600; color: var(--text-primary); }
+
+/* ===== Quote ===== */
+.quote-block {
+  background: #fafaf7;
+  border-left: 4px solid var(--accent-secondary);
+  padding: 16px 20px;
+  margin: 18px 0;
+  font-style: italic;
+  color: var(--text-secondary);
+  font-size: 14.5px;
+  border-radius: 0 8px 8px 0;
+}
+.quote-block::before {
+  content: """;
+  font-size: 32px;
+  color: var(--accent-secondary);
+  opacity: 0.5;
+  font-family: Georgia, serif;
+  line-height: 0;
+  vertical-align: -10px;
+  margin-right: 6px;
+}
+.quote-block .quote-author {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-style: normal;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+/* ===== Footer ===== */
+.site-footer {
+  background: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  text-align: center;
+  padding: 22px 20px;
+  font-size: 13px;
+  border-top: 3px solid var(--accent-gold);
+}
+.site-footer .footer-tag {
+  color: var(--accent-gold);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: relative; height: auto; max-height: 400px; }
+  .main { padding: 24px 20px 60px; }
+  .section { padding: 24px 22px; }
+  .site-header { padding: 28px 20px 22px; }
+}
+
+/* ===== Back to top ===== */
+.back-to-top {
+  position: fixed;
+  bottom: 30px; right: 30px;
+  width: 44px; height: 44px;
+  background: var(--accent-primary);
+  color: #fff;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  border: none;
+  font-size: 18px;
+  transition: var(--transition);
+  z-index: 100;
+}
+.back-to-top:hover { background: #a03a26; transform: translateY(-2px); }
+.back-to-top.visible { display: flex; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <div class="brand-mark">超</div>
+    <div>
+      <h1>《超级学习者》知识脑图</h1>
+      <div class="subtitle">ULTRALEARNING · SCOTT H. YOUNG · 9 大原则完整梳理</div>
+    </div>
+  </div>
+  <div class="meta">
+    <span>📘 作者：斯科特·H·扬（Scott H. Young）</span>
+    <span>🧠 主题：元学习 · 专注 · 直接 · 训练 · 检索 · 反馈 · 记忆 · 直觉 · 试验</span>
+    <span>🎯 目标：掌握任何学科，超越竞争者</span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ========== Sidebar Navigation ========== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>目录导航</h2>
+      <button class="toggle-all" onclick="toggleAllNav()">全部展开</button>
+    </div>
+    <ul class="nav-list" id="navList">
+      <li class="nav-item">
+        <div class="nav-section active" data-target="intro">
+          <span class="icon">★</span>
+          <span>全书导览</span>
+        </div>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="ch1">
+          <span class="icon">1</span>
+          <span>不去 MIT 也能上 MIT</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="ch1">
+          <li><a href="#s1-mit">MIT 挑战</a></li>
+          <li><a href="#s1-language">三个月学会外语</a></li>
+          <li><a href="#s1-jeopardy">罗杰·克雷格通关《危险边缘》</a></li>
+          <li><a href="#s1-million">从最低工资到百万富翁</a></li>
+          <li><a href="#s1-after">MIT 挑战之后</a></li>
+          <li><a href="#s1-discover">发现超级学习者</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="ch2">
+          <span class="icon">2</span>
+          <span>为什么超级学习很重要</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="ch2">
+          <li><a href="#s2-why">超级学习的价值</a></li>
+          <li><a href="#s2-econ">经济学：平均时代的终结</a></li>
+          <li><a href="#s2-edu">教育：学费太高</a></li>
+          <li><a href="#s2-tech">技术：学习的新前沿</a></li>
+          <li><a href="#s2-career">加速职业成长</a></li>
+          <li><a href="#s2-talent">天赋问题：陶哲轩</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="ch3">
+          <span class="icon">3</span>
+          <span>怎样成为超级学习者</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="ch3">
+          <li><a href="#s3-become">成为超级学习者</a></li>
+          <li><a href="#s3-first">初级超级学习者的第一步</a></li>
+          <li><a href="#s3-principles">9 大原则总览</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="p1">
+          <span class="icon">P1</span>
+          <span>原则 1 · 元学习</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="p1">
+          <li><a href="#p1-what">什么是元学习</a></li>
+          <li><a href="#p1-power">导图的力量</a></li>
+          <li><a href="#p1-how">怎样绘制导图</a></li>
+          <li><a href="#p1-q">三问：为什么/学什么/如何做</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="p2">
+          <span class="icon">P2</span>
+          <span>原则 2 · 专注</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="p2">
+          <li><a href="#p2-problems">三大专注问题</a></li>
+          <li><a href="#p2-improve">提高专注力</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="p3">
+          <span class="icon">P3</span>
+          <span>原则 3 · 直接</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="p3">
+          <li><a href="#p3-why">直接的重要性</a></li>
+          <li><a href="#p3-transfer">迁移：教育的污点</a></li>
+          <li><a href="#p3-how">如何直接学习</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="p4">
+          <span class="icon">P4</span>
+          <span>原则 4 · 训练</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="p4">
+          <li><a href="#p4-chemistry">学习的化学反应</a></li>
+          <li><a href="#p4-drill">训练设计策略</a></li>
+          <li><a href="#p4-mindful">用心训练</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="p5">
+          <span class="icon">P5</span>
+          <span>原则 5 · 检索</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="p5">
+          <li><a href="#p5-effect">测验的效果</a></li>
+          <li><a href="#p5-hard">困难可取吗</a></li>
+          <li><a href="#p5-how">如何练习检索</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="p6">
+          <span class="icon">P6</span>
+          <span>原则 6 · 反馈</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="p6">
+          <li><a href="#p6-power">信息的力量</a></li>
+          <li><a href="#p6-types">反馈的类型</a></li>
+          <li><a href="#p6-how">如何改进反馈</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="p7">
+          <span class="icon">P7</span>
+          <span>原则 7 · 记忆</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="p7">
+          <li><a href="#p7-nigel">奈杰尔·理查兹的秘密</a></li>
+          <li><a href="#p7-forget">为什么记住这么难</a></li>
+          <li><a href="#p7-fight">打赢反遗忘战</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="p8">
+          <span class="icon">P8</span>
+          <span>原则 8 · 直觉</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="p8">
+          <li><a href="#p8-feynman">揭秘费曼的魔法</a></li>
+          <li><a href="#p8-cultivate">如何培养直觉</a></li>
+          <li><a href="#p8-feyntech">费曼技巧</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="p9">
+          <span class="icon">P9</span>
+          <span>原则 9 · 试验</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="p9">
+          <li><a href="#p9-vangogh">凡·高如何学会绘画</a></li>
+          <li><a href="#p9-types">三种类型的试验</a></li>
+          <li><a href="#p9-how">如何试验</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="ch13">
+          <span class="icon">13</span>
+          <span>你的第一个超级学习项目</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="ch13">
+          <li><a href="#s13-step1">五步法</a></li>
+          <li><a href="#s13-alternative">替代方案</a></li>
+          <li><a href="#s13-lifelong">终身学习</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="ch14">
+          <span class="icon">14</span>
+          <span>非常规教育 · 培养超级学习者</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="ch14">
+          <li><a href="#s14-kasparov">再战卡斯帕罗夫</a></li>
+          <li><a href="#s14-cultivate">如何培养超级学习者</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="nav-section collapsed" data-target="app">
+          <span class="icon">附</span>
+          <span>附录 · 训练手册</span>
+          <span class="arrow">▼</span>
+        </div>
+        <ul class="nav-children collapsed" data-children="app">
+          <li><a href="#app-mit">MIT 课程挑战</a></li>
+          <li><a href="#app-language">不说英语的一年</a></li>
+          <li><a href="#app-portrait">肖像画挑战</a></li>
+          <li><a href="#app-handbook">三阶段训练手册</a></li>
+        </ul>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- ========== Main Content ========== -->
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero-card" id="intro">
+      <div class="eyebrow">ULTRALEARNING · 全书导览</div>
+      <h2>掌握任何学科、超越竞争者的 9 大超级学习原则</h2>
+      <p>本书源自作者 Scott H. Young 的亲身实践——一年自学完成 MIT 计算机科学全部 33 门课程、三个月掌握葡萄牙语等四种语言。通过研究全球超级学习者，提炼出<strong>元学习、专注、直接、训练、检索、反馈、记忆、直觉、试验</strong>九大核心原则，并展示如何在真实项目中运用这些原则来掌握几乎任何学科。</p>
+    </div>
+
+    <!-- 核心脑图 -->
+    <div class="section" id="overview">
+      <div class="section-header">
+        <div class="section-number">★</div>
+        <div>
+          <h2>超级学习 9 大原则全景</h2>
+          <div class="section-tagline">从「学会学」到「精通一切」</div>
+        </div>
+      </div>
+
+      <div class="mindmap">
+        <div class="mindmap-title">九大原则核心脑图</div>
+        <div class="mindmap-center">
+          <div class="mindmap-core">超级学习 ULTRALEARNING</div>
+          <div class="mindmap-branches">
+            <div class="mindmap-branch"><span class="num">1</span>元学习</div>
+            <div class="mindmap-branch"><span class="num">2</span>专注</div>
+            <div class="mindmap-branch"><span class="num">3</span>直接</div>
+            <div class="mindmap-branch"><span class="num">4</span>训练</div>
+            <div class="mindmap-branch"><span class="num">5</span>检索</div>
+            <div class="mindmap-branch"><span class="num">6</span>反馈</div>
+            <div class="mindmap-branch"><span class="num">7</span>记忆</div>
+            <div class="mindmap-branch"><span class="num">8</span>直觉</div>
+            <div class="mindmap-branch"><span class="num">9</span>试验</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-block">
+        <h3>为什么是这 9 个原则？</h3>
+        <p>Scott Young 通过研究 <strong>本杰明·富兰克林、罗杰·克雷格、理查德·费曼、凡·高、特里斯坦·德·蒙特贝洛、奈杰尔·理查兹</strong>等横跨多个世纪的超级学习者发现，他们看似不同的学习方法背后都共享着同一套底层原则。掌握这些原则的组合运用，就能以远超常人的效率掌握任何学科。</p>
+      </div>
+
+      <div class="callout primary">
+        <div class="callout-title">超级学习定义</div>
+        <strong>超级学习（Ultralearning）</strong>是一种<strong>自学策略</strong>，它既是一种<strong>关于学习的技能</strong>，也是一种<strong>以掌握高难度课题为目标的方法</strong>。它强调严格、深入、有攻击性、专注且有创意地学习，其核心是承担起<strong>自己教自己的责任</strong>。
+      </div>
+    </div>
+
+    <!-- ============== CH 1 ============== -->
+    <div class="section" id="ch1">
+      <div class="section-header">
+        <div class="section-number">1</div>
+        <div>
+          <h2>不去 MIT，也能接受 MIT 的教育</h2>
+          <div class="section-tagline">用真实案例开启超级学习之门</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="s1-mit">
+        <h3>🚀 MIT 挑战</h3>
+        <p>2011 年，作者用 12 个月时间，在没有正式注册入学的情况下，自学完成了 MIT 计算机科学专业的全部 <strong>33 门课程</strong>。他每天学习 10 小时以上，5 天学完一门课，全部通过期末考试。涵盖线性代数、多元微积分、算法、电路、概率论、计算机系统结构等。</p>
+        <div class="callout">
+          <div class="callout-title">关键启发</div>
+          现代教育昂贵、缓慢、标准化；而真正改变命运的，是<strong>主动自学</strong>的能力。<strong>大学文凭不是必要条件</strong>，自学可以更高效、更便宜。
+        </div>
+      </div>
+
+      <div class="content-block" id="s1-language">
+        <h3>🌐 三个月学会外语</h3>
+        <p>在 MIT 挑战之后，作者又用 <strong>3 个月时间</strong>先后学会了西班牙语、葡萄牙语、普通话和韩语四种语言。每种语言约 90 天，每种语言分三个阶段：</p>
+        <ol class="numbered-list">
+          <li><strong>前 30 天</strong>：大量被动输入，攻破发音关</li>
+          <li><strong>中间 30 天</strong>：主动对话练习，纠错改错</li>
+          <li><strong>最后 30 天</strong>：沉浸式生活化使用</li>
+        </ol>
+      </div>
+
+      <div class="content-block" id="s1-jeopardy">
+        <h3>🎯 罗杰·克雷格如何通关《危险边缘》</h3>
+        <p>罗杰·克雷格原本是软件工程师，在一次看《危险边缘》节目时，发现一个选手因为无法按抢答器而输掉比赛。从此他研发出一套基于<strong>超级学习</strong>的方法，仅用不到一年就获得参赛资格，赢得 <strong>超过 23 万美元</strong>奖金。</p>
+        <ul class="bullet-list">
+          <li>建立 <strong>25 万个</strong>含线索和答案的数据库</li>
+          <li>用<strong>间隔重复</strong>系统（SuperMemo）记忆</li>
+          <li>研究<strong>抢答器反应</strong>的肌肉记忆</li>
+          <li>持续模拟实战</li>
+        </ul>
+      </div>
+
+      <div class="content-block" id="s1-million">
+        <h3>💰 从拿最低工资到百万富翁</h3>
+        <p><strong>迪克</strong>高中辍学后做过洗碗工，最低时薪的工作。偶然被一本关于房地产的小册子启发，开始自学<strong>合同法、市场分析、谈判、装修、融资</strong>，最终成为身家数百万的房地产投资人。</p>
+        <div class="callout green">
+          <div class="callout-title">关键启示</div>
+          <strong>自学可以改变阶层</strong>。当你的知识结构与大多数人不同，你就能发现别人看不见的机会。
+        </div>
+      </div>
+
+      <div class="content-block" id="s1-after">
+        <h3>🛠 MIT 挑战之后</h3>
+        <p>MIT 挑战虽然取得成功，但作者意识到自己只是学到了<strong>书本知识</strong>，并未真正精通计算机科学。这促使他开始研究：<strong>究竟是什么让某些人能用更短的时间达到更高的水平？</strong> 这就是超级学习研究的起点。</p>
+      </div>
+
+      <div class="content-block" id="s1-discover">
+        <h3>🔍 发现超级学习者</h3>
+        <p>超级学习者不只是天才，他们是<strong>掌握了学习策略的普通人</strong>。他们有一些共同特征：</p>
+        <ul class="bullet-list">
+          <li>有强烈的<strong>内在动机</strong>，为热情而非外在奖励学习</li>
+          <li>设计<strong>独特</strong>的学习项目，不走寻常路</li>
+          <li>愿意<strong>直面失败</strong>，把挫折当反馈</li>
+          <li>兼具<strong>专注</strong>和<strong>灵活</strong>的策略</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ============== CH 2 ============== -->
+    <div class="section" id="ch2">
+      <div class="section-header">
+        <div class="section-number">2</div>
+        <div>
+          <h2>为什么超级学习很重要</h2>
+          <div class="section-tagline">在这个时代，自学能力是终极竞争力</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="s2-why">
+        <h3>💎 超级学习的价值</h3>
+        <p>在知识经济时代，<strong>「学会学」</strong> 是回报率最高的技能。超级学习不仅是加速学习的方法，更是一种<strong>思维方式</strong>——它让你在面对未知时充满信心、保持好奇、形成独立判断。</p>
+      </div>
+
+      <div class="content-block" id="s2-econ">
+        <h3 class="green">📈 经济学：平均时代已经终结</h3>
+        <p>经济学中，<strong>超级明星效应</strong> 和 <strong>胜者全得</strong> 现象让收入分配越来越两极分化。<strong>泰勒·考恩（Tyler Cowen）</strong> 在《平均时代的终结》中指出，顶尖 10% 与中位数之间的差距越来越大。</p>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">🎵</div>
+            <h4>音乐</h4>
+            <p>流媒体时代，少数艺人拿走大部分收入</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">💻</div>
+            <h4>科技</h4>
+            <p>顶尖程序员与普通程序员的产出差距是 10 倍</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">📚</div>
+            <h4>教育</h4>
+            <p>名校文凭的溢价仍存在，但自学者可通过实战超越</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🧠</div>
+            <h4>技能</h4>
+            <p>复合型深度技能者收入最高</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-block" id="s2-edu">
+        <h3 class="blue">🎓 教育：学费太高</h3>
+        <p>美国大学学费过去 30 年上涨 <strong>200% 以上</strong>，远超通胀。学生贷款总额已突破 1.7 万亿美元。许多大学课程的<strong>辍学率高达 40%</strong>，毕业后真正从事对口工作的不到一半。</p>
+        <ul class="bullet-list">
+          <li>大学 <strong>毕业率</strong> 平均仅 60%</li>
+          <li>只有 <strong>27%</strong> 的大学毕业生从事对口工作</li>
+          <li>学校学到的<strong>迁移能力</strong>普遍较弱</li>
+        </ul>
+      </div>
+
+      <div class="content-block" id="s2-tech">
+        <h3 class="gold">⚙️ 技术：学习的新前沿</h3>
+        <p>在线教育（MOOC、YouTube、AI 教练）、<strong>间隔重复软件</strong>（Anki、SuperMemo）、开源项目、远程协作工具让<strong>任何人都能以极低的成本获得世界级学习资源</strong>。</p>
+      </div>
+
+      <div class="content-block" id="s2-career">
+        <h3>🚀 加速职业成长</h3>
+        <p>很多职业路径已经<strong>标准化</strong>，但超级学习者通过自学新技能，能够在职业转型中<strong>逆袭</strong>。例如：</p>
+        <ul class="bullet-list">
+          <li>从传统行业转入数据科学</li>
+          <li>从会计转入用户体验设计</li>
+          <li>从销售转入产品管理</li>
+        </ul>
+      </div>
+
+      <div class="content-block" id="s2-talent">
+        <h3>🧬 与天赋有关？陶哲轩问题</h3>
+        <p>陶哲轩（Terence Tao）7 岁读高中、12 岁获国际数学奥赛金牌、24 岁成为 UCLA 教授。<strong>这是不是意味着超级学习只是天才的特权？</strong></p>
+        <div class="callout">
+          <div class="callout-title">作者的回应</div>
+          陶哲轩自己也说：<strong>「我不聪明，我只是思考得更久。」</strong> 智力的差异确实存在，但超级学习的核心是<strong>方法</strong>，不是智力。普通人通过正确的策略，可以达到天才的「普通水平」，而大多数人的「普通水平」已经足够在竞争中脱颖而出。
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== CH 3 ============== -->
+    <div class="section" id="ch3">
+      <div class="section-header">
+        <div class="section-number">3</div>
+        <div>
+          <h2>怎样成为超级学习者</h2>
+          <div class="section-tagline">成为超级学习者的路径图</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="s3-become">
+        <h3>🧭 成为超级学习者</h3>
+        <p>成为超级学习者<strong>不需要超常天赋</strong>，但需要：</p>
+        <ul class="bullet-list">
+          <li>强烈的<strong>好奇心</strong>与<strong>内在动机</strong></li>
+          <li>愿意承受<strong>不适</strong>和<strong>失败</strong></li>
+          <li>掌握<strong>9 大原则</strong>并刻意实践</li>
+          <li>投入<strong>大量时间</strong>（每周 20-40 小时）</li>
+        </ul>
+      </div>
+
+      <div class="content-block" id="s3-first">
+        <h3>👣 初级超级学习者的第一步</h3>
+        <ol class="numbered-list">
+          <li><strong>选一个你想真正掌握的课题</strong></li>
+          <li><strong>阅读关于这个课题的 2-3 本书</strong>，形成全局观</li>
+          <li><strong>找到榜样</strong>（已经掌握这个课题的人）</li>
+          <li><strong>制定粗略计划</strong>，但不过度规划</li>
+          <li><strong>开始行动</strong>，边做边调整</li>
+        </ol>
+      </div>
+
+      <div class="content-block" id="s3-principles">
+        <h3>🏆 9 大原则总览</h3>
+        <p>本书的核心是<strong>9 大原则</strong>，它们环环相扣：</p>
+        <div class="styled-table-wrapper">
+          <table class="styled-table">
+            <thead>
+              <tr><th>原则</th><th>核心</th><th>一句话</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1. 元学习</td><td>先绘制学习地图</td><td>学会学，是学一切的前提</td></tr>
+              <tr><td>2. 专注</td><td>排除干扰</td><td>不专注，就不会有深度学习</td></tr>
+              <tr><td>3. 直接</td><td>直接动手</td><td>做你要学的事</td></tr>
+              <tr><td>4. 训练</td><td>攻克薄弱环节</td><td>反复拆解难点</td></tr>
+              <tr><td>5. 检索</td><td>以测促学</td><td>考试比复习更有效</td></tr>
+              <tr><td>6. 反馈</td><td>直面负面评价</td><td>不痛不痒就长不大</td></tr>
+              <tr><td>7. 记忆</td><td>对抗遗忘曲线</td><td>别往漏水的桶里加水</td></tr>
+              <tr><td>8. 直觉</td><td>深入思考后形成直觉</td><td>直觉来自苦功</td></tr>
+              <tr><td>9. 试验</td><td>走出舒适区</td><td>不试验，就找不到适合自己的路</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== P1 ============== -->
+    <div class="section" id="p1">
+      <div class="section-header">
+        <div class="section-number gold">P1</div>
+        <div>
+          <h2>原则 1 · 元学习：先绘制学习地图</h2>
+          <div class="section-tagline">学习的第一步不是学，而是弄清「怎么学」</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="p1-what">
+        <h3 class="gold">📐 什么是元学习</h3>
+        <p><strong>元学习（Metalearning）</strong>是<strong>关于学习的学习</strong>。在学习任何课题之前，先思考：</p>
+        <ul class="bullet-list">
+          <li>这个课题的<strong>关键概念</strong>是什么？</li>
+          <li>学习的<strong>难点</strong>在哪里？</li>
+          <li>应该<strong>用什么方法</strong>来学？</li>
+        </ul>
+      </div>
+
+      <div class="content-block" id="p1-power">
+        <h3>🗺 元学习导图的力量</h3>
+        <p>作者在 MIT 挑战中，每门课程开始前都会先做一份 <strong>元学习导图</strong>，包括：</p>
+        <ul class="bullet-list">
+          <li>课程的<strong>关键概念</strong>、<strong>关键事实</strong>、<strong>关键程序</strong></li>
+          <li>每个部分的<strong>学习难度</strong></li>
+          <li>对应的<strong>学习策略</strong>和<strong>资源</strong></li>
+        </ul>
+        <div class="callout gold">
+          <div class="callout-title">导图价值</div>
+          <strong>好的开始是成功的一半</strong>。不做元学习，你会把时间浪费在低效的方法上；做好元学习，你能精准命中学习瓶颈。
+        </div>
+      </div>
+
+      <div class="content-block" id="p1-how">
+        <h3>✏️ 怎样绘制导图</h3>
+        <p>作者建议的元学习导图步骤：</p>
+        <ol class="numbered-list">
+          <li><strong>通读教材目录、前言、结论</strong>，对全貌有粗略印象</li>
+          <li><strong>列出关键概念</strong>（核心思想）</li>
+          <li><strong>列出关键事实</strong>（必须记住的）</li>
+          <li><strong>列出关键程序</strong>（必须会做的）</li>
+          <li>对每项<strong>评估难度</strong>（高/中/低）</li>
+          <li><strong>标记瓶颈</strong>，并思考应对策略</li>
+        </ol>
+      </div>
+
+      <div class="content-block" id="p1-q">
+        <h3>❓ 三问：为什么/学什么/如何做</h3>
+        <p>在每个超级学习项目开始前，回答三个根本问题：</p>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">❓</div>
+            <h4>为什么而学？</h4>
+            <p>找到真正的<strong>内在动机</strong>，否则你会半途而废</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">📚</div>
+            <h4>学什么？</h4>
+            <p>明确<strong>学习范围</strong>、<strong>深度</strong>、<strong>衡量标准</strong></p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🛠</div>
+            <h4>如何做？</h4>
+            <p>选择<strong>方法</strong>、<strong>资源</strong>、<strong>时间安排</strong></p>
+          </div>
+        </div>
+        <div class="callout">
+          <div class="callout-title">你应该做多少计划？</div>
+          <strong>不宜过度计划</strong>。前 1/3 的时间做规划，后 2/3 的时间执行并修正。计划应该是<strong>有方向的探索</strong>，而非僵化的清单。
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== P2 ============== -->
+    <div class="section" id="p2">
+      <div class="section-header">
+        <div class="section-number gold">P2</div>
+        <div>
+          <h2>原则 2 · 专注：磨刀不误砍柴工</h2>
+          <div class="section-tagline">没有专注，一切学习都是浅尝辄止</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="p2-problems">
+        <h3>⚠️ 三大专注问题</h3>
+        <table class="styled-table">
+          <thead>
+            <tr><th>问题</th><th>表现</th><th>解法</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>无法开始 / 拖延</td>
+              <td>明明知道该学习，但就是拖到最后一刻</td>
+              <td>任务分解、番茄钟、5 分钟起步法</td>
+            </tr>
+            <tr>
+              <td>无法持续 / 分心</td>
+              <td>坐下来却不停地看手机、走神</td>
+              <td>关闭干扰源、使用网站拦截器（如 Freedom）</td>
+            </tr>
+            <tr>
+              <td>找不到专注点</td>
+              <td>不知道从哪开始，陷入混乱</td>
+              <td>元学习、任务拆解、明确下一步</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="content-block" id="p2-improve">
+        <h3>💪 提高专注力</h3>
+        <ul class="bullet-list">
+          <li><strong>从小事做起</strong>：先专注 5 分钟，再逐步加到 25、45、90 分钟</li>
+          <li><strong>建立仪式感</strong>：固定时间、固定地点、固定动作</li>
+          <li><strong>管理能量，而非时间</strong>：找到你一天中精力最好的时段</li>
+          <li><strong>适度的运动与睡眠</strong>是专注力的物质基础</li>
+          <li><strong>抵抗分心</strong>：每次成功抗拒分心的冲动，分心对你的影响就会减弱</li>
+        </ul>
+        <div class="quote-block">
+          你的几分钟坚持就会变得足够强大，足以让你去成就伟大的事业，就像萨默维尔在 200 年前所做的那样。
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== P3 ============== -->
+    <div class="section" id="p3">
+      <div class="section-header">
+        <div class="section-number gold">P3</div>
+        <div>
+          <h2>原则 3 · 直接：勇往直前</h2>
+          <div class="section-tagline">做你要学的事，而不是学你要做的事</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="p3-why">
+        <h3>⚡ 直接的重要性</h3>
+        <p><strong>直接学习（Directness）</strong> 是超级学习最反直觉的原则：</p>
+        <ul class="bullet-list">
+          <li>想学外语？<strong>直接说</strong>，而不是先学语法</li>
+          <li>想学编程？<strong>直接写代码</strong>，而不是先看理论</li>
+          <li>想学绘画？<strong>直接画</strong>，而不是先看画展</li>
+        </ul>
+        <div class="callout primary">
+          <div class="callout-title">直接 vs 间接</div>
+          <strong>间接学习</strong>（如课堂、教材）让学生感觉「学到了」，但实际迁移能力很弱。<strong>直接学习</strong>虽然初期痛苦，但<strong>掌握得最牢</strong>。
+        </div>
+      </div>
+
+      <div class="content-block" id="p3-transfer">
+        <h3>🔄 迁移：教育的污点</h3>
+        <p><strong>迁移（Transfer）</strong>指把在一个情境中学到的知识应用到另一个情境。教育心理学几十年的研究表明：</p>
+        <ul class="bullet-list">
+          <li>学生<strong>很难</strong>把课堂学到的知识迁移到真实世界</li>
+          <li>迁移率常常 <strong>低于 25%</strong></li>
+          <li>老师常常<strong>高估</strong>学生的迁移能力</li>
+        </ul>
+      </div>
+
+      <div class="content-block" id="p3-how">
+        <h3>🧭 如何直接学习</h3>
+        <ol class="numbered-list">
+          <li><strong>定义真实目标</strong>：「我能用这门语言点餐、问路、聊天」</li>
+          <li><strong>从真实任务开始</strong>：上手就做一个小项目</li>
+          <li><strong>遇到瓶颈再回头学理论</strong></li>
+          <li><strong>从源头学习</strong>：读原始论文、原版书、原始教程</li>
+          <li><strong>寻找「做中学」</strong> 的伙伴和场景</li>
+        </ol>
+        <div class="callout green">
+          <div class="callout-title">成功的直接学习者</div>
+          <strong>本尼·刘易斯</strong> 3 个月学西班牙语，每天直接和陌生人说话；<strong>凡·高</strong> 直接临摹大师作品，<strong>费曼</strong> 在康奈尔大学食堂直接给本科生讲物理。
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== P4 ============== -->
+    <div class="section" id="p4">
+      <div class="section-header">
+        <div class="section-number green">P4</div>
+        <div>
+          <h2>原则 4 · 训练：攻克薄弱环节</h2>
+          <div class="section-tagline">能弹好最难的小节，整个曲子就能演奏好</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="p4-chemistry">
+        <h3 class="green">⚗️ 学习的化学反应</h3>
+        <p><strong>训练（Drill）</strong> 是有意识的、聚焦于<strong>薄弱环节</strong>的反复练习。它和一般的「重复」不同：</p>
+        <table class="styled-table">
+          <thead>
+            <tr><th>类型</th><th>特征</th><th>效果</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>一般重复</td>
+              <td>从头到尾一遍遍做</td>
+              <td>容易的更熟练，难的依然难</td>
+            </tr>
+            <tr>
+              <td>有意识训练</td>
+              <td>识别弱项 + 反复针对性练习</td>
+              <td>短时间显著突破</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>本杰明·富兰克林把写作分成 <strong>词汇、句法、逻辑、风格</strong> 几个独立维度逐一攻克，最终成为美国国父级的写作者。</p>
+      </div>
+
+      <div class="content-block" id="p4-drill">
+        <h3>🎯 训练设计策略</h3>
+        <ol class="numbered-list">
+          <li><strong>先直接学习</strong>：了解整体方法</li>
+          <li><strong>识别瓶颈</strong>：在每个子技能中找出最弱的一项</li>
+          <li><strong>拆分子技能</strong>：把瓶颈拆成更小的可练习单元</li>
+          <li><strong>设计针对性练习</strong>：让练习难度<strong>略高于</strong>当前水平</li>
+          <li><strong>及时反馈</strong>：知道对错才能改进</li>
+        </ol>
+      </div>
+
+      <div class="content-block" id="p4-mindful">
+        <h3>🧘 用心训练</h3>
+        <p>训练不是<strong>机械重复</strong>，而是<strong>用心思考</strong>的重复。著名小提琴家说：</p>
+        <div class="quote-block">
+          我不会漫无目的地练习，我会带着具体的目标练习：<strong>改善某一段的弓法、纠正某个音准</strong>。
+          <span class="quote-author">——耶胡迪·梅纽因</span>
+        </div>
+        <ul class="bullet-list">
+          <li>每次训练<strong>有明确目标</strong></li>
+          <li>训练中<strong>实时评估</strong>自己的表现</li>
+          <li><strong>避免自动化</strong>：保持专注，避免「无脑重复」</li>
+          <li>训练后<strong>反思</strong>：哪里做得好、哪里没达到</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ============== P5 ============== -->
+    <div class="section" id="p5">
+      <div class="section-header">
+        <div class="section-number green">P5</div>
+        <div>
+          <h2>原则 5 · 检索：以测促学</h2>
+          <div class="section-tagline">考试比复习更有效</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="p5-effect">
+        <h3>📊 测验的效果</h3>
+        <p>心理学家 <strong>卡皮克和布朗特</strong> 的研究：让学生用四种方法学习同一段课文：</p>
+        <table class="styled-table">
+          <thead>
+            <tr><th>方法</th><th>学生预测分数</th><th>实际测试结果</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>反复复习</td><td>最高</td><td>中等</td></tr>
+            <tr><td>一次性复习</td><td>较高</td><td>中等</td></tr>
+            <tr><td>概念图</td><td>中等</td><td>中等</td></tr>
+            <tr><td>自由回忆（检索）</td><td>最低</td><td><strong>最高（比复习组高 50%）</strong></td></tr>
+          </tbody>
+        </table>
+        <div class="callout primary">
+          <div class="callout-title">学习的悖论</div>
+          <strong>主动检索</strong> 时感觉更困难，但<strong>学习效果更好</strong>。这是因为<strong>困难可取（Desirable Difficulty）</strong>。
+        </div>
+      </div>
+
+      <div class="content-block" id="p5-hard">
+        <h3>💎 困难可取吗？</h3>
+        <p>学习者普遍<strong>低估</strong>了检索的价值，<strong>高估</strong>了被动复习的价值。原因是<strong>主观体验</strong>误导：</p>
+        <ul class="bullet-list">
+          <li><strong>被动复习</strong> → 流畅、轻松 → 「我已经会了」</li>
+          <li><strong>主动检索</strong> → 卡壳、困难 → 「我还没学会」</li>
+        </ul>
+        <p>但实际恰恰相反：<strong>越难检索，记得越牢</strong>。这就是 <strong>必要难度（Desirable Difficulty）</strong> 原则。</p>
+      </div>
+
+      <div class="content-block" id="p5-how">
+        <h3>🛠 如何练习检索</h3>
+        <ol class="numbered-list">
+          <li><strong>用闪卡（Anki / SuperMemo）</strong>：用间隔重复算法自动安排测验</li>
+          <li><strong>合上书回忆</strong>：学完一段就合上书，默写要点</li>
+          <li><strong>做真题</strong>：在开课前就尝试做期末考试题</li>
+          <li><strong>教别人</strong>：讲解是最高级的检索</li>
+          <li><strong>间隔练习</strong>：不要临时抱佛脚，留出复习间隔</li>
+        </ol>
+        <div class="callout">
+          <div class="callout-title">重访拉马努金</div>
+          印度数学天才 <strong>拉马努金</strong> 凭借一本无答案的<strong>《纯粹数学与应用数学基本结果汇编》</strong> 自学，每遇到定理都试图自己推导——<strong>这种主动检索过程</strong>让他形成了惊人的数学直觉。
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== P6 ============== -->
+    <div class="section" id="p6">
+      <div class="section-header">
+        <div class="section-number green">P6</div>
+        <div>
+          <h2>原则 6 · 反馈：不要回避负面评价</h2>
+          <div class="section-tagline">没有反馈，就没有真正的进步</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="p6-power">
+        <h3>📡 信息的力量</h3>
+        <p><strong>反馈</strong>是学习的<strong>方向盘</strong>。没有反馈，你就像在黑夜中开车——你不知道方向对不对、还要走多远。超级学习者无一例外地<strong>主动寻求大量反馈</strong>：</p>
+        <ul class="bullet-list">
+          <li><strong>罗杰·克雷格</strong>：抢答测验，立刻知道对错</li>
+          <li><strong>本尼·刘易斯</strong>：每天和陌生人说新语言，忍受尴尬</li>
+          <li><strong>特里斯坦</strong>：每周演讲多次，从多个俱乐部获取不同反馈</li>
+        </ul>
+        <div class="callout primary">
+          <div class="callout-title">反馈可能适得其反</div>
+          <strong>但反馈也可能是双刃剑</strong>。如果反馈不正确或过于关注人而非任务，反而<strong>打击学习者的积极性</strong>。例如：老师批评「你真笨」会让人放弃；说「这个方法可以改进」则会激励。
+        </div>
+      </div>
+
+      <div class="content-block" id="p6-types">
+        <h3>🔍 反馈的类型</h3>
+        <table class="styled-table">
+          <thead>
+            <tr><th>类型</th><th>例子</th><th>特点</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>结果性反馈</td>
+              <td>考试对错、测试结果</td>
+              <td>告诉你做对了没</td>
+            </tr>
+            <tr>
+              <td>信息性反馈</td>
+              <td>正确答案、解题过程</td>
+              <td>告诉你为什么</td>
+            </tr>
+            <tr>
+              <td>纠正性反馈</td>
+              <td>教练指出动作错误</td>
+              <td>直接告诉你哪里错</td>
+            </tr>
+            <tr>
+              <td>元认知反馈</td>
+              <td>「你应该在第三步检查」</td>
+              <td>告诉你策略的不足</td>
+            </tr>
+          </tbody>
+        </table>
+        <p><strong>反馈应该多快？</strong> 通常<strong>越快越好</strong>，但延迟反馈有时反而促进长期记忆。最好的策略是：<strong>即时反馈 + 间隔复习</strong>。</p>
+      </div>
+
+      <div class="content-block" id="p6-how">
+        <h3>⚙️ 如何改进你的反馈</h3>
+        <ol class="numbered-list">
+          <li><strong>主动制造反馈</strong>：找真题、自测题、竞赛</li>
+          <li><strong>找教练或导师</strong>：他们能给出<strong>个性化</strong>反馈</li>
+          <li><strong>加入学习社群</strong>：同伴反馈往往非常及时</li>
+          <li><strong>自我录音录像</strong>：观察自己的演讲、动作、笔迹</li>
+          <li><strong>把错误当礼物</strong>：每个错误都是改进的入口</li>
+        </ol>
+        <div class="callout">
+          <div class="callout-title">超越反馈</div>
+          <strong>最好的反馈是自己给的</strong>。当你能准确评估自己的表现时，就不再依赖外部反馈——这才是<strong>精通者</strong>的标志。
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== P7 ============== -->
+    <div class="section" id="p7">
+      <div class="section-header">
+        <div class="section-number blue">P7</div>
+        <div>
+          <h2>原则 7 · 记忆：别往漏水的桶里加水</h2>
+          <div class="section-tagline">对抗遗忘，是终身学习的必修课</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="p7-nigel">
+        <h3 class="blue">🧠 奈杰尔·理查兹的秘密</h3>
+        <p><strong>奈杰尔·理查兹（Nigel Richards）</strong>是国际拼字比赛（Scrabble）冠军，但他<strong>完全不懂法语</strong>，却赢得了<strong>法语拼字比赛世界冠军</strong>。他用 9 周时间背下了<strong>法语词典</strong>的全部 386,000 个单词——靠的纯粹是<strong>记忆</strong>。</p>
+        <div class="callout primary">
+          <div class="callout-title">启示</div>
+          记忆不是天才的特权，<strong>任何人都可以通过正确方法显著提升记忆能力</strong>。理查兹的方法并不神秘——<strong>间隔重复 + 心象化</strong>。
+        </div>
+      </div>
+
+      <div class="content-block" id="p7-forget">
+        <h3>🌊 为什么记住这么难</h3>
+        <p><strong>赫尔曼·艾宾浩斯</strong> 发现了著名的<strong>遗忘曲线</strong>：</p>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">📉</div>
+            <h4>衰退理论</h4>
+            <p>记忆像沙漏中的沙子，时间会无情地磨损</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🧩</div>
+            <h4>干扰理论</h4>
+            <p>前摄/后摄干扰，新旧记忆相互覆盖</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🔑</div>
+            <h4>线索遗忘</h4>
+            <p>记忆没有消失，只是找不到提取线索</p>
+          </div>
+        </div>
+        <p>医生从医学院学到的知识会随时间衰退，<strong>即使每天都在使用</strong>。这说明：<strong>对抗遗忘需要主动策略</strong>。</p>
+      </div>
+
+      <div class="content-block" id="p7-fight">
+        <h3>🛡 打赢反遗忘战</h3>
+        <ol class="numbered-list">
+          <li><strong>间隔重复</strong>：用 Anki / SuperMemo 自动安排复习</li>
+          <li><strong>过度学习</strong>：刚学会后再多练 50%</li>
+          <li><strong>赋予意义</strong>：有意义的材料比无意义的好记 10 倍</li>
+          <li><strong>建立连接</strong>：把新知识挂到已有的知识网络上</li>
+          <li><strong>多感官编码</strong>：看、听、说、写、动结合</li>
+          <li><strong>心象化</strong>：把抽象概念转化为生动的画面</li>
+          <li><strong>压缩信息</strong>：用记忆宫殿、首字母缩略词等</li>
+        </ol>
+        <div class="callout">
+          <div class="callout-title">记忆宫殿</div>
+          沿着一条熟悉的路线（家、办公室），在不同位置「放置」要记的东西。理查兹的 386,000 法语单词就是这样记忆的。
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== P8 ============== -->
+    <div class="section" id="p8">
+      <div class="section-header">
+        <div class="section-number blue">P8</div>
+        <div>
+          <h2>原则 8 · 直觉：在形成直觉前要深入思考</h2>
+          <div class="section-tagline">直觉不是天生的，是苦功的副产品</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="p8-feynman">
+        <h3 class="blue">🔮 揭秘费曼的魔法</h3>
+        <p><strong>理查德·费曼（Richard Feynman）</strong> 是 20 世纪最伟大的物理学家之一，诺贝尔奖得主。但他在大学时几乎听不懂自己的课程，全靠<strong>完全独立地重新推导</strong>每一章，才真正掌握知识。</p>
+        <div class="quote-block">
+          我会从头开始重新发明微积分，而不是像老师那样展示一系列技巧。
+          <span class="quote-author">——费曼</span>
+        </div>
+        <p>费曼形成惊人直觉的秘诀是：<strong>把抽象知识彻底内化</strong>，让概念变成可操作的「思维工具」。</p>
+      </div>
+
+      <div class="content-block" id="p8-cultivate">
+        <h3>🌱 如何培养直觉</h3>
+        <ol class="numbered-list">
+          <li><strong>先理解基础</strong>：用最朴素的例子建立直觉</li>
+          <li><strong>大量例子</strong>：通过多个具体例子抽象出一般规律</li>
+          <li><strong>类比与比喻</strong>：把陌生概念与熟悉事物连接</li>
+          <li><strong>改变视角</strong>：从不同角度思考同一问题</li>
+          <li><strong>可视化</strong>：在脑海中「看见」抽象概念</li>
+          <li><strong>慢慢积累</strong>：直觉是<strong>长时间沉浸</strong>后的副产品</li>
+        </ol>
+      </div>
+
+      <div class="content-block" id="p8-feyntech">
+        <h3>🎓 费曼技巧（The Feynman Technique）</h3>
+        <p>一种<strong>用教学检验理解</strong>的方法：</p>
+        <ol class="numbered-list">
+          <li><strong>选择概念</strong>，写下来</li>
+          <li><strong>假装你在向一个孩子解释</strong>它</li>
+          <li>如果卡壳，<strong>回到原始材料重新学习</strong></li>
+          <li><strong>简化语言</strong>，使用你自己的词汇</li>
+        </ol>
+        <div class="callout">
+          <div class="callout-title">神秘的直觉</div>
+          直觉不是魔法。当你看到专家<strong>秒答</strong>难题时，那背后是<strong>成千上万小时</strong>的刻意练习。直觉就是<strong>在潜意识中快速运行的模式识别</strong>。
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== P9 ============== -->
+    <div class="section" id="p9">
+      <div class="section-header">
+        <div class="section-number blue">P9</div>
+        <div>
+          <h2>原则 9 · 试验：跨出舒适区去探索吧</h2>
+          <div class="section-tagline">不试验，就找不到适合自己的路</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="p9-vangogh">
+        <h3 class="blue">🎨 凡·高是如何学会绘画的</h3>
+        <p><strong>文森特·凡·高</strong> 27 岁才开始绘画，37 岁去世。在短短 10 年里，他尝试了<strong>几十种不同的方法、媒介、风格</strong>，最终形成独特的画风：</p>
+        <ul class="bullet-list">
+          <li>用查尔斯·巴格的《炭笔练习》《绘画课程》系统训练</li>
+          <li>临摹米勒的《播种者》数十次</li>
+          <li>尝试芦苇笔、墨水、水彩、蜡笔、木炭等多种材料</li>
+          <li>从灰暗色调转向大胆的互补色</li>
+          <li>从印象派走向后印象派</li>
+        </ul>
+        <div class="callout primary">
+          <div class="callout-title">关键发现</div>
+          凡·高的学习方法本质是<strong>假设—实验—结果—重复</strong>的<strong>科学方法</strong>。正是这种<strong>试验精神</strong>让他形成了独特风格。
+        </div>
+      </div>
+
+      <div class="content-block" id="p9-types">
+        <h3>🧪 三种类型的试验</h3>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">🏆</div>
+            <h4>效仿典范</h4>
+            <p>学习榜样在相似情境下怎么做</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🧪</div>
+            <h4>运行测试</h4>
+            <p>小范围试验，看哪种方法更有效</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🚀</div>
+            <h4>探索极端</h4>
+            <p>故意尝试极端方法，看效果如何</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-block" id="p9-how">
+        <h3>🌟 如何试验</h3>
+        <ol class="numbered-list">
+          <li><strong>勇于尝试</strong>：不要被「标准方法」束缚</li>
+          <li><strong>允许失败</strong>：失败的实验也是宝贵信息</li>
+          <li><strong>小步快跑</strong>：每次只改一个变量</li>
+          <li><strong>记录过程</strong>：写学习日志，对比不同方法</li>
+          <li><strong>综合多种方法</strong>：找到适合自己的混合策略</li>
+        </ol>
+        <div class="quote-block">
+          效仿典范、运行测试、探索极端，这些都能帮你摆脱根深蒂固的习惯，并尝试新方法。这个过程不仅会教给你抽象的学习原则，还会教给你具体的策略，以适应你的个性、兴趣，让你取长补短。
+          <span class="quote-author">——Scott H. Young</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== CH 13 ============== -->
+    <div class="section" id="ch13">
+      <div class="section-header">
+        <div class="section-number">13</div>
+        <div>
+          <h2>你的第一个超级学习项目</h2>
+          <div class="section-tagline">5 步启动你的超级学习之旅</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="s13-step1">
+        <h3>📋 5 步法</h3>
+        <ol class="numbered-list">
+          <li><strong>第一步：做好调查</strong>
+            <ul class="bullet-list">
+              <li>阅读 2-3 本关于该领域的入门书</li>
+              <li>浏览该领域专家的访谈、博客</li>
+              <li>了解学习这个领域的常见瓶颈和资源</li>
+            </ul>
+          </li>
+          <li><strong>第二步：安排好时间</strong>
+            <ul class="bullet-list">
+              <li>决定每周花多少时间（建议 20+ 小时）</li>
+              <li>列出关键里程碑</li>
+              <li>选择评估进度的方式（测试、项目、对话）</li>
+            </ul>
+          </li>
+          <li><strong>第三步：执行计划</strong>
+            <ul class="bullet-list">
+              <li>每周按计划执行</li>
+              <li>每周一次回顾调整</li>
+              <li>使用 9 大原则</li>
+            </ul>
+          </li>
+          <li><strong>第四步：回顾结果</strong>
+            <ul class="bullet-list">
+              <li>对比原定目标</li>
+              <li>分析有效和无效的方法</li>
+              <li>把经验教训记录下来</li>
+            </ul>
+          </li>
+          <li><strong>第五步：选择保持还是精通</strong>
+            <ul class="bullet-list">
+              <li>如果想保持：把技能降到低强度习惯</li>
+              <li>如果想精通：继续投入更多时间</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <div class="content-block" id="s13-alternative">
+        <h3>🔄 替代方案：低强度习惯和正式指导</h3>
+        <p>超级学习<strong>不是唯一选择</strong>。还有两种补充路径：</p>
+        <ul class="bullet-list">
+          <li><strong>低强度习惯</strong>：每天 20-30 分钟，长期坚持，缓慢进步</li>
+          <li><strong>正式指导</strong>：找教练、上课、加入培训项目</li>
+        </ul>
+        <p>超级学习适合<strong>想真正精通</strong>某项技能的人；其他方式适合<strong>培养兴趣</strong>或<strong>维持现有水平</strong>。</p>
+      </div>
+
+      <div class="content-block" id="s13-lifelong">
+        <h3>♾️ 终身学习</h3>
+        <p>超级学习不是<strong>一次性的挑战</strong>，而是一种<strong>生活方式</strong>。通过不断启动新的超级学习项目，你将：</p>
+        <ul class="bullet-list">
+          <li>建立<strong>更深入</strong>的专业能力</li>
+          <li>获得<strong>跨领域</strong>的连接能力</li>
+          <li>保持<strong>持续成长</strong>的心态</li>
+          <li>面对<strong>未知</strong>更加从容</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ============== CH 14 ============== -->
+    <div class="section" id="ch14">
+      <div class="section-header">
+        <div class="section-number">14</div>
+        <div>
+          <h2>非常规教育：超级学习者可以培养吗？</h2>
+          <div class="section-tagline">教育下一代超级学习者</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="s14-kasparov">
+        <h3>♟️ 再战卡斯帕罗夫</h3>
+        <p>1997 年，<strong>深蓝</strong>击败国际象棋世界冠军卡斯帕罗夫。但真正的启示不是机器超越人类，而是<strong>机器 + 人</strong>的组合胜过任何一方。</p>
+        <p>今天，自由式国际象棋（人机混合）选手已经<strong>远超</strong>最强的人类棋手和最强的 AI 单独作战——这正是<strong>超级学习</strong>在 AI 时代的最佳隐喻。</p>
+      </div>
+
+      <div class="content-block" id="s14-cultivate">
+        <h3>🧒 如何培养一名超级学习者</h3>
+        <ol class="numbered-list">
+          <li><strong>保护好奇心</strong>：不要用「这有什么用」扼杀孩子的问题</li>
+          <li><strong>鼓励深度探索</strong>：支持孩子对一件事彻底搞懂</li>
+          <li><strong>提供工具和资源</strong>：书籍、工具、课程、教练</li>
+          <li><strong>容忍失败</strong>：让孩子在失败中学习</li>
+          <li><strong>示范终身学习</strong>：父母是最好的榜样</li>
+        </ol>
+        <div class="callout green">
+          <div class="callout-title">在学校和工作场所</div>
+          <strong>学校</strong>可以引入项目式学习、跨学科课程、自我评估；<strong>企业</strong>可以鼓励员工每年启动一个超级学习项目，作为内部学习文化。
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== APPENDIX ============== -->
+    <div class="section" id="app">
+      <div class="section-header">
+        <div class="section-number gold">附</div>
+        <div>
+          <h2>附录：超级学习项目训练手册</h2>
+          <div class="section-tagline">从理论到行动</div>
+        </div>
+      </div>
+
+      <div class="content-block" id="app-mit">
+        <h3>🎓 MIT 课程挑战</h3>
+        <p>作者在 MIT 挑战中用到的具体方法：</p>
+        <ul class="bullet-list">
+          <li><strong>资源</strong>：MIT OpenCourseWare 全部免费</li>
+          <li><strong>时间</strong>：每天 10 小时，每周 6 天</li>
+          <li><strong>方法</strong>：看视频课 + 做题 + 自测</li>
+          <li><strong>评估</strong>：每门课完成后做 MIT 期末考试题</li>
+        </ul>
+      </div>
+
+      <div class="content-block" id="app-language">
+        <h3>🗣 不说英语的一年</h3>
+        <p>作者在 <strong>4 个国家生活了 3 个月</strong>，每天只用当地语言：</p>
+        <ul class="bullet-list">
+          <li>西班牙（西班牙语）</li>
+          <li>巴西（葡萄牙语）</li>
+          <li>中国（普通话）</li>
+          <li>韩国（韩语）</li>
+        </ul>
+        <p>关键策略：<strong>绝对不偷懒回说英语</strong>，用一切手段让对方理解你。</p>
+      </div>
+
+      <div class="content-block" id="app-portrait">
+        <h3>🖼 肖像画挑战</h3>
+        <p>作者用 <strong>30 天</strong>从零开始学习肖像画，目标：画出一张能让人认出来的肖像。方法是：</p>
+        <ol class="numbered-list">
+          <li>前 10 天：临摹，训练眼睛</li>
+          <li>中间 10 天：对着真人写生</li>
+          <li>最后 10 天：综合提升</li>
+        </ol>
+      </div>
+
+      <div class="content-block" id="app-handbook">
+        <h3>📘 3 阶段训练手册</h3>
+        <table class="styled-table">
+          <thead>
+            <tr><th>阶段</th><th>内容</th><th>方法</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1. 规划</td>
+              <td>明确目标、范围、时间表</td>
+              <td>元学习、读 2-3 本入门书、找榜样</td>
+            </tr>
+            <tr>
+              <td>2. 执行</td>
+              <td>按计划学习</td>
+              <td>9 大原则轮番使用：直接、训练、检索、反馈、记忆、直觉、试验</td>
+            </tr>
+            <tr>
+              <td>3. 评估</td>
+              <td>检验是否达标</td>
+              <td>测试、对比目标、记录反思、决定下一步</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout primary">
+          <div class="callout-title">结论</div>
+          <strong>超级学习不是超能力，而是可以习得的策略组合。</strong>掌握这 9 大原则，并把它们应用到你想掌握的任何学科，你就能以<strong>10 倍于普通人的速度</strong>学习。
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<button class="back-to-top" id="backToTop" title="回到顶部">↑</button>
+
+<footer class="site-footer">
+  <div class="footer-tag">ULTRALEARNING</div>
+  <p>本知识脑图基于 Scott H. Young《超级学习者》整理 · 仅供学习交流使用</p>
+</footer>
+
+<script>
+// ====== Sidebar toggle ======
+const sections = document.querySelectorAll('.nav-section');
+sections.forEach(sec => {
+  sec.addEventListener('click', function() {
+    const target = this.getAttribute('data-target');
+    const children = document.querySelector(`[data-children="${target}"]`);
+    this.classList.toggle('collapsed');
+    if (children) children.classList.toggle('collapsed');
+  });
+});
+
+let allExpanded = false;
+function toggleAllNav() {
+  allExpanded = !allExpanded;
+  const allSections = document.querySelectorAll('.nav-section[data-target]');
+  const allChildren = document.querySelectorAll('.nav-children');
+  const btn = document.querySelector('.toggle-all');
+  if (allExpanded) {
+    allSections.forEach(s => s.classList.remove('collapsed'));
+    allChildren.forEach(c => c.classList.remove('collapsed'));
+    btn.textContent = '全部折叠';
+  } else {
+    allSections.forEach(s => s.classList.add('collapsed'));
+    allChildren.forEach(c => c.classList.add('collapsed'));
+    btn.textContent = '全部展开';
+  }
+}
+
+// ====== Smooth scroll & active state ======
+const navLinks = document.querySelectorAll('.nav-children li a');
+navLinks.forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    const targetId = this.getAttribute('href').substring(1);
+    const target = document.getElementById(targetId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    // active
+    document.querySelectorAll('.nav-children li a').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ====== Back to top ======
+const backBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 400) backBtn.classList.add('visible');
+  else backBtn.classList.remove('visible');
+});
+backBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ====== Auto highlight nav on scroll ======
+const sectionEls = document.querySelectorAll('.section[id]');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.getAttribute('id');
+      // find matching nav link
+      document.querySelectorAll('.nav-children li a').forEach(l => {
+        l.classList.remove('active');
+        if (l.getAttribute('href') === '#' + id) l.classList.add('active');
+      });
+      // also expand parent if collapsed
+      const parent = entry.target.closest('.section');
+      // find the section number in nav
+      const sectionMap = { 'ch1': 'ch1', 'ch2': 'ch2', 'ch3': 'ch3',
+                           'p1': 'p1', 'p2': 'p2', 'p3': 'p3',
+                           'p4': 'p4', 'p5': 'p5', 'p6': 'p6',
+                           'p7': 'p7', 'p8': 'p8', 'p9': 'p9',
+                           'ch13': 'ch13', 'ch14': 'ch14', 'app': 'app' };
+      for (const [key, val] of Object.entries(sectionMap)) {
+        if (id === key || id.startsWith(key + '-') || id.startsWith('s1') && key === 'ch1' ||
+            id.startsWith('s2') && key === 'ch2' || id.startsWith('s3') && key === 'ch3' ||
+            (id === 'p1-what' || id === 'p1-power' || id === 'p1-how' || id === 'p1-q') && key === 'p1' ||
+            (id === 'p2-problems' || id === 'p2-improve') && key === 'p2' ||
+            (id === 'p3-why' || id === 'p3-transfer' || id === 'p3-how') && key === 'p3' ||
+            (id === 'p4-chemistry' || id === 'p4-drill' || id === 'p4-mindful') && key === 'p4' ||
+            (id === 'p5-effect' || id === 'p5-hard' || id === 'p5-how') && key === 'p5' ||
+            (id === 'p6-power' || id === 'p6-types' || id === 'p6-how') && key === 'p6' ||
+            (id === 'p7-nigel' || id === 'p7-forget' || id === 'p7-fight') && key === 'p7' ||
+            (id === 'p8-feynman' || id === 'p8-cultivate' || id === 'p8-feyntech') && key === 'p8' ||
+            (id === 'p9-vangogh' || id === 'p9-types' || id === 'p9-how') && key === 'p9' ||
+            (id === 's13-step1' || id === 's13-alternative' || id === 's13-lifelong') && key === 'ch13' ||
+            (id === 's14-kasparov' || id === 's14-cultivate') && key === 'ch14' ||
+            (id === 'app-mit' || id === 'app-language' || id === 'app-portrait' || id === 'app-handbook') && key === 'app') {
+          const sec = document.querySelector(`[data-target="${val}"]`);
+          const ch = document.querySelector(`[data-children="${val}"]`);
+          if (sec && ch) {
+            sec.classList.remove('collapsed');
+            ch.classList.remove('collapsed');
+          }
+        }
+      }
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sectionEls.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

@@ -17,6 +17,7 @@
     --accent: #9C5A3C;        /* 沉静陶土棕（皮面书脊） */
     --accent-hover: #7D4530;  /* 深一档的陶土棕 */
     --accent-soft: #EFE2D2;   /* 陶土棕的极淡背景 */
+    --disabled: #B8AE99;      /* 待添加项的暗化色 */
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -319,6 +320,51 @@
     background: var(--accent-soft);
   }
 
+  /* ── Pending entry (暂无脑图) ─────────── */
+  .entry-pending {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 20px 0;
+    color: var(--disabled);
+    cursor: not-allowed;
+  }
+
+  .entry-pending .entry-title {
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .entry-pending .entry-meta {
+    font-family: "SF Mono", "JetBrains Mono", "Menlo", Consolas, monospace;
+    font-size: 12px;
+    color: var(--disabled);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .entry-pending .entry-meta::after {
+    content: "待添加";
+    margin-left: auto;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    padding: 1px 6px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--disabled);
+    text-transform: uppercase;
+    font-weight: 500;
+    font-style: italic;
+  }
+
   /* ── Footer ──────────────────────────── */
   .footer {
     margin-top: 96px;
@@ -413,6 +459,7 @@
       --accent: #D4A574;      /* 暖琥珀金（夜读灯笼光） */
       --accent-hover: #E5BC8C;/* 浅一档的琥珀金 */
       --accent-soft: #2A2118;  /* 暗琥珀背景 */
+      --disabled: #5A5246;     /* 暗化待添加项 */
     }
   }
 </style>
@@ -424,23 +471,43 @@
       <div class="topnav-label">目录</div>
       <a href="#cat-learn" class="topnav-item">
         <span class="topnav-num">01</span>
-        <span class="topnav-text">学习笔记</span>
-        <span class="topnav-count">11</span>
+        <span class="topnav-text">学习技巧</span>
+        <span class="topnav-count">5</span>
       </a>
-      <a href="#cat-tech" class="topnav-item">
+      <a href="#cat-read" class="topnav-item">
         <span class="topnav-num">02</span>
-        <span class="topnav-text">技术笔记</span>
-        <span class="topnav-count">11</span>
+        <span class="topnav-text">阅读技巧</span>
+        <span class="topnav-count">5</span>
       </a>
-      <a href="#cat-self" class="topnav-item">
+      <a href="#cat-energy" class="topnav-item">
         <span class="topnav-num">03</span>
-        <span class="topnav-text">自我笔记</span>
+        <span class="topnav-text">精力学习</span>
+        <span class="topnav-count">5</span>
+      </a>
+      <a href="#cat-think" class="topnav-item">
+        <span class="topnav-num">04</span>
+        <span class="topnav-text">思维学习</span>
         <span class="topnav-count">5</span>
       </a>
       <a href="#cat-language" class="topnav-item">
-        <span class="topnav-num">04</span>
-        <span class="topnav-text">语言笔记</span>
+        <span class="topnav-num">05</span>
+        <span class="topnav-text">语言学习</span>
         <span class="topnav-count">9</span>
+      </a>
+      <a href="#cat-os" class="topnav-item">
+        <span class="topnav-num">06</span>
+        <span class="topnav-text">OS学习</span>
+        <span class="topnav-count">3</span>
+      </a>
+      <a href="#cat-linux" class="topnav-item">
+        <span class="topnav-num">07</span>
+        <span class="topnav-text">Linux学习</span>
+        <span class="topnav-count">3</span>
+      </a>
+      <a href="#cat-android" class="topnav-item">
+        <span class="topnav-num">08</span>
+        <span class="topnav-text">安卓系统</span>
+        <span class="topnav-count">5</span>
       </a>
     </nav>
 
@@ -455,32 +522,14 @@
     <section class="section" aria-labelledby="cat-learn">
       <div class="section-head">
         <span class="section-num">01</span>
-        <h2 class="section-title" id="cat-learn">学习笔记</h2>
-        <span class="section-count">11</span>
+        <h2 class="section-title" id="cat-learn">学习技巧</h2>
+        <span class="section-count">5</span>
       </div>
       <ul class="entries">
         <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="learn/如何阅读一本书/如何阅读一本书-知识脑图.html">
-            <span class="entry-title">如何阅读一本书 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">learn/如何阅读一本书/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="learn/极简快速阅读-金正/如何阅读一本书-知识脑图.html">
-            <span class="entry-title">如何阅读一本书 · 知识脑图（新版）<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">learn/极简快速阅读-金正/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="learn/极简快速阅读/极简快速阅读-知识脑图.html">
-            <span class="entry-title">极简快速阅读 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">learn/极简快速阅读/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="learn/高效能阅读/高效能阅读-知识脑图.html">
-            <span class="entry-title">高效能阅读 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">learn/高效能阅读/</span>
+          <a target="_blank" rel="noopener noreferrer" href="learn/认知天性/认知天性_知识脑图.html">
+            <span class="entry-title">认知天性 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/认知天性/</span>
           </a>
         </li>
         <li class="entry">
@@ -490,9 +539,43 @@
           </a>
         </li>
         <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="learn/系统之美/系统之美-知识脑图.html">
-            <span class="entry-title">系统之美 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">learn/系统之美/</span>
+          <a target="_blank" rel="noopener noreferrer" href="learn/如何阅读一本书/如何阅读一本书-知识脑图.html">
+            <span class="entry-title">如何阅读一本书 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/如何阅读一本书/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/超级学习者/超级学习者-知识脑图.html">
+            <span class="entry-title">超级学习者 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/超级学习者/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/深度工作/深度工作_知识脑图.html">
+            <span class="entry-title">深度工作 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/深度工作/</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="cat-read">
+      <div class="section-head">
+        <span class="section-num">02</span>
+        <h2 class="section-title" id="cat-read">阅读技巧</h2>
+        <span class="section-count">5</span>
+      </div>
+      <ul class="entries">
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/如何阅读一本书/如何阅读一本书-知识脑图.html">
+            <span class="entry-title">如何阅读一本书 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/如何阅读一本书/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/高效能阅读/高效能阅读-知识脑图.html">
+            <span class="entry-title">高效能阅读 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/高效能阅读/</span>
           </a>
         </li>
         <li class="entry">
@@ -508,9 +591,77 @@
           </a>
         </li>
         <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/学习之道/学习之道_知识脑图.html">
+            <span class="entry-title">学习之道 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/学习之道/</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="cat-energy">
+      <div class="section-head">
+        <span class="section-num">03</span>
+        <h2 class="section-title" id="cat-energy">精力学习</h2>
+        <span class="section-count">5</span>
+      </div>
+      <ul class="entries">
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/精力管理/精力管理_知识脑图.html">
+            <span class="entry-title">精力管理 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/精力管理/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/深度工作/深度工作_知识脑图.html">
+            <span class="entry-title">深度工作 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/深度工作/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/搞定Ⅰ/搞定Ⅰ-知识脑图.html">
+            <span class="entry-title">搞定Ⅰ：无压工作的艺术 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/搞定Ⅰ/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/高效能人士的七个习惯/高效能人士的七个习惯-知识脑图.html">
+            <span class="entry-title">高效能人士的七个习惯 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/高效能人士的七个习惯/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/巅峰表现/巅峰表现_知识脑图.html">
+            <span class="entry-title">巅峰表现 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/巅峰表现/</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="cat-think">
+      <div class="section-head">
+        <span class="section-num">04</span>
+        <h2 class="section-title" id="cat-think">思维学习</h2>
+        <span class="section-count">5</span>
+      </div>
+      <ul class="entries">
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/金字塔原理/金字塔原理_知识脑图.html">
+            <span class="entry-title">金字塔原理 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/金字塔原理/</span>
+          </a>
+        </li>
+        <li class="entry">
           <a target="_blank" rel="noopener noreferrer" href="learn/学会提问/学会提问-知识脑图.html">
             <span class="entry-title">学会提问 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
             <span class="entry-meta">learn/学会提问/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="learn/系统之美/系统之美-知识脑图.html">
+            <span class="entry-title">系统之美 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/系统之美/</span>
           </a>
         </li>
         <li class="entry">
@@ -520,125 +671,9 @@
           </a>
         </li>
         <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="learn/认知天性/认知天性_知识脑图.html">
-            <span class="entry-title">认知天性 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">learn/认知天性/</span>
-          </a>
-        </li>
-      </ul>
-    </section>
-
-    <section class="section" aria-labelledby="cat-tech">
-      <div class="section-head">
-        <span class="section-num">02</span>
-        <h2 class="section-title" id="cat-tech">技术笔记</h2>
-        <span class="section-count">11</span>
-      </div>
-      <ul class="entries">
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解Android卷I/深入理解Android卷I-知识脑图.html">
-            <span class="entry-title">深入理解Android卷I · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">tech/深入理解Android卷I/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解Android卷II/深入理解Android卷II-知识脑图.html">
-            <span class="entry-title">深入理解Android卷II · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">tech/深入理解Android卷II/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解Android卷III/深入理解Android卷III-知识图谱.html">
-            <span class="entry-title">深入理解Android卷III · 知识图谱<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">tech/深入理解Android卷III/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解Android内核设计思想/深入理解Android内核设计思想-知识脑图.html">
-            <span class="entry-title">深入理解Android内核设计思想 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">tech/深入理解Android内核设计思想/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="tech/Android系统源代码情景分析/Android系统源代码情景分析_知识脑图.html">
-            <span class="entry-title">Android系统源代码情景分析 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">tech/Android系统源代码情景分析/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="tech/LINUX设备驱动程序/LINUX设备驱动程序-知识脑图.html">
-            <span class="entry-title">LINUX设备驱动程序 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">tech/LINUX设备驱动程序/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="tech/Linux内核设计与实现/Linux内核设计与实现-知识脑图.html">
-            <span class="entry-title">Linux内核设计与实现 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">tech/Linux内核设计与实现/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解LINUX内核/深入理解LINUX内核_知识脑图.html">
-            <span class="entry-title">深入理解LINUX内核 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">tech/深入理解LINUX内核/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="tech/Linux系统编程/Linux系统编程-知识脑图.html">
-            <span class="entry-title">Linux系统编程 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">tech/Linux系统编程/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="tech/操作系统导论/操作系统导论_知识脑图.html">
-            <span class="entry-title">操作系统导论 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">tech/操作系统导论/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解计算机系统/深入理解计算机系统_知识脑图.html">
-            <span class="entry-title">深入理解计算机系统 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">tech/深入理解计算机系统/</span>
-          </a>
-        </li>
-      </ul>
-    </section>
-
-    <section class="section" aria-labelledby="cat-self">
-      <div class="section-head">
-        <span class="section-num">03</span>
-        <h2 class="section-title" id="cat-self">自我笔记</h2>
-        <span class="section-count">5</span>
-      </div>
-      <ul class="entries">
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="self/精力管理/精力管理_知识脑图.html">
-            <span class="entry-title">精力管理 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">self/精力管理/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="self/深度工作/深度工作_知识脑图.html">
-            <span class="entry-title">深度工作 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">self/深度工作/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="self/搞定Ⅰ/搞定Ⅰ-知识脑图.html">
-            <span class="entry-title">搞定Ⅰ：无压工作的艺术 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">self/搞定Ⅰ/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="self/高效能人士的七个习惯/高效能人士的七个习惯-知识脑图.html">
-            <span class="entry-title">高效能人士的七个习惯 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">self/高效能人士的七个习惯/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="self/巅峰表现/巅峰表现_知识脑图.html">
-            <span class="entry-title">巅峰表现 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">self/巅峰表现/</span>
+          <a target="_blank" rel="noopener noreferrer" href="learn/批判性思维工具/批判性思维工具_知识脑图.html">
+            <span class="entry-title">批判性思维工具 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">learn/批判性思维工具/</span>
           </a>
         </li>
       </ul>
@@ -646,8 +681,8 @@
 
     <section class="section" aria-labelledby="cat-language">
       <div class="section-head">
-        <span class="section-num">04</span>
-        <h2 class="section-title" id="cat-language">语言笔记</h2>
+        <span class="section-num">05</span>
+        <h2 class="section-title" id="cat-language">语言学习</h2>
         <span class="section-count">9</span>
       </div>
       <ul class="entries">
@@ -661,24 +696,6 @@
           <a target="_blank" rel="noopener noreferrer" href="language/Effective Java/Effective_Java_知识脑图.html">
             <span class="entry-title">Effective Java · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
             <span class="entry-meta">language/Effective Java/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="language/Kotlin实战/Kotlin实战-知识脑图.html">
-            <span class="entry-title">Kotlin 实战 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">language/Kotlin实战/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="language/Kotlin编程权威指南/Kotlin编程权威指南-知识脑图.html">
-            <span class="entry-title">Kotlin 编程权威指南 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">language/Kotlin编程权威指南/</span>
-          </a>
-        </li>
-        <li class="entry">
-          <a target="_blank" rel="noopener noreferrer" href="language/深入理解Kotlin协程/深入理解Kotlin协程-知识脑图.html">
-            <span class="entry-title">深入理解 Kotlin 协程 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
-            <span class="entry-meta">language/深入理解Kotlin协程/</span>
           </a>
         </li>
         <li class="entry">
@@ -703,6 +720,120 @@
           <a target="_blank" rel="noopener noreferrer" href="language/Effective Modern C++/Effective Modern C++_知识脑图.html">
             <span class="entry-title">Effective Modern C++ · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
             <span class="entry-meta">language/Effective Modern C++/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="language/Kotlin实战/Kotlin实战-知识脑图.html">
+            <span class="entry-title">Kotlin 实战 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">language/Kotlin实战/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="language/Kotlin编程权威指南/Kotlin编程权威指南-知识脑图.html">
+            <span class="entry-title">Kotlin 编程权威指南 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">language/Kotlin编程权威指南/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="language/深入理解Kotlin协程/深入理解Kotlin协程-知识脑图.html">
+            <span class="entry-title">深入理解 Kotlin 协程 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">language/深入理解Kotlin协程/</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="cat-os">
+      <div class="section-head">
+        <span class="section-num">06</span>
+        <h2 class="section-title" id="cat-os">OS学习</h2>
+        <span class="section-count">3</span>
+      </div>
+      <ul class="entries">
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="tech/操作系统导论/操作系统导论_知识脑图.html">
+            <span class="entry-title">操作系统导论 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">tech/操作系统导论/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解计算机系统/深入理解计算机系统_知识脑图.html">
+            <span class="entry-title">深入理解计算机系统 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">tech/深入理解计算机系统/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="tech/Linux内核设计与实现/Linux内核设计与实现-知识脑图.html">
+            <span class="entry-title">Linux内核设计与实现 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">tech/Linux内核设计与实现/</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="cat-linux">
+      <div class="section-head">
+        <span class="section-num">07</span>
+        <h2 class="section-title" id="cat-linux">Linux学习</h2>
+        <span class="section-count">3</span>
+      </div>
+      <ul class="entries">
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="tech/Linux内核设计与实现/Linux内核设计与实现-知识脑图.html">
+            <span class="entry-title">Linux内核设计与实现 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">tech/Linux内核设计与实现/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="tech/LINUX设备驱动程序/LINUX设备驱动程序-知识脑图.html">
+            <span class="entry-title">LINUX设备驱动程序 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">tech/LINUX设备驱动程序/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解LINUX内核/深入理解LINUX内核_知识脑图.html">
+            <span class="entry-title">深入理解LINUX内核 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">tech/深入理解LINUX内核/</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="cat-android">
+      <div class="section-head">
+        <span class="section-num">08</span>
+        <h2 class="section-title" id="cat-android">安卓系统</h2>
+        <span class="section-count">5</span>
+      </div>
+      <ul class="entries">
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解Android内核设计思想/深入理解Android内核设计思想-知识脑图.html">
+            <span class="entry-title">深入理解Android内核设计思想 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">tech/深入理解Android内核设计思想/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解Android卷I/深入理解Android卷I-知识脑图.html">
+            <span class="entry-title">深入理解Android卷I · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">tech/深入理解Android卷I/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解Android卷II/深入理解Android卷II-知识脑图.html">
+            <span class="entry-title">深入理解Android卷II · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">tech/深入理解Android卷II/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="tech/深入理解Android卷III/深入理解Android卷III-知识图谱.html">
+            <span class="entry-title">深入理解Android卷III · 知识图谱<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">tech/深入理解Android卷III/</span>
+          </a>
+        </li>
+        <li class="entry">
+          <a target="_blank" rel="noopener noreferrer" href="tech/Android系统源代码情景分析/Android系统源代码情景分析_知识脑图.html">
+            <span class="entry-title">Android系统源代码情景分析 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
+            <span class="entry-meta">tech/Android系统源代码情景分析/</span>
           </a>
         </li>
       </ul>
