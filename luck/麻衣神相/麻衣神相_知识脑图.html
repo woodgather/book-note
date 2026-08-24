@@ -1,0 +1,2351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>图解古代人体工程学·麻衣神相 | 知识脑图</title>
+<style>
+:root {
+    --color-primary: #8b1a1a;
+    --color-primary-light: #c0392b;
+    --color-secondary: #d4a04a;
+    --color-accent: #1e3a5f;
+    --color-bg: #f5f1e8;
+    --color-bg-card: #fdfaf3;
+    --color-text: #2c2416;
+    --color-text-light: #6b5d4a;
+    --color-border: #d4c5a0;
+    --color-shadow: rgba(139, 26, 26, 0.1);
+    --color-success: #2d5a3d;
+    --color-warning: #c87f2a;
+    --color-danger: #a93226;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "STSong", "SimSun", serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.8;
+    font-size: 16px;
+    background-image:
+        radial-gradient(at 10% 10%, rgba(139, 26, 26, 0.03) 0%, transparent 50%),
+        radial-gradient(at 90% 90%, rgba(212, 160, 74, 0.04) 0%, transparent 50%);
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 320px;
+    min-width: 320px;
+    background: linear-gradient(180deg, #2c1810 0%, #3d2817 100%);
+    color: #f0e6d2;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    box-shadow: 4px 0 20px var(--color-shadow);
+    border-right: 3px solid var(--color-secondary);
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.2);
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--color-secondary);
+    border-radius: 3px;
+}
+
+.sidebar-header {
+    padding: 24px 20px;
+    background: linear-gradient(135deg, #1a0e08 0%, #3d2817 100%);
+    border-bottom: 2px solid var(--color-secondary);
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.sidebar-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-secondary);
+    margin-bottom: 6px;
+    letter-spacing: 2px;
+    font-family: "STKaiti", "KaiTi", serif;
+}
+
+.sidebar-subtitle {
+    font-size: 12px;
+    color: #c4b59a;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.search-box {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(212, 160, 74, 0.3);
+    color: #f0e6d2;
+    border-radius: 4px;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.2s;
+}
+.search-box:focus {
+    background: rgba(255,255,255,0.12);
+    border-color: var(--color-secondary);
+}
+.search-box::placeholder {
+    color: #8b7d65;
+}
+
+.nav-tree {
+    padding: 8px 0;
+    list-style: none;
+}
+
+.nav-tree ul {
+    list-style: none;
+}
+
+.nav-item {
+    margin: 0;
+}
+
+.nav-toggle {
+    display: flex;
+    align-items: center;
+    padding: 10px 18px 10px 14px;
+    cursor: pointer;
+    user-select: none;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.nav-toggle:hover {
+    background: rgba(212, 160, 74, 0.12);
+    border-left-color: var(--color-secondary);
+}
+
+.nav-toggle.has-children::before {
+    content: "▶";
+    display: inline-block;
+    width: 16px;
+    font-size: 9px;
+    color: var(--color-secondary);
+    transition: transform 0.2s;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+.nav-toggle.has-children.expanded::before {
+    transform: rotate(90deg);
+}
+
+.nav-toggle.no-children::before {
+    content: "•";
+    display: inline-block;
+    width: 16px;
+    color: var(--color-secondary);
+    margin-right: 6px;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 12px;
+}
+
+.nav-toggle .nav-text {
+    flex: 1;
+}
+
+.nav-link {
+    display: block;
+    padding: 8px 18px 8px 32px;
+    color: #c4b59a;
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+    line-height: 1.5;
+}
+
+.nav-link:hover {
+    background: rgba(212, 160, 74, 0.08);
+    color: #f0e6d2;
+    border-left-color: var(--color-secondary);
+}
+
+.nav-link.active {
+    background: rgba(139, 26, 26, 0.2);
+    color: var(--color-secondary);
+    border-left-color: var(--color-secondary);
+    font-weight: 600;
+}
+
+.nav-children {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: rgba(0,0,0,0.15);
+}
+
+.nav-children.expanded {
+    max-height: 10000px;
+}
+
+.nav-toggle.level-1 { color: #f0e6d2; font-weight: 700; font-size: 15px; padding-top: 14px; padding-bottom: 14px; }
+.nav-toggle.level-2 { color: #d4c5a0; font-size: 14px; }
+.nav-toggle.level-3 { color: #b8a98a; font-size: 13px; padding-left: 28px; }
+.nav-toggle.level-4 { color: #9b8d72; font-size: 12px; padding-left: 38px; }
+
+.nav-link.level-3 { padding-left: 48px; }
+.nav-link.level-4 { padding-left: 62px; font-size: 12px; }
+
+.main {
+    flex: 1;
+    padding: 0;
+    min-width: 0;
+}
+
+.content {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 60px 50px 100px;
+}
+
+.hero {
+    text-align: center;
+    padding: 50px 30px;
+    margin-bottom: 50px;
+    background: linear-gradient(135deg, #fdfaf3 0%, #f5ead4 100%);
+    border-radius: 12px;
+    border: 2px solid var(--color-secondary);
+    box-shadow: 0 8px 30px var(--color-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(139, 26, 26, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(212, 160, 74, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.hero-book {
+    font-size: 14px;
+    color: var(--color-text-light);
+    letter-spacing: 6px;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.hero-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+    letter-spacing: 8px;
+    font-family: "STKaiti", "KaiTi", serif;
+    position: relative;
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    color: var(--color-accent);
+    margin-bottom: 24px;
+    letter-spacing: 4px;
+    position: relative;
+}
+
+.hero-divider {
+    width: 80px;
+    height: 3px;
+    background: var(--color-secondary);
+    margin: 20px auto;
+    position: relative;
+}
+
+.hero-meta {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    color: var(--color-text-light);
+    font-size: 14px;
+    position: relative;
+}
+
+.hero-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.section {
+    margin-bottom: 60px;
+    background: var(--color-bg-card);
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0 4px 20px var(--color-shadow);
+    border: 1px solid var(--color-border);
+    scroll-margin-top: 20px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--color-secondary);
+}
+
+.section-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 4px;
+    margin-right: 14px;
+    letter-spacing: 1px;
+    font-family: "STKaiti", "KaiTi", serif;
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: 2px;
+    font-family: "STKaiti", "KaiTi", serif;
+}
+
+.section-subtitle {
+    font-size: 14px;
+    color: var(--color-text-light);
+    margin-top: 4px;
+    letter-spacing: 1px;
+}
+
+.subsection {
+    margin-bottom: 35px;
+    padding: 25px 28px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-secondary);
+    scroll-margin-top: 20px;
+}
+
+.subsection-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.subsection-title::before {
+    content: "◆";
+    color: var(--color-secondary);
+    font-size: 14px;
+}
+
+.subsection-content {
+    color: var(--color-text);
+    line-height: 1.9;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 18px 0;
+}
+
+.feature-card {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    transition: all 0.2s;
+}
+
+.feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--color-shadow);
+    border-color: var(--color-secondary);
+}
+
+.feature-card-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 6px;
+    border-bottom: 1px dashed var(--color-border);
+    padding-bottom: 6px;
+}
+
+.feature-card-meaning {
+    font-size: 12px;
+    color: var(--color-success);
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.feature-card-detail {
+    font-size: 13px;
+    color: var(--color-text-light);
+    line-height: 1.6;
+}
+
+.info-block {
+    background: rgba(212, 160, 74, 0.08);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    border-left: 3px solid var(--color-secondary);
+}
+
+.info-block-title {
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.info-block-content {
+    color: var(--color-text);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.def-list {
+    display: grid;
+    gap: 10px;
+    margin: 14px 0;
+}
+
+.def-item {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 16px;
+    padding: 10px 14px;
+    background: white;
+    border-radius: 5px;
+    border-left: 3px solid var(--color-secondary);
+    font-size: 14px;
+}
+
+.def-term {
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.def-meaning {
+    color: var(--color-text);
+    line-height: 1.7;
+}
+
+.quote {
+    background: linear-gradient(135deg, rgba(139, 26, 26, 0.04) 0%, rgba(212, 160, 74, 0.06) 100%);
+    border-left: 4px solid var(--color-primary);
+    padding: 18px 22px;
+    margin: 16px 0;
+    font-style: italic;
+    color: var(--color-text);
+    border-radius: 0 6px 6px 0;
+    font-size: 15px;
+    line-height: 1.8;
+    position: relative;
+}
+
+.quote::before {
+    content: """";
+    position: absolute;
+    top: -8px;
+    left: 8px;
+    font-size: 60px;
+    color: var(--color-secondary);
+    opacity: 0.2;
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+
+.quote-source {
+    display: block;
+    margin-top: 8px;
+    font-style: normal;
+    font-size: 13px;
+    color: var(--color-text-light);
+    text-align: right;
+}
+
+.tag {
+    display: inline-block;
+    padding: 2px 10px;
+    background: var(--color-secondary);
+    color: white;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+}
+
+.tag.success { background: var(--color-success); }
+.tag.warning { background: var(--color-warning); }
+.tag.danger { background: var(--color-danger); }
+.tag.info { background: var(--color-accent); }
+
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 16px 0;
+}
+
+@media (max-width: 768px) {
+    .two-col { grid-template-columns: 1fr; }
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; min-width: auto; height: auto; position: relative; max-height: 50vh; }
+    .content { padding: 30px 20px; }
+    .hero-title { font-size: 28px; }
+}
+
+.highlight-box {
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3c4 100%);
+    border: 2px dashed var(--color-secondary);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 20px 0;
+}
+
+.highlight-box-title {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.highlight-box-title::before {
+    content: "★";
+    color: var(--color-secondary);
+}
+
+ul.bullet-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 10px 0;
+}
+
+ul.bullet-list li {
+    padding-left: 24px;
+    position: relative;
+    margin: 6px 0;
+    line-height: 1.8;
+}
+
+ul.bullet-list li::before {
+    content: "❖";
+    color: var(--color-secondary);
+    position: absolute;
+    left: 4px;
+    top: 0;
+    font-size: 12px;
+}
+
+.footer {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--color-text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--color-border);
+    margin-top: 60px;
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 44px;
+    height: 44px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--color-shadow);
+    z-index: 100;
+    transition: all 0.2s;
+    border: none;
+    font-size: 20px;
+}
+
+.back-to-top:hover {
+    background: var(--color-primary-light);
+    transform: translateY(-2px);
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-title">麻衣神相</div>
+        <div class="sidebar-subtitle">中国古代人体工程学</div>
+        <input type="text" class="search-box" id="searchBox" placeholder="🔍 搜索内容...">
+    </div>
+    <ul class="nav-tree" id="navTree">
+        <li class="nav-item">
+            <div class="nav-toggle level-1 no-children" data-target="intro">
+                <span class="nav-text">序言与概述</span>
+            </div>
+        </li>
+        <li class="nav-item">
+            <div class="nav-toggle level-1 has-children" data-target="daodu">
+                <span class="nav-text">导读卷·中国古代最有名的相书</span>
+            </div>
+            <ul class="nav-children" id="daodu">
+                <li class="nav-item">
+                    <div class="nav-toggle level-2 has-children" data-target="daodu-1">
+                        <span class="nav-text">第一章 读相术之书，首推《麻衣神相》</span>
+                    </div>
+                    <ul class="nav-children" id="daodu-1">
+                        <li><a href="#dd-1-1" class="nav-link level-3">《麻衣神相》—相术入门书</a></li>
+                        <li><a href="#dd-1-2" class="nav-link level-3">《麻衣神相》的传承：两位"神仙"</a></li>
+                        <li><a href="#dd-1-3" class="nav-link level-3">《麻衣神相》的影响：历代相术"底本"</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-toggle level-2 has-children" data-target="daodu-2">
+                        <span class="nav-text">第二章 神秘的相术：中国古代相术文化</span>
+                    </div>
+                    <ul class="nav-children" id="daodu-2">
+                        <li><a href="#dd-2-1" class="nav-link level-3">中国古代相术的起源与发展</a></li>
+                        <li><a href="#dd-2-2" class="nav-link level-3">相术的理论基础：阴阳五行</a></li>
+                        <li><a href="#dd-2-3" class="nav-link level-3">相术的理论皈依：天人合一</a></li>
+                        <li><a href="#dd-2-4" class="nav-link level-3">相术与中医：同源异出</a></li>
+                        <li><a href="#dd-2-5" class="nav-link level-3">相术体系：形形色色的术语</a></li>
+                        <li><a href="#dd-2-6" class="nav-link level-3">中国古代相术方法：相人之术</a></li>
+                        <li><a href="#dd-2-7" class="nav-link level-3">相术著作要览</a></li>
+                        <li><a href="#dd-2-8" class="nav-link level-3">相术与中国传统文化</a></li>
+                        <li><a href="#dd-2-9" class="nav-link level-3">对相术的理性认识</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <div class="nav-toggle level-1 has-children" data-target="miansu">
+                <span class="nav-text">面相速查</span>
+            </div>
+            <ul class="nav-children" id="miansu">
+                <li><a href="#ms-eyebrow" class="nav-link level-2">眉毛形态速查</a></li>
+                <li><a href="#ms-eye" class="nav-link level-2">眼睛形态速查</a></li>
+                <li><a href="#ms-nose" class="nav-link level-2">鼻子形态速查</a></li>
+                <li><a href="#ms-mouth" class="nav-link level-2">口型形态速查</a></li>
+                <li><a href="#ms-ear" class="nav-link level-2">耳型形态速查</a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <div class="nav-toggle level-1 has-children" data-target="shousu">
+                <span class="nav-text">手相速查</span>
+            </div>
+            <ul class="nav-children" id="shousu">
+                <li><a href="#ss-types" class="nav-link level-2">四种手型（土/风/火/水）</a></li>
+                <li><a href="#ss-zhangqiu" class="nav-link level-2">掌丘与八卦</a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <div class="nav-toggle level-1 has-children" data-target="v1">
+                <span class="nav-text">卷一·相法总论</span>
+            </div>
+            <ul class="nav-children" id="v1">
+                <li><a href="#v1-1" class="nav-link level-2">十三部位总图歌</a></li>
+                <li><a href="#v1-2" class="nav-link level-2">流年运气部位歌</a></li>
+                <li><a href="#v1-3" class="nav-link level-2">运气口诀</a></li>
+                <li><a href="#v1-4" class="nav-link level-2">识限歌</a></li>
+                <li><a href="#v1-5" class="nav-link level-2">十二宫详解</a></li>
+                <li><a href="#v1-6" class="nav-link level-2">十二宫秘诀</a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <div class="nav-toggle level-1 has-children" data-target="v2">
+                <span class="nav-text">卷二·察言观色</span>
+            </div>
+            <ul class="nav-children" id="v2">
+                <li><a href="#v2-1" class="nav-link level-2">五观总论</a></li>
+                <li><a href="#v2-2" class="nav-link level-2">五岳</a></li>
+                <li><a href="#v2-3" class="nav-link level-2">四渎</a></li>
+                <li><a href="#v2-4" class="nav-link level-2">三主三柱</a></li>
+                <li><a href="#v2-5" class="nav-link level-2">五星六曜说</a></li>
+                <li><a href="#v2-6" class="nav-link level-2">五星六曜诀断诗</a></li>
+                <li><a href="#v2-7" class="nav-link level-2">六府三才三停</a></li>
+                <li><a href="#v2-8" class="nav-link level-2">四学堂</a></li>
+                <li><a href="#v2-9" class="nav-link level-2">八学堂</a></li>
+                <li><a href="#v2-10" class="nav-link level-2">人面总论</a></li>
+                <li><a href="#v2-11" class="nav-link level-2">五行形</a></li>
+                <li><a href="#v2-12" class="nav-link level-2">五行色</a></li>
+                <li><a href="#v2-13" class="nav-link level-2">五形象说</a></li>
+                <li><a href="#v2-14" class="nav-link level-2">论形·人体对应宇宙</a></li>
+                <li><a href="#v2-15" class="nav-link level-2">论神·内敛为吉</a></li>
+                <li><a href="#v2-16" class="nav-link level-2">论形有余</a></li>
+                <li><a href="#v2-17" class="nav-link level-2">论神有余</a></li>
+                <li><a href="#v2-18" class="nav-link level-2">论形不足</a></li>
+                <li><a href="#v2-19" class="nav-link level-2">论神不足</a></li>
+                <li><a href="#v2-20" class="nav-link level-2">论声</a></li>
+                <li><a href="#v2-21" class="nav-link level-2">论气</a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <div class="nav-toggle level-1 has-children" data-target="v3">
+                <span class="nav-text">卷三·五官相法</span>
+            </div>
+            <ul class="nav-children" id="v3">
+                <li><a href="#v3-1" class="nav-link level-2">相骨</a></li>
+                <li><a href="#v3-2" class="nav-link level-2">相肉</a></li>
+                <li><a href="#v3-3" class="nav-link level-2">相头并发</a></li>
+                <li><a href="#v3-4" class="nav-link level-2">相额</a></li>
+                <li><a href="#v3-5" class="nav-link level-2">论面</a></li>
+                <li><a href="#v3-6" class="nav-link level-2">论眉（24种眉相）</a></li>
+                <li><a href="#v3-7" class="nav-link level-2">相目（35种眼相）</a></li>
+                <li><a href="#v3-8" class="nav-link level-2">相鼻（24种鼻相）</a></li>
+                <li><a href="#v3-9" class="nav-link level-2">相人中</a></li>
+                <li><a href="#v3-10" class="nav-link level-2">相口（15种口相）</a></li>
+                <li><a href="#v3-11" class="nav-link level-2">相唇</a></li>
+                <li><a href="#v3-12" class="nav-link level-2">相舌</a></li>
+                <li><a href="#v3-13" class="nav-link level-2">论齿</a></li>
+                <li><a href="#v3-14" class="nav-link level-2">相耳（16种耳相）</a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <div class="nav-toggle level-1 has-children" data-target="v4">
+                <span class="nav-text">卷四·四肢相法</span>
+            </div>
+            <ul class="nav-children" id="v4">
+                <li><a href="#v4-1" class="nav-link level-2">论四肢</a></li>
+                <li><a href="#v4-2" class="nav-link level-2">论手</a></li>
+                <li><a href="#v4-3" class="nav-link level-2">论掌纹</a></li>
+                <li><a href="#v4-4" class="nav-link level-2">论手背纹</a></li>
+                <li><a href="#v4-5" class="nav-link level-2">手纹形模：71掌纹</a></li>
+                <li><a href="#v4-6" class="nav-link level-2">论足</a></li>
+                <li><a href="#v4-7" class="nav-link level-2">论足纹</a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <div class="nav-toggle level-1 has-children" data-target="v5">
+                <span class="nav-text">卷五·达摩相诀</span>
+            </div>
+            <ul class="nav-children" id="v5">
+                <li><a href="#v5-1" class="nav-link level-2">达摩祖师相诀秘传</a></li>
+                <li><a href="#v5-2" class="nav-link level-2">第一法：相主神</a></li>
+                <li><a href="#v5-3" class="nav-link level-2">第二法：神主眼</a></li>
+                <li><a href="#v5-4" class="nav-link level-2">第三法：人身分十分</a></li>
+                <li><a href="#v5-5" class="nav-link level-2">第四法：人面分十分</a></li>
+                <li><a href="#v5-6" class="nav-link level-2">第五法：择交在眼</a></li>
+                <li><a href="#v5-7" class="nav-link level-2">总诀第一~第五</a></li>
+                <li><a href="#v5-8" class="nav-link level-2">十二宫克应诀</a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <div class="nav-toggle level-1 has-children" data-target="v6">
+                <span class="nav-text">卷六·石室神异赋</span>
+            </div>
+            <ul class="nav-children" id="v6">
+                <li><a href="#v6-1" class="nav-link level-2">麻衣看相：脸上的命运</a></li>
+                <li><a href="#v6-2" class="nav-link level-2">面相杂论</a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <div class="nav-toggle level-1 has-children" data-target="v7">
+                <span class="nav-text">卷七·论三停吉凶</span>
+            </div>
+            <ul class="nav-children" id="v7">
+                <li><a href="#v7-1" class="nav-link level-2">命相通论</a></li>
+                <li><a href="#v7-2" class="nav-link level-2">金锁赋</a></li>
+                <li><a href="#v7-3" class="nav-link level-2">银匙赋</a></li>
+                <li><a href="#v7-4" class="nav-link level-2">相形气色赋</a></li>
+                <li><a href="#v7-5" class="nav-link level-2">三停吉气</a></li>
+                <li><a href="#v7-6" class="nav-link level-2">三停凶气</a></li>
+                <li><a href="#v7-7" class="nav-link level-2">面痣吉凶</a></li>
+                <li><a href="#v7-8" class="nav-link level-2">毫毛吉凶</a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <div class="nav-toggle level-1 has-children" data-target="app">
+                <span class="nav-text">附录·身体相法</span>
+            </div>
+            <ul class="nav-children" id="app">
+                <li><a href="#app-1" class="nav-link level-2">六府三才三停</a></li>
+                <li><a href="#app-2" class="nav-link level-2">上停部位</a></li>
+                <li><a href="#app-3" class="nav-link level-2">中停部位</a></li>
+                <li><a href="#app-4" class="nav-link level-2">下停部位</a></li>
+                <li><a href="#app-5" class="nav-link level-2">流年运势年鉴</a></li>
+                <li><a href="#app-6" class="nav-link level-2">气色占应诀</a></li>
+                <li><a href="#app-7" class="nav-link level-2">论髭髯（胡须）</a></li>
+                <li><a href="#app-8" class="nav-link level-2">相鱼尾</a></li>
+                <li><a href="#app-9" class="nav-link level-2">论颈项·论背·论腰</a></li>
+                <li><a href="#app-10" class="nav-link level-2">论腹·胸乳</a></li>
+                <li><a href="#app-11" class="nav-link level-2">麻衣相心</a></li>
+                <li><a href="#app-12" class="nav-link level-2">三十六善养心要诀</a></li>
+                <li><a href="#app-13" class="nav-link level-2">相脐·相下部</a></li>
+                <li><a href="#app-14" class="nav-link level-2">相行·相坐·论卧</a></li>
+                <li><a href="#app-15" class="nav-link level-2">论食·相德</a></li>
+                <li><a href="#app-16" class="nav-link level-2">相善·相恶</a></li>
+                <li><a href="#app-17" class="nav-link level-2">相名标·蹇难</a></li>
+                <li><a href="#app-18" class="nav-link level-2">相忠信慈孝·愚僻凶暴</a></li>
+                <li><a href="#app-19" class="nav-link level-2">相形带杀·相疾病</a></li>
+                <li><a href="#app-20" class="nav-link level-2">四季吉凶气色</a></li>
+                <li><a href="#app-21" class="nav-link level-2">管辂相婴儿</a></li>
+                <li><a href="#app-22" class="nav-link level-2">女人论·女人歌</a></li>
+            </ul>
+        </li>
+    </ul>
+</aside>
+
+<main class="main">
+<div class="content">
+
+<div class="hero">
+    <div class="hero-book">图解古代人体工程学 · 第一卷</div>
+    <h1 class="hero-title">麻衣神相</h1>
+    <div class="hero-subtitle">阅知命运 · 解密人生</div>
+    <div class="hero-divider"></div>
+    <div class="hero-meta">
+        <span>📜 原著：（宋）麻衣道者</span>
+        <span>✍ 编著：徐阳</span>
+        <span>📖 出版：陕西师范大学出版社</span>
+    </div>
+</div>
+
+<section id="intro" class="section">
+    <div class="section-header">
+        <span class="section-badge">序</span>
+        <div>
+            <h2 class="section-title">编者序：阅知命运，解密人生</h2>
+            <div class="section-subtitle">Foreword</div>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <div class="highlight-box-title">本书核心要义</div>
+        <p>相术名著《麻衣神相》流传千年，至今仍保有完整风貌，附有大量插图，通俗易懂。在古代人们还对人类身体构造普遍缺乏认知的情况下，《麻衣神相》即以相学的角度探究了包括人体结构功能、人的心理活动特征、人体运动形态、人体器官协调性等方面的诸多课题，可谓既展示了高超神妙的命理分析，又提供了丰富的人类生理信息——如此广博深刻，实开古代人体工程学先河。</p>
+    </div>
+
+    <div class="subsection">
+        <h3 class="subsection-title">编者导读</h3>
+        <div class="subsection-content">
+            <p>虽然有"人不可貌相，海水不可斗量"的哲言在先，但身处当前这样一个浮躁的时代，匆忙的生活步履造成我们对周围人的认识判断常常止乎于体貌特征。有时候你对于一个泛泛之交的记忆，常常只是他有一双炯炯有神的大眼睛，两道气势逼人的剑眉，或者一个看上去邋里邋遢的酒糟鼻，一对惹人发笑的招风耳。</p>
+            <p style="margin-top:12px;">然而，你有没有停下来细细地想过，其实每个人的相貌都是暗藏玄机的——鼻子高有它高的福祉，眼窝深有它深的寿禄，福运就在人呈现出的肉体形态里秘密躲藏。人的相貌本身正是一本等待被翻阅、被解密的奥义精深的命运之书。</p>
+        </div>
+    </div>
+
+    <div class="subsection">
+        <h3 class="subsection-title">相由心生之理</h3>
+        <div class="subsection-content">
+            <p>譬如一个人内心的所思所想，也正会如实地映现在他的相貌上：内心藏有恶念的人，五官也必然是一副凶神恶煞的样子；而内心没有忧虑的人，举手投足也自然一派清逸——这便是"相由心生"之理。</p>
+        </div>
+    </div>
+
+    <div class="subsection">
+        <h3 class="subsection-title">本书四大特色</h3>
+        <div class="cards-grid">
+            <div class="feature-card">
+                <div class="feature-card-name">① 人性化导读</div>
+                <div class="feature-card-detail">让读者围绕《麻衣神相》，了解相术发展渊源、相术流派特征，设立导读卷，参考阅读。</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-name">② 精到原文</div>
+                <div class="feature-card-detail">以《麻衣神相》权威版本为底本，收集资料，精心点校，提供精良读本。</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-name">③ 精致提要</div>
+                <div class="feature-card-detail">将深奥文言文转化成现代白话文，将相术原理娓娓道来，排除阅读障碍。</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-name">④ 化繁为简的图解</div>
+                <div class="feature-card-detail">采用数量众多的图标、插图、图解，简化原书复杂的理论结构，提供有用的理论框架和知识要点。</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📌 重要提示</div>
+        <div class="info-block-content">中国古代相术内蕴丰富，涵盖深远。本书因成书年代久远，难免留存不清之处，望读者能以一定批判的眼光阅读，披沙拣金，获取真知。</div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">导读</span>
+        <div>
+            <h2 class="section-title">导读卷：中国古代最有名的相书</h2>
+            <div class="section-subtitle">Introductory Volume</div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-content">在中国传统文化领域，《麻衣神相》是一部具有划时代意义的相学宝典，虽然这部著作从整体篇幅上并未见恢弘，但其却尽收人体各部的高妙相法，为历代相学专家顶礼膜拜，也在相学界树立起了不可逾越的高峰。</div>
+    </div>
+
+    <div id="dd-1-1" class="subsection">
+        <h3 class="subsection-title">第一章 · 读相术之书，首推《麻衣神相》</h3>
+        <div class="subsection-content">
+            <p>中国古代相学流派众多，主分江湖派和学士派。无论是哪一派，对其影响最大的相书当首推《麻衣神相》——它集前代相书之大成，是一部具有总结性的划时代著作，而《麻衣神相》身为"相学之首"，也是当之无愧的称誉。</p>
+        </div>
+    </div>
+
+    <div id="dd-1-2" class="subsection">
+        <h3 class="subsection-title">1．《麻衣神相》：前无古人、后无来者的相术之书</h3>
+        <div class="info-block">
+            <div class="info-block-title">《麻衣神相》的基本定位</div>
+            <div class="info-block-content">中国现存最早的对人体相貌进行系统论述的相术著作。在《明史·艺文志》中有明文记载。在汇编过程中所收集资料的全面和编排上精湛的技巧，可谓前无古人、后无来者，更是任何一个精通相术者首推的入门读物。</div>
+        </div>
+
+        <div class="quote">
+            管中窥豹，从原文摘句中了解《麻衣神相》行文风格："眼长而深光润者大贵，黑如漆者聪明文章，含藏不露灼热有光者富贵，细而深者长寿，性兼隐蔽，浮而露者夭死，大而凸圆若怒者促寿，凸暴流视者淫盗……"
+            <span class="quote-source">——《麻衣神相》对面部五官的论述</span>
+        </div>
+
+        <h4 class="subsection-title" style="font-size:16px;">《麻衣神相》的四大结构</h4>
+        <div class="cards-grid">
+            <div class="feature-card">
+                <div class="feature-card-name">一、概论</div>
+                <div class="feature-card-detail">相术基本概念：十三部位、流年运气、十二宫、五星六曜、五岳四渎、九州八卦、四学堂八学堂等。</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-name">二、综合论</div>
+                <div class="feature-card-detail">讨论人的精神、气色、声音、骨相、姿容等：论形、论神、论形有余、论神有余、论形不足、论神不足、论声、论气。</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-name">三、意义论</div>
+                <div class="feature-card-detail">专门讨论吉凶祸福意义和项目：五行形、五行色、六府三才三停、财帛、男女、奴仆等。</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-name">四、精华论</div>
+                <div class="feature-card-detail">从头部下至四肢，细至骨骼、面痣，分别从五官、四肢及疤痕、黑痣、纹路等多方面讨论面部信息与命运联系。</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dd-1-3" class="subsection">
+        <h3 class="subsection-title">2．《麻衣神相》的传承：两位"神仙"的传奇故事</h3>
+        <div class="subsection-content">
+            <p>宋朝时期，相术风行，众人对其已是迷狂的状态。此时，隐居山林的<span class="tag">麻衣道者</span><span class="tag">陈抟（希夷）</span>师徒二人对相术的发展无疑起到了推波助澜的巨大作用，有关他们的传说也一直颇具神话色彩。</p>
+            <p style="margin-top:10px;">麻衣道者究竟是否就是《麻衣神相》的作者呢？据有关专家考证，《麻衣神相》疑为后人依托而作。清代陆法崇认为"后人皆以麻衣为号相传也"；清人倪岳在《神相全编考》中也说过"近世口传相人之书，皆宗麻衣道者"。</p>
+        </div>
+
+        <div class="quote">
+            麻衣道者深冬之时，在华山石室，拥炉教希夷（即陈抟），不用言诱，只用火箸写字于炉灰中，默授希夷。
+            <span class="quote-source">——《麻衣道者正易心法》</span>
+        </div>
+
+        <div class="cards-grid">
+            <div class="feature-card">
+                <div class="feature-card-name">麻衣道者</div>
+                <div class="feature-card-detail">中国相术史上的一代神相，关于他的传说颇多，但与其有关的具体记载则少之又少。大抵为五代末北宋初人。</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-name">陈抟（希夷）</div>
+                <div class="feature-card-detail">北宋初年间人，宋初著名的道教学者、易学大师，对宋代理学发展有较大影响。陈抟的相术师承麻衣道者，曾一起隐居山林。</div>
+            </div>
+        </div>
+
+        <h4 style="margin-top:18px;color:var(--color-accent);">名家评"麻衣"</h4>
+        <div class="quote">"头顶方巾腰束绦，气傲；麻衣相法我独高，玄妙。"<span class="quote-source">——（明）沈采《还带记·众朋就相》</span></div>
+        <div class="quote">"相法推《麻衣》，推命本《珞碌》。"<span class="quote-source">——（清）黄遵宪《番客篇》</span></div>
+        <div class="quote">"谈到《麻衣》、《柳庄》相法，有人说顾问额角放光，像是个发达相，最近一定会作县知事。"<span class="quote-source">——沈从文《顾问官》</span></div>
+    </div>
+
+    <div id="dd-1-4" class="subsection">
+        <h3 class="subsection-title">3．《麻衣神相》的影响：历代相术的"底本"</h3>
+        <div class="subsection-content">
+            <p>依据门户、学派来分类，相法可分为<span class="tag success">麻衣相法</span><span class="tag success">柳庄相法</span><span class="tag success">水镜相法</span>等多种类型。其中以麻衣相法流传最广，有《麻衣神相》一书传世，后世相术著作和时下民间术士多以此书为本。</p>
+        </div>
+
+        <h4 style="margin:14px 0 8px;color:var(--color-accent);">五行相生歌</h4>
+        <div class="quote">
+            耳有垂珠鼻有梁，金水相生主大昌；<br>
+            眼明耳好多神气，若不为官富更强。<br>
+            口方鼻直人须贵，金土相生紫绶郎；<br>
+            唇方眼黑木生火，为人志气多财粮。<br>
+            舌长唇厚火生土，此人有福中年昌；<br>
+            眼长眉秀足风流，身坐金章朝审堂。
+        </div>
+
+        <h4 style="margin:14px 0 8px;color:var(--color-accent);">五行相克歌</h4>
+        <div class="quote">
+            耳大唇薄水克火，衣食贫寒空有智；<br>
+            唇大耳薄亦如然，此相之人终不贵。<br>
+            鼻大眼小金克木，一世贫寒受孤独；<br>
+            眼大鼻小难为成，虽有资财寿命促。<br>
+            舌小耳大水克火，急性孤独区人我；<br>
+            耳小舌大亦不仁，悭贪心恶多灾祸。<br>
+            舌大鼻小火克金，钱财方盛祸来侵；<br>
+            鼻大舌小招贫苦，寿长无子送郊林。<br>
+            眼大唇小木克土，相此之人终不富；<br>
+            唇大眼小贵难求，到老贫寒死无墓。
+        </div>
+    </div>
+
+    <div id="dd-2-1" class="subsection">
+        <h3 class="subsection-title">第二章 · 神秘的相术：中国古代相术文化</h3>
+        <div class="subsection-content">我国相术历史久远，内涵丰富而独特。观人相貌气血神色，以判人之吉凶贤愚，每每必验。</div>
+    </div>
+
+    <div id="dd-2-2" class="subsection">
+        <h3 class="subsection-title">1．中国古代相术的起源与发展</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">上古时期</div><div class="feature-card-meaning">相术的萌芽</div><div class="feature-card-detail">上古帝王选拔人才以相术为重要手段。据《大戴礼记》记载："昔尧取人以状，舜取人以色，禹取人以言，汤取人以声，文王取人以度。"</div></div>
+            <div class="feature-card"><div class="feature-card-name">春秋时期</div><div class="feature-card-meaning">相术的诞生</div><div class="feature-card-detail">相术作为一门学问开始系统化。</div></div>
+            <div class="feature-card"><div class="feature-card-name">战国时期</div><div class="feature-card-meaning">相术的发展</div><div class="feature-card-detail">相术理论逐步丰富。</div></div>
+            <div class="feature-card"><div class="feature-card-name">两汉时期</div><div class="feature-card-meaning">相术的热潮</div><div class="feature-card-detail">相术理论的初建，名家辈出。</div></div>
+            <div class="feature-card"><div class="feature-card-name">唐宋时期</div><div class="feature-card-meaning">相术的流行</div><div class="feature-card-detail">相术达到鼎盛，《麻衣神相》应运而生。</div></div>
+            <div class="feature-card"><div class="feature-card-name">明清之际</div><div class="feature-card-meaning">相术典籍的整理</div><div class="feature-card-detail">明清时期的面相理论以宋元相术为依托，最重要者当属袁柳庄《柳庄神相》。</div></div>
+        </div>
+    </div>
+
+    <div id="dd-2-3" class="subsection">
+        <h3 class="subsection-title">2．相术的理论基础：阴阳五行</h3>
+        <div class="subsection-content">
+            <p>阴阳五行学说是相术的理论基础。五行指金、木、水、火、土五种基本元素，它们之间存在相生相克的关系：</p>
+            <p style="margin-top:8px;"><strong>五行相生：</strong>木生火 → 火生土 → 土生金 → 金生水 → 水生木</p>
+            <p><strong>五行相克：</strong>木克土 → 土克水 → 水克火 → 火克金 → 金克木</p>
+        </div>
+    </div>
+
+    <div id="dd-2-4" class="subsection">
+        <h3 class="subsection-title">3．相术的理论皈依：天人合一</h3>
+        <div class="info-block">
+            <div class="info-block-title">核心观念</div>
+            <div class="info-block-content">人道与天道合一；人与自然同源同理；人与天地相参，与日相应；人与社会对应和谐。中国古代相术采用飞禽走兽相法，以自然界动物比类取象，将人的相貌分成许多类型，赋予相应命理内涵。</div>
+        </div>
+    </div>
+
+    <div id="dd-2-5" class="subsection">
+        <h3 class="subsection-title">4．相术与中医：同源异出</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">医相同源</div><div class="feature-card-detail">相术和中医都源于对人体外在表征与内在健康关系的观察。</div></div>
+            <div class="feature-card"><div class="feature-card-name">互相包含</div><div class="feature-card-detail">相术的"望"与中医的"望诊"相通，五脏与面部五官对应。</div></div>
+        </div>
+        <div class="info-block" style="margin-top:14px;">
+            <div class="info-block-title">五脏与五官对应</div>
+            <div class="info-block-content">人脸部的五官与身体内部的五脏相通：内脏如果出现疾病，则会通过面部五官表现出来。</div>
+        </div>
+    </div>
+
+    <div id="dd-2-6" class="subsection">
+        <h3 class="subsection-title">5．相术体系：形形色色的相术术语</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">九州八卦干支说</div></div>
+            <div class="feature-card"><div class="feature-card-name">六府三才三停说</div></div>
+            <div class="feature-card"><div class="feature-card-name">五官五行生克说</div></div>
+            <div class="feature-card"><div class="feature-card-name">十二宫五官说</div></div>
+            <div class="feature-card"><div class="feature-card-name">十三部位说</div></div>
+            <div class="feature-card"><div class="feature-card-name">四学堂八学堂说</div></div>
+            <div class="feature-card"><div class="feature-card-name">五星六曜五岳四渎说</div></div>
+        </div>
+    </div>
+
+    <div id="dd-2-7" class="subsection">
+        <h3 class="subsection-title">6．中国古代相术方法：相人之术</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">相面</div><div class="feature-card-detail">观察面部五官形态</div></div>
+            <div class="feature-card"><div class="feature-card-name">相手</div><div class="feature-card-detail">观察手掌形态与纹路</div></div>
+            <div class="feature-card"><div class="feature-card-name">相头</div><div class="feature-card-detail">观察头部骨骼形状</div></div>
+            <div class="feature-card"><div class="feature-card-name">相发</div><div class="feature-card-detail">观察头发的质地与色泽</div></div>
+            <div class="feature-card"><div class="feature-card-name">相痣</div><div class="feature-card-detail">观察身体痣的位置与颜色</div></div>
+            <div class="feature-card"><div class="feature-card-name">相足</div><div class="feature-card-detail">观察脚的形态</div></div>
+            <div class="feature-card"><div class="feature-card-name">相形神</div><div class="feature-card-detail">观察形体与神韵</div></div>
+            <div class="feature-card"><div class="feature-card-name">相气色</div><div class="feature-card-detail">观察面部气色变化</div></div>
+        </div>
+    </div>
+
+    <div id="dd-2-8" class="subsection">
+        <h3 class="subsection-title">7．中国古代相术著作要览</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">《玉管照神局》</div><div class="feature-card-detail">古代相术重要典籍之一</div></div>
+            <div class="feature-card"><div class="feature-card-name">《月波洞中记》</div><div class="feature-card-detail">古代相术重要典籍</div></div>
+            <div class="feature-card"><div class="feature-card-name">《太清神鉴》</div><div class="feature-card-detail">后周王朴著</div></div>
+            <div class="feature-card"><div class="feature-card-name">《照胆经》</div><div class="feature-card-detail">古代相术重要典籍</div></div>
+            <div class="feature-card"><div class="feature-card-name">《人伦大统赋》</div><div class="feature-card-detail">古代相术重要典籍</div></div>
+            <div class="feature-card"><div class="feature-card-name">《麻衣神相》</div><div class="feature-card-detail">现存最早系统论述相术的著作</div></div>
+        </div>
+    </div>
+
+    <div id="dd-2-9" class="subsection">
+        <h3 class="subsection-title">8．相术与中国传统文化</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">相术与政治</div><div class="feature-card-detail">古代帝王选拔人才以相术为重要手段</div></div>
+            <div class="feature-card"><div class="feature-card-name">相术与经济</div><div class="feature-card-detail">商业活动中以相术判断合作伙伴</div></div>
+            <div class="feature-card"><div class="feature-card-name">相术与军事</div><div class="feature-card-detail">以相术判断将领</div></div>
+            <div class="feature-card"><div class="feature-card-name">相术与哲学</div><div class="feature-card-detail">阴阳五行、天人合一</div></div>
+            <div class="feature-card"><div class="feature-card-name">相术与民俗</div><div class="feature-card-detail">深入民间，影响婚丧嫁娶</div></div>
+        </div>
+    </div>
+
+    <div id="dd-2-10" class="subsection">
+        <h3 class="subsection-title">9．对相术的理性认识</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">荒谬的先天决定论</div><div class="feature-card-detail">认为命运先天决定，否认后天努力</div></div>
+            <div class="feature-card"><div class="feature-card-name">封建价值取向</div><div class="feature-card-detail">以富贵贫贱为命相判断标准</div></div>
+            <div class="feature-card"><div class="feature-card-name">男尊女卑意识</div><div class="feature-card-detail">充满性别歧视</div></div>
+            <div class="feature-card"><div class="feature-card-name">五行远离科学</div><div class="feature-card-detail">五行相法缺乏科学依据</div></div>
+            <div class="feature-card"><div class="feature-card-name">相术生存之道</div><div class="feature-card-detail">神秘性、励志性、现实功用</div></div>
+            <div class="feature-card"><div class="feature-card-name">综合评价</div><div class="feature-card-detail">取其精华，去其糟粕，古为今用</div></div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">速查</span>
+        <div>
+            <h2 class="section-title">面相速查：五官形态与吉凶</h2>
+            <div class="section-subtitle">Face Features Quick Reference</div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-content">人的面部特征历来是相术的重点，看一个人命相如何，首先要看脸。下列《麻衣神相》总结的五官形状及判断，可供按图查找。</div>
+    </div>
+
+    <div id="ms-eyebrow" class="subsection">
+        <h3 class="subsection-title">眉毛形态速查（24种眉相）</h3>
+        <div class="subsection-content"><p>人的眉毛能与眼睛相辉映，透露人的精气神，一副清朗的眉搭配一双秀丽的眼，当然显得福气非凡。</p></div>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">交加眉</div><div class="feature-card-meaning">中年后坐牢、破产</div><div class="feature-card-detail">从眉头到眉尾逐渐变得稀疏</div></div>
+            <div class="feature-card"><div class="feature-card-name">黄薄眉</div><div class="feature-card-meaning">少年富放荡，终致客死他乡</div><div class="feature-card-detail">眉毛短而疏</div></div>
+            <div class="feature-card"><div class="feature-card-name">八字眉</div><div class="feature-card-meaning">晚年孤苦</div><div class="feature-card-detail">眉头稀疏，眉尾松散，直连奸门</div></div>
+            <div class="feature-card"><div class="feature-card-name">柳叶眉</div><div class="feature-card-meaning">遇贵人而发达</div><div class="feature-card-detail">眉形粗重，粗中带浊，浊中有清</div></div>
+            <div class="feature-card"><div class="feature-card-name">前清后疏眉</div><div class="feature-card-meaning">中年发迹</div><div class="feature-card-detail">眉形稀疏，富有秀逸之气</div></div>
+            <div class="feature-card"><div class="feature-card-name">鬼眉</div><div class="feature-card-meaning">凶相</div><div class="feature-card-detail">眉毛粗且黑，直逼眼仁</div></div>
+            <div class="feature-card"><div class="feature-card-name">扫帚眉</div><div class="feature-card-meaning">家庭不和</div><div class="feature-card-detail">前面清楚浓密，后部松散</div></div>
+            <div class="feature-card"><div class="feature-card-name">罗汉眉</div><div class="feature-card-meaning">情路坎坷</div><div class="feature-card-detail">眉毛黑亮，排布均匀</div></div>
+            <div class="feature-card"><div class="feature-card-name">剑眉</div><div class="feature-card-meaning">少贫后贵</div><div class="feature-card-detail">清秀、细长，如茂密山林</div></div>
+            <div class="feature-card"><div class="feature-card-name">疏散眉</div><div class="feature-card-meaning">有财运，晚年凄凉</div><div class="feature-card-detail">眉形疏散</div></div>
+            <div class="feature-card"><div class="feature-card-name">尖刀眉</div><div class="feature-card-meaning">有凶心</div><div class="feature-card-detail">眉毛长得粗壮、蛮野</div></div>
+            <div class="feature-card"><div class="feature-card-name">龙眉</div><div class="feature-card-meaning">大贵</div><div class="feature-card-detail">秀密有致，曲折有形，浓淡适中</div></div>
+            <div class="feature-card"><div class="feature-card-name">狮子眉</div><div class="feature-card-meaning">能吃苦，可富贵</div><div class="feature-card-detail">眉毛高耸、粗重，有威武之气</div></div>
+            <div class="feature-card"><div class="feature-card-name">短促秀眉</div><div class="feature-card-meaning">仁义长寿</div><div class="feature-card-detail">短小、清秀</div></div>
+            <div class="feature-card"><div class="feature-card-name">旋螺眉</div><div class="feature-card-meaning">大贵之相</div><div class="feature-card-detail">眉形呈少见的螺旋状</div></div>
+            <div class="feature-card"><div class="feature-card-name">新月眉</div><div class="feature-card-meaning">最佳眉形</div><div class="feature-card-detail">眉形秀丽如初升月牙儿</div></div>
+            <div class="feature-card"><div class="feature-card-name">大短促眉</div><div class="feature-card-meaning">金银满屋</div><div class="feature-card-detail">短却清秀，眉尾略发黄</div></div>
+            <div class="feature-card"><div class="feature-card-name">一字眉</div><div class="feature-card-meaning">聪慧高寿</div><div class="feature-card-detail">呈一字形，排布整齐，如同华盖</div></div>
+            <div class="feature-card"><div class="feature-card-name">虎眉</div><div class="feature-card-meaning">可成伟业</div><div class="feature-card-detail">粗大、清秀，有威严</div></div>
+            <div class="feature-card"><div class="feature-card-name">清秀眉</div><div class="feature-card-meaning">学业有成</div><div class="feature-card-detail">秀长过眼，直入鬓角</div></div>
+            <div class="feature-card"><div class="feature-card-name">卧蚕眉</div><div class="feature-card-meaning">机敏富贵</div><div class="feature-card-detail">弯曲，但不乏秀逸</div></div>
+            <div class="feature-card"><div class="feature-card-name">扫帚眉</div><div class="feature-card-meaning">妨害后代</div><div class="feature-card-detail">浓重清朗，跨天仓</div></div>
+            <div class="feature-card"><div class="feature-card-name">间断眉</div><div class="feature-card-meaning">兄弟互残</div><div class="feature-card-detail">眉毛黄淡，有勾纹，有间断</div></div>
+        </div>
+    </div>
+
+    <div id="ms-eye" class="subsection">
+        <h3 class="subsection-title">眼睛形态速查（精选20种）</h3>
+        <div class="subsection-content"><p>人与人交流，通过注视对方的眼睛能最直接察觉对方的情绪变化。黑睛分明映心境，炯炯有神映精神。</p></div>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">龙眼</div><div class="feature-card-meaning">大贵相</div><div class="feature-card-detail">眼仁清净，颇具神采，藏有智慧</div></div>
+            <div class="feature-card"><div class="feature-card-name">龟眼</div><div class="feature-card-meaning">健康长寿</div><div class="feature-card-detail">圆小，有灵气韵，眼皮上下横</div></div>
+            <div class="feature-card"><div class="feature-card-name">狮眼</div><div class="feature-card-meaning">有权势多富</div><div class="feature-card-detail">眼形粗犷端正，显露威严</div></div>
+            <div class="feature-card"><div class="feature-card-name">孔雀眼</div><div class="feature-card-meaning">可居高官</div><div class="feature-card-detail">明亮含情为好相</div></div>
+            <div class="feature-card"><div class="feature-card-name">凤眼</div><div class="feature-card-meaning">聪慧过人</div><div class="feature-card-detail">眼线细长，目光明亮</div></div>
+            <div class="feature-card"><div class="feature-card-name">象眼</div><div class="feature-card-meaning">福寿双全</div><div class="feature-card-detail">眼皮上下有波纹，赋情致</div></div>
+            <div class="feature-card"><div class="feature-card-name">虎眼</div><div class="feature-card-meaning">富贵一生</div><div class="feature-card-detail">眼大，眼珠为淡金色</div></div>
+            <div class="feature-card"><div class="feature-card-name">睡凤眼</div><div class="feature-card-meaning">文采过人</div><div class="feature-card-detail">眼线细长，目光明亮</div></div>
+            <div class="feature-card"><div class="feature-card-name">鹤形眼</div><div class="feature-card-meaning">中年显达</div><div class="feature-card-detail">上眼皮直抵奸门部位</div></div>
+            <div class="feature-card"><div class="feature-card-name">牛眼</div><div class="feature-card-meaning">巨富</div><div class="feature-card-detail">眼形大，眼珠圆，有精神</div></div>
+            <div class="feature-card"><div class="feature-card-name">鸳鸯眼</div><div class="feature-card-meaning">婚姻美满多富贵</div><div class="feature-card-detail">秀丽红润，圆而有韵</div></div>
+            <div class="feature-card"><div class="feature-card-name">桃花眼</div><div class="feature-card-meaning">放浪形骸</div><div class="feature-card-detail">妩媚含情，轻佻之态</div></div>
+            <div class="feature-card"><div class="feature-card-name">蛇眼</div><div class="feature-card-meaning">心性歹毒</div><div class="feature-card-detail">圆润鼓胀，向外凸张</div></div>
+            <div class="feature-card"><div class="feature-card-name">猴眼</div><div class="feature-card-meaning">大富贵</div><div class="feature-card-detail">如瞪眼，圆且有神</div></div>
+            <div class="feature-card"><div class="feature-card-name">马眼</div><div class="feature-card-meaning">极差相</div><div class="feature-card-detail">大三角形，眼珠向外鼓</div></div>
+            <div class="feature-card"><div class="feature-card-name">伏犀目</div><div class="feature-card-meaning">大福相</div><div class="feature-card-detail">眼形较大，脑袋很圆</div></div>
+            <div class="feature-card"><div class="feature-card-name">猪眼</div><div class="feature-card-meaning">惹是生非</div><div class="feature-card-detail">眼白多，眼黑少，目光无神</div></div>
+            <div class="feature-card"><div class="feature-card-name">鱼眼</div><div class="feature-card-meaning">命短愚钝</div><div class="feature-card-detail">似含水雾，混沌不开</div></div>
+            <div class="feature-card"><div class="feature-card-name">鹿目</div><div class="feature-card-meaning">超凡脱俗</div><div class="feature-card-detail">眼睛黑亮，眼纹长</div></div>
+            <div class="feature-card"><div class="feature-card-name">猫目</div><div class="feature-card-meaning">富贵双全</div><div class="feature-card-detail">眼形圆润，眼仁发黄</div></div>
+        </div>
+    </div>
+
+    <div id="ms-nose" class="subsection">
+        <h3 class="subsection-title">鼻子形态速查（精选20种鼻相）</h3>
+        <div class="subsection-content"><p>鼻子从外部特征分为山根、年上、寿上、准头四部分。判断鼻相好坏主要在于整体是否端正、高隆，各部分是否绵延相接。</p></div>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">龙鼻</div><div class="feature-card-meaning">大贵</div><div class="feature-card-detail">鼻头圆，山根好，鼻梁挺直</div></div>
+            <div class="feature-card"><div class="feature-card-name">狮鼻</div><div class="feature-card-meaning">富甲一方</div><div class="feature-card-detail">鼻头厚实，与兰台、廷尉和谐</div></div>
+            <div class="feature-card"><div class="feature-card-name">牛鼻</div><div class="feature-card-meaning">大富</div><div class="feature-card-detail">山根壮实有型</div></div>
+            <div class="feature-card"><div class="feature-card-name">盛囊鼻</div><div class="feature-card-meaning">达官显贵</div><div class="feature-card-detail">翼两侧丰润</div></div>
+            <div class="feature-card"><div class="feature-card-name">虎鼻</div><div class="feature-card-meaning">名利之隆</div><div class="feature-card-detail">鼻头大，鼻孔子隐蔽</div></div>
+            <div class="feature-card"><div class="feature-card-name">悬胆鼻</div><div class="feature-card-meaning">壮年有财</div><div class="feature-card-detail">端正方整，山根直</div></div>
+            <div class="feature-card"><div class="feature-card-name">裁筒鼻</div><div class="feature-card-meaning">大器晚成</div><div class="feature-card-detail">鼻头圆，山根远</div></div>
+            <div class="feature-card"><div class="feature-card-name">伏犀鼻</div><div class="feature-card-meaning">有大才</div><div class="feature-card-detail">匀称修长，直达天庭</div></div>
+            <div class="feature-card"><div class="feature-card-name">蒜头鼻</div><div class="feature-card-meaning">中年成就</div><div class="feature-card-detail">山根平直小巧</div></div>
+            <div class="feature-card"><div class="feature-card-name">鹰嘴鼻</div><div class="feature-card-meaning">心肠恶毒</div><div class="feature-card-detail">鼻梁露出骨形，鼻头有尖钩</div></div>
+            <div class="feature-card"><div class="feature-card-name">三弯三曲鼻</div><div class="feature-card-meaning">大不吉利</div><div class="feature-card-detail">鼻子上有三道弯和折</div></div>
+            <div class="feature-card"><div class="feature-card-name">剑峰鼻</div><div class="feature-card-meaning">一生劳碌</div><div class="feature-card-detail">鼻梁如刀背，准头少肉</div></div>
+            <div class="feature-card"><div class="feature-card-name">露脊鼻</div><div class="feature-card-meaning">庸碌凄苦</div><div class="feature-card-detail">鼻子瘦削，鼻梁凸起</div></div>
+            <div class="feature-card"><div class="feature-card-name">猩鼻</div><div class="feature-card-meaning">心胸广阔</div><div class="feature-card-detail">高鼻梁，眼与眉紧凑</div></div>
+            <div class="feature-card"><div class="feature-card-name">偏凹鼻</div><div class="feature-card-meaning">多灾多难</div><div class="feature-card-detail">年上和寿上低陷</div></div>
+            <div class="feature-card"><div class="feature-card-name">孤峰鼻</div><div class="feature-card-meaning">灾祸相连</div><div class="feature-card-detail">鼻子突兀，鼻头少肉，颧骨低</div></div>
+            <div class="feature-card"><div class="feature-card-name">露灶鼻</div><div class="feature-card-meaning">家贫奔劳</div><div class="feature-card-detail">鼻子又高又大，鼻孔也大</div></div>
+            <div class="feature-card"><div class="feature-card-name">胡羊鼻</div><div class="feature-card-meaning">大富翁</div><div class="feature-card-detail">鼻长而大，鼻头隆起</div></div>
+            <div class="feature-card"><div class="feature-card-name">鲫鱼鼻</div><div class="feature-card-meaning">贫困孤独</div><div class="feature-card-detail">寿上和年上高，山根小</div></div>
+            <div class="feature-card"><div class="feature-card-name">猴鼻</div><div class="feature-card-meaning">贫贱相</div><div class="feature-card-detail">山根大且直，鼻头丰满</div></div>
+        </div>
+    </div>
+
+    <div id="ms-mouth" class="subsection">
+        <h3 class="subsection-title">口型形态速查（15种口相）</h3>
+        <div class="subsection-content"><p>人的口是话语和饭食的门路，在五官中为出纳宫。嘴厚薄适中且有棱有角为好相。</p></div>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">四字口</div><div class="feature-card-meaning">聪慧多才</div><div class="feature-card-detail">平整方正像四字，双唇合一</div></div>
+            <div class="feature-card"><div class="feature-card-name">弓口</div><div class="feature-card-meaning">中年显达</div><div class="feature-card-detail">像一张弯弓，颜色鲜丽</div></div>
+            <div class="feature-card"><div class="feature-card-name">虎口</div><div class="feature-card-meaning">声名显赫</div><div class="feature-card-detail">嘴形阔大，肥厚</div></div>
+            <div class="feature-card"><div class="feature-card-name">猴口</div><div class="feature-card-meaning">富贵寿禄</div><div class="feature-card-detail">嘴唇细长</div></div>
+            <div class="feature-card"><div class="feature-card-name">方口</div><div class="feature-card-meaning">大富大贵</div><div class="feature-card-detail">嘴形方正，唇红齿白</div></div>
+            <div class="feature-card"><div class="feature-card-name">牛口</div><div class="feature-card-meaning">大智若愚</div><div class="feature-card-detail">嘴唇非常厚实</div></div>
+            <div class="feature-card"><div class="feature-card-name">仰月口</div><div class="feature-card-meaning">显赫一方</div><div class="feature-card-detail">形如上弦月，鲜艳如抹了口红</div></div>
+            <div class="feature-card"><div class="feature-card-name">龙口</div><div class="feature-card-meaning">位居高重</div><div class="feature-card-detail">紫唇长而厚</div></div>
+            <div class="feature-card"><div class="feature-card-name">吹火口</div><div class="feature-card-meaning">贫夭多灾</div><div class="feature-card-detail">嘴唇瘦削，像在吹火</div></div>
+            <div class="feature-card"><div class="feature-card-name">皱纹口</div><div class="feature-card-meaning">无人送终</div><div class="feature-card-detail">嘴唇上多斑纹</div></div>
+            <div class="feature-card"><div class="feature-card-name">鲇鱼口</div><div class="feature-card-meaning">人生困苦</div><div class="feature-card-detail">嘴唇薄，嘴角下垂且尖削</div></div>
+            <div class="feature-card"><div class="feature-card-name">猪口</div><div class="feature-card-meaning">贫残相</div><div class="feature-card-detail">嘴唇粗厚有光泽，经常流口水</div></div>
+            <div class="feature-card"><div class="feature-card-name">樱桃口</div><div class="feature-card-meaning">出身富贵</div><div class="feature-card-detail">嘴小且尖，嘴和腮红润</div></div>
+            <div class="feature-card"><div class="feature-card-name">覆船口</div><div class="feature-card-meaning">乞丐命</div><div class="feature-card-detail">上嘴唇大，下嘴唇小</div></div>
+            <div class="feature-card"><div class="feature-card-name">鲫鱼口</div><div class="feature-card-meaning">贫苦落魄</div><div class="feature-card-detail">嘴小难抿紧，像鲫鱼的嘴</div></div>
+        </div>
+    </div>
+
+    <div id="ms-ear" class="subsection">
+        <h3 class="subsection-title">耳型形态速查（精选14种耳相）</h3>
+        <div class="subsection-content"><p>耳廓圆润肥厚，色白，且高于双眉是好相。如果耳珠垂挂则更加富贵，象征着将拥有源源不断的福泽。</p></div>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">金耳</div><div class="feature-card-meaning">大富大贵</div><div class="feature-card-detail">耳比眉高一寸，比脸白</div></div>
+            <div class="feature-card"><div class="feature-card-name">水耳</div><div class="feature-card-meaning">大富贵</div><div class="feature-card-detail">耳朵肥厚，坚挺高耸</div></div>
+            <div class="feature-card"><div class="feature-card-name">木耳</div><div class="feature-card-meaning">亲情淡薄</div><div class="feature-card-detail">耳廓薄，不明显</div></div>
+            <div class="feature-card"><div class="feature-card-name">火耳</div><div class="feature-card-meaning">晚年顺遂</div><div class="feature-card-detail">耳高过眉，耳廓尖</div></div>
+            <div class="feature-card"><div class="feature-card-name">土耳</div><div class="feature-card-meaning">富贵不尽</div><div class="feature-card-detail">耳朵肥大，厚硬，红润</div></div>
+            <div class="feature-card"><div class="feature-card-name">耳垂肩</div><div class="feature-card-meaning">可做国君</div><div class="feature-card-detail">耳朵高过眉，垂珠像要超过肩膀</div></div>
+            <div class="feature-card"><div class="feature-card-name">虎耳</div><div class="feature-card-meaning">阴险狡诈</div><div class="feature-card-detail">耳小，隐藏在头两侧</div></div>
+            <div class="feature-card"><div class="feature-card-name">棋子耳</div><div class="feature-card-meaning">白手创业</div><div class="feature-card-detail">耳朵圆，两耳廓相呼应</div></div>
+            <div class="feature-card"><div class="feature-card-name">扇风耳</div><div class="feature-card-meaning">散尽家财</div><div class="feature-card-detail">耳朵很大，探向脑前</div></div>
+            <div class="feature-card"><div class="feature-card-name">猪耳</div><div class="feature-card-meaning">晚年灾祸</div><div class="feature-card-detail">耳朵厚，无耳廓，有垂珠</div></div>
+            <div class="feature-card"><div class="feature-card-name">鼠耳</div><div class="feature-card-meaning">会坐牢</div><div class="feature-card-detail">耳朵上耸，耳根软弱</div></div>
+            <div class="feature-card"><div class="feature-card-name">贴脑耳</div><div class="feature-card-meaning">福寿</div><div class="feature-card-detail">耳朵紧贴头部</div></div>
+            <div class="feature-card"><div class="feature-card-name">驴耳</div><div class="feature-card-meaning">无福</div><div class="feature-card-detail">耳朵如驴</div></div>
+            <div class="feature-card"><div class="feature-card-name">开花耳</div><div class="feature-card-meaning">贫贱</div><div class="feature-card-detail">耳廓外翻如开花</div></div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">速查</span>
+        <div>
+            <h2 class="section-title">手相速查：手型与掌纹</h2>
+            <div class="section-subtitle">Hand Features Quick Reference</div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-content">古人认为，手作为人身体的重要部分，与人体的健康状况及生命吉凶密切相关。《麻衣神相》中，手相与面相一样，是相人的一个非常重要的因素。</div>
+    </div>
+
+    <div id="ss-types" class="subsection">
+        <h3 class="subsection-title">四种手型详解</h3>
+        <div class="cards-grid">
+            <div class="feature-card">
+                <div class="feature-card-name">土型手 <span class="tag success">实用手</span></div>
+                <div class="feature-card-meaning">踏实、保守、稳健</div>
+                <div class="feature-card-detail"><strong>辨识：</strong>手掌呈方形，比较厚实；手指较短；手腕较大；掌纹不多但很深，智慧线较直；大拇指根部的肌肉厚硬。</div>
+                <div class="feature-card-detail" style="margin-top:6px;"><strong>个性：</strong>理性，脚踏实地，有执行能力；个性随和，但有点木讷；不轻易放弃，有点固执。</div>
+                <div class="feature-card-detail" style="margin-top:6px;"><strong>事业：</strong>默默耕耘，有毅力，能专心一致，适合专业领域。</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-name">风型手 <span class="tag info">理想手</span></div>
+                <div class="feature-card-meaning">活跃、好奇、领导力</div>
+                <div class="feature-card-detail"><strong>辨识：</strong>手掌呈方形；手指修长，指尖呈圆形或圆锥形；掌纹不多但很清晰；手掌润泽，颜色偏白；肉厚，有弹性。</div>
+                <div class="feature-card-detail" style="margin-top:6px;"><strong>个性：</strong>崇尚实际、不慕虚荣、谨守秩序、意志坚定；有才干与领导能力。</div>
+                <div class="feature-card-detail" style="margin-top:6px;"><strong>事业：</strong>适合从事媒体工作，如写作、新闻、翻译、出版等。</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-name">火型手 <span class="tag warning">艺术手</span></div>
+                <div class="feature-card-meaning">外向、幽默、有魅力</div>
+                <div class="feature-card-detail"><strong>辨识：</strong>手掌呈长形；手指非常修长；掌纹较多，但有几条很深的纹路；指尖呈圆形或圆锥形；指节不明显，指甲透红。</div>
+                <div class="feature-card-detail" style="margin-top:6px;"><strong>个性：</strong>思考快速，反应灵敏；比较感性，好恶分明。</div>
+                <div class="feature-card-detail" style="margin-top:6px;"><strong>事业：</strong>有才华、有智慧、有魄力，最适合演艺类工作。</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-name">水型手 <span class="tag">哲学手</span></div>
+                <div class="feature-card-meaning">敏感、优雅、有品味</div>
+                <div class="feature-card-detail"><strong>辨识：</strong>手掌呈长形；手指修长；指尖呈圆锥形；掌纹比较细密；掌色较白，掌背青筋隐而不露。</div>
+                <div class="feature-card-detail" style="margin-top:6px;"><strong>个性：</strong>聪明有才华，观察敏锐；思考能力强，但执行能力弱。</div>
+                <div class="feature-card-detail" style="margin-top:6px;"><strong>事业：</strong>气质高雅、品味独特，适合当艺术家、诗人、音乐家。</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ss-zhangqiu" class="subsection">
+        <h3 class="subsection-title">掌丘与八卦</h3>
+        <div class="info-block">
+            <div class="info-block-content">掌丘是指手掌上较凸起的部分，因形似小山，所以叫做"掌丘"。古代相术学中将九个掌丘分别对应八卦，并赋予不同的寓意。</div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">卷一</span>
+        <div>
+            <h2 class="section-title">卷一 · 相法总论</h2>
+            <div class="section-subtitle">General Theory of Physiognomy</div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-content">开卷阐述了学习面相学的基础知识，给出了最重要的十三部、面部流年、十二宫等学说，对人的面部结构和面部器官进行了全方位的解析，将面相与命格的联系以结构化的形式表现出来。</div>
+    </div>
+
+    <div id="v1-1" class="subsection">
+        <h3 class="subsection-title">1．十三部位总图歌：《麻衣神相》的精髓</h3>
+        <div class="subsection-content">
+            <p>相学上，以人面的正中间为基点，从上到下依次分为十三个部位：</p>
+        </div>
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">① 天中</div><div class="def-meaning">从额头正中最上方，离发际约1公分处。看祖先及亲人</div></div>
+            <div class="def-item"><div class="def-term">② 天庭</div><div class="def-meaning">额头部位天中下面。看事业、官运和官司</div></div>
+            <div class="def-item"><div class="def-term">③ 司空</div><div class="def-meaning">天庭下面约2公分处</div></div>
+            <div class="def-item"><div class="def-term">④ 中正</div><div class="def-meaning">司空下面约1公分处。司空和中正合称官禄宫</div></div>
+            <div class="def-item"><div class="def-term">⑤ 印堂</div><div class="def-meaning">中正下面约1公分处双眉之间。面相中非常重要的部位</div></div>
+            <div class="def-item"><div class="def-term">⑥ 山根</div><div class="def-meaning">两眉中间，鼻梁低处开始高起处。主智力、荣誉、疾病</div></div>
+            <div class="def-item"><div class="def-term">⑦ 年上</div><div class="def-meaning">山根下面，约占鼻子中间1/3</div></div>
+            <div class="def-item"><div class="def-term">⑧ 寿上</div><div class="def-meaning">年上下面，约占鼻子中间1/3</div></div>
+            <div class="def-item"><div class="def-term">⑨ 准头</div><div class="def-meaning">鼻头。看财运、自尊心和爱情</div></div>
+            <div class="def-item"><div class="def-term">⑩ 人中</div><div class="def-meaning">鼻子和嘴之间的部位</div></div>
+            <div class="def-item"><div class="def-term">⑪ 水星</div><div class="def-meaning">嘴部</div></div>
+            <div class="def-item"><div class="def-term">⑫ 承浆</div><div class="def-meaning">嘴唇下面凹陷处</div></div>
+            <div class="def-item"><div class="def-term">⑬ 地阁</div><div class="def-meaning">下巴。看晚年的运气</div></div>
+        </div>
+    </div>
+
+    <div id="v1-2" class="subsection">
+        <h3 class="subsection-title">2．流年运气部位歌：面相与年龄</h3>
+        <div class="subsection-content"><p>流年是指人从出生到去世每一年的运势，相术上把人的面部分为一百个部位，和人1～100岁相对应。要看一个人的运气如何，男女是有区别的——<span class="tag">男看左</span><span class="tag">女看右</span>。</p></div>
+        <div class="highlight-box">
+            <div class="highlight-box-title">耳朵管少年（1-14岁）</div>
+            <p>色泽红润，说明天生聪颖、生活优裕、身体健康；色泽发灰发白，说明身体有病，不是长寿之相。</p>
+        </div>
+        <div class="highlight-box">
+            <div class="highlight-box-title">鼻子管中年（40-50岁）</div>
+            <p>山根高挺、鼻翼饱满为吉，说明有财禄、好运；反之则为不吉。</p>
+        </div>
+        <div class="highlight-box">
+            <div class="highlight-box-title">下巴管老年（60岁后）</div>
+            <p>饱满丰润为宜，说明可以安享晚年；削尖、枯白为凶，代表多病速衰。</p>
+        </div>
+    </div>
+
+    <div id="v1-3" class="subsection">
+        <h3 class="subsection-title">3．运气口诀：五行人的面相流年</h3>
+        <div class="quote">
+            水刑一数金三岁，土厚惟将四岁推。<br>
+            火起五年求顺逆，木刑二岁复何疑。<br>
+            金水兼之从上下，若云木火反求之。<br>
+            土自准头初主限，周而复始定安危。
+        </div>
+        <div class="subsection-content">
+            <p>五行形人起算年龄不同：水形人可在一至三岁起推算；土形人从四岁起推算；火形人在五岁起推算；木形人在两岁起推算。</p>
+        </div>
+    </div>
+
+    <div id="v1-4" class="subsection">
+        <h3 class="subsection-title">4．识限歌：看相的捷径</h3>
+        <div class="quote">
+            八岁十八二十八，下至山根上至发。<br>
+            有无活计两头消，三十印堂莫带杀。<br>
+            三二四二五十二，山根上下准头止。<br>
+            禾仓禄马要相当，不识之人莫乱指。<br>
+            五三六三七十三，人面排来地阁间。
+        </div>
+    </div>
+
+    <div id="v1-5" class="subsection">
+        <h3 class="subsection-title">5．十二宫：道尽面部玄机</h3>
+        <div class="subsection-content">
+            <p>所谓的面部十二宫，分别为：<strong>命宫、财帛、兄弟、田宅、男女、奴仆、妻妾、疾厄、迁移、官禄、福德、相貌</strong>。五官即眉为保寿官，目为监察官，鼻为审辩官，口为出纳官，耳为采听官。</p>
+        </div>
+
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">① 命宫</div><div class="def-meaning">两眉之间，山根之上（印堂）。光明如镜，学问皆通；山根平满，乃主福寿；凹沉必定贫寒。</div></div>
+            <div class="def-item"><div class="def-term">② 财帛宫</div><div class="def-meaning">鼻子。须要丰满明润，财有余；忽然枯削昏黑，财帛消乏。</div></div>
+            <div class="def-item"><div class="def-term">③ 兄弟宫</div><div class="def-meaning">两眉。眉长过目，三四兄弟，无刑；眉秀而疏，枝干自然端正。</div></div>
+            <div class="def-item"><div class="def-term">④ 田宅宫</div><div class="def-meaning">两眼。最怕赤脉侵睛，初年破尽家园。眼如点漆，终身产业荣昌。</div></div>
+            <div class="def-item"><div class="def-term">⑤ 男女宫</div><div class="def-meaning">两眼下（泪堂）。三阳平满，几孙福禄荣昌；隐隐卧蚕，子息清贵；泪堂深陷，定为男女无缘。</div></div>
+            <div class="def-item"><div class="def-term">⑥ 奴仆宫</div><div class="def-meaning">地阁，重接水星。颏圆丰满，侍立成群；口如四字，主呼聚喝散之权。</div></div>
+            <div class="def-item"><div class="def-term">⑦ 妻妾宫</div><div class="def-meaning">鱼尾（奸门）。光润无纹，必保妻全四德；丰隆平满，娶妻财帛盈箱；鱼尾纹多，妻防恶死。</div></div>
+            <div class="def-item"><div class="def-term">⑧ 疾厄宫</div><div class="def-meaning">印堂之下（山根）。隆而丰满，福禄无穷；连接伏犀，定主文章；纹痕低陷，连年宿疾沉疴。</div></div>
+            <div class="def-item"><div class="def-term">⑨ 迁移宫</div><div class="def-meaning">眉角（天仓）。隆满丰盈，华彩无忧；额凹低陷，到老住场难觅；眉连交接，破祖离宗。</div></div>
+            <div class="def-item"><div class="def-term">⑩ 官禄宫</div><div class="def-meaning">中正上合离宫（额中）。光明莹净，显达超群；额角堂堂，犯着官司贵解；眼如赤鲤，决犯徒刑。</div></div>
+            <div class="def-item"><div class="def-term">⑪ 福德宫</div><div class="def-meaning">天仓牵连地阁。五星朝拱，平生福禄滔滔；天地相朝，德行俱全五福。</div></div>
+            <div class="def-item"><div class="def-term">⑫ 相貌宫</div><div class="def-meaning">整个面相骨法。观五岳盈满，此人富贵多荣；次辨三停俱等，永保平生显达。</div></div>
+        </div>
+    </div>
+
+    <div id="v1-6" class="subsection">
+        <h3 class="subsection-title">6．十二宫秘诀：日月角高隆为吉</h3>
+        <div class="info-block">
+            <div class="info-block-title">父母宫所在</div>
+            <div class="info-block-content">父母宫位于额头两边日、月角的部位，男子的日角在左，月角在右，女子则刚好相反。日角代表父亲，月角代表母亲。须要高圆明净，则父母长寿康宁；低陷则幼失双亲。</div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">卷二</span>
+        <div>
+            <h2 class="section-title">卷二 · 察言观色</h2>
+            <div class="section-subtitle">Observation of Speech and Color</div>
+        </div>
+    </div>
+
+    <div id="v2-1" class="subsection">
+        <h3 class="subsection-title">1．五观总论：饱满丰盈为贵</h3>
+        <div class="info-block">
+            <div class="info-block-content">五官的吉相以饱满丰盈为贵。具体而言：眉要宽广清秀；目要深长藏神；鼻要梁柱端直；口要方正棱角；耳要轮廓分明。</div>
+        </div>
+    </div>
+
+    <div id="v2-2" class="subsection">
+        <h3 class="subsection-title">2．五岳：匀称互应，大富大贵</h3>
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">南岳（衡山）</div><div class="def-meaning">额头——衡山</div></div>
+            <div class="def-item"><div class="def-term">北岳（恒山）</div><div class="def-meaning">下巴——恒山</div></div>
+            <div class="def-item"><div class="def-term">东岳（泰山）</div><div class="def-meaning">左颧骨——泰山</div></div>
+            <div class="def-item"><div class="def-term">西岳（华山）</div><div class="def-meaning">右颧骨——华山</div></div>
+            <div class="def-item"><div class="def-term">中岳（嵩山）</div><div class="def-meaning">鼻子——嵩山</div></div>
+        </div>
+        <p>五岳要匀称、丰隆、朝拱。五岳朝拱，官禄荣迁；行坐威严，为人尊重。</p>
+    </div>
+
+    <div id="v2-3" class="subsection">
+        <h3 class="subsection-title">3．四渎：守住福源的部位</h3>
+        <div class="subsection-content"><p>四渎指耳为江、目为河、口为淮、鼻为济。四渎以深远为贵：耳要轮廓分明；目要神光内敛；口要方正；鼻要丰隆。</p></div>
+    </div>
+
+    <div id="v2-4" class="subsection">
+        <h3 class="subsection-title">4．三主三柱：面部的流年三阶段</h3>
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">上主（初年）</div><div class="def-meaning">额头，管少年至青年运气</div></div>
+            <div class="def-item"><div class="def-term">中主（中年）</div><div class="def-meaning">鼻子、颧骨，管中年运气</div></div>
+            <div class="def-item"><div class="def-term">下主（老年）</div><div class="def-meaning">地阁、嘴部，管晚年运气</div></div>
+        </div>
+    </div>
+
+    <div id="v2-5" class="subsection">
+        <h3 class="subsection-title">5．五星六曜说</h3>
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">金星</div><div class="def-meaning">左耳</div></div>
+            <div class="def-item"><div class="def-term">木星</div><div class="def-meaning">额头</div></div>
+            <div class="def-item"><div class="def-term">水星</div><div class="def-meaning">嘴部</div></div>
+            <div class="def-item"><div class="def-term">火星</div><div class="def-meaning">山根</div></div>
+            <div class="def-item"><div class="def-term">土星</div><div class="def-meaning">鼻子</div></div>
+            <div class="def-item"><div class="def-term">太阳</div><div class="def-meaning">左眼</div></div>
+            <div class="def-item"><div class="def-term">太阴</div><div class="def-meaning">右眼</div></div>
+            <div class="def-item"><div class="def-term">罗睺</div><div class="def-meaning">左眉</div></div>
+            <div class="def-item"><div class="def-term">计都</div><div class="def-meaning">右眉</div></div>
+            <div class="def-item"><div class="def-term">月孛</div><div class="def-meaning">山根（与火星区分）</div></div>
+            <div class="def-item"><div class="def-term">紫气</div><div class="def-meaning">印堂或准头</div></div>
+        </div>
+    </div>
+
+    <div id="v2-6" class="subsection">
+        <h3 class="subsection-title">6．五星六曜诀断诗</h3>
+        <div class="quote">
+            金星、木星贵在轮廓分明；水星贵在方阔红润；火星贵在广阔平滑；<br>
+            土星贵在丰满笔挺；紫气贵在圆润隆起；太阴、太阳贵在细长亮彩；<br>
+            月孛贵在隆起光润；罗睺、计都贵在顺长相宜。
+        </div>
+    </div>
+
+    <div id="v2-7" class="subsection">
+        <h3 class="subsection-title">7．六府三才三停：贵在相辅相成</h3>
+        <div class="info-block">
+            <div class="info-block-content"><strong>六府：</strong>两辅骨（上二府，辅角到天仓）、两颧骨（中二府，命门至虎耳）、两颐骨（下二府，颐骨至地阁）。"六府若丰隆朝拱者，不贵则富"。</div>
+        </div>
+        <div class="info-block">
+            <div class="info-block-content"><strong>三才：</strong>额（天，要求圆而润，<em>天者贵</em>）、鼻（人面中轴，要求正而齐，<em>人者寿</em>）、颏（地，要求方而阔，<em>地者富</em>）。</div>
+        </div>
+        <div class="info-block">
+            <div class="info-block-content"><strong>三停：</strong>自发际至印堂为<strong>上停</strong>（主初年）；自山根至准头为<strong>中停</strong>（主中年）；自人中至地阁为<strong>下停</strong>（主晚年）。三停平等富贵荣显，三停不均孤夭贫贱。</div>
+        </div>
+    </div>
+
+    <div id="v2-8" class="subsection">
+        <h3 class="subsection-title">8．四学堂：眼、额、牙、耳</h3>
+        <div class="subsection-content"><p>四学堂指：眼为<strong>词学堂</strong>（主文才）；额为<strong>禄学堂</strong>（主官禄）；牙为<strong>内学堂</strong>；耳门（耳前）为<strong>外学堂</strong>。四学堂的吉凶：以红黄、明亮、丰润为吉。</p></div>
+    </div>
+
+    <div id="v2-9" class="subsection">
+        <h3 class="subsection-title">9．八学堂：看贫富贵贱</h3>
+        <div class="subsection-content"><p>八学堂在四学堂基础上加上：<strong>高明学堂、广大学堂、左目学堂、右目学堂</strong>。八学堂的吉相以明润、丰隆、端正为贵。</p></div>
+    </div>
+
+    <div id="v2-10" class="subsection">
+        <h3 class="subsection-title">10．人面总论：综合看面相</h3>
+        <div class="quote">
+            最佳吉相：十三部位端正 + 五岳朝拱 + 三停平等 + 六府丰隆 + 十二宫相辅相成 + 五官精气神俱足
+        </div>
+    </div>
+
+    <div id="v2-11" class="subsection">
+        <h3 class="subsection-title">11．五行形：五行人各有其形态</h3>
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">木形人</div><div class="def-meaning">清瘦修长，面色青白</div></div>
+            <div class="def-item"><div class="def-term">火形人</div><div class="def-meaning">头尖面赤，肌骨薄弱</div></div>
+            <div class="def-item"><div class="def-term">土形人</div><div class="def-meaning">面方厚实，背丰腰厚</div></div>
+            <div class="def-item"><div class="def-term">金形人</div><div class="def-meaning">面方白净，眉目清秀</div></div>
+            <div class="def-item"><div class="def-term">水形人</div><div class="def-meaning">面黑肉滑，眉粗眼大</div></div>
+        </div>
+    </div>
+
+    <div id="v2-12" class="subsection">
+        <h3 class="subsection-title">12．五行色：五行人各有其颜色</h3>
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">木</div><div class="def-meaning">青</div></div>
+            <div class="def-item"><div class="def-term">火</div><div class="def-meaning">赤</div></div>
+            <div class="def-item"><div class="def-term">土</div><div class="def-meaning">黄</div></div>
+            <div class="def-item"><div class="def-term">金</div><div class="def-meaning">白</div></div>
+            <div class="def-item"><div class="def-term">水</div><div class="def-meaning">黑</div></div>
+        </div>
+    </div>
+
+    <div id="v2-13" class="subsection">
+        <h3 class="subsection-title">13．五形象说：相格应符合五行属性</h3>
+        <div class="subsection-content"><p>五形象说强调：人的相貌应与所属五行的属性相符——木形人宜清秀；火形人宜明亮；土形人宜厚实；金形人宜方正；水形人宜圆润。</p></div>
+    </div>
+
+    <div id="v2-14" class="subsection">
+        <h3 class="subsection-title">14．论形：人体对应宇宙万物</h3>
+        <div class="quote">
+            人如天地：头圆像天，足方像地；两眼像日月；毛发像草木；骨骼像金石；呼吸像风；声音像雷；血脉像江河；骨节像山岳；汗液像雨露。
+        </div>
+    </div>
+
+    <div id="v2-15" class="subsection">
+        <h3 class="subsection-title">15．论神：内敛为吉，外泄为凶</h3>
+        <div class="info-block">
+            <div class="info-block-content">神之相以藏为贵。神藏则寿，神露则夭。神宜藏于目，目有神则贵；神宜藏于气，气足则寿。内敛含蓄为吉，外泄张扬为凶。</div>
+        </div>
+    </div>
+
+    <div id="v2-16" class="subsection">
+        <h3 class="subsection-title">16-19．论形有余 / 神有余 / 形不足 / 神不足</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name"><span class="tag success">形有余</span></div><div class="feature-card-meaning">主富贵长寿</div><div class="feature-card-detail">头长身短、上身长下身短；面部方正、眉目清秀；骨肉相称、气色润泽。</div></div>
+            <div class="feature-card"><div class="feature-card-name"><span class="tag success">神有余</span></div><div class="feature-card-meaning">主怡然高贵</div><div class="feature-card-detail">眼目有神、举止安详；言语从容、不激不厉；喜怒不形于色。</div></div>
+            <div class="feature-card"><div class="feature-card-name"><span class="tag danger">形不足</span></div><div class="feature-card-meaning">主困厄短命</div><div class="feature-card-detail">头短身长、肩缩胸凹；面色晦暗、骨肉不相称。</div></div>
+            <div class="feature-card"><div class="feature-card-name"><span class="tag danger">神不足</span></div><div class="feature-card-meaning">主官非霉运</div><div class="feature-card-detail">目光呆滞、举止慌张；言语急躁、喜怒形于色。</div></div>
+        </div>
+    </div>
+
+    <div id="v2-20" class="subsection">
+        <h3 class="subsection-title">20．论声：洪亮圆润为贵</h3>
+        <div class="subsection-content"><p>声音以洪亮圆润为贵，以嘶哑粗俗为贱。声宜清而亮、沉而稳；不宜高而尖、弱而飘。声相应与形相配，形盛声亦盛，形衰声亦衰。</p></div>
+    </div>
+
+    <div id="v2-21" class="subsection">
+        <h3 class="subsection-title">21．论气：深长和柔为贵</h3>
+        <div class="subsection-content"><p>气以深长和柔为贵。气长则寿，气短则夭；气和则吉，气暴则凶。气与神相辅相成，气足神旺，气衰神弱。</p></div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">卷三</span>
+        <div>
+            <h2 class="section-title">卷三 · 五官相法</h2>
+            <div class="section-subtitle">Physiognomy of the Five Features</div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-content">从人体的头部开始，下至四肢，细至骨骼、面痣等，分别从五官、四肢，以及疤痕、黑痣、纹路等多方面来讨论人的面部信息与命运休咎之间的联系，穷通吉凶。</div>
+    </div>
+
+    <div id="v3-1" class="subsection">
+        <h3 class="subsection-title">1．相骨：宜清秀匀称</h3>
+        <div class="info-block">
+            <div class="info-block-content">相骨以"骨法"为贵。骨宜清秀匀称：清而不枯，秀而不弱，匀而不偏，称而不浊。十种贵骨：<strong>日角骨、月角骨、伏犀骨、巨鳌骨、龙宫骨、虎耳骨、将军骨、伏虎骨、剑锋骨、龙角骨</strong>。</div>
+        </div>
+    </div>
+
+    <div id="v3-2" class="subsection">
+        <h3 class="subsection-title">2．相肉：宜丰满红润</h3>
+        <div class="subsection-content"><p>相肉以丰满红润为贵。肉宜丰满而不臃肿，红润而不枯槁。骨肉相称为上相——骨为骨，肉为肉，二者不可分离。</p></div>
+    </div>
+
+    <div id="v3-3" class="subsection">
+        <h3 class="subsection-title">3．相头并发：宜骨突而开阔</h3>
+        <div class="subsection-content"><p>头宜圆而饱满，骨突而开阔，发宜黑而密润。头骨贵的有：日角骨、月角骨、伏犀骨、巨鳌骨等。头发以黑、密、润、泽为贵。</p></div>
+    </div>
+
+    <div id="v3-4" class="subsection">
+        <h3 class="subsection-title">4．相额：宜开阔隆起</h3>
+        <div class="subsection-content"><p>额宜开阔隆起。额为"天庭"，主少年至青年运气。额相以宽广、明润、无疤痕为吉。额以骨高而起为贵，以凹陷、暗淡为凶。</p></div>
+    </div>
+
+    <div id="v3-5" class="subsection">
+        <h3 class="subsection-title">5．论面：宜红润匀称</h3>
+        <div class="subsection-content"><p>面宜红润匀称。面以方为主，以圆为贵，以润为吉。面部三停均等，五岳朝拱，气色红润，是大富大贵之相。</p></div>
+    </div>
+
+    <div id="v3-6" class="subsection">
+        <h3 class="subsection-title">6．论眉：24种眉相详解</h3>
+        <div class="info-block">
+            <div class="info-block-content">眉毛在五官中称"保寿官"，主兄弟、寿禄、性格。眉以清秀、顺亮、疏朗为贵；杂乱、短促、倒长为凶。具体24种眉相详见"面相速查"章节。</div>
+        </div>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">贵眉</div><div class="feature-card-detail">龙眉、剑眉、新月眉、一字眉、清秀眉、旋螺眉</div></div>
+            <div class="feature-card"><div class="feature-card-name">富眉</div><div class="feature-card-detail">柳叶眉、卧蚕眉、狮子眉</div></div>
+            <div class="feature-card"><div class="feature-card-name">吉眉</div><div class="feature-card-detail">前清后疏眉、短促秀眉、大短促眉、虎眉</div></div>
+            <div class="feature-card"><div class="feature-card-name">凶眉</div><div class="feature-card-detail">交加眉、黄薄眉、八字眉、鬼眉、扫帚眉、罗汉眉、疏散眉、尖刀眉、间断眉</div></div>
+        </div>
+    </div>
+
+    <div id="v3-7" class="subsection">
+        <h3 class="subsection-title">7．相目：35种眼相详解</h3>
+        <div class="info-block">
+            <div class="info-block-content">眼睛在五官中称"监察官"，主心智、贤愚。眼以绵长闪亮、黑白分明为贵；以赤脉侵睛、浮露无华为凶。具体35种眼相详见"面相速查"章节。</div>
+        </div>
+        <div class="quote">
+            "眼长而深光润者大贵，黑如漆者聪明文章，含藏不露灼热有光者富贵，细而深者长寿，性兼隐蔽，浮而露者夭死，大而凸圆若怒者促寿，凸暴流视者淫盗……"
+        </div>
+    </div>
+
+    <div id="v3-8" class="subsection">
+        <h3 class="subsection-title">8．相鼻：24种鼻相详解</h3>
+        <div class="info-block">
+            <div class="info-block-content">鼻子在五官中称"审辩官"，主财富、地位。鼻以挺直丰润、山根高隆、准头圆润为贵。具体24种鼻相详见"面相速查"章节。</div>
+        </div>
+        <div class="highlight-box">
+            <div class="highlight-box-title">鼻子的四个重要部位</div>
+            <p>山根（鼻根部）：看智力、荣誉、疾病；<br>年上（鼻梁上半）：看斗志、意志；<br>寿上（鼻梁下半）：看中年运气；<br>准头（鼻头）：看财运、自尊、爱情。</p>
+        </div>
+    </div>
+
+    <div id="v3-9" class="subsection">
+        <h3 class="subsection-title">9．相人中：宜深长清晰</h3>
+        <div class="subsection-content"><p>人中以深长清晰为贵。人中深而长者，寿命绵长、子女众多；人中浅而短者，可能无后、寿命较短。人中宜上窄下宽、清晰明了。</p></div>
+    </div>
+
+    <div id="v3-10" class="subsection">
+        <h3 class="subsection-title">10．相口：15种口相详解</h3>
+        <div class="info-block">
+            <div class="info-block-content">口在五官中称"出纳官"，主言语、福禄。嘴以阔比四方、棱角分明为贵。具体15种口相详见"面相速查"章节。</div>
+        </div>
+    </div>
+
+    <div id="v3-11" class="subsection">
+        <h3 class="subsection-title">11．相唇：宜匀称红厚</h3>
+        <div class="subsection-content"><p>唇宜匀称红厚。唇以红色、润泽、不薄不厚为贵。唇色红润者福禄厚；唇色苍白者贫病；唇色发黑者灾祸。</p></div>
+    </div>
+
+    <div id="v3-12" class="subsection">
+        <h3 class="subsection-title">12．相舌：宜方长红润</h3>
+        <div class="subsection-content"><p>舌以方长红润为贵。舌以色红、苔薄、体长为贵。舌大而红者，富贵福禄；舌小而薄者，贫贱短命。</p></div>
+    </div>
+
+    <div id="v3-13" class="subsection">
+        <h3 class="subsection-title">13．论齿：宜整齐洁白</h3>
+        <div class="subsection-content"><p>齿以整齐洁白为贵。齿列整齐、色白、密而固为吉；齿列稀疏、参差、枯黄为凶。齿为骨之余，肾主骨，故齿与肾气相通。</p></div>
+    </div>
+
+    <div id="v3-14" class="subsection">
+        <h3 class="subsection-title">14．相耳：16种耳相详解</h3>
+        <div class="info-block">
+            <div class="info-block-content">耳在五官中称"采听官"，主健康、智慧。耳以高耸垂珠、色白过面、轮廓分明为贵。具体16种耳相详见"面相速查"章节。</div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">卷四</span>
+        <div>
+            <h2 class="section-title">卷四 · 四肢相法</h2>
+            <div class="section-subtitle">Physiognomy of Limbs</div>
+        </div>
+    </div>
+
+    <div id="v4-1" class="subsection">
+        <h3 class="subsection-title">1．论四肢：宜笔直挺拔</h3>
+        <div class="subsection-content"><p>四肢以笔直挺拔为贵。臂宜长而圆，腿宜直而长；膝宜圆而厚，足宜方而大。四肢与五行相应：上肢属木主仁，下肢属水主智。</p></div>
+    </div>
+
+    <div id="v4-2" class="subsection">
+        <h3 class="subsection-title">2．论手：宜长厚柔软</h3>
+        <div class="info-block">
+            <div class="info-block-content">手以长、厚、柔软为贵。手指以纤长、润泽为吉；以短、粗、枯为凶。手上若有"龙骨"或"虎骨"，主大贵。</div>
+        </div>
+    </div>
+
+    <div id="v4-3" class="subsection">
+        <h3 class="subsection-title">3．论掌纹：宜深细清晰</h3>
+        <div class="subsection-content"><p>掌纹以深细清晰为贵。纹路深而清晰，主富贵长寿；纹路浅而模糊，主贫贱短命。掌中主纹有：<strong>生命线、智慧线、感情线、命运线</strong>。</p></div>
+    </div>
+
+    <div id="v4-4" class="subsection">
+        <h3 class="subsection-title">4．论手背纹：宜纹理紧密</h3>
+        <div class="subsection-content"><p>手背纹以纹理紧密为贵。纹理紧密者，性情稳定；纹理疏松者，一生奔波。手背青筋以隐而不露为吉。</p></div>
+    </div>
+
+    <div id="v4-5" class="subsection">
+        <h3 class="subsection-title">5．手纹形模：71掌纹贵贱</h3>
+        <div class="info-block">
+            <div class="info-block-content">《麻衣神相》共记载了71种掌纹形模，分为贵格、富格、寿格、贫格、贱格、凶格等。以下为主要掌纹：</div>
+        </div>
+
+        <h4 style="margin:14px 0 8px;color:var(--color-success);">贵格掌纹（精选）</h4>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">带印纹</div><div class="feature-card-meaning">大贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">金花印纹</div><div class="feature-card-meaning">大贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">拜相纹</div><div class="feature-card-meaning">大贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">兵符纹</div><div class="feature-card-meaning">一品贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">雁阵纹</div><div class="feature-card-meaning">大贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">六花纹</div><div class="feature-card-meaning">大贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">悬鱼纹</div><div class="feature-card-meaning">大贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">独朝纹</div><div class="feature-card-meaning">大贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">宝晕纹</div><div class="feature-card-meaning">大贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">金龟纹</div><div class="feature-card-meaning">大贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">玉柱纹</div><div class="feature-card-meaning">大贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">笔阵纹</div><div class="feature-card-meaning">大贵</div></div>
+        </div>
+
+        <h4 style="margin:14px 0 8px;color:var(--color-warning);">富格掌纹（精选）</h4>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">玉井纹</div><div class="feature-card-detail">富贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">美禄纹</div><div class="feature-card-detail">富贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">学堂纹</div><div class="feature-card-detail">富贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">福厚纹</div><div class="feature-card-detail">富贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">小贵纹</div><div class="feature-card-detail">小富</div></div>
+            <div class="feature-card"><div class="feature-card-name">川字纹</div><div class="feature-card-detail">富贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">三峰纹</div><div class="feature-card-detail">富</div></div>
+            <div class="feature-card"><div class="feature-card-name">三才纹</div><div class="feature-card-detail">富</div></div>
+            <div class="feature-card"><div class="feature-card-name">智慧纹</div><div class="feature-card-detail">富而智</div></div>
+            <div class="feature-card"><div class="feature-card-name">千金纹</div><div class="feature-card-detail">大富</div></div>
+        </div>
+
+        <h4 style="margin:14px 0 8px;color:var(--color-danger);">凶格掌纹（精选）</h4>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">乱花纹</div><div class="feature-card-meaning">贫贱</div></div>
+            <div class="feature-card"><div class="feature-card-name">花酒纹</div><div class="feature-card-meaning">纵酒</div></div>
+            <div class="feature-card"><div class="feature-card-name">花柳纹</div><div class="feature-card-meaning">淫乱</div></div>
+            <div class="feature-card"><div class="feature-card-name">偷花纹</div><div class="feature-card-meaning">偷盗</div></div>
+            <div class="feature-card"><div class="feature-card-name">色欲纹</div><div class="feature-card-meaning">淫欲</div></div>
+            <div class="feature-card"><div class="feature-card-name">桃花纹</div><div class="feature-card-meaning">桃花劫</div></div>
+            <div class="feature-card"><div class="feature-card-name">克父纹</div><div class="feature-card-meaning">克父</div></div>
+            <div class="feature-card"><div class="feature-card-name">克母纹</div><div class="feature-card-meaning">克母</div></div>
+            <div class="feature-card"><div class="feature-card-name">亡神纹</div><div class="feature-card-meaning">凶亡</div></div>
+            <div class="feature-card"><div class="feature-card-name">劫煞纹</div><div class="feature-card-meaning">劫难</div></div>
+        </div>
+    </div>
+
+    <div id="v4-6" class="subsection">
+        <h3 class="subsection-title">6．论足：宜方大细腻</h3>
+        <div class="subsection-content"><p>足宜方大细腻。足以方而厚、大而实为贵；以薄而尖、小而削为贱。足下有"井字纹"为吉，主富贵。</p></div>
+    </div>
+
+    <div id="v4-7" class="subsection">
+        <h3 class="subsection-title">7．论足纹：足有纹痣是贵相</h3>
+        <div class="subsection-content"><p>足有纹痣是贵相。足下纹以清晰明显为吉；足下痣以色黑圆润为吉。足下生痣主富足，足下生纹主贵显。</p></div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">卷五</span>
+        <div>
+            <h2 class="section-title">卷五 · 达摩相诀</h2>
+            <div class="section-subtitle">Bodhidharma's Physiognomy Secrets</div>
+        </div>
+    </div>
+
+    <div id="v5-1" class="subsection">
+        <h3 class="subsection-title">1．达摩祖师相诀秘传：择人而授</h3>
+        <div class="quote">
+            达摩相法是中国相术中的重要流派，相传为达摩祖师所创。达摩祖师认为相术乃"择人而授"之秘学，非资质上佳、心地纯良之人不可传。
+        </div>
+    </div>
+
+    <div id="v5-2" class="subsection">
+        <h3 class="subsection-title">2．第一法：相主神（神有七）</h3>
+        <div class="info-block">
+            <div class="info-block-content">七神：<strong>魂、神、意、魄、精、血、志</strong>。神藏于心，神旺则寿，神衰则亡。神有七种状态，各主不同的命格。</div>
+        </div>
+    </div>
+
+    <div id="v5-3" class="subsection">
+        <h3 class="subsection-title">3．第二法：神主眼（眼有七）</h3>
+        <div class="subsection-content"><p>眼为心灵之窗，神藏于眼。眼有七种神：<strong>秀、神、藏、露、刚、柔、慈</strong>。神秀者贵；神刚者勇；神柔者仁。</p></div>
+    </div>
+
+    <div id="v5-4" class="subsection">
+        <h3 class="subsection-title">4．第三法：人身分十分</h3>
+        <div class="subsection-content"><p>人身分十分，每一部位各占一定分值，相加为人的整体命格评分。</p></div>
+    </div>
+
+    <div id="v5-5" class="subsection">
+        <h3 class="subsection-title">5．第四法：人面分十分</h3>
+        <div class="subsection-content"><p>人面分十分：眼为最重要，占3分；鼻占2分；额占1.5分；颧占1分；口占1分；颐占0.5分；眉占1分。</p></div>
+    </div>
+
+    <div id="v5-6" class="subsection">
+        <h3 class="subsection-title">6．第五法：择交在眼</h3>
+        <div class="info-block">
+            <div class="info-block-content">择交在眼：与人交往，先观其眼。眼正心正，眼邪心邪。眼乃心灵之窗，择友当从眼睛判断其心性。</div>
+        </div>
+    </div>
+
+    <div id="v5-7" class="subsection">
+        <h3 class="subsection-title">7．总诀第一至第五</h3>
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">总诀第一</div><div class="def-meaning">人当自悟，今不析言——相术玄机非言语可尽，需自悟。</div></div>
+            <div class="def-item"><div class="def-term">总诀第二</div><div class="def-meaning">贵相要综合而论——单一部位不决定整体命运，需综合判断。</div></div>
+            <div class="def-item"><div class="def-term">总诀第三</div><div class="def-meaning">心是形的主宰——内心修养决定外在相貌，"相由心生"。</div></div>
+            <div class="def-item"><div class="def-term">总诀第四</div><div class="def-meaning">论女相——女子相法以端庄、柔顺、慈爱为贵。</div></div>
+            <div class="def-item"><div class="def-term">总诀第五</div><div class="def-meaning">骨相、行相与面部气色三者结合判断命运。</div></div>
+        </div>
+    </div>
+
+    <div id="v5-8" class="subsection">
+        <h3 class="subsection-title">8．十二宫克应诀：详解十二宫</h3>
+        <div class="info-block">
+            <div class="info-block-content">"克应"指各宫部位所主的吉凶应验情况。每宫都有其特定的吉凶征验，与命运的具体事件相联系。</div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">卷六</span>
+        <div>
+            <h2 class="section-title">卷六 · 麻衣先生石室神异赋</h2>
+            <div class="section-subtitle">Mayi Master's Stone Chamber Mystic Verse</div>
+        </div>
+    </div>
+
+    <div id="v6-1" class="subsection">
+        <h3 class="subsection-title">1．麻衣看相：脸上的命运</h3>
+        <div class="info-block">
+            <div class="info-block-content">本卷收集了陈抟和麻衣的传说，面相反映人生的核心理论，以及大量具体面相判断的赋文，是中国古代相术的重要文献。</div>
+        </div>
+
+        <h4 style="margin:14px 0 8px;color:var(--color-accent);">核心论断精选</h4>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">三停匀称为贵</div><div class="feature-card-detail">上中下三停均等，是大贵之相</div></div>
+            <div class="feature-card"><div class="feature-card-name">五岳呼应主富贵</div><div class="feature-card-detail">五岳朝拱丰耸，官禄荣迁</div></div>
+            <div class="feature-card"><div class="feature-card-name">鼻管中年财富</div><div class="feature-card-detail">鼻为财星，主中年财运</div></div>
+            <div class="feature-card"><div class="feature-card-name">额主荣华</div><div class="feature-card-detail">额头主早年的气运和荣华</div></div>
+            <div class="feature-card"><div class="feature-card-name">眉目主聪慧</div><div class="feature-card-detail">眉清目秀，主智慧才华</div></div>
+            <div class="feature-card"><div class="feature-card-name">气浊神枯主贫穷</div><div class="feature-card-detail">气色浑浊、神色枯槁必贫</div></div>
+            <div class="feature-card"><div class="feature-card-name">河目海口者有官禄</div><div class="feature-card-detail">眼如河、口如海，主有官禄</div></div>
+            <div class="feature-card"><div class="feature-card-name">铁面剑眉者掌权</div><div class="feature-card-detail">面色如铁、眉如剑，主掌权</div></div>
+            <div class="feature-card"><div class="feature-card-name">龙颜凤颈为贵妇</div><div class="feature-card-detail">龙颜凤颈是贵妇之相</div></div>
+            <div class="feature-card"><div class="feature-card-name">燕颔虎头为将相</div><div class="feature-card-detail">燕颔（下巴宽）虎头，主将相</div></div>
+        </div>
+
+        <h4 style="margin:14px 0 8px;color:var(--color-accent);">凶相论断</h4>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">忌满脸横肉</div><div class="feature-card-detail">满脸横肉者凶暴</div></div>
+            <div class="feature-card"><div class="feature-card-name">面似橘皮主贫穷</div><div class="feature-card-detail">面似橘皮者主贫</div></div>
+            <div class="feature-card"><div class="feature-card-name">眉峰似剑主暴躁</div><div class="feature-card-detail">眉峰尖锐似剑者性暴</div></div>
+            <div class="feature-card"><div class="feature-card-name">两眼无神主短寿</div><div class="feature-card-detail">两眼无神者主短命</div></div>
+            <div class="feature-card"><div class="feature-card-name">山根昏沉主疾病</div><div class="feature-card-detail">山根昏暗者多疾</div></div>
+            <div class="feature-card"><div class="feature-card-name">斜视冷笑主奸邪</div><div class="feature-card-detail">斜视者奸、笑者阴险</div></div>
+        </div>
+    </div>
+
+    <div id="v6-2" class="subsection">
+        <h3 class="subsection-title">2．面相杂论：各种相法大杂烩</h3>
+        <div class="info-block">
+            <div class="info-block-content">本节汇集了各种面相判断的精要论断，是《麻衣神相》相法体系的补充与完善。</div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">卷七</span>
+        <div>
+            <h2 class="section-title">卷七 · 论三停吉凶</h2>
+            <div class="section-subtitle">Auspicious and Inauspicious Signs in the Three Zones</div>
+        </div>
+    </div>
+
+    <div id="v7-1" class="subsection">
+        <h3 class="subsection-title">1．命相通论：五行面相，不同吉凶</h3>
+        <div class="subsection-content"><p>五行面相各有吉凶。木形人宜清秀；火形人宜明亮；土形人宜厚实；金形人宜方正；水形人宜圆润。五行相生为吉，相克为凶。</p></div>
+    </div>
+
+    <div id="v7-2" class="subsection">
+        <h3 class="subsection-title">2．金锁赋：相法歌诀一</h3>
+        <div class="quote">
+            金锁赋是《麻衣神相》中重要的相法歌诀之一，以"金锁"比喻面相的精密与宝贵，强调要综合判断，不可偏执一端。
+        </div>
+    </div>
+
+    <div id="v7-3" class="subsection">
+        <h3 class="subsection-title">3．银匙赋：相法歌诀二</h3>
+        <div class="quote">
+            银匙赋以"银匙"比喻相法的精准与实用，强调通过面相可开启命运之锁。
+        </div>
+    </div>
+
+    <div id="v7-4" class="subsection">
+        <h3 class="subsection-title">4．相形气色赋：看相还要看气色</h3>
+        <div class="info-block">
+            <div class="info-block-content">看相要形神兼备：既要看静态的形（骨骼、轮廓），也要看动态的气色（红润、晦暗）。气色是判断近期吉凶的关键。</div>
+        </div>
+    </div>
+
+    <div id="v7-5" class="subsection">
+        <h3 class="subsection-title">5-7．论三停吉气（上/中/下）</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">上停吉气</div><div class="feature-card-detail">额上吉气以红黄明润为贵，主少年发达、父母庇荫</div></div>
+            <div class="feature-card"><div class="feature-card-name">中停吉气</div><div class="feature-card-detail">脸庞中部吉气以明亮有神为贵，主中年富贵、夫妻和睦</div></div>
+            <div class="feature-card"><div class="feature-card-name">下停吉气</div><div class="feature-card-detail">口旁吉气以红润为贵，主晚年安康、儿孙绕膝</div></div>
+        </div>
+    </div>
+
+    <div id="v7-6" class="subsection">
+        <h3 class="subsection-title">8-9．论三停凶气（上/中下）</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">上停凶气</div><div class="feature-card-detail">额上凶气以青黑暗滞为凶，主少年困顿、刑克父母</div></div>
+            <div class="feature-card"><div class="feature-card-name">中下停凶气</div><div class="feature-card-detail">脸庞中下部凶气以赤黑枯槁为凶，主中年灾祸、晚年孤苦</div></div>
+        </div>
+    </div>
+
+    <div id="v7-7" class="subsection">
+        <h3 class="subsection-title">10．面痣：脸上的痣也有吉凶分别</h3>
+        <div class="info-block">
+            <div class="info-block-content">面痣分显痣和隐痣。显痣在表面，看得见；隐痣在皮肤下，需细看。痣以<strong>色黑圆润、位置得宜</strong>为吉；以<strong>色灰枯干、位置不佳</strong>为凶。</div>
+        </div>
+        <div class="subsection-content">
+            <p>不同部位的痣有不同的吉凶含义：</p>
+            <ul class="bullet-list">
+                <li><strong>印堂痣：</strong>主刑克，妨碍父母</li>
+                <li><strong>山根痣：</strong>主疾病，妨碍健康</li>
+                <li><strong>鼻头痣：</strong>主破财，妨碍财运</li>
+                <li><strong>眼睑痣：</strong>主泪痣，影响子女</li>
+                <li><strong>耳珠痣：</strong>主富贵，福禄绵长</li>
+                <li><strong>下停痣：</strong>主田宅，稳定富足</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="v7-8" class="subsection">
+        <h3 class="subsection-title">11．毫毛：身体毛发的吉凶</h3>
+        <div class="subsection-content">
+            <p>毫毛指身体细毛。毫毛以<strong>黑亮、柔顺、密而匀</strong>为吉；以<strong>枯黄、杂乱、稀而疏</strong>为凶。</p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">附录</span>
+        <div>
+            <h2 class="section-title">附录 · 身体相法</h2>
+            <div class="section-subtitle">Body Physiognomy Compendium</div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-content">《麻衣神相》中所授意的相法除了对人体各主要部位形貌有定义式的论述外，还做出了其他许多判断，比如相上、中、下三停，通过人的气色做相应占卜，解读人体较隐蔽部位的命理信息，对人的心性和世间的季候进行品评。本卷即是集中展现这些神奇相法。</div>
+    </div>
+
+    <div id="app-1" class="subsection">
+        <h3 class="subsection-title">1．六府三才三停</h3>
+        <div class="quote">
+            上停长少吉昌、中停长近君王，下停长老吉祥。<br>
+            三停平等富贵荣显，三停不均孤夭贫贱。
+        </div>
+    </div>
+
+    <div id="app-2" class="subsection">
+        <h3 class="subsection-title">2．上停部位：脸庞上部面相名词</h3>
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">天中</div><div class="def-meaning">额头正中发际下约1公分处，看祖先及亲人</div></div>
+            <div class="def-item"><div class="def-term">天庭</div><div class="def-meaning">天中下面约1公分处，看事业、官运、官司</div></div>
+            <div class="def-item"><div class="def-term">司空</div><div class="def-meaning">天庭下面约2公分处</div></div>
+            <div class="def-item"><div class="def-term">中正</div><div class="def-meaning">司空下面约1公分处</div></div>
+            <div class="def-item"><div class="def-term">印堂</div><div class="def-meaning">双眉之间，相面中非常重要的部位</div></div>
+            <div class="def-item"><div class="def-term">日月角</div><div class="def-meaning">两眉上面额头较高处。日角代表父亲，月角代表母亲</div></div>
+            <div class="def-item"><div class="def-term">福堂</div><div class="def-meaning">两眉上面中间位置</div></div>
+            <div class="def-item"><div class="def-term">边地/高广/驿马</div><div class="def-meaning">合称迁移宫，看搬家、外出旅行</div></div>
+        </div>
+    </div>
+
+    <div id="app-3" class="subsection">
+        <h3 class="subsection-title">3．中停部位：脸庞中部面相名词</h3>
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">山根</div><div class="def-meaning">两眉中间，鼻梁低处开始高起处，主智力、荣誉、疾病</div></div>
+            <div class="def-item"><div class="def-term">年上/寿上</div><div class="def-meaning">鼻梁中段，看斗志、意志</div></div>
+            <div class="def-item"><div class="def-term">准头</div><div class="def-meaning">鼻头，看财运、自尊心、爱情</div></div>
+            <div class="def-item"><div class="def-term">兰台/廷尉</div><div class="def-meaning">鼻翼两侧，看金钱、精力</div></div>
+            <div class="def-item"><div class="def-term">命门</div><div class="def-meaning">鬓角和奸门之间，看健康</div></div>
+            <div class="def-item"><div class="def-term">鱼尾/奸门</div><div class="def-meaning">眼角及旁边，看感情</div></div>
+        </div>
+    </div>
+
+    <div id="app-4" class="subsection">
+        <h3 class="subsection-title">4．下停部位：脸庞下部面相名词</h3>
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">人中</div><div class="def-meaning">鼻子和嘴之间，看子嗣、寿命</div></div>
+            <div class="def-item"><div class="def-term">水星</div><div class="def-meaning">嘴部</div></div>
+            <div class="def-item"><div class="def-term">承浆</div><div class="def-meaning">嘴唇下面凹陷处</div></div>
+            <div class="def-item"><div class="def-term">地阁</div><div class="def-meaning">下巴，看晚年运气</div></div>
+            <div class="def-item"><div class="def-term">颂堂</div><div class="def-meaning">地阁附近</div></div>
+            <div class="def-item"><div class="def-term">地库</div><div class="def-meaning">下巴两侧</div></div>
+        </div>
+    </div>
+
+    <div id="app-5" class="subsection">
+        <h3 class="subsection-title">5．流年：脸上的人生运势年鉴</h3>
+        <div class="subsection-content">
+            <p>流年指人的逐年运势。具体年龄与面部部位的对应关系：</p>
+            <ul class="bullet-list">
+                <li><strong>1-14岁：</strong>看耳朵（男左女右）</li>
+                <li><strong>15-16岁：</strong>看额头</li>
+                <li><strong>17-18岁：</strong>看日月角（父母宫）</li>
+                <li><strong>19-21岁：</strong>看天庭辅骨</li>
+                <li><strong>22岁：</strong>看司空</li>
+                <li><strong>25岁：</strong>看中正</li>
+                <li><strong>28岁：</strong>看印堂</li>
+                <li><strong>29-30岁：</strong>看山林</li>
+                <li><strong>31-34岁：</strong>看眉间</li>
+                <li><strong>35-40岁：</strong>看眼睛</li>
+                <li><strong>41-42岁：</strong>看山根</li>
+                <li><strong>43-45岁：</strong>看年上、寿上</li>
+                <li><strong>46-47岁：</strong>看两颧</li>
+                <li><strong>48-50岁：</strong>看准头、兰台、廷尉</li>
+                <li><strong>51-57岁：</strong>看人中、仙库、食仓、禄仓、法令</li>
+                <li><strong>60岁：</strong>看水唇</li>
+                <li><strong>61岁：</strong>看承浆</li>
+                <li><strong>70-71岁：</strong>看颂堂、地阁</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="app-6" class="subsection">
+        <h3 class="subsection-title">6．气色占应诀：气色中的命运玄机</h3>
+        <div class="info-block">
+            <div class="info-block-content">气色占应诀是古代相术中通过面部气色变化来推断近期吉凶的方法。本节列举了数十种具体的气色占应：占五脏安、占五脏病、占死气、占父母孝服、占婚姻、占妊娠、占夜梦、占破财、占失财、占狱讼、占亨通、占发达、占印信、占行人、占病及官事、占男女、占酒食、占捕捉、占失文字、占失火、占水厄、占妻病、占妨妻、占兄弟等。</div>
+        </div>
+    </div>
+
+    <div id="app-7" class="subsection">
+        <h3 class="subsection-title">7．论髭髯：胡子也分吉凶祸福</h3>
+        <div class="subsection-content"><p>胡须以黑亮、密润、柔顺为吉；以枯黄、稀疏、杂乱为凶。不同部位的胡须含义不同：人中胡须主子孙；腮部胡须主威严；下巴胡须主财富。</p></div>
+    </div>
+
+    <div id="app-8" class="subsection">
+        <h3 class="subsection-title">8．相鱼尾：功名象征</h3>
+        <div class="subsection-content"><p>鱼尾即眼角外侧的鱼尾纹。鱼尾以丰润不破为吉，主功名显达；鱼尾纹破乱为凶，主功名无成。</p></div>
+    </div>
+
+    <div id="app-9" class="subsection">
+        <h3 class="subsection-title">9-13．论颈项 / 论背 / 相背 / 论腰 / 相腰</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">论颈项</div><div class="feature-card-detail">肥短瘦长为佳。颈以丰满有力、长圆适中为贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">论背</div><div class="feature-card-detail">丰隆为贵。背以厚实、丰隆为吉</div></div>
+            <div class="feature-card"><div class="feature-card-name">相背</div><div class="feature-card-detail">丰厚为佳。背丰厚主福禄长久</div></div>
+            <div class="feature-card"><div class="feature-card-name">论腰</div><div class="feature-card-detail">宽腰有福。腰宜宽而圆实</div></div>
+            <div class="feature-card"><div class="feature-card-name">相腰</div><div class="feature-card-detail">腰直为佳。腰宜直而圆</div></div>
+        </div>
+    </div>
+
+    <div id="app-10" class="subsection">
+        <h3 class="subsection-title">14-17．论腹 / 相腹 / 论胸乳 / 相胸乳</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">论腹</div><div class="feature-card-detail">圆实富贵。腹以圆而实为吉</div></div>
+            <div class="feature-card"><div class="feature-card-name">相腹</div><div class="feature-card-detail">腹上的富贵功名。腹相能看出富贵程度</div></div>
+            <div class="feature-card"><div class="feature-card-name">论胸乳</div><div class="feature-card-detail">胸间的气量才智。胸以宽厚为贵</div></div>
+            <div class="feature-card"><div class="feature-card-name">相胸乳</div><div class="feature-card-detail">胸前的贵贱分别。乳以圆而坚实为吉</div></div>
+        </div>
+    </div>
+
+    <div id="app-11" class="subsection">
+        <h3 class="subsection-title">18．麻衣相心：相由心生</h3>
+        <div class="quote">
+            "相由心生，相随心灭"——心是形的主宰，内心修养决定外在相貌。
+            <span class="quote-source">——麻衣道者</span>
+        </div>
+    </div>
+
+    <div id="app-12" class="subsection">
+        <h3 class="subsection-title">19．三十六善养心要诀：心善面善，心恶面恶</h3>
+        <div class="info-block">
+            <div class="info-block-content">《麻衣神相》提出三十六种养心方法，强调通过修养内心来改善面相。内心善良、品德高尚者，自然相貌端正、气色和润；反之，相貌也会变得凶恶。</div>
+        </div>
+        <p style="margin-top:10px;">三十六个要诀涵盖：仁、义、礼、智、信、忠、孝、悌、慈、惠、谦、恭、节、俭、忍、让、勤、勉、诚、敬、慎、廉、耻、勇、毅、安、静、定、慧、觉、悟、慈、悲、喜、舍、度等品德修养。</p>
+    </div>
+
+    <div id="app-13" class="subsection">
+        <h3 class="subsection-title">20-21．相脐 / 相下部：身体下部的吉凶</h3>
+        <div class="subsection-content">
+            <p><strong>相脐：</strong>脐以圆而深为吉，主智慧胆识。</p>
+            <p style="margin-top:8px;"><strong>相下部：</strong>身体下部（臀部、会阴、阴部等）的吉凶判断。</p>
+        </div>
+    </div>
+
+    <div id="app-14" class="subsection">
+        <h3 class="subsection-title">22-26．相行 / 相坐 / 论卧 / 相卧 / 论食</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">相行论</div><div class="feature-card-detail">走路姿势吉凶。行宜稳而正</div></div>
+            <div class="feature-card"><div class="feature-card-name">相行篇</div><div class="feature-card-detail">相行的方法。脚步轻快者福重</div></div>
+            <div class="feature-card"><div class="feature-card-name">相坐</div><div class="feature-card-detail">坐姿中的吉凶。坐宜稳如山</div></div>
+            <div class="feature-card"><div class="feature-card-name">论卧</div><div class="feature-card-detail">睡姿中的吉凶。卧宜安详</div></div>
+            <div class="feature-card"><div class="feature-card-name">相卧</div><div class="feature-card-detail">睡姿吉凶判断</div></div>
+            <div class="feature-card"><div class="feature-card-name">论食</div><div class="feature-card-detail">吃饭仪态吉凶</div></div>
+        </div>
+    </div>
+
+    <div id="app-15" class="subsection">
+        <h3 class="subsection-title">27-28．论食 / 相德</h3>
+        <div class="subsection-content">
+            <p><strong>论食：</strong>吃饭时的仪态可看出一个人的修养和命运。食相以从容有度为吉，以狼吞虎咽为凶。</p>
+            <p style="margin-top:8px;"><strong>相德：</strong>德行与面相密切相关。有德者必有相，有相者未必有德。</p>
+        </div>
+    </div>
+
+    <div id="app-16" class="subsection">
+        <h3 class="subsection-title">29-30．相善 / 相恶</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">相善</div><div class="feature-card-detail">善相判断：眉目慈和、口角含笑、气色红润</div></div>
+            <div class="feature-card"><div class="feature-card-name">相恶</div><div class="feature-card-detail">恶相判断：目露凶光、口角下垂、气色晦暗</div></div>
+        </div>
+    </div>
+
+    <div id="app-17" class="subsection">
+        <h3 class="subsection-title">31-32．相名标 / 相蹇难</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">相名标</div><div class="feature-card-detail">年少荣昌的面相：额头光润、眉目清秀</div></div>
+            <div class="feature-card"><div class="feature-card-name">相蹇难</div><div class="feature-card-detail">命运多灾的面相：眉目暗滞、气色枯槁</div></div>
+        </div>
+    </div>
+
+    <div id="app-18" class="subsection">
+        <h3 class="subsection-title">33-34．相忠信慈孝 / 相愚僻凶暴</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">相忠信慈孝</div><div class="feature-card-detail">忠义之人的面相：眉目慈和、嘴角含笑、面色红润</div></div>
+            <div class="feature-card"><div class="feature-card-name">相愚僻凶暴</div><div class="feature-card-detail">愚鲁之人的面相：目露凶光、眉目暗滞、面色枯槁</div></div>
+        </div>
+    </div>
+
+    <div id="app-19" class="subsection">
+        <h3 class="subsection-title">35-36．相形带杀 / 相疾病</h3>
+        <div class="cards-grid">
+            <div class="feature-card"><div class="feature-card-name">相形带杀</div><div class="feature-card-detail">不得好死的面相：形带杀气，凶相毕露</div></div>
+            <div class="feature-card"><div class="feature-card-name">相疾病</div><div class="feature-card-detail">疾病缠身的面相：山根枯暗、气色衰败</div></div>
+        </div>
+    </div>
+
+    <div id="app-20" class="subsection">
+        <h3 class="subsection-title">37．四季吉凶气色：四季面相判断</h3>
+        <div class="def-list">
+            <div class="def-item"><div class="def-term">春季</div><div class="def-meaning">木旺，宜青。面色以青润为吉</div></div>
+            <div class="def-item"><div class="def-term">夏季</div><div class="def-meaning">火旺，宜赤。面色以红润为吉</div></div>
+            <div class="def-item"><div class="def-term">秋季</div><div class="def-meaning">金旺，宜白。面色以白净为吉</div></div>
+            <div class="def-item"><div class="def-term">冬季</div><div class="def-meaning">水旺，宜黑。面色以黑亮为吉</div></div>
+        </div>
+    </div>
+
+    <div id="app-21" class="subsection">
+        <h3 class="subsection-title">38-39．管辂相婴儿 / 相婴儿贵贱</h3>
+        <div class="info-block">
+            <div class="info-block-content">管辂是三国时期著名相术师，其相婴儿法是古代相术中的重要分支。婴儿面相以耳大、眉清、目秀、口方为贵；以耳小、眉乱、目赤、口尖为贱。</div>
+        </div>
+    </div>
+
+    <div id="app-22" class="subsection">
+        <h3 class="subsection-title">40-41．女人论 / 女人歌：女子身体相法</h3>
+        <div class="quote">
+            女子相法与男子略有不同，主要看：<br>
+            · 头：圆而秀，不宜过大<br>
+            · 面：饱满润泽<br>
+            · 眉：弯而细长<br>
+            · 目：黑白分明<br>
+            · 鼻：挺直圆润<br>
+            · 口：樱桃小口<br>
+            · 耳：轮廓分明<br>
+            · 身形：柔美匀称<br>
+            · 声音：柔和清脆
+        </div>
+        <div class="info-block">
+            <div class="info-block-content">女子以"端庄、柔顺、慈爱"为贵相；以"妖冶、轻佻、凶狠"为贱相。女子面相以"旺夫益子"为最高标准。</div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <span class="section-badge">总结</span>
+        <div>
+            <h2 class="section-title">知识脑图总结</h2>
+            <div class="section-subtitle">Summary</div>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <div class="highlight-box-title">📚 《麻衣神相》核心理念</div>
+        <p><strong>天人合一</strong>：人如天地，相如宇宙；<br>
+        <strong>阴阳五行</strong>：以五行配五脏、五官；<br>
+        <strong>相由心生</strong>：心善面善，心恶面恶；<br>
+        <strong>形神兼备</strong>：形为表，神为本，气为用；<br>
+        <strong>综合判断</strong>：三停、五岳、十二宫合一观。</p>
+    </div>
+
+    <h3 style="margin:18px 0 10px;color:var(--color-accent);">九大核心相法体系</h3>
+    <div class="cards-grid">
+        <div class="feature-card"><div class="feature-card-name">① 十三部位</div><div class="feature-card-detail">面部正中从上到下的13个部位</div></div>
+        <div class="feature-card"><div class="feature-card-name">② 十二宫</div><div class="feature-card-detail">命宫、财帛、兄弟等12个区域</div></div>
+        <div class="feature-card"><div class="feature-card-name">③ 五官</div><div class="feature-card-detail">眉眼耳鼻口的吉凶判断</div></div>
+        <div class="feature-card"><div class="feature-card-name">④ 五岳四渎</div><div class="feature-card-detail">面部山岳河流比喻</div></div>
+        <div class="feature-card"><div class="feature-card-name">⑤ 三停三才</div><div class="feature-card-detail">面部三段对应人生三阶段</div></div>
+        <div class="feature-card"><div class="feature-card-name">⑥ 五星六曜</div><div class="feature-card-detail">面部星曜的吉凶</div></div>
+        <div class="feature-card"><div class="feature-card-name">⑦ 四八学堂</div><div class="feature-card-detail">学识品德的判断</div></div>
+        <div class="feature-card"><div class="feature-card-name">⑧ 流年运气</div><div class="feature-card-detail">各年龄段对应的部位</div></div>
+        <div class="feature-card"><div class="feature-card-name">⑨ 形神气声</div><div class="feature-card-detail">形神气声的综合判断</div></div>
+    </div>
+
+    <div class="info-block" style="margin-top:20px;">
+        <div class="info-block-title">⚠ 重要声明</div>
+        <div class="info-block-content">本书所载相术理论是中国古代传统文化的一部分，包含诸多历史局限性。读者当以批判的眼光阅读，取其精华（如对五官形貌的观察分类、对人体生理的认知），去其糟粕（如封建迷信、男尊女卑等）。</div>
+    </div>
+</section>
+
+<div class="footer">
+    <p>《图解古代人体工程学①·麻衣神相》知识脑图</p>
+    <p>原著：（宋）麻衣道者 | 编著：徐阳 | 出版：陕西师范大学出版社</p>
+    <p>本书知识结构整理 · 仅供参考学习</p>
+</div>
+
+</div>
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" title="回到顶部">↑</button>
+
+<script>
+document.querySelectorAll('.nav-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function() {
+        if (this.classList.contains('no-children')) return;
+        const targetId = this.getAttribute('data-target');
+        const target = document.getElementById(targetId);
+        if (!target) return;
+        this.classList.toggle('expanded');
+        target.classList.toggle('expanded');
+    });
+});
+
+const navLinks = document.querySelectorAll('.nav-link');
+navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const id = entry.target.id;
+            navLinks.forEach(l => {
+                l.classList.remove('active');
+                if (l.getAttribute('href') === '#' + id) {
+                    l.classList.add('active');
+                }
+            });
+        }
+    });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+document.querySelectorAll('section[id], .subsection[id]').forEach(el => {
+    observer.observe(el);
+});
+
+const searchBox = document.getElementById('searchBox');
+searchBox.addEventListener('input', function() {
+    const query = this.value.toLowerCase().trim();
+    if (!query) {
+        document.querySelectorAll('.nav-item').forEach(item => item.style.display = '');
+        return;
+    }
+    document.querySelectorAll('.nav-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(query)) {
+            item.style.display = '';
+            let parent = item.parentElement;
+            while (parent && !parent.classList.contains('nav-tree')) {
+                if (parent.classList.contains('nav-children')) {
+                    parent.classList.add('expanded');
+                    const toggle = parent.previousElementSibling;
+                    if (toggle && toggle.classList.contains('has-children')) {
+                        toggle.classList.add('expanded');
+                    }
+                }
+                parent = parent.parentElement;
+            }
+        } else {
+            item.style.display = 'none';
+        }
+    });
+});
+
+const backToTop = document.getElementById('backToTop');
+backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+        backToTop.style.display = 'flex';
+    } else {
+        backToTop.style.display = 'none';
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>柳庄相法 · 知识脑图</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f5f1e8;
+  --paper: #fbf8f1;
+  --ink: #2a2520;
+  --ink-soft: #5a5048;
+  --ink-faint: #8a7f74;
+  --accent: #8b3a2e;
+  --accent-soft: #b8694f;
+  --gold: #b08a3e;
+  --line: #d8cfb8;
+  --line-soft: #ece4d0;
+  --card: #ffffff;
+  --shadow: 0 2px 8px rgba(60, 40, 20, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Noto Serif SC", "Source Han Serif", "Songti SC", "STSong", "SimSun", "宋体", serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.85;
+  font-size: 16px;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(176, 138, 62, 0.04) 0, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(139, 58, 46, 0.04) 0, transparent 40%);
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--paper);
+  border-right: 1px solid var(--line);
+  padding: 28px 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  box-shadow: 2px 0 8px rgba(60, 40, 20, 0.04);
+}
+
+.brand {
+  text-align: center;
+  padding-bottom: 22px;
+  margin-bottom: 20px;
+  border-bottom: 1px double var(--line);
+}
+
+.brand h1 {
+  font-size: 24px;
+  color: var(--accent);
+  letter-spacing: 6px;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.brand .sub {
+  font-size: 12px;
+  color: var(--ink-faint);
+  letter-spacing: 3px;
+}
+
+.nav {
+  list-style: none;
+}
+
+.nav-group {
+  margin-bottom: 6px;
+}
+
+.nav-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  border-radius: 4px;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.nav-toggle:hover {
+  background: var(--line-soft);
+  color: var(--accent);
+}
+
+.nav-toggle .arrow {
+  display: inline-block;
+  width: 14px;
+  font-size: 10px;
+  color: var(--ink-faint);
+  transition: transform 0.2s;
+}
+
+.nav-group.open > .nav-toggle .arrow {
+  transform: rotate(90deg);
+  color: var(--accent);
+}
+
+.nav-toggle .dot {
+  width: 5px;
+  height: 5px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+.nav-children {
+  list-style: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  padding-left: 24px;
+}
+
+.nav-group.open > .nav-children {
+  max-height: 2000px;
+}
+
+.nav-children li {
+  margin: 2px 0;
+}
+
+.nav-children a {
+  display: block;
+  padding: 6px 12px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 14px;
+  border-left: 2px solid transparent;
+  transition: all 0.2s;
+  border-radius: 0 4px 4px 0;
+}
+
+.nav-children a:hover {
+  color: var(--accent);
+  background: var(--line-soft);
+  border-left-color: var(--accent);
+}
+
+.nav-children a.active {
+  color: var(--accent);
+  background: var(--line-soft);
+  border-left-color: var(--accent);
+  font-weight: 500;
+}
+
+/* Main content */
+.main {
+  padding: 40px 56px;
+  max-width: 1100px;
+}
+
+.hero {
+  background: linear-gradient(135deg, var(--paper) 0%, var(--card) 100%);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 40px 48px;
+  margin-bottom: 36px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--gold), var(--accent));
+}
+
+.hero .title-zh {
+  font-size: 42px;
+  color: var(--accent);
+  letter-spacing: 12px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.hero .title-en {
+  font-size: 13px;
+  color: var(--ink-faint);
+  letter-spacing: 4px;
+  margin-bottom: 22px;
+  text-transform: uppercase;
+}
+
+.hero .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.hero .meta span::before {
+  content: "◆ ";
+  color: var(--gold);
+  font-size: 10px;
+}
+
+.hero .intro {
+  margin-top: 20px;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 2;
+  text-align: justify;
+}
+
+/* Sections */
+.section {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 32px 40px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+
+.section + .section {
+  margin-top: 28px;
+}
+
+.vol-tag {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  padding: 4px 14px;
+  border-radius: 14px;
+  font-size: 12px;
+  letter-spacing: 3px;
+  margin-bottom: 14px;
+}
+
+.section h2 {
+  font-size: 28px;
+  color: var(--accent);
+  margin-bottom: 6px;
+  letter-spacing: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+
+.section h2::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--gold);
+}
+
+.section h3 {
+  font-size: 20px;
+  color: var(--ink);
+  margin: 24px 0 12px;
+  padding-left: 14px;
+  border-left: 4px solid var(--accent);
+  letter-spacing: 2px;
+}
+
+.section h4 {
+  font-size: 16px;
+  color: var(--accent-soft);
+  margin: 18px 0 8px;
+  letter-spacing: 1px;
+}
+
+.section p {
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+  text-align: justify;
+  text-indent: 2em;
+}
+
+.section ul, .section ol {
+  margin: 8px 0 14px 28px;
+  color: var(--ink-soft);
+}
+
+.section li {
+  margin-bottom: 6px;
+  line-height: 1.85;
+}
+
+.section blockquote {
+  background: var(--line-soft);
+  border-left: 4px solid var(--gold);
+  padding: 14px 20px;
+  margin: 14px 0;
+  color: var(--ink-soft);
+  font-style: italic;
+  border-radius: 0 6px 6px 0;
+}
+
+.quote {
+  background: linear-gradient(135deg, #fdfaf2, #f8f1e0);
+  border: 1px dashed var(--gold);
+  border-radius: 6px;
+  padding: 18px 22px;
+  margin: 16px 0;
+  color: var(--ink);
+  position: relative;
+}
+
+.quote::before {
+  content: "「";
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  font-size: 28px;
+  color: var(--gold);
+  font-family: serif;
+  line-height: 1;
+}
+
+.quote::after {
+  content: "」";
+  margin-left: 4px;
+  color: var(--gold);
+  font-family: serif;
+}
+
+.quote-body {
+  padding-left: 22px;
+  font-style: normal;
+  line-height: 2;
+  color: var(--ink);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 16px 18px;
+  transition: all 0.2s;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.card h5 {
+  color: var(--accent);
+  font-size: 15px;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.card p {
+  text-indent: 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 16px 0;
+}
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { position: relative; height: auto; }
+  .main { padding: 24px 18px; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .hero .title-zh { font-size: 30px; letter-spacing: 6px; }
+  .section { padding: 22px 20px; }
+  .section h2 { font-size: 22px; }
+}
+
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 44px;
+  height: 44px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 100;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  color: var(--ink-faint);
+  font-size: 12px;
+  letter-spacing: 4px;
+}
+
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.divider span {
+  padding: 0 16px;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--line-soft);
+  color: var(--accent);
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  margin-right: 6px;
+  border: 1px solid var(--line);
+}
+
+.moles-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 14px;
+}
+
+.moles-table th {
+  background: var(--accent);
+  color: white;
+  padding: 10px;
+  text-align: left;
+  letter-spacing: 2px;
+  font-weight: 500;
+}
+
+.moles-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.moles-table tr:hover {
+  background: var(--line-soft);
+}
+
+.moles-table td:first-child {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.footer {
+  text-align: center;
+  padding: 30px;
+  color: var(--ink-faint);
+  font-size: 13px;
+  border-top: 1px solid var(--line);
+  margin-top: 40px;
+}
+
+.footer .seal {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  padding: 8px 18px;
+  border-radius: 4px;
+  letter-spacing: 6px;
+  margin-bottom: 12px;
+  border: 2px solid var(--accent);
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- 左侧导航 -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>柳庄相法</h1>
+      <div class="sub">LIUZHUANG XIANGFA</div>
+    </div>
+    <ul class="nav" id="nav">
+      <li class="nav-group">
+        <button class="nav-toggle"><span class="arrow">▶</span><span class="dot"></span>卷上 · 基础篇</button>
+        <ul class="nav-children">
+          <li><a href="#shengming">人之本源</a></li>
+          <li><a href="#rongku">荣枯得失</a></li>
+          <li><a href="#wuxing">五行论相</a></li>
+          <li><a href="#wuguan">五官总论</a></li>
+          <li><a href="#liufu">六府三才</a></li>
+          <li><a href="#twelve-palaces">十二宫</a></li>
+          <li><a href="#palaces-detail">十二宫详论</a></li>
+          <li><a href="#xue-tang">学堂</a></li>
+          <li><a href="#er-tong">婴孩章</a></li>
+          <li><a href="#liu-nian">流年运限</a></li>
+          <li><a href="#face-moles">男女面痣</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <button class="nav-toggle"><span class="arrow">▶</span><span class="dot"></span>卷上 · 身形篇</button>
+        <ul class="nav-children">
+          <li><a href="#shou">手相</a></li>
+          <li><a href="#jiao">脚相</a></li>
+          <li><a href="#bei-yao">背腰</a></li>
+          <li><a href="#xiong-ru">胸乳</a></li>
+          <li><a href="#fu-qi">腹脐</a></li>
+          <li><a href="#yin-sheng">阴生殖器</a></li>
+          <li><a href="#gu-dao">谷道</a></li>
+          <li><a href="#zhen-gu">枕骨</a></li>
+          <li><a href="#mao-fa">毛发</a></li>
+          <li><a href="#sheng-yin">声音</a></li>
+          <li><a href="#wo">卧姿</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <button class="nav-toggle"><span class="arrow">▶</span><span class="dot"></span>卷上 · 总论篇</button>
+        <ul class="nav-children">
+          <li><a href="#jingshen">精神气血</a></li>
+          <li><a href="#nan-ji">男人所忌</a></li>
+          <li><a href="#nv-ji">女人所忌</a></li>
+          <li><a href="#qi-se">吉区气色</a></li>
+          <li><a href="#ji-fang">吉凶方位</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <button class="nav-toggle"><span class="arrow">▶</span><span class="dot"></span>卷中 · 问答篇</button>
+        <ul class="nav-children">
+          <li><a href="#yongle">永乐百问</a></li>
+          <li><a href="#nan-gui">十八上贵</a></li>
+          <li><a href="#nan-fu">男人十孤</a></li>
+          <li><a href="#nan-xing">男人三十六刑</a></li>
+          <li><a href="#nv-gui">十二富贵</a></li>
+          <li><a href="#nv-xing">女人三十六刑</a></li>
+          <li><a href="#nv-gu">女人二十四孤</a></li>
+          <li><a href="#yi-gong">移宫论</a></li>
+          <li><a href="#nan-nv">男女宫</a></li>
+          <li><a href="#xing-fu">形局总论</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <button class="nav-toggle"><span class="arrow">▶</span><span class="dot"></span>卷中 · 五形篇</button>
+        <ul class="nav-children">
+          <li><a href="#five-shapes">五形总论</a></li>
+          <li><a href="#mu-xing">木形人</a></li>
+          <li><a href="#huo-xing">火形人</a></li>
+          <li><a href="#tu-xing">土形人</a></li>
+          <li><a href="#jin-xing">金形人</a></li>
+          <li><a href="#shui-xing">水形人</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <button class="nav-toggle"><span class="arrow">▶</span><span class="dot"></span>卷下 · 气色篇</button>
+        <ul class="nav-children">
+          <li><a href="#qi-color">气色总论</a></li>
+          <li><a href="#four-season">四时气色</a></li>
+          <li><a href="#palace-color">十二宫气色</a></li>
+          <li><a href="#hand-color">掌心气色</a></li>
+          <li><a href="#mouth-color">口角气色</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <button class="nav-toggle"><span class="arrow">▶</span><span class="dot"></span>卷下 · 流年篇</button>
+        <ul class="nav-children">
+          <li><a href="#liu-nian-flow">流年部位</a></li>
+          <li><a href="#chu-xing">出行</a></li>
+          <li><a href="#qiu-li">求利</a></li>
+          <li><a href="#qiu-ming">求名</a></li>
+          <li><a href="#ru-xue">入学</a></li>
+        </ul>
+      </li>
+      <li class="nav-group">
+        <button class="nav-toggle"><span class="arrow">▶</span><span class="dot"></span>卷下 · 灾病篇</button>
+        <ul class="nav-children">
+          <li><a href="#fu-qin-bing">父母病</a></li>
+          <li><a href="#xiong-di-bing">兄弟病</a></li>
+          <li><a href="#qi-qie-bing">妻妾病</a></li>
+          <li><a href="#ben-shen">本身疾病</a></li>
+          <li><a href="#nu-pu">奴仆病</a></li>
+          <li><a href="#jia-zhai">外门家宅</a></li>
+          <li><a href="#liu-xu">六畜旺衰</a></li>
+          <li><a href="#gong-song">公讼</a></li>
+        </ul>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- 主体内容 -->
+  <main class="main">
+    <!-- 封面 -->
+    <section class="hero" id="top">
+      <div class="title-zh">柳 莊 相 法</div>
+      <div class="title-en">LIUZHUANG · THE ART OF PHYSIOGNOMY</div>
+      <div class="meta">
+        <span>编撰者：袁柳庄（袁忠彻）</span>
+        <span>辑订：霞野头陀 · 云林子</span>
+        <span>刊本：光绪十五年（1889）新业山房记板</span>
+        <span>卷数：上 · 中 · 下 三卷</span>
+      </div>
+      <div class="intro">
+        袁柳庄先生神相全编，乃明代著名相术大家袁忠彻所传相法总集。本书以"人禀天地之气而生，五脏六腑形于五官，气色行于四时"为核心理论，系统论述相人之术——上卷论童幼、五官、六府、十二宫、身形各部；中卷以永乐百问答形式论富贵孤刑、五形格局；下卷论气色、流年、求谋、灾病。通篇强调"骨格为体，气色为用"，三停、十二宫、五岳、六曜为相之大纲。研习此书，可于动静取舍之间、毫厘疑似之际，识人之贤愚贵贱，察事之吉凶悔吝。
+      </div>
+    </section>
+
+    <!-- ================== 卷上 · 基础篇 ================== -->
+    <section class="section" id="shengming">
+      <span class="vol-tag">卷 上</span>
+      <h2>人之本源</h2>
+      <h3>人同天地</h3>
+      <p>人禀天地之气，与万物同生于阴阳之间。天有日月，人有两眼；天有五星，人有五官；天有四时，人有四肢；天有五行，人有五脏。故观人之相，先观其神，神完气足则根本厚，气色枯暗则命数衰。</p>
+      <div class="quote"><div class="quote-body">夫人之生也，禀阴阳而化形，因五行而立体。天以日月经天，人以眼目应之；天以五曜列宿，人以五官位之。相人之道，先观其神，次察其形。</div></div>
+      <h3>精神气血</h3>
+      <p>男以精神为主，女以血气为荣。男子精充则身旺，女子血足则面华。精枯则神散，血滞则色暗。神短者寿促，气足者命长。男子两目光彩、精神烱烱，必主大贵；女人面如桃花、唇红齿白，定是贤良。</p>
+    </section>
+
+    <section class="section" id="rongku">
+      <span class="vol-tag">卷 上</span>
+      <h2>荣枯得失</h2>
+      <p>人之荣枯，皆定于相之格局。骨格为主，气色为用。骨格虽好，气色不合，亦主困滞；骨格平常，气色光润，亦主小发。相书有云：相有定法，气无定形。</p>
+      <h3>五官得失</h3>
+      <p>耳为采听官，要硬要反（轮廓分明）；眉为保寿官，要秀要长；眼为监察官，要明要秀；鼻为审辨官，要隆要直；口为出纳官，要方要阔。五官俱正，必大富贵；五官俱偏，必主贫贱。</p>
+      <div class="cards">
+        <div class="card">
+          <h5>耳 · 采听官</h5>
+          <p>轮廓分明，贴脑而生，色白过面，主聪明长寿。一耳反者主贫，双耳贴脑者主贵。</p>
+        </div>
+        <div class="card">
+          <h5>眉 · 保寿官</h5>
+          <p>宜秀宜长，疏密有致，眉毛弯长过目者主兄弟多，眉散者少年不利。</p>
+        </div>
+        <div class="card">
+          <h5>眼 · 监察官</h5>
+          <p>要黑白分明，藏神不露，秀长有神者主贵。眼大无神主天，鱼尾纹多主劳碌。</p>
+        </div>
+        <div class="card">
+          <h5>鼻 · 审辨官</h5>
+          <p>山根挺直，年寿丰隆，准头圆润者主财禄。鼻梁偏斜者主心术不正，鼻孔掀露者主贫。</p>
+        </div>
+        <div class="card">
+          <h5>口 · 出纳官</h5>
+          <p>要方要阔，唇红齿白，呼出吸入有度。口大容拳者主贵，口小者主吝。</p>
+        </div>
+      </div>
+      <h3>七美八清</h3>
+      <p>相书有"七美"：耳白过面、眉长过目、目如点漆、口含四字、手如干姜、掌红如丹、立如踞虎。"八清"：眉清、睛清、鼻清、口清、齿清、声清、气清、神清。七美八清俱备，必主大贵。</p>
+    </section>
+
+    <section class="section" id="wuxing">
+      <span class="vol-tag">卷 上</span>
+      <h2>五行论相</h2>
+      <p>人禀五行之气而生，木瘦金方水主肥，土形敦厚背如龟，上尖下阔名曰火，五行形局细参详。</p>
+      <h3>五行之要</h3>
+      <ul>
+        <li><strong>木形人</strong>：色青、瘦长、挺直，得火则明，得金则成。</li>
+        <li><strong>火形人</strong>：色红、上尖下阔、头尖面赤，得土则安，得水则危。</li>
+        <li><strong>土形人</strong>：色黄、敦厚、背如龟，得金则富，得木则衰。</li>
+        <li><strong>金形人</strong>：色白、方阔、骨硬，得水则润，得火则克。</li>
+        <li><strong>水形人</strong>：色黑、肥厚、圆润，得木则生，得土则滞。</li>
+      </ul>
+      <div class="quote"><div class="quote-body">大哉五行！生物之理，万象悉焉。木须金方成器，火须水克方明，土得木而疏通，金得火而锻炼，水得土而止。各有生克制化，相须而成。</div></div>
+    </section>
+
+    <section class="section" id="wuguan">
+      <span class="vol-tag">卷 上</span>
+      <h2>五官总论</h2>
+      <p>五官者，耳眉眼鼻口也。一官成，十年之富贵；三官成，半生衣禄无缺；五官俱正，必定大贵。</p>
+      <h3>六曜星</h3>
+      <p>六曜即日月星辰加上眉毛（罗计）：一紫无星（日）、二月孛星（月）、三罗星（眉）、四计都星（其余星位）、五日太阳、左耳木星、右耳金星。五星俱正，自有富贵之相；若一大一小，则为相克之格。</p>
+    </section>
+
+    <section class="section" id="liufu">
+      <span class="vol-tag">卷 上</span>
+      <h2>六府三才</h2>
+      <h3>六府</h3>
+      <p>六府者，两辅骨（边上）、两颧骨（颧边）、命门（耳前）、地阁（下巴）。三停得正，六府得均，主腰金衣紫；六府不均者，孤独贫贱。</p>
+      <h3>三才</h3>
+      <p>三才者，上停（发际至山根，主初限）、中停（山根至鼻准，主中限）、下停（鼻准至地阁，主末限）。三停平等，少年发达；三停不均，一生困滞。</p>
+      <div class="quote"><div class="quote-body">上停长者大吉，中停长者仁义，下停长者富贵。三停均等，名曰三才合局，少年衣禄无忧。</div></div>
+    </section>
+
+    <section class="section" id="twelve-palaces">
+      <span class="vol-tag">卷 上</span>
+      <h2>十二宫总论</h2>
+      <p>十二宫者，相之大纲也。命宫、财帛、兄弟、田宅、男女、奴仆、妻妾、疾厄、迁移、官禄、福德、相貌，分布于面部十二部位。十二宫得位，一生富贵；十二宫失陷，百事难成。</p>
+    </section>
+
+    <section class="section" id="palaces-detail">
+      <span class="vol-tag">卷 上</span>
+      <h2>十二宫详论</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h5>一、命宫</h5>
+          <p>位居山根，主一生荣枯。光润无痕者，一生福禄；凹陷昏暗者，多灾多难。</p>
+        </div>
+        <div class="card">
+          <h5>二、财帛宫</h5>
+          <p>位居鼻准，准头丰隆、金甲齐明者主发财。鼻孔掀露则财难聚。</p>
+        </div>
+        <div class="card">
+          <h5>三、兄弟宫</h5>
+          <p>位居双眉。眉毛长秀、兄弟多；眉散逆乱，兄弟相克。</p>
+        </div>
+        <div class="card">
+          <h5>四、田宅宫</h5>
+          <p>位居两眼。眼光明润、田宅广；赤脉侵睛，先破祖业。</p>
+        </div>
+        <div class="card">
+          <h5>五、男女宫</h5>
+          <p>位居眼下三阳，又名卧蚕。丰满明润者子女多；枯陷则无子。</p>
+        </div>
+        <div class="card">
+          <h5>六、奴仆宫</h5>
+          <p>位居地阁（下巴）。地阁朝天，奴仆成群；地阁尖削，奴仆难聚。</p>
+        </div>
+        <div class="card">
+          <h5>七、妻妾宫</h5>
+          <p>位居鱼尾（眼尾）。光润无痕，妻贤四德；枯陷斜纹，婚姻不顺。</p>
+        </div>
+        <div class="card">
+          <h5>八、疾厄宫</h5>
+          <p>位居山根。年寿光润者无病疾，青暗多纹者多病灾。</p>
+        </div>
+        <div class="card">
+          <h5>九、迁移宫</h5>
+          <p>位居天仓（太阳穴）。丰隆光润者宜出行；低陷者出外不利。</p>
+        </div>
+        <div class="card">
+          <h5>十、官禄宫</h5>
+          <p>位居中正（额中）。骨起分明者官高；额陷者无功名。</p>
+        </div>
+        <div class="card">
+          <h5>十一、福德宫</h5>
+          <p>位居天庭（额上）。方正明润者福厚；偏陷者多劳碌。</p>
+        </div>
+        <div class="card">
+          <h5>十二、相貌宫</h5>
+          <p>总看五岳三停。骨正神清者贵；形局不正者贱。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="xue-tang">
+      <span class="vol-tag">卷 上</span>
+      <h2>学堂之论</h2>
+      <h3>八学堂</h3>
+      <p>八学堂：先大学堂（额）、东学堂（耳门前）、西学堂（耳门后）、南学堂（额下）、北学堂（颐下）、中大学堂（鼻）、明学堂（眼）、官学堂（口）。学堂光明者主文贵。</p>
+      <h3>四学堂</h3>
+      <p>四学堂：眼为明学堂，鼻为中大学堂，口为官学堂，颏为内学堂。一处光明，主功名可成。</p>
+    </section>
+
+    <section class="section" id="er-tong">
+      <span class="vol-tag">卷 上</span>
+      <h2>婴孩章</h2>
+      <p>童相与成人不同。相童之法，先看三岳（额、颧、鼻）、次看精神、再看骨肉。</p>
+      <h3>看童要诀</h3>
+      <ul>
+        <li><strong>三岳中正</strong>：上岳（额）高则多福利；中岳（鼻）高则家业成；下岳（颏）高则根基厚。</li>
+        <li><strong>骨硬肉坚</strong>：头骨硬则寿，肉坚实则少病。</li>
+        <li><strong>耳大贴脑</strong>：耳大而贴主聪明，轮廓分明者长寿。</li>
+        <li><strong>声音清响</strong>：声音清而响者贵，声如破锣者贫。</li>
+      </ul>
+      <h3>下地小儿</h3>
+      <p>下地小儿红润者好养；红黑色主月内亡；皮肤滑如鹅卵者贵；皮肤粗皱者难养。眉高耳硬者贵，眉头紧蹙者不吉。满月内能笑者聪慧，三岁能言者中正。</p>
+      <h3>腹中辨男女</h3>
+      <p>母腹中辨男女：母眼下黄明主女，青暗主男；母印堂红主男，唇白主女。腹中胎动均匀者主胎安，胎动急迫者主胎难。</p>
+    </section>
+
+    <section class="section" id="liu-nian">
+      <span class="vol-tag">卷 上</span>
+      <h2>流年运限</h2>
+      <p>流年者，年岁与面部部位之对应。自一岁至一百岁，分属面部不同部位，每十年为一限。</p>
+      <h3>三限之要</h3>
+      <ul>
+        <li><strong>初限（1-30岁）</strong>：行上停（发际至山根），看额相。</li>
+        <li><strong>中限（31-50岁）</strong>：行中停（山根至鼻准），看眼鼻。</li>
+        <li><strong>末限（51岁后）</strong>：行下停（鼻准至地阁），看嘴颐。</li>
+      </ul>
+      <p>凡看流年，先看骨格格局，再看流年气色。骨格为体，气色为用，体用相合则吉，相悖则凶。</p>
+    </section>
+
+    <section class="section" id="face-moles">
+      <span class="vol-tag">卷 上</span>
+      <h2>男女面痣</h2>
+      <p>面痣之论，男女各异。男面痣看官禄、女面痣看夫儿。痣有显晦，色有吉凶。</p>
+      <table class="moles-table">
+        <thead>
+          <tr><th>部位</th><th>男相</th><th>女相</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>父母宫（额）</td><td>主父母吉凶</td><td>主公婆关系</td></tr>
+          <tr><td>官禄宫（中正）</td><td>主官职升迁</td><td>主夫君贵显</td></tr>
+          <tr><td>田宅宫（眼）</td><td>主家业兴衰</td><td>主妆奁丰薄</td></tr>
+          <tr><td>男女宫（卧蚕）</td><td>主子息有无</td><td>主产育安危</td></tr>
+          <tr><td>妻妾宫（鱼尾）</td><td>主妻妾贤否</td><td>主夫妻和谐</td></tr>
+          <tr><td>财帛宫（鼻）</td><td>主财禄丰盈</td><td>主持家能力</td></tr>
+          <tr><td>疾厄宫（山根）</td><td>主健康灾病</td><td>主疾厄与生产</td></tr>
+          <tr><td>迁移宫（天仓）</td><td>主出行利钝</td><td>主归宁平安</td></tr>
+        </tbody>
+      </table>
+      <p>痣以明润为吉，枯暗为凶。痣黑如漆、点如丹者吉，痣白如粉、灰如泥者凶。</p>
+    </section>
+
+    <!-- ================== 身形篇 ================== -->
+    <section class="section" id="shou">
+      <span class="vol-tag">卷 上</span>
+      <h2>手相</h2>
+      <p>手为四支之要，一身之用。相手之法，先看五行，次察八卦，再看掌纹指节。</p>
+      <h3>手之三要</h3>
+      <ul>
+        <li><strong>手宜软不宜硬</strong>：手软如绵者富，硬如铁者贫。</li>
+        <li><strong>指宜长不宜短</strong>：指长者贵，指短者劳碌。</li>
+        <li><strong>掌宜厚不宜薄</strong>：掌厚者富，掌薄者财难聚。</li>
+      </ul>
+      <h3>八卦二十四宫</h3>
+      <p>掌中有八卦九宫：乾、坤、震、巽、坎、离、艮、兑。八卦分二十四宫，掌中明堂红润者主福寿。</p>
+      <div class="quote"><div class="quote-body">手如干姜，掌红如丹，指长而软，文武兼全。手如鸡爪，掌薄而硬，贫穷夭折。</div></div>
+    </section>
+
+    <section class="section" id="jiao">
+      <span class="vol-tag">卷 上</span>
+      <h2>脚相</h2>
+      <p>脚为一身之根，最要厚实。脚厚者根基稳，脚薄者根基浅。</p>
+      <h3>脚之三要</h3>
+      <ul>
+        <li><strong>足背有肉</strong>：足背丰厚者安，足背单薄者劳碌。</li>
+        <li><strong>足心有井</strong>：足心深陷者贵，扁平者劳碌。</li>
+        <li><strong>脚趾齐整</strong>：趾齐如莲瓣者贵，散乱者贫。</li>
+      </ul>
+      <h3>小儿脚根</h3>
+      <p>小儿若无脚根，名为"浮花"，不过一春；脚根端正者根基稳固，长大可期。</p>
+    </section>
+
+    <section class="section" id="bei-yao">
+      <span class="vol-tag">卷 上</span>
+      <h2>背腰</h2>
+      <h3>背</h3>
+      <p>背为一身之阳，宜厚宜圆。背有三甲：上甲（肩）、中甲（背）、下甲（腰）。三甲俱全者贵，背陷成坑者凶。</p>
+      <h3>腰</h3>
+      <p>腰为肾之府，宜圆宜厚。腰圆如葫芦者贵，腰细如柳者劳碌。背为阳、腹为阴，阴阳相称者吉。</p>
+      <div class="quote"><div class="quote-body">背有三甲如龟，腹有三垂如袋；上截大、下截小者贵；肩寒背陷者贫。腰圆腹厚者多子多福。</div></div>
+    </section>
+
+    <section class="section" id="xiong-ru">
+      <span class="vol-tag">卷 上</span>
+      <h2>胸乳</h2>
+      <h3>胸</h3>
+      <p>胸宜宽不宜狭，宜平满不宜凹陷。胸中骨起者贵，坑陷者凶。"胸如挂砚"者必主大贵。</p>
+      <h3>乳</h3>
+      <p>乳为生子之兆，宜黑宜坚，乳头朝下者生子。乳宜大不宜小，宜坚不宜软。乳晕深者子贵，乳晕浅者子少。</p>
+      <h3>乳之吉凶</h3>
+      <ul>
+        <li>乳大坚硬、晕黑如漆：多子且贵。</li>
+        <li>乳小色白、晕浅：子少而贱。</li>
+        <li>乳无晕、朝天：老来孤独。</li>
+        <li>乳如悬匏：主产厄。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="fu-qi">
+      <span class="vol-tag">卷 上</span>
+      <h2>腹脐</h2>
+      <h3>腹</h3>
+      <p>腹宜深宜厚，宜圆宜平。腹有三垂：上垂（胸下）、中垂（脐上）、下垂（脐下）。三垂俱全者大贵。腹近上者名贵，朝下者孤独。</p>
+      <h3>脐</h3>
+      <p>脐为五脏之总，脐深如杯者寿，脐浅如纸者夭。脐孔朝上者贫，朝下者富，脐大容指者贵。</p>
+    </section>
+
+    <section class="section" id="yin-sheng">
+      <span class="vol-tag">卷 上</span>
+      <h2>阴生殖器</h2>
+      <p>男子玉茎，女子玉门，皆主子息与寿元。</p>
+      <h3>男子</h3>
+      <p>玉茎宜长大，肾囊宜黑紫，隐而不露者贵。红嫩外露者夭，色黑无毛者孤。</p>
+      <h3>女子</h3>
+      <p>玉门宜小紧，毛宜黑长。阴上无毛、幼年阴露者多淫荡；阴毛过腹者多产。</p>
+    </section>
+
+    <section class="section" id="gu-dao">
+      <span class="vol-tag">卷 上</span>
+      <h2>谷道</h2>
+      <p>谷道宜闭宜藏，宜深宜紧。露毛者妨父母，色白者主孤。</p>
+      <div class="quote"><div class="quote-body">谷道深藏如井者贵，外露如卷者贱；毫生谷道者妨父母，赤色者多病灾。</div></div>
+    </section>
+
+    <section class="section" id="zhen-gu">
+      <span class="vol-tag">卷 上</span>
+      <h2>枕骨</h2>
+      <p>枕骨在耳后，高起者主贵。玉枕不成者多夭，能言而亡。枕骨有五种名目：仰月、月正、山字、彭祖、川字。彭祖者最贵。</p>
+    </section>
+
+    <section class="section" id="mao-fa">
+      <span class="vol-tag">卷 上</span>
+      <h2>毛发</h2>
+      <h3>发</h3>
+      <p>发宜黑宜密，宜软不宜硬。发黑如漆者贵，发黄如草者贫。"发夫三润"者贵，少白发者劳碌。眉毫多者主寿。</p>
+      <h3>毛</h3>
+      <p>毫为毛之最，宜生足为寄（脚背），眉为福寿。毫细为妙，毫粗硬者多凶。耳毫主寿，眉毫主福。</p>
+      <div class="quote"><div class="quote-body">发如黑漆、眉如远山、髭如卧虎，三处俱好者主大贵。毛如乱草者劳碌一生，毛如金丝者富贵双全。</div></div>
+    </section>
+
+    <section class="section" id="sheng-yin">
+      <span class="vol-tag">卷 上</span>
+      <h2>声音</h2>
+      <p>声为心之苗，音为肾之候。声音与心气相合。</p>
+      <h3>五声</h3>
+      <ul>
+        <li><strong>金声</strong>：响亮和润，主大贵。</li>
+        <li><strong>木声</strong>：高畅清远，主仁义。</li>
+        <li><strong>水声</strong>：缓急有度，主智慧。</li>
+        <li><strong>火声</strong>：焦暴急促，主暴戾。</li>
+        <li><strong>土声</strong>：厚重沉雄，主富贵。</li>
+      </ul>
+      <p>声如破锣者贫，声如洪钟者贵。声亮气足者福寿，声弱气短者夭折。</p>
+    </section>
+
+    <section class="section" id="wo">
+      <span class="vol-tag">卷 上</span>
+      <h2>卧姿</h2>
+      <p>卧姿见心性。仰卧者心宽，覆卧者劳碌，侧卧者智，左卧者吉。</p>
+      <h3>卧之四象</h3>
+      <ul>
+        <li><strong>仰卧</strong>：心性开阔，福泽绵长。</li>
+        <li><strong>覆卧</strong>>：劳碌辛苦，多忧少乐。</li>
+        <li><strong>侧卧</strong>：聪明机巧，善思善谋。</li>
+        <li><strong>蜷卧</strong>：胆怯无依，孤独贫困。</li>
+      </ul>
+    </section>
+
+    <!-- ================== 总论篇 ================== -->
+    <section class="section" id="jingshen">
+      <span class="vol-tag">卷 上</span>
+      <h2>精神气血</h2>
+      <p>男以精神为主，女以血气为荣。精神者，一身之君；血气者，五脏之母。精神足则形骸旺，血气衰则面目枯。</p>
+      <h3>男子以精为贵</h3>
+      <p>男子两目烱烱、神光浮动，必主大贵。精神短者寿促，气足者命长。印堂明润、神清气爽，主初限发达；中年末限亦看此。</p>
+      <h3>女子以血为荣</h3>
+      <p>女子面如桃花、唇红齿白，主大贵贤良。血枯则色暗，血足则色润。皮肤白如雪者多淫，唇红如丹者多子。</p>
+    </section>
+
+    <section class="section" id="nan-ji">
+      <span class="vol-tag">卷 上</span>
+      <h2>男人所忌</h2>
+      <p>男子相，有四十忌。犯一忌则减福禄，犯多忌则贫夭。</p>
+      <h3>四十忌</h3>
+      <div class="grid-2">
+        <div class="card"><h5>头忌</h5><p>头忌尖、忌偏、忌摇、忌俯。</p></div>
+        <div class="card"><h5>额忌</h5><p>额忌窄、忌陷、忌乱纹、忌发际低。</p></div>
+        <div class="card"><h5>眉忌</h5><p>眉忌散、忌交、忌压眼、忌尾垂。</p></div>
+        <div class="card"><h5>眼忌</h5><p>眼忌露、忌赤、忌昏、忌孤。</p></div>
+        <div class="card"><h5>鼻忌</h5><p>鼻忌削、忌露孔、忌弯斜、忌鹰嘴。</p></div>
+        <div class="card"><h5>口忌</h5><p>口忌薄、忌尖、忌乱动、忌吹火。</p></div>
+        <div class="card"><h5>耳忌</h5><p>耳忌反、忌开花、忌轮暗、忌无垂珠。</p></div>
+        <div class="card"><h5>腰忌</h5><p>腰忌偏、忌细、忌短、忌侧弯。</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="nv-ji">
+      <span class="vol-tag">卷 上</span>
+      <h2>女人所忌</h2>
+      <p>女子相，有二十四忌。</p>
+      <h3>二十四忌</h3>
+      <div class="grid-2">
+        <div class="card"><h5>面忌</h5><p>面忌尖、忌白粉、忌无血、忌如银盘。</p></div>
+        <div class="card"><h5>眉忌</h5><p>眉忌散、忌浓浊、忌压眼、忌如扫帚。</p></div>
+        <div class="card"><h5>眼忌</h5><p>眼忌露光、忌斜视、忌偷视、忌四白。</p></div>
+        <div class="card"><h5>鼻忌</h5><p>鼻忌孤峰、忌如刀削、忌如吹火。</p></div>
+        <div class="card"><h5>口忌</h5><p>口忌尖薄、忌乱动、忌露齿、忌如吹火。</p></div>
+        <div class="card"><h5>腰忌</h5><p>腰忌细寒、忌偏斜、忌无肉。</p></div>
+        <div class="card"><h5>乳忌</h5><p>乳忌小、忌色白、忌无晕、忌朝天。</p></div>
+        <div class="card"><h5>臀忌</h5><p>臀忌无肉、忌陷、忌削、忌外露。</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="qi-se">
+      <span class="vol-tag">卷 上</span>
+      <h2>吉区气色</h2>
+      <p>气色为相之灵。气在内为根本，色在外为发舒。气足色润则吉，气虚色暗则凶。</p>
+      <h3>五色应五脏</h3>
+      <ul>
+        <li><strong>青色</strong>：主肝，应春；青主忧思、惊吓、酒色过度。</li>
+        <li><strong>红色</strong>：主心，应夏；红主喜庆、酒食、官禄。</li>
+        <li><strong>黄色</strong>：主脾，应长夏；黄主财喜、田宅、根基。</li>
+        <li><strong>白色</strong>：主肺，应秋；白主丧服、刑伤、血光。</li>
+        <li><strong>黑色</strong>：主肾，应冬；黑主酒色、灾病、肾虚。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="ji-fang">
+      <span class="vol-tag">卷 上</span>
+      <h2>吉凶方位</h2>
+      <p>相中有"五形方位"之说：金形人利西方，木形人利东方，水形人利北方，火形人利南方，土形人利中央。</p>
+      <h3>秘传口诀</h3>
+      <div class="quote"><div class="quote-body">东方青色属木，看眼目与眉；南方赤色属火，看口舌与颧；西方白色属金，看鼻准与颧；北方黑色属水，看耳门与肾；中央黄色属土，看印堂与颐。</div></div>
+    </section>
+
+    <!-- ================== 卷中 · 问答篇 ================== -->
+    <section class="section" id="yongle">
+      <span class="vol-tag">卷 中</span>
+      <h2>永乐百问</h2>
+      <p>永乐年间，明成祖朱棣问袁柳庄先生相法，先生一一作答。问答之间，相理精微毕现。今择其要，分门别类，列述如下：</p>
+
+      <h3>问：妇人贵在何处？</h3>
+      <p>答：妇人贵在眉目肩背。子位在肚乳脐。凡面方者为虎面，必主大贵；项圆长、肩背平者，定是贤良。</p>
+      <h3>问：日月交锋反得善煞者何故？</h3>
+      <p>答：因清正大贵之气，游在口舌之间，色白而秀，少年自少也。</p>
+      <h3>问：老来皮干血色退何故？</h3>
+      <p>答：因土败致弱，血气不充，老来破败。此发后还须有失，世人宜慎。</p>
+      <h3>问：相分南北，何以辨之？</h3>
+      <p>答：南方火相，宜清瘦而色红；北方水相，宜肥厚而色黑。中原土相，宜敦厚而色黄。</p>
+      <h3>问：富贵在于何处？</h3>
+      <p>答：眉为彩监，眼为监察，鼻为审辨，口为出纳，耳为采听。五官俱正，则富贵自至。</p>
+      <h3>问：相好而心田善者，看何部位？</h3>
+      <p>答：心田之善，看卧蚕下。卧蚕丰满色润者心善，色暗形陷者心恶。</p>
+      <h3>问：父相好子相败，何故？</h3>
+      <p>答：父相虽好，子相格局若坏，亦能破家。故须父子相合，方能长久。</p>
+      <h3>问：病沉反生，无病反死何故？</h3>
+      <p>答：病沉者气血尚能运化，故能生；无病者面色忽变，气血已离，故反死。</p>
+      <h3>问：武臣不与文臣同相，何也？</h3>
+      <p>答：武臣要威猛刚毅，文臣要清秀端方。五官虽同，气度各异。</p>
+      <h3>问：何为三阳明旺？</h3>
+      <p>答：双目之下、卧蚕之上、男女宫之间，光明润泽者，谓三阳明旺，主大贵。</p>
+    </section>
+
+    <section class="section" id="nan-gui">
+      <span class="vol-tag">卷 中</span>
+      <h2>十八上贵</h2>
+      <p>男子有十八种上贵之相，择其要者列之：</p>
+      <div class="grid-2">
+        <div class="card"><h5>1. 头圆额广</h5><p>如日月光明，必主极品之贵。</p></div>
+        <div class="card"><h5>2. 眉长过目</h5><p>眉秀而长，色泽光润。</p></div>
+        <div class="card"><h5>3. 眼如点漆</h5><p>黑白分明，神光内藏。</p></div>
+        <div class="card"><h5>4. 鼻如悬胆</h5><p>山根挺直，准头丰隆。</p></div>
+        <div class="card"><h5>5. 口含四字</h5><p>口方唇红，齿白整齐。</p></div>
+        <div class="card"><h5>6. 耳白过面</h5><p>轮廓分明，贴脑而生。</p></div>
+        <div class="card"><h5>7. 声如洪钟</h5><p>响亮和润，气足神全。</p></div>
+        <div class="card"><h5>8. 背厚肩圆</h5><p>三甲俱全，腰圆如斗。</p></div>
+        <div class="card"><h5>9. 手如干姜</h5><p>掌红如丹，指软而长。</p></div>
+        <div class="card"><h5>10. 足下生龟</h5><p>足背有肉，足心有井。</p></div>
+        <div class="card"><h5>11. 腹如垂囊</h5><p>三垂俱全，深厚能容。</p></div>
+        <div class="card"><h5>12. 发如黑漆</h5><p>发密而黑，光可照人。</p></div>
+        <div class="card"><h5>13. 齿如编贝</h5><p>整齐洁白，坚而不疏。</p></div>
+        <div class="card"><h5>14. 舌如赤练</h5><p>红长而方，下有廉泉纹。</p></div>
+        <div class="card"><h5>15. 项如鸳鸯</h5><p>项圆而长，皮肤光润。</p></div>
+        <div class="card"><h5>16. 胸如挂砚</h5><p>胸骨隆起，平满宽阔。</p></div>
+        <div class="card"><h5>17. 腰圆如龟</h5><p>腰厚而圆，能容万象。</p></div>
+        <div class="card"><h5>18. 立如踞虎</h5><p>身正体端，气宇轩昂。</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="nan-fu">
+      <span class="vol-tag">卷 中</span>
+      <h2>男人十孤</h2>
+      <p>男子有十种孤相，主孤独无依：</p>
+      <ol>
+        <li><strong>面无神</strong>：精神枯槁者孤。</li>
+        <li><strong>骨露筋浮</strong>：肉少骨露者孤。</li>
+        <li><strong>眉散如草</strong>：眉毛散乱者兄弟无依。</li>
+        <li><strong>眼露四白</strong>：眼大无神者孤独。</li>
+        <li><strong>鼻如鹰嘴</strong>：阴险毒辣、孤独终老。</li>
+        <li><strong>口薄如纸</strong>：唇薄口小者福薄。</li>
+        <li><strong>耳反无珠</strong>：耳反无垂珠者不聚财。</li>
+        <li><strong>腰细如柳</strong>：腰细无肉者劳碌。</li>
+        <li><strong>脚薄无根</strong>：足薄无肉者根基浅。</li>
+        <li><strong>声如破锣</strong>：声焦气弱者贫夭。</li>
+      </ol>
+    </section>
+
+    <section class="section" id="nan-xing">
+      <span class="vol-tag">卷 中</span>
+      <h2>男人三十六刑</h2>
+      <p>男子有三十六刑相，主刑克骨肉、孤独贫夭。</p>
+      <h3>头面部刑</h3>
+      <ul>
+        <li>头尖、额窄、眉散、眼露、鼻削、口薄。</li>
+        <li>耳反、颧高、颐陷、唇掀、舌露、齿疏。</li>
+      </ul>
+      <h3>身形刑</h3>
+      <ul>
+        <li>背坑、腰细、臀削、腿薄、手硬、脚薄。</li>
+        <li>胸陷、腹凹、脐浅、乳小、毛粗、皮急。</li>
+      </ul>
+      <h3>神气刑</h3>
+      <ul>
+        <li>神昏、色滞、声焦、气短、步偏、坐歪。</li>
+        <li>笑邪、视偏、语乱、意浮、行偏、谋短。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="nv-gui">
+      <span class="vol-tag">卷 中</span>
+      <h2>十二富贵</h2>
+      <p>女子有十二种富贵之相：</p>
+      <ol>
+        <li><strong>头圆额广</strong>：主夫贵子荣。</li>
+        <li><strong>眉如新月</strong>：眉秀弯长，色泽光润。</li>
+        <li><strong>眼似秋波</strong>：黑白分明，神藏不露。</li>
+        <li><strong>鼻如悬胆</strong>：山根挺直，准头丰隆。</li>
+        <li><strong>口如樱桃</strong>：唇红齿白，呼出吸入有度。</li>
+        <li><strong>耳贴珠垂</strong>：轮廓分明，贴脑而生。</li>
+        <li><strong>声若鸣琴</strong>：清响和润。</li>
+        <li><strong>背厚肩圆</strong>：三甲俱全。</li>
+        <li><strong>腰圆腹厚</strong>：三垂俱备。</li>
+        <li><strong>手足软嫩</strong>：指掌红润。</li>
+        <li><strong>发黑如云</strong>：光泽照人。</li>
+        <li><strong>行坐端正</strong>：举止有度。</li>
+      </ol>
+    </section>
+
+    <section class="section" id="nv-xing">
+      <span class="vol-tag">卷 中</span>
+      <h2>女人三十六刑</h2>
+      <p>女子有三十六刑相，主刑克夫君、孤独贫夭。</p>
+      <h3>头面部刑</h3>
+      <ul>
+        <li>面尖、额陷、眉散、眼露、鼻削、口薄。</li>
+        <li>耳反、颧高、颐削、唇掀、舌露、齿疏。</li>
+      </ul>
+      <h3>身形刑</h3>
+      <ul>
+        <li>背坑、腰细、臀削、腿薄、手硬、脚薄。</li>
+        <li>胸陷、乳小、阴露、毛粗、皮急、肉浮。</li>
+      </ul>
+      <h3>神气刑</h3>
+      <ul>
+        <li>神昏、色滞、声焦、气短、步偏、坐歪。</li>
+        <li>笑邪、视偏、语乱、意浮、行偏、谋短。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="nv-gu">
+      <span class="vol-tag">卷 中</span>
+      <h2>女人二十四孤</h2>
+      <p>女子有二十四孤相，主孤独贫夭：</p>
+      <ol>
+        <li>面无血色、唇白如纸</li>
+        <li>眉散如草、尾垂</li>
+        <li>眼露四白、视偏</li>
+        <li>鼻削如刀、露孔</li>
+        <li>口薄如纸、尖</li>
+        <li>耳反无珠、色暗</li>
+        <li>声焦气短、破锣</li>
+        <li>背坑肩寒</li>
+        <li>腰细如柳、偏斜</li>
+        <li>乳小色白、晕浅</li>
+        <li>臀削无肉、外露</li>
+        <li>阴毛黄白、稀少</li>
+        <li>手足粗硬、掌薄</li>
+        <li>发黄如草、稀少</li>
+        <li>皮肤粗黑、无光</li>
+        <li>行坐不正、偏斜</li>
+        <li>笑邪视偏、语乱</li>
+        <li>意浮心浅、谋短</li>
+        <li>气血不调、经乱</li>
+        <li>面如银盘、粉多</li>
+        <li>印堂青暗、缺陷</li>
+        <li>山根枯陷、断裂</li>
+        <li>地阁尖削、无肉</li>
+        <li>人中浅短、无须</li>
+      </ol>
+    </section>
+
+    <section class="section" id="yi-gong">
+      <span class="vol-tag">卷 中</span>
+      <h2>移宫论</h2>
+      <p>移宫者，部位虽正而纹痕破之也。相貌、官禄、财帛三宫，最忌移纹。</p>
+      <h3>三宫移纹</h3>
+      <ul>
+        <li><strong>相貌宫移</strong>：骨相虽好，纹破则减贵。</li>
+        <li><strong>官禄宫移</strong>：额中虽正，纹破则退官。</li>
+        <li><strong>财帛宫移</strong>：鼻准虽丰，纹破则耗财。</li>
+      </ul>
+      <p>故相家言：部位不缺陷，气色不暗滞，纹痕不破格，方为全美。</p>
+    </section>
+
+    <section class="section" id="nan-nv">
+      <span class="vol-tag">卷 中</span>
+      <h2>男女宫</h2>
+      <p>男女宫位居眼下三阳，又名卧蚕。男子看子息，女子看产育。</p>
+      <h3>男子看子息</h3>
+      <p>卧蚕丰满光润者子多，枯陷者无子。卧蚕色黑如漆者子贵，色黄如泥者子愚。</p>
+      <h3>女子看产育</h3>
+      <p>卧蚕红润者产易，青暗者产难。乳大乳晕深者多子，乳小乳晕浅者少子。</p>
+    </section>
+
+    <section class="section" id="xing-fu">
+      <span class="vol-tag">卷 中</span>
+      <h2>形局总论</h2>
+      <p>人之形局，由骨格定；人之荣枯，由气色定。形局有"五形三格"之分。</p>
+      <h3>三格</h3>
+      <ul>
+        <li><strong>上格</strong>：五形俱备，三停均等，五官六府皆宜。</li>
+        <li><strong>中格</strong>：五形不全，三停略偏，五官有一二不足。</li>
+        <li><strong>下格</strong>：五形偏枯，三停失均，五官皆有破败。</li>
+      </ul>
+      <h3>形局之要</h3>
+      <p>形如材，气如色。材虽好而色枯，则暂荣而终败；材虽平常而色润，则小发而渐起。故骨格为体，气色为用，体用相合方为全美。</p>
+    </section>
+
+    <!-- ================== 五形篇 ================== -->
+    <section class="section" id="five-shapes">
+      <span class="vol-tag">卷 中</span>
+      <h2>五形总论</h2>
+      <p>人禀五行之气而生，金木水火土各有其形。形正则气正，形偏则气偏。</p>
+      <div class="quote"><div class="quote-body">大哉五行！生物之理，万象悉焉。相人之法，先观其形。形得其正者贵；形失其正者贱。</div></div>
+    </section>
+
+    <section class="section" id="mu-xing">
+      <span class="vol-tag">卷 中</span>
+      <h2>木形人</h2>
+      <p>木形人色青、瘦长、挺直。木形得金方成器，木形入火则明。</p>
+      <h3>木形之相</h3>
+      <ul>
+        <li><strong>形</strong>：瘦长挺直，骨节明显。</li>
+        <li><strong>色</strong>：青白、青或青黑。</li>
+        <li><strong>性</strong>：仁慈、直爽、多思。</li>
+        <li><strong>忌</strong>：木多金少者一世身柴；木形人毛发枯落则死。</li>
+      </ul>
+      <div class="quote"><div class="quote-body">木形落发即死无疑。书云：木形落发难延寿，金形落发反为祥。</div></div>
+    </section>
+
+    <section class="section" id="huo-xing">
+      <span class="vol-tag">卷 中</span>
+      <h2>火形人</h2>
+      <p>火形人色红、上尖下阔、头尖面赤。火形得土方安，火形入水则危。</p>
+      <h3>火形之相</h3>
+      <ul>
+        <li><strong>形</strong>：上尖下阔，头顶尖削。</li>
+        <li><strong>色</strong>：红、赤或红黄。</li>
+        <li><strong>性</strong>：急躁、聪明、外向。</li>
+        <li><strong>忌</strong>：火多水克则夭；火形人鼻塌者贫。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="tu-xing">
+      <span class="vol-tag">卷 中</span>
+      <h2>土形人</h2>
+      <p>土形人色黄、敦厚、背如龟。土形得金则富，土形入木则衰。</p>
+      <h3>土形之相</h3>
+      <ul>
+        <li><strong>形</strong>：敦厚稳重，背厚肩圆。</li>
+        <li><strong>色</strong>：黄、黄白或黄黑。</li>
+        <li><strong>性</strong>：忠厚、诚信、稳重。</li>
+        <li><strong>忌</strong>：土多木克则孤；土形人眉乱者劳碌。</li>
+      </ul>
+      <div class="quote"><div class="quote-body">土也，端厚仍深重，安详若泰山。心机难测度，信乃施为贤。背如龟、足如斗者，富贵双全。</div></div>
+    </section>
+
+    <section class="section" id="jin-xing">
+      <span class="vol-tag">卷 中</span>
+      <h2>金形人</h2>
+      <p>金形人色白、方阔、骨硬。金形得水则润，金形入火则克。</p>
+      <h3>金形之相</h3>
+      <ul>
+        <li><strong>形</strong>：方阔骨硬，面方耳正。</li>
+        <li><strong>色</strong>：白、白黄或白黑。</li>
+        <li><strong>性</strong>：刚毅、果断、有信。</li>
+        <li><strong>忌</strong>：金多火克则贫；金形人声破者夭。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="shui-xing">
+      <span class="vol-tag">卷 中</span>
+      <h2>水形人</h2>
+      <p>水形人色黑、肥厚、圆润。水形得木则生，水形入土则滞。</p>
+      <h3>水形之相</h3>
+      <ul>
+        <li><strong>形</strong>：肥厚圆润，肉多骨少。</li>
+        <li><strong>色</strong>：黑、黑黄或黑红。</li>
+        <li><strong>性</strong>：智慧、灵活、善谋。</li>
+        <li><strong>忌</strong>：水多土克则贫；水形人眼露者孤。</li>
+      </ul>
+    </section>
+
+    <!-- ================== 卷下 · 气色篇 ================== -->
+    <section class="section" id="qi-color">
+      <span class="vol-tag">卷 下</span>
+      <h2>气色总论</h2>
+      <p>气者，一身之精神，发于五脏；色者，气之外应，见于面部。气在内为本，色在外为用。气足则色润，气虚则色暗。</p>
+      <h3>气色三要</h3>
+      <ul>
+        <li><strong>气足色明</strong>：气色红润、光彩照人，主大吉。</li>
+        <li><strong>气滞色暗</strong>：气色枯滞、青黑暗淡，主灾祸。</li>
+        <li><strong>气散色夭</strong>：气色枯白、粉如死灰，主大凶。</li>
+      </ul>
+      <div class="quote"><div class="quote-body">外气在内色，色在外气。气足色必明，色暗气必衰。故观色可以知气，观气可以知命。</div></div>
+    </section>
+
+    <section class="section" id="four-season">
+      <span class="vol-tag">卷 下</span>
+      <h2>四时气色</h2>
+      <p>气色随四时而变。春宜青、夏宜红、秋宜白、冬宜黑，四季末宜黄。</p>
+      <h3>四季气色</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h5>春 · 青色</h5>
+          <p>春季主肝，色宜青。色青而明润者吉；青而枯暗者主忧思、惊吓。</p>
+        </div>
+        <div class="card">
+          <h5>夏 · 红色</h5>
+          <p>夏季主心，色宜红。色红而明润者吉；红而枯滞者主口舌、酒食。</p>
+        </div>
+        <div class="card">
+          <h5>秋 · 白色</h5>
+          <p>秋季主肺，色宜白。色白而明润者吉；白而枯暗者主丧服、刑伤。</p>
+        </div>
+        <div class="card">
+          <h5>冬 · 黑色</h5>
+          <p>冬季主肾，色宜黑。色黑而明润者吉；黑而枯滞者主灾病、肾虚。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="palace-color">
+      <span class="vol-tag">卷 下</span>
+      <h2>十二宫气色</h2>
+      <p>十二宫各有应时之色，色应其宫则吉，色不应则凶。</p>
+      <h3>各宫气色要点</h3>
+      <ul>
+        <li><strong>命宫（印堂）</strong>：宜红黄明润，忌青黑暗滞。</li>
+        <li><strong>财帛宫（鼻）</strong>：宜黄明，忌青赤。</li>
+        <li><strong>兄弟宫（眉）</strong>：宜红黄，忌青白。</li>
+        <li><strong>田宅宫（眼）</strong>：宜黄明，忌赤暗。</li>
+        <li><strong>男女宫（卧蚕）</strong>：宜黄明，忌青黑。</li>
+        <li><strong>奴仆宫（颐）</strong>：宜白明，忌黑枯。</li>
+        <li><strong>妻妾宫（鱼尾）</strong>：宜红润，忌青暗。</li>
+        <li><strong>疾厄宫（山根）</strong>：宜白亮，忌青暗。</li>
+        <li><strong>迁移宫（天仓）</strong>：宜黄明，忌青黑。</li>
+        <li><strong>官禄宫（中正）</strong>：宜红黄，忌青白。</li>
+        <li><strong>福德宫（天庭）</strong>：宜黄润，忌黑暗。</li>
+        <li><strong>相貌宫（五岳）</strong>：宜光明，忌昏暗。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="hand-color">
+      <span class="vol-tag">卷 下</span>
+      <h2>掌心气色</h2>
+      <p>掌心为内学堂，又名明堂。掌色红润者主聪明富贵，掌色枯暗者主愚钝贫夭。</p>
+      <h3>掌心之相</h3>
+      <ul>
+        <li>掌红如丹者富。</li>
+        <li>掌白如雪者贫。</li>
+        <li>掌青如靛者主灾病。</li>
+        <li>掌黑如墨者主死亡。</li>
+        <li>掌黄如泥者主财喜。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="mouth-color">
+      <span class="vol-tag">卷 下</span>
+      <h2>口角气色</h2>
+      <p>口为出纳官，色宜红润。口角红润者主酒食、口德；口角青暗者主疾病、灾祸。</p>
+      <h3>口角四色</h3>
+      <ul>
+        <li><strong>红</strong>：主酒食、喜庆。</li>
+        <li><strong>黄</strong>：主财喜、家和。</li>
+        <li><strong>白</strong>：主丧服、刑伤。</li>
+        <li><strong>黑</strong>：主疾病、死亡。</li>
+      </ul>
+    </section>
+
+    <!-- ================== 卷下 · 流年篇 ================== -->
+    <section class="section" id="liu-nian-flow">
+      <span class="vol-tag">卷 下</span>
+      <h2>流年部位</h2>
+      <p>流年部位图：自一岁至一百岁，分布于面部各处。每十年主一部位，逐年而行。</p>
+      <h3>三停与流年</h3>
+      <ul>
+        <li><strong>上停（初限）</strong>：1-30岁，主额相。</li>
+        <li><strong>中停（中限）</strong>：31-50岁，主眼鼻。</li>
+        <li><strong>下停（末限）</strong>：51岁后，主嘴颐。</li>
+      </ul>
+      <p>凡看流年，先观骨格之根基，次察流年之部位，再看气色之感应。三者合一，则流年吉凶可定。</p>
+    </section>
+
+    <section class="section" id="chu-xing">
+      <span class="vol-tag">卷 下</span>
+      <h2>出行</h2>
+      <p>出行看驿马、眉、耳门。驿马在命门（耳前），眉为彩监。</p>
+      <h3>出行三要</h3>
+      <ul>
+        <li><strong>驿马明</strong>：命门黄明者出行大吉。</li>
+        <li><strong>眉色好</strong>：眉红黄者出行顺利。</li>
+        <li><strong>耳门亮</strong>：耳门红润者一路平安。</li>
+      </ul>
+      <h3>出行方向</h3>
+      <p>青色重往东南反得重利；红色一重必作灾；赤色重宜往东北；水色宜西北方。</p>
+    </section>
+
+    <section class="section" id="qiu-li">
+      <span class="vol-tag">卷 下</span>
+      <h2>求利</h2>
+      <p>求利看财帛宫（鼻）、地库（颐）、印堂。三处光明红润者必得财利。</p>
+      <h3>求利之要</h3>
+      <ul>
+        <li><strong>印堂黄明</strong>：主近财。</li>
+        <li><strong>准头红润</strong>：主进财。</li>
+        <li><strong>地库白色</strong>：主横财。</li>
+        <li><strong>掌心红润</strong>：主进财。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="qiu-ming">
+      <span class="vol-tag">卷 下</span>
+      <h2>求名</h2>
+      <p>求名看官禄宫（中正）、印堂、驿马。官禄宫主科名，印堂主名声。</p>
+      <h3>求名之要</h3>
+      <ul>
+        <li><strong>官禄宫明</strong>：额中红黄明润者，必得名。</li>
+        <li><strong>印堂红紫</strong>：印堂红紫者，功名可成。</li>
+        <li><strong>驿马明润</strong>：驿马明润者，赴考必中。</li>
+        <li><strong>眉目清秀</strong>：眉清目秀者，文运亨通。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="ru-xue">
+      <span class="vol-tag">卷 下</span>
+      <h2>入学</h2>
+      <p>入学看命门、瘦耳、印堂、山根。此四处宜黄润明亮，忌红赤黑青。</p>
+      <h3>入学之要</h3>
+      <ul>
+        <li><strong>命门黄明</strong>：主入学顺利。</li>
+        <li><strong>瘦耳明亮</strong>：主读书有成。</li>
+        <li><strong>印堂黄润</strong>：主学业精进。</li>
+        <li><strong>山根白亮</strong>：主根基稳固。</li>
+      </ul>
+    </section>
+
+    <!-- ================== 卷下 · 灾病篇 ================== -->
+    <section class="section" id="fu-qin-bing">
+      <span class="vol-tag">卷 下</span>
+      <h2>父母病</h2>
+      <p>父母病看日角（父）、月角（母）。日角在左眉上，月角在右眉上。</p>
+      <h3>父母病色</h3>
+      <ul>
+        <li>父病：日角青暗主病重；白赤色必刑伤；红轻紫重。</li>
+        <li>母病：月角青暗主母病重；白赤色必刑伤；红轻紫重。</li>
+        <li>日角月角黄明者父母俱安；昏暗者有灾。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="xiong-di-bing">
+      <span class="vol-tag">卷 下</span>
+      <h2>兄弟病</h2>
+      <p>兄弟病看眉头、眉尾、兄弟宫（眉）。眉头青暗主兄弟有疾。</p>
+      <h3>兄弟病色</h3>
+      <ul>
+        <li>眉青暗：主兄弟有灾。</li>
+        <li>眉红润：主兄弟平安。</li>
+        <li>眉黄明：主兄弟吉庆。</li>
+        <li>眉枯白：主兄弟刑伤。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="qi-qie-bing">
+      <span class="vol-tag">卷 下</span>
+      <h2>妻妾病</h2>
+      <p>妻妾病看鱼尾（妻妾宫）、奸门（妻宫）。奸门青暗主妻有疾。</p>
+      <h3>妻妾病色</h3>
+      <ul>
+        <li>鱼尾明润：妻妾平安。</li>
+        <li>奸门青暗：妻有疾。</li>
+        <li>奸门红黄：妻妾吉。</li>
+        <li>奸门枯白：妻有刑伤。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="ben-shen">
+      <span class="vol-tag">卷 下</span>
+      <h2>本身疾病</h2>
+      <p>本身疾病看山根（疾厄宫）、命宫（印堂）、三阳。</p>
+      <h3>本身病色</h3>
+      <ul>
+        <li>山根青暗：主疾厄将至。</li>
+        <li>印堂黑暗：主灾病缠身。</li>
+        <li>三阳如靛：主死亡将至。</li>
+        <li>满面粉光：主大凶。</li>
+      </ul>
+      <div class="quote"><div class="quote-body">山根枯耳轮黑，命门暗口角青。书云：黑人气暗三阳如靛死必无。</div></div>
+    </section>
+
+    <section class="section" id="nu-pu">
+      <span class="vol-tag">卷 下</span>
+      <h2>奴仆病</h2>
+      <p>奴仆病看地阁（奴仆宫）、奴仆位。奴仆位在下停。</p>
+      <h3>奴仆病色</h3>
+      <ul>
+        <li>地阁青暗：奴仆有灾。</li>
+        <li>地阁黄明：奴仆平安。</li>
+        <li>下停枯暗：奴仆离散。</li>
+        <li>下停明润：奴仆成群。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="jia-zhai">
+      <span class="vol-tag">卷 下</span>
+      <h2>外门家宅</h2>
+      <p>家宅看山根、田宅宫（眼）、天仓（迁移宫）。</p>
+      <h3>家宅之相</h3>
+      <ul>
+        <li>山根发黄：家宅吉。</li>
+        <li>印堂紫红：家宅人口俱安。</li>
+        <li>天庭赤：防火灾。</li>
+        <li>地阁白：防小人。</li>
+        <li>黄明：主家宅兴盛。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="liu-xu">
+      <span class="vol-tag">卷 下</span>
+      <h2>六畜旺衰</h2>
+      <p>六畜之旺衰，看十二宫之辰位。寅卯为木位，看山林；午未为火位，看官禄。</p>
+      <h3>六畜之要</h3>
+      <ul>
+        <li>山林位黄明：六畜兴旺。</li>
+        <li>山林位青暗：六畜有灾。</li>
+        <li>田宅宫明：六畜平安。</li>
+        <li>奴仆宫暗：六畜损伤。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="gong-song">
+      <span class="vol-tag">卷 下</span>
+      <h2>公讼</h2>
+      <p>公讼看命宫、印堂、眉。印堂赤色主官非。</p>
+      <h3>公讼之相</h3>
+      <ul>
+        <li>印堂赤色：主官事缠身。</li>
+        <li>眉青暗：主诉讼失利。</li>
+        <li>山根青暗：主牢狱之灾。</li>
+        <li>命宫黄明：主诉讼得直。</li>
+      </ul>
+    </section>
+
+    <div class="divider"><span>终</span></div>
+
+    <div class="footer">
+      <div class="seal">柳庄相法</div>
+      <p>据《柳庄相法》清光绪十五年（1889）新业山房记板整理</p>
+      <p>© 知识脑图 · 整理编纂仅供学习参考</p>
+    </div>
+  </main>
+</div>
+
+<button class="back-to-top" id="backTop" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑</button>
+
+<script>
+// 折叠导航
+document.querySelectorAll('.nav-toggle').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    this.parentElement.classList.toggle('open');
+  });
+});
+
+// 高亮当前
+const links = document.querySelectorAll('.nav-children a');
+const sections = document.querySelectorAll('.section[id]');
+
+window.addEventListener('scroll', function(){
+  let current = '';
+  sections.forEach(function(s){
+    const top = s.getBoundingClientRect().top;
+    if (top < 150) current = s.id;
+  });
+  links.forEach(function(l){
+    l.classList.remove('active');
+    if (l.getAttribute('href') === '#' + current) {
+      l.classList.add('active');
+      // 自动展开父级
+      const group = l.closest('.nav-group');
+      if (group && !group.classList.contains('open')) {
+        // 暂时不自动展开，保持默认折叠
+      }
+    }
+  });
+  // 回到顶部
+  const btn = document.getElementById('backTop');
+  if (window.scrollY > 600) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+});
+
+// 平滑滚动
+links.forEach(function(l){
+  l.addEventListener('click', function(e){
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      const offset = target.getBoundingClientRect().top + window.scrollY - 20;
+      window.scrollTo({top: offset, behavior: 'smooth'});
+    }
+  });
+});
+</script>
+</body>
+</html>
