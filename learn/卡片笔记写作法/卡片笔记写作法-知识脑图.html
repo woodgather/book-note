@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《卡片笔记写作法》知识脑图</title>
+<style>
+  :root {
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --ink: #2b2f3a;
+    --ink-2: #5a6272;
+    --ink-3: #8a93a6;
+    --line: #e4e8f0;
+    --accent: #4f6bed;
+    --accent-soft: #eef1fe;
+    --c1: #4f6bed; /* 导论/序 */
+    --c2: #0ea5a4; /* 第一章 */
+    --c3: #e0a63b; /* 第二章 */
+    --c4: #d3639a; /* 第三章 */
+    --c5: #7b61d6; /* 后记/实践 */
+    --radius: 12px;
+    color-scheme: light;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.75;
+    font-size: 15px;
+  }
+
+  /* ===== 布局 ===== */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* ===== 左侧竖向导航 ===== */
+  .sidebar {
+    width: 300px;
+    min-width: 300px;
+    background: var(--panel);
+    border-right: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 32px;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #d9dee9; border-radius: 3px; }
+  .brand {
+    padding: 0 8px 16px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 14px;
+  }
+  .brand h1 { font-size: 17px; font-weight: 700; letter-spacing: .5px; }
+  .brand p { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+  .toc-tools { display: flex; gap: 8px; padding: 0 8px 10px; }
+  .toc-tools button {
+    flex: 1; border: 1px solid var(--line); background: #fafbfe;
+    border-radius: 8px; padding: 5px 0; font-size: 12px; color: var(--ink-2);
+    cursor: pointer; transition: .15s;
+  }
+  .toc-tools button:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+  .toc ul { list-style: none; }
+  .toc li { position: relative; }
+  .toc-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 8px; border-radius: 8px; cursor: pointer;
+    font-size: 13.5px; color: var(--ink-2); transition: background .15s;
+    user-select: none;
+  }
+  .toc-item:hover { background: var(--accent-soft); color: var(--accent); }
+  .toc-item .arrow {
+    width: 16px; height: 16px; flex: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--ink-3);
+    transition: transform .2s;
+  }
+  .toc-item .arrow.leaf { visibility: hidden; }
+  .toc li.open > .toc-item .arrow:not(.leaf) { transform: rotate(90deg); }
+  .toc .dot { width: 8px; height: 8px; border-radius: 3px; flex: none; }
+  .toc li ul { display: none; margin-left: 22px; border-left: 1px dashed var(--line); padding-left: 6px; }
+  .toc li.open > ul { display: block; }
+  .toc-item.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+  /* ===== 主区域 ===== */
+  .main { flex: 1; min-width: 0; padding: 30px 40px 80px; max-width: 1080px; }
+
+  .hero {
+    background: linear-gradient(135deg, #4f6bed 0%, #7b61d6 60%, #9a5cd0 100%);
+    color: #fff; border-radius: 16px; padding: 34px 38px; margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(79,107,237,.25);
+  }
+  .hero .kicker { font-size: 12.5px; letter-spacing: 2px; opacity: .85; margin-bottom: 8px; }
+  .hero h2 { font-size: 28px; font-weight: 800; letter-spacing: 1px; }
+  .hero .sub { margin-top: 10px; font-size: 14px; opacity: .92; }
+  .hero .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .hero .meta span {
+    background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28);
+    padding: 4px 14px; border-radius: 999px; font-size: 12.5px;
+  }
+
+  .section { margin-bottom: 34px; scroll-margin-top: 20px; }
+  .sec-head {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 6px;
+  }
+  .sec-head .badge {
+    font-size: 12px; font-weight: 700; color: #fff; padding: 3px 12px;
+    border-radius: 999px; letter-spacing: 1px; flex: none;
+  }
+  .sec-head h3 { font-size: 21px; font-weight: 800; }
+  .sec-desc { color: var(--ink-2); font-size: 13.5px; margin: 2px 0 14px 2px; }
+
+  /* ===== 脑图树 ===== */
+  .map { margin-left: 4px; }
+  .map ul { list-style: none; }
+  .map li { position: relative; padding-left: 26px; }
+  .map li::before {
+    content: ""; position: absolute; left: 0; top: 0;
+    width: 18px; height: 24px;
+    border-left: 2px solid var(--line);
+    border-bottom: 2px solid var(--line);
+    border-bottom-left-radius: 10px;
+  }
+  .map li:last-child::before { height: 22px; }
+  .map > ul > li::before { display: none; }
+
+  .node {
+    display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 8px 14px; margin: 5px 0;
+    cursor: pointer; transition: box-shadow .15s, border-color .15s;
+    box-shadow: 0 1px 3px rgba(30,40,70,.05);
+    user-select: none;
+  }
+  .node:hover { border-color: var(--accent); box-shadow: 0 3px 10px rgba(79,107,237,.12); }
+  .node .caret {
+    width: 18px; height: 18px; border-radius: 5px; flex: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--ink-3); background: #f1f3f9;
+    transition: transform .2s;
+  }
+  li.open > .node .caret { transform: rotate(90deg); }
+  li.leaf-node > .node { cursor: default; }
+  li.leaf-node > .node .caret { visibility: hidden; }
+
+  .lv1 > .node { font-size: 16.5px; font-weight: 700; padding: 11px 18px; border-left: 4px solid var(--c1); }
+  .lv2 > .node { font-size: 15px; font-weight: 600; border-left: 4px solid var(--c2); }
+  .lv3 > .node { font-size: 14px; font-weight: 600; border-left: 4px solid var(--c4); }
+  .lv4 > .node { font-size: 13.5px; font-weight: 500; color: var(--ink-2); border-left: 4px solid var(--c3); }
+
+  li.collapsed > ul { display: none; }
+
+  /* 卡片内容 */
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 12px 16px; margin: 6px 0;
+    font-size: 13.5px; color: var(--ink-2);
+    box-shadow: 0 1px 3px rgba(30,40,70,.04);
+    max-width: 720px;
+  }
+  .card b { color: var(--ink); }
+  .card ul { padding-left: 18px; margin: 4px 0; }
+  .card li { margin: 3px 0; padding-left: 4px; }
+  .card li::before { display: none; }
+  .card .hl { color: var(--accent); font-weight: 600; }
+  .card .quote { color: var(--ink-3); font-style: italic; }
+  .ktag {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 1px 9px; border-radius: 999px; margin-right: 6px; vertical-align: 1px;
+  }
+  .t-blue  { background: #e8edff; color: #4056d8; }
+  .t-green { background: #e2f7f6; color: #0b8b8a; }
+  .t-amber { background: #fdf3dd; color: #b07a12; }
+  .t-pink  { background: #fdeaf3; color: #c14b86; }
+  .t-purple{ background: #f0ebff; color: #6a51cf; }
+
+  /* 章节主题色 */
+  .theme-blue   .lv1 > .node { border-left-color: var(--c1); }
+  .theme-green  .lv1 > .node { border-left-color: var(--c2); }
+  .theme-amber  .lv1 > .node { border-left-color: var(--c3); }
+  .theme-pink   .lv1 > .node { border-left-color: var(--c4); }
+  .theme-purple .lv1 > .node { border-left-color: var(--c5); }
+  .theme-blue   .sec-head .badge { background: var(--c1); }
+  .theme-green  .sec-head .badge { background: var(--c2); }
+  .theme-amber  .sec-head .badge { background: var(--c3); }
+  .theme-pink   .sec-head .badge { background: var(--c4); }
+  .theme-purple .sec-head .badge { background: var(--c5); }
+
+  .footer { color: var(--ink-3); font-size: 12.5px; text-align: center; padding: 30px 0 10px; border-top: 1px solid var(--line); }
+
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; min-width: 0; position: static; height: auto; max-height: 320px; }
+    .main { padding: 20px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ================= 左侧竖向导航（默认折叠） ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>📚 卡片笔记写作法</h1>
+      <p>如何实现从阅读到写作 · 申克·阿伦斯（Sönke Ahrens）</p>
+    </div>
+    <div class="toc-tools">
+      <button id="tocExpand">全部展开</button>
+      <button id="tocCollapse">全部折叠</button>
+    </div>
+    <nav class="toc" id="toc">
+      <ul>
+        <li><div class="toc-item" data-target="sec-preface"><span class="arrow">▶</span><span class="dot" style="background:var(--c1)"></span>序言部分</div>
+          <ul>
+            <li><div class="toc-item leaf" data-target="sec-preface-cn"><span class="arrow leaf">•</span>中文版序</div></li>
+            <li><div class="toc-item leaf" data-target="sec-preface-r1"><span class="arrow leaf">•</span>推荐序一 · 像卢曼一样写卡片</div></li>
+            <li><div class="toc-item leaf" data-target="sec-preface-r2"><span class="arrow leaf">•</span>推荐序二 · 外脑思考</div></li>
+            <li><div class="toc-item leaf" data-target="sec-preface-r3"><span class="arrow leaf">•</span>推荐序三 · 知识复利</div></li>
+            <li><div class="toc-item leaf" data-target="sec-preface-tr"><span class="arrow leaf">•</span>译者序</div></li>
+          </ul>
+        </li>
+        <li><div class="toc-item" data-target="sec-intro"><span class="arrow">▶</span><span class="dot" style="background:var(--c1)"></span>导论</div>
+          <ul>
+            <li><div class="toc-item leaf" data-target="sec-intro"><span class="arrow leaf">•</span>写作与记笔记被忽视的真相</div></li>
+          </ul>
+        </li>
+        <li><div class="toc-item" data-target="sec-ch1"><span class="arrow">▶</span><span class="dot" style="background:var(--c2)"></span>第一章 · 绪论</div>
+          <ul>
+            <li><div class="toc-item leaf" data-target="ch1-know"><span class="arrow leaf">•</span>关于写作，你需要知道的</div></li>
+            <li><div class="toc-item leaf" data-target="ch1-luhmann"><span class="arrow leaf">•</span>卢曼卡片盒</div></li>
+            <li><div class="toc-item leaf" data-target="ch1-do"><span class="arrow leaf">•</span>关于写作，你需要做的</div></li>
+            <li><div class="toc-item leaf" data-target="ch1-tools"><span class="arrow leaf">•</span>需要具备的能力（工具箱）</div></li>
+            <li><div class="toc-item leaf" data-target="ch1-notes"><span class="arrow leaf">•</span>需要注意的几个问题</div></li>
+          </ul>
+        </li>
+        <li><div class="toc-item" data-target="sec-ch2"><span class="arrow">▶</span><span class="dot" style="background:var(--c3)"></span>第二章 · 四个基本原则</div>
+          <ul>
+            <li><div class="toc-item leaf" data-target="ch2-p1"><span class="arrow leaf">•</span>原则一 · 写作是唯一重要的事情</div></li>
+            <li><div class="toc-item leaf" data-target="ch2-p2"><span class="arrow leaf">•</span>原则二 · 简洁是最重要的</div></li>
+            <li><div class="toc-item leaf" data-target="ch2-p3"><span class="arrow leaf">•</span>原则三 · 没有人完全从零开始写作</div></li>
+            <li><div class="toc-item leaf" data-target="ch2-p4"><span class="arrow leaf">•</span>原则四 · 让工作推动你前进</div></li>
+          </ul>
+        </li>
+        <li><div class="toc-item" data-target="sec-ch3"><span class="arrow">▶</span><span class="dot" style="background:var(--c4)"></span>第三章 · 六个步骤</div>
+          <ul>
+            <li><div class="toc-item leaf" data-target="ch3-s1"><span class="arrow leaf">•</span>步骤一 · 区分独立又关联的任务</div></li>
+            <li><div class="toc-item leaf" data-target="ch3-s2"><span class="arrow leaf">•</span>步骤二 · 阅读和理解</div></li>
+            <li><div class="toc-item leaf" data-target="ch3-s3"><span class="arrow leaf">•</span>步骤三 · 记卡片盒笔记</div></li>
+            <li><div class="toc-item leaf" data-target="ch3-s4"><span class="arrow leaf">•</span>步骤四 · 发展想法</div></li>
+            <li><div class="toc-item leaf" data-target="ch3-s5"><span class="arrow leaf">•</span>步骤五 · 分享你的洞见</div></li>
+            <li><div class="toc-item leaf" data-target="ch3-s6"><span class="arrow leaf">•</span>步骤六 · 养成习惯</div></li>
+          </ul>
+        </li>
+        <li><div class="toc-item" data-target="sec-epilogue"><span class="arrow">▶</span><span class="dot" style="background:var(--c5)"></span>后记 & 实践</div>
+          <ul>
+            <li><div class="toc-item leaf" data-target="sec-epilogue"><span class="arrow leaf">•</span>后记</div></li>
+            <li><div class="toc-item leaf" data-target="sec-practice"><span class="arrow leaf">•</span>卡片笔记写作法实践（flomo）</div></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- ================= 主脑图区域 ================= -->
+  <main class="main">
+    <div class="hero">
+      <div class="kicker">KNOWLEDGE MIND MAP · 知识脑图</div>
+      <h2>《卡片笔记写作法》</h2>
+      <div class="sub">如何实现从阅读到写作 —— [德] 申克·阿伦斯（Sönke Ahrens）著 · 以卢曼卡片盒（Zettelkasten）为核心的高效写作与知识管理系统</div>
+      <div class="meta">
+        <span>🧠 核心方法：卢曼卡片盒笔记法</span>
+        <span>📦 卡片盒 ≈ 学术界的集装箱</span>
+        <span>⬇️ 自下而上发展主题</span>
+        <span>🔁 写作即思考的媒介</span>
+      </div>
+    </div>
+    <!-- ========== 序言部分 ========== -->
+    <section class="section theme-blue" id="sec-preface">
+      <div class="sec-head"><span class="badge">序言</span><h3>序言部分</h3></div>
+      <div class="sec-desc">四篇序言与译者序，从不同视角勾勒本书的价值：卡片盒是"系统"而非"技巧"。</div>
+      <div class="map"><ul>
+        <li class="lv1 leaf-node" id="sec-preface-cn"><div class="node"><span class="caret">▶</span>中文版序（申克·阿伦斯）</div>
+          <div class="card">借助法国哲学家/汉学家<span class="hl">弗兰索瓦·朱利安</span>的视角：与柏拉图式传统（关注计划、目标、身份、顿悟）不同，卡片盒依赖<span class="hl">非线性方式</span>——缓慢而稳定的改进，让思维产生持续、微妙的变化，事物间<span class="hl">相生相依</span>。这种思想在中国哲学中讨论得更广泛。本书刻意<span class="hl">与工具无关</span>，聚焦不受时间影响的基本原则；双向链接的新一代笔记工具涌现，卡片笔记观点已"出圈"。</div>
+        </li>
+        <li class="lv1 leaf-node" id="sec-preface-r1"><div class="node"><span class="caret">▶</span>推荐序一 · 像卢曼一样写卡片（阳志平）</div>
+          <div class="card"><ul>
+            <li><b>卢曼与纳博科夫卡片法的最大区别：多了一个盒子。</b>一个盒子保存内容本身，另一个盒子对内容进行索引与整理（元认知）——对应认知科学的"一阶操作"（认知）与"二阶操作"（元认知）。</li>
+            <li><b>必要难度理论（比约克夫妇）：</b>存储与提取负相关——存入越容易，提取越困难；略微增加存入难度（如课后整理笔记），未来提取更容易、记得更牢。</li>
+            <li>卢曼的四类索引：主题索引 / 相邻卡片主题概览 / 前后逻辑索引 / 笔记—笔记链接（最常用，常产生出乎意料的新思路）。</li>
+            <li>新一代软件（Roam Research、Zettelkasten 等）的两个核心贡献：文本颗粒度拆分更细（<span class="hl">组块 block</span>）；建立<span class="hl">双向引用</span>。</li>
+          </ul></div>
+        </li>
+        <li class="lv1 leaf-node" id="sec-preface-r2"><div class="node"><span class="caret">▶</span>推荐序二 · 外脑思考，突破思维局限的写作法（李峻 / 为知笔记 CEO）</div>
+          <div class="card">本书最重要的价值在<span class="hl">毫不起眼的日常工作流程和做笔记的细节</span>。仅凭意志力和坚持不可能完成极限挑战；只有完全换一种思维方式，才能愉悦地达成目标。把"拖延、坚持、压力、焦虑、知识管理、时间管理"这些热词从脑海里划掉——用卡片盒这类外部系统（外脑）替代对自律的依赖。</div>
+        </li>
+        <li class="lv1 leaf-node" id="sec-preface-r3"><div class="node"><span class="caret">▶</span>推荐序三 · 用卡片笔记积累你的知识复利（少楠 / flomo 联合创始人）</div>
+          <div class="card">卢曼一生积累 <span class="hl">90000 张知识卡片</span>，写了 58 本书。"项目：社会学理论。期限：30年。成本：零。"卡片笔记写作法本质上不是一个"技巧"，而是一个<span class="hl">系统</span>——存储和组织知识、扩展记忆、生成新连接和想法的系统。反直觉的思考方式：拒绝做知识的搬运工（必须用自己的话写下来）；记录知识而非信息；不机械分类，让关系自动生长。核心：<span class="hl">重要的不是记录，而是更好地思考</span>。</div>
+        </li>
+        <li class="lv1 leaf-node" id="sec-preface-tr"><div class="node"><span class="caret">▶</span>译者序（陈琳）</div>
+          <div class="card"><ul>
+            <li>常见笔记书的两种局限：只教形式（一页纸法、九宫格、思维导图）或只教原理（费曼、康奈尔、PQ4R）——学习成果<span class="hl">无法跨领域、跨时间累积</span>。</li>
+            <li><b>自下而上 vs 自上而下：</b>前者把功夫花在平时，笔记成为日后的生产性资料；后者以计划开始、围绕主题搜集资料，随机性大、风险高。</li>
+            <li>为什么记笔记：洞见来之不易，记笔记可以<span class="hl">巩固思考成果</span>；笔记系统是外接大脑，也是生产力助推器。</li>
+            <li>译者提醒：知道≠做到——闪念/文献/永久笔记是否集中一处、是否用自己的话、是否每天漫游笔记寻找联系，云泥之差。"存储强度"与"提取强度"宜按自身水平配比使用。需像剥洋葱一样解构原理，像修漆器一样分层复原实践。</li>
+          </ul></div>
+        </li>
+      </ul></div>
+    </section>
+
+    <!-- ========== 导论 ========== -->
+    <section class="section theme-blue" id="sec-intro">
+      <div class="sec-head"><span class="badge">导论</span><h3>导论：每个人都离不开写作</h3></div>
+      <div class="sec-desc">为什么"记笔记"这个占写作最大份量的环节，反而最少被人关注与改善？</div>
+      <div class="map"><ul>
+        <li class="lv1 leaf-node"><div class="node"><span class="caret">▶</span>写作是学习、研究和探究的媒介</div>
+          <div class="card">写作不一定指写论文或书，也包括日常记录。写作并不是学习、研究之后的事情，而是这些工作的<span class="hl">媒介</span>；每天的写作、记笔记和打草稿像呼吸一样重要，正因如此才容易被忽视。每一点脑力耕耘都从一条笔记开始。</div>
+        </li>
+        <li class="lv1 leaf-node"><div class="node"><span class="caret">▶</span>现有写作书籍的两类局限</div>
+          <div class="card"><ul>
+            <li>第一类讲<span class="hl">形式</span>：风格、结构、正确引用；第二类讲<span class="hl">心理</span>：如何在截止日期前完成而不精神崩溃。</li>
+            <li>共同问题：都从"空白屏幕/白纸"教起，忽略了<span class="hl">记笔记</span>这一关键步骤——而写作的实际开始远早于落笔，写下论点只是最小的部分。</li>
+            <li>笔记做得不好不会立即得到负面反馈，所以缺少改善需求（市场也缺少此类指导书）。</li>
+          </ul></div>
+        </li>
+        <li class="lv1 leaf-node"><div class="node"><span class="caret">▶</span>成功写作的真正分水岭：笔记做得好不好</div>
+          <div class="card">论文的质量与难易更多取决于<span class="hl">确定题目之前</span>所做的准备。把已写好的东西整理成新作品，远比从脑中组合再写在纸上容易。高智商与学术成功并无明显相关性（120 分以内）；起最大作用的是<span class="hl">自律/自控力</span>——但意志力是有限的资源、消耗很快。好消息：<span class="hl">自控和自律与环境的关系远大于与个人的关系</span>，而环境是可以改变的。当做事根本不需要意志力时，你就离成功不远了。</div>
+        </li>
+      </ul></div>
+    </section>
+    <!-- ========== 第一章 绪论 ========== -->
+    <section class="section theme-green" id="sec-ch1">
+      <div class="sec-head"><span class="badge">第一章</span><h3>绪论</h3></div>
+      <div class="sec-desc">卢曼卡片盒是什么、如何工作，以及围绕它你需要知道、去做、具备和注意的一切。</div>
+      <div class="map"><ul>
+
+        <li class="lv1" id="ch1-know"><div class="node"><span class="caret">▶</span>一、关于写作，你需要知道的</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>好的结构让写作顺利</div>
+              <div class="card">把"写论文"这种无定式任务分解成<span class="hl">小而清晰的独立任务</span>，一次只专注一件事，即可进入<span class="hl">心流</span>状态（契克森米哈赖）。具有优秀结构的笔记是可信任的写作宝库——不必记住每件事，把大脑从记忆负担中解放出来专注思考。拖延与动力不足源于<span class="hl">不合适的工作流程</span>，而非找不到主题。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>构建流程，而非制订计划</div>
+              <div class="card">做事情有清晰的结构 ≠ 制订计划。计划是强加条条框框，需要意志力支撑，不适合研究、思考等<span class="hl">开放式过程</span>——洞见无法预知。真正该做的是构建适合自己的工作流程，让<span class="hl">洞见和新想法成为驱动力</span>。计划制订者考完试就停止学习；真正的高手用能产生洞见、积累和激发新想法的方式学习。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>优秀学生 vs 成绩差的学生</div>
+              <div class="card">优秀学生跨学科阅读、追求更好的表达，因此需要一个系统来跟进不断增加的信息——也更容易患"<span class="hl">冒牌货综合征</span>"。成绩差的学生只在本学科打转、自我感觉良好（<span class="hl">邓宁—克鲁格效应</span>）。本书为优秀的学生、雄心的学者和好奇的非虚构写作者而写。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>好的解决方案往往简单且出人意料</div>
+              <div class="card">无需复杂系统，也无需重组已有的一切，从现在起换一种方式处理即可。处理复杂事情最好的方法是<span class="hl">尽可能保持简单</span>，用简化的结构搭建复杂的内容。方法 = 两个已验证方法的结合：<span class="hl">① 卢曼卡片盒技术</span>（本书核心）＋ <span class="hl">② 改变涉及工具的日常工作</span>（最好的工具嵌入工作流程才有用）。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>从 GTD 得到的启示</div>
+              <div class="card">戴维·艾伦《搞定》（GTD）强调<span class="hl">总体工作流程</span>：收集一切、标准化处理、定期检查 → 达到"心如止水"，专注眼前。但 GTD 不能直接用于洞见式写作：它依赖明确目标，而写作的洞见无法预先界定；写作非线性、需频繁切换任务。可借鉴的核心是<span class="hl">整体观</span>：所有环节环环相扣、无缝衔接；只有信任系统，大脑才会放开。</div>
+            </li>
+          </ul>
+        </li>
+
+        <li class="lv1" id="ch1-luhmann"><div class="node"><span class="caret">▶</span>二、卢曼卡片盒（Niklas Luhmann）</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>其人其事</div>
+              <div class="card">酿酒师之子，本是行政公务员；下班后阅读哲学、组织理论和社会学并做笔记。发现传统笔记无意义后改用卡片盒。把手稿寄给社会学家舍尔斯基 → 一年内借助卡片盒完成博士论文与定职论文 → 1968 年任比勒菲尔德大学社会学教授。经典回答："我的研究课题是<span class="hl">社会理论，持续时间 30 年，成本为零</span>。"30 年间出版 58 本著作、数百篇文章，身后又出版六七部手稿。高产只能用<span class="hl">独特的工作方法</span>解释（施密特研究）："我并不是什么事都自己想。它们主要是在卡片盒里发生的。"他从不强迫自己："我只做容易的事情。"</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>两个卡片盒 + 工作原理</div>
+              <div class="card"><ul>
+                <li><span class="ktag t-green">文献卡片盒</span>文献及对内容的简要说明（一面书目信息，一面简要笔记，用完整句子、明确注明来源）。</li>
+                <li><span class="ktag t-pink">主卡片盒</span>针对阅读内容收集和产生的<span class="hl">想法</span>——每个想法一张卡片、只写一面，简明扼要。</li>
+                <li>记笔记时留意盒中已有笔记；新笔记常成为较长<span class="hl">笔记链</span>的一部分，孤立存在的笔记很少。</li>
+                <li>不是照抄，而是<span class="hl">从一个语境转化到另一个语境</span>（像翻译），尽量真实保持原意。</li>
+              </ul></div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>编号、链接与索引</div>
+              <div class="card"><ul>
+                <li><b>编号：</b>不按主题，而是用数字+字母组合（如 21 → 22 → 21a → 21/3d7a6 → 21/3d7a7）永久标识每条笔记，分支出思想串。</li>
+                <li><b>链接：</b>每次添加笔记都检查相关笔记并建立联系（类似超链接）；同一条笔记可加入不同上下文。⚠️ 不是个人维基或数据库——微妙差异才是系统独特之处。</li>
+                <li><b>索引：</b>引用一两条笔记作为进入某主题/思路的<span class="hl">切入点</span>。</li>
+                <li><b>自下而上：</b>不预设主题顺序，主题从笔记积累中自然开发。</li>
+              </ul></div>
+            </li>
+          </ul>
+        </li>
+
+        <li class="lv1" id="ch1-do"><div class="node"><span class="caret">▶</span>三、关于写作，你需要做的</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>写作是思考的最佳催化剂</div>
+              <div class="card">记笔记不是最关键的工作，<span class="hl">思考、阅读、理解和提出想法</span>才是，笔记只是其具体成果。手中随时有笔，边思考边记。神经科学家尼尔·利维："纸上的笔记并没有让智力活动变得更容易，而是<span class="hl">让它成为可能</span>。"想真正理解某件事，就必须把它转化为自己的语言。费曼、富兰克林同样强调外显化。</div>
+            </li>
+            <li class="lv2"><div class="node"><span class="caret">▶</span>撰写论文的八个步骤</div>
+              <ul>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>① 记闪念笔记</div><div class="card">手边随时有记录工具，捕捉脑海中闪现的每个想法，不必多虑如何写。放入"收集箱"稍后统一处理。若时间宽裕也可直接写成永久笔记。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>② 记文献笔记</div><div class="card">无论读什么都做笔记：写下不想忘记或可能用到的内容。<span class="hl">非常简短、精心选择、用自己的语言</span>，对引文格外挑剔（不要抄写而不理解）。与参考书目细节一起存入文献管理系统。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>③ 记永久笔记</div><div class="card">最好每天一次，阅读第①②步的笔记（在遗忘前），思考它们与自己研究的关联：矛盾？一致？印证？互补？能否结合出新想法？为每个想法<span class="hl">准确写下一条笔记</span>：完整句子、标注来源、精确清晰简短，像为别人写作一样。之后扔掉闪念笔记、文献笔记入文献系统——重要内容进入卡片盒后即可忘记它们。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>④ 添加到卡片盒</div><div class="card">a. 归档在一条或多条相关笔记之后（软件可多处挂载；纸笔则放最合适处并手写链接）；b. 给相关笔记<span class="hl">添加链接</span>；c. 确保以后能找到：从索引页链接或做切入点链接。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>⑤ 自下而上发展主题</div><div class="card">看系统内部：有什么、缺什么、出现了什么问题。广泛阅读来挑战和加强论点。不要为某个主题头脑风暴，而是<span class="hl">看卡片盒哪里形成了笔记链、想法群</span>；跟着兴趣走，选择有望获得最深刻见解的路。即使盒中空无一物，也永不从零开始。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>⑥ 确定写作主题</div><div class="card">积攒足够想法后，主题<span class="hl">基于你已有的素材</span>而非未读文献可能提供的未知想法。收集相关笔记复制到大纲软件、排好顺序，看缺什么、多什么。不等一切集齐，积极阅读和记笔记以改进论点与架构。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>⑦ 把笔记变成初稿</div><div class="card">不是简单复制，而是<span class="hl">转化成连贯内容</span>、嵌入论点上下文，并从笔记中得出论点；检查漏洞、完善或改变论点。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>⑧ 编辑、校对</div><div class="card">修订成稿，然后开始写下一篇。实际上你从不会只写一个想法——而是在不同阶段同时写出很多想法，这正是卡片盒的真正优势；同时进行多个思考，不让任何好想法白白浪费。</div></li>
+              </ul>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>日常工作与偶然学习</div>
+              <div class="card">典型一天：阅读并记笔记 → 在卡片盒中建立关联 → 激发新想法 → 记下并加入讨论 → 发现论点漏洞回卡片盒找缺失链接 → 研究脚注补充引用。偶然遇到的东西占学习的大部分——<span class="hl">每天吸收一点、按兴趣过滤</span>，最好的想法往往出乎意料。保持多项思考并行的灵活性。</div>
+            </li>
+          </ul>
+        </li>
+
+        <li class="lv1" id="ch1-tools"><div class="node"><span class="caret">▶</span>四、关于写作，你需要具备的能力（工具箱）</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>核心思想：专注根本，拒绝复杂化</div>
+              <div class="card">NASA 太空笔 vs 俄罗斯铅笔（传说）的教训：<span class="hl">专注事情的根本，而不是把事情不必要地复杂化</span>。画线、SQ3R、写日记等技巧彼此不配合，反而使工作一团糟。好的工具不是增加功能，而是<span class="hl">减少对主要工作（思考）的干扰</span>。所需只是：一个不受干扰可专心思考的大脑 + 一个可靠的笔记系统。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>四种工具</div>
+              <div class="card"><ul>
+                <li><span class="ktag t-blue">书写工具</span>纸和笔即可，随时记录闪念，不分散注意力；所有记录集中到一个"收集箱"，最好一天内处理完。</li>
+                <li><span class="ktag t-green">文献管理工具</span>推荐 Zotero（免费）：ISBN/DOI 自动生成条目、植入 Word 等编辑器插入引文、自动匹配引用格式。</li>
+                <li><span class="ktag t-amber">卡片盒</span>纸质（A6 卡片）或软件。推荐支持<span class="hl">反向链接</span>的工具：Obsidian、Roam Research、Zettlr、ZKN3 等。</li>
+                <li><span class="ktag t-pink">编辑工具</span>Word / LaTeX 等，与文献管理器配合避免手动输入参考文献。</li>
+              </ul></div>
+            </li>
+          </ul>
+        </li>
+
+        <li class="lv1" id="ch1-notes"><div class="node"><span class="caret">▶</span>五、关于写作，你需要注意的几个问题</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>工具 ≠ 方法</div>
+              <div class="card">备齐工具只需 5~10 分钟，但工具好坏取决于<span class="hl">运用它们的能力</span>（长笛的比喻）。不理解使用方法就"试一试"，结果必然失望——卡片盒很可能沦为笔记归档，或更糟：<span class="hl">思想的坟场</span>。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>知其然，更知其所以然</div>
+              <div class="card">比勒菲尔德大学的长期项目已公开卢曼笔记的研究成果。不仅要知如何工作、如何使用，更要知<span class="hl">为什么有效</span>——这样才能按自己的需要调整。记住几个基本原则、理解系统背后逻辑，任何人都可以复制卢曼的方法。</div>
+            </li>
+          </ul>
+        </li>
+
+      </ul></div>
+    </section>
+    <!-- ========== 第二章 四个基本原则 ========== -->
+    <section class="section theme-amber" id="sec-ch2">
+      <div class="sec-head"><span class="badge">第二章</span><h3>有效写作的四个基本原则</h3></div>
+      <div class="sec-desc">写作是唯一重要的事情 · 简洁是最重要的 · 没有人完全从零开始写作 · 让工作推动你前进。</div>
+      <div class="map"><ul>
+
+        <li class="lv1" id="ch2-p1"><div class="node"><span class="caret">▶</span>原则一：写作是唯一重要的事情</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>学习本身就是做研究</div>
+              <div class="card">学生视角把写论文当作一项独立技能；本书假设：<span class="hl">学习是一个独立的研究过程</span>，学习是为了获得无法预知的洞见并公之于众。学术界没有私密知识——有想法只有自己知道等于没想法，无法重现的论据不算论据。威廉·冯·洪堡："教授不是为了学生而存在……两者都只为<span class="hl">真理</span>而存在。"真理永远属于公共事务，令人信服的论点必须前后一致、基于事实。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>专注写作 ≠ 减少其他投入</div>
+              <div class="card">带着"写作"这一明确目的去做每件事，反而更投入、更有的放矢：阅读更专注（知道要用自己的语言详述）、更容易记住要点、学会区分"听起来好的论点"与"实际上好的论点"。改变对写作重要性的看法，也会改变对其他事情的看法。<span class="hl">刻意练习</span>是更好工作的唯一重要方法。</div>
+            </li>
+          </ul>
+        </li>
+
+        <li class="lv1" id="ch2-p2"><div class="node"><span class="caret">▶</span>原则二：简洁是最重要的</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>集装箱的启示（麦克莱恩）</div>
+              <div class="card">1956 年"理想X号"首航：集装箱本质上只是一个箱子，却重塑全球贸易格局。其他船东失败的原因：<span class="hl">把新工具融入旧的工作方式，而不改变基础设施和日常工作</span>。麦克莱恩明白重要的是整个贸易链——把从包装到港口的每个环节统一起来后，二阶效应启动自我强化的正反馈循环。▶ 记笔记同理：传统方式（画线、摘抄、按主题分堆）就像早期船东。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>卡片盒 = 学术界的集装箱</div>
+              <div class="card">所有内容<span class="hl">标准化为相同格式</span>存入同一个卡片盒。传统系统的问题是把笔记"存放在哪个主题下"；卡片盒系统考虑的是"想在哪个主题下<span class="hl">再见到</span>它"。按主题分类的两难：主题内笔记越多越难找 / 主题层级越多越混乱。传统系统为了找你想找的、让大脑疲于回忆；卡片盒为了<span class="hl">呈现你已忘记的</span>、让大脑专注思考。越积累越有价值，而非越积累越乱。</div>
+            </li>
+            <li class="lv2"><div class="node"><span class="caret">▶</span>三类笔记（达到群聚效应的关键）</div>
+              <ul>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>闪念笔记 Fleeting Notes</div><div class="card">对信息的提醒，任何方式记录，<span class="hl">一两天内</span>处理后扔掉。画线、空白处评论也只算闪念笔记——不及时处理很快变得毫无用处。它只在你能及时回顾并转化为正式笔记时才有价值。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>永久笔记 Permanent Notes</div><div class="card">以<span class="hl">永久可理解</span>的方式包含必要信息，永不丢弃，以同样方式存放于同一处。即使忘记取材的上下文仍能读懂——它<span class="hl">不只是备忘录，而是以书面形式包含实际思想或观点的文本</span>（至关重要的区别）。标准化格式是建立群聚效应的前提。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>项目笔记 Project Notes</div><div class="card">只与特定项目相关：手稿评论、文献收集、大纲、草稿片段、备忘录、待办、草稿本身。保存在特定项目文件夹，项目结束即丢弃或存档。与卡片盒、文献系统清晰分开，可随意修改而不影响卡片盒。</div></li>
+              </ul>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>三个典型错误</div>
+              <div class="card"><ul>
+                <li><b>① 把所有笔记都当永久笔记：</b>什么都记 → 好笔记被淹没，无法实现群聚效应（整柜笔记本却发不出一篇文章）。</li>
+                <li><b>② 只收集与特定项目相关的笔记：</b>每个项目完成后重新开始，与项目无关的信息全部丢失；为每个兴趣建文件夹 → 累积大量未完成项目。</li>
+                <li><b>③ 把所有笔记都当闪念笔记：</b>只收集未处理的闪念 → 混乱、不断想从头再来。</li>
+                <li>共同点：笔记越多越难找到恰当的那个——本应是<span class="hl">学得越多笔记越有用</span>的复利系统。</li>
+              </ul></div>
+            </li>
+          </ul>
+        </li>
+
+        <li class="lv1" id="ch2-p3"><div class="node"><span class="caret">▶</span>原则三：没有人完全从零开始写作</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>"从白纸开始"是彻头彻尾的误解</div>
+              <div class="card">学习指南的线性路线（先定题→再研究→再写作）不可行：<span class="hl">解释学循环</span>（加达默尔）——每一项知识努力都从已有观念开始并在探究中转化。真正长久的建议：<span class="hl">拿着笔阅读</span>，把思想发展落实到纸上，建立不断增长的外部思想库。题目、问题和论点会自然地从材料中涌现。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>头脑风暴的谬误</div>
+              <div class="card">提倡以头脑风暴为出发点令人惊讶：想法并非来自头脑风暴，而<span class="hl">来自外部</span>——阅读、讨论、他人的意见。"写作前先想好要写什么"既太晚（已错过积累书面资源的机会）也太早（该做的事还没做）——线性安排本身有问题。大脑既不客观也不可靠。用卡片盒打破线性顺序后，问题从"找不到主题"变成"<span class="hl">可写的主题太多</span>"。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>每一步都在做决定</div>
+              <div class="card">把时间用在已有的兴趣上：阅读、思考、写作——有趣的问题自动出现。不勉强在预设方向上产生洞见，最大限度降低失去兴趣、推倒重来的风险。非线性 ≠ 放任自流：清晰可靠的结构依然至关重要。</div>
+            </li>
+          </ul>
+        </li>
+
+        <li class="lv1" id="ch2-p4"><div class="node"><span class="caret">▶</span>原则四：让工作推动你前进</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>吸热反应式的工作</div>
+              <div class="card">放热反应要不断添加能量（意志力）维持；<span class="hl">吸热反应一旦被触发就自行继续、释放能量</span>。好的工作流程成为良性循环：积极体验激励接受下一个任务 → 更好完成 → 更享受。靠外部奖励（写完一章才娱乐）只是短期方案；只有<span class="hl">工作本身就是激励</span>，驱动力才可持续（健身教练西格的案例）。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>反馈循环与成长型思维</div>
+              <div class="card">及时而具体的反馈是提高能力的唯一途径；寻求反馈而非回避是学习者的第一美德（德韦克）。<span class="hl">成长型思维</span>：从变好中获得快乐（内在回报）；<span class="hl">固定型思维</span>：从赞美中获得快乐（外在回报）→ 停留舒适区。被表扬的"天才"更容易陷入固定型思维。线性模式下反馈机会少且分散；循环方法提供许多<span class="hl">小的、内置的反馈循环</span>：拿笔阅读检验理解 → 文献笔记变永久笔记暴露矛盾 → 越写越清楚。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>卡片盒与大脑同步成长</div>
+              <div class="card">卡片盒不是简单的笔记集合——其可用性随规模<span class="hl">指数增长</span>：包含的内在联系提供的不只是孤立事实，还有成熟的思想与不期而遇的联想。大脑同理：已有信息越互联互通，学习新信息越容易（"思维模型的网格"，芒格）。真正富有成效的是<span class="hl">卡片盒与大脑之间的动态关系</span>。</div>
+            </li>
+          </ul>
+        </li>
+
+      </ul></div>
+    </section>
+    <!-- ========== 第三章 六个步骤 ========== -->
+    <section class="section theme-pink" id="sec-ch3">
+      <div class="sec-head"><span class="badge">第三章</span><h3>成功写作的六个步骤</h3></div>
+      <div class="sec-desc">明确区分任务 → 阅读和理解 → 记卡片盒笔记 → 发展想法 → 分享洞见 → 养成习惯。</div>
+      <div class="map"><ul>
+
+        <!-- 步骤一 -->
+        <li class="lv1" id="ch3-s1"><div class="node"><span class="caret">▶</span>步骤一：明确区分独立而又相关联的任务</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>全神贯注于每一项任务</div>
+              <div class="card">持续干扰使效率大幅下降。看电视削弱儿童注意力；电视新闻政治板块的平均播报长度逐年下降。我们被越来越多的干扰包围，提升注意力的机会越来越少。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>不要一心多用</div>
+              <div class="card">声称擅长多任务的人实测<span class="hl">效率更低</span>，且多任务本身会进一步降低多任务能力。所谓"同时"其实是在任务间<span class="hl">快速转移注意力</span>，每次转移都消耗转移能力。自认为擅长的原因：缺乏客观对照 + <span class="hl">曝光效应</span>（把熟悉程度误当技能）。写作包含阅读、理解、思索、结构化、编辑等注意力需求各不相同的任务——必须切实分开。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>不同的任务需要不同的关注度</div>
+              <div class="card"><ul>
+                <li><b>校对</b>：扮演批评家，以读者眼光冷静看待文本，需要最专注的注意力。</li>
+                <li><b>写作</b>：专注自己的思想，过早自我批评会陷入停滞；寻找合适的词语需要"漂浮注意力"（把大纲放在眼前，就更容易琢磨措辞）。</li>
+                <li><b>提纲/修改结构</b>：关注整个论点，是写作过程中需反复处理的独立任务，不是一次性计划。</li>
+                <li><b>整合发展思路</b>：联想性、游戏性、创造性的"拼图"工作。</li>
+                <li><b>阅读</b>：根据文本灵活调整速度和方法，不是一种方法打天下。</li>
+                <li>诺贝尔奖得主与普通科学家的区别不是不懈关注，而是<span class="hl">灵活的关注</span>——在超常专注与有趣探索之间交替。创造力的关键是能在开放思维与分析框架之间<span class="hl">灵活切换</span>。</li>
+              </ul></div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>做专家，不做计划制订者</div>
+              <div class="card">理性分析推理过于缓慢且强调通用规则，反而阻碍绩效提升。停止制订计划之时，就是开始学习之时（像摘掉自行车的训练轮）。<span class="hl">德雷福斯技能获取模型</span>五层级：新手—高级新手—胜任者—精通者—<span class="hl">专家</span>。遵守规则只能到"胜任者"；专家已内化知识、依靠直觉——直觉不是神秘力量，而是<span class="hl">融入过去经验、通过反馈循环反复实践的沉淀</span>。心肺复苏实验：老师们反而认不出有经验者（把守规则误当正确判断）。卡片盒工作流程不告诉你何时做什么，而是提供可分离的任务结构 + 即时反馈，让你通过刻意练习成长为行家里手。傅以斌："真正的专家不做计划。"</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>写下来为大脑减负</div>
+              <div class="card">短期记忆容量：<span class="hl">7±2</span>（米勒），近期研究认为更可能是 <span class="hl">4</span>（Cowan）。理解的东西靠联系记忆——世界杯年份的例子。<span class="hl">蔡格尼克效应</span>：未完成的任务占据短期记忆直到完成；但<span class="hl">把想法写下来，大脑就相信它会被妥善处理</span>（完成或推迟，大脑不区分）——GTD 有效的原因。做法：① 把写作分解成可一次性完成的小任务；② 随时写下思考结果与可能的联系，从断点轻松续接。反向利用：刻意保留未完成的问题在脑海中游走（散步、洗澡时灵光乍现）。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>减少做决定</div>
+              <div class="card">意志力像肌肉：消耗快、恢复慢（<span class="hl">自我损耗</span>）。决策最令人疲惫——比尔·盖茨只穿两种颜色的西装。标准化工作流程可一劳永逸地预先确定大多数组织性决定（同样的笔记本、同样的提取方式、同样的永久笔记格式），把心力留给真正有用的思考。及时完成任务还能放心休息：休息让大脑把信息移入长期记忆；散步、打盹都有助学习。</div>
+            </li>
+          </ul>
+        </li>
+
+        <!-- 步骤二 -->
+        <li class="lv1" id="ch3-s2"><div class="node"><span class="caret">▶</span>步骤二：阅读和理解</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>阅读时手中有笔</div>
+              <div class="card">富兰克林："阅读时手里拿支笔……是把痕迹印在记忆中的最好方法。"把读到的东西<span class="hl">融入自己的思维系统</span>再做成笔记，别人的发现就转化为自己的新想法。转述不是改变原意，而是<span class="hl">用不同的文字尽可能真实地表述原意</span>；即使复制引文，含义也会因剥离上下文而改变。文献笔记的详略取决于文本难度与目的；卢曼的建议是阅读时"总是想着卡片盒中可能存在的联系"。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>手写 vs 电脑录入</div>
+              <div class="card">研究（Mueller &amp; Oppenheimer）：记忆数量无差别，但手写者<span class="hl">理解水平显著更高</span>且一周后仍保持优势。原因：手写慢 → 只能记重点 → 必须先理解 → 转换成自己的语言；电脑逐字录入"绕过了大脑"。手写笔记按"姓氏+年份"整理，与文献系统对应。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>保持开放的心态（对抗确认偏差）</div>
+              <div class="card"><span class="hl">确认偏差</span>：我们被让自己感觉良好的事物吸引，自动搜索支持数据，甚至意识不到（交友、选文章皆是）。达尔文的金科玉律：遇到与结论相反的事实、观察或思想时，<span class="hl">立即记下来</span>——因为它们更容易被遗忘。像奥德修斯把自己绑在桅杆上：借<span class="hl">外部系统</span>而非主观努力对抗偏差。两步解法：① 把写作过程颠倒过来（自上而下 → <span class="hl">自下而上</span>）；② 动机从寻找证实性事实转变为收集<span class="hl">所有相关信息</span>。选择标准不是"支持或反对"，而是"<span class="hl">相关或不相关</span>"。经验法则：如果你的洞见对学术成功构成威胁，那么你的做法就错了。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>培养抓住要点的能力</div>
+              <div class="card">区分相关信息与次要细节只能通过实践——像钢琴家每天练琴一样的<span class="hl">刻意练习</span>。理论、概念、术语、典型错误、心智模式构成"思考工具箱"→ 识别模式后阅读更快、掌握要点更准（芒格："普世智慧"）。卢曼：好的方法不是摘录，而是<span class="hl">对所读文本进行浓缩重写</span>——自动训练注意力转向文本的框架、模式、类别和假设。追问：作者想说明什么、想排除什么？（如提到"人权"是在对比什么？）康德："要有勇气运用你自己的理智。"这种能力也提升讲话与思考——表达越清晰越被认为聪明。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>写下来有助于真正理解</div>
+              <div class="card">费曼："原则是你不能欺骗自己，可你偏偏又是最容易被欺骗的人。"<span class="hl">重复阅读特别危险</span>：曝光效应让人把熟悉误当理解、且越发喜欢。永久笔记假定读者"一无所知"——包括未来的自己。口头表达可以掩饰漏洞（"你知道我的意思"），写在纸上无处遁形。选择：是<span class="hl">感觉变聪明</span>还是<span class="hl">真的变聪明</span>？大多数学生仍用被证明几乎无用的方法（反复阅读、画线）。只有实际尝试从大脑提取信息，才知道学到了什么。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>在阅读过程中学习（有效学习法）</div>
+              <div class="card"><ul>
+                <li>"只有去做才能学"——学习需要努力和思考；老师预先整理好一切（模块化分类）反而<span class="hl">剥夺了建立有意义连接的机会</span>，像快餐：方便但没有营养。</li>
+                <li><b>合意困难（Bjork）：</b>变式、间隔、情境干扰、先测试后学习——先阻碍学习，随后促进长期记忆与活用；恒定、可预测的条件先促进速度，后无法长期记忆。</li>
+                <li>在知道答案前先尝试回答，即使失败也会记得更好；付出努力的提取尝试更有效。</li>
+                <li>死记硬背：短期有效、无法真正学会；不如去打一局乒乓球——<span class="hl">运动帮助信息进入长期记忆</span>、减少压力激素。</li>
+                <li><span class="hl">详细阐释</span>（"为学而写"）：真正思考所读内容的意义及其与其他知识的结合——与卡片盒笔记的做法一致，是研究最多、最成功的学习方法。</li>
+                <li>大脑与卡片盒分工：卡片盒负责细节和参考资料（长期记忆资源、保持客观）；大脑专注要点、深层理解与学科大图景，更有创造力。</li>
+              </ul></div>
+            </li>
+          </ul>
+        </li>
+
+        <!-- 步骤三 -->
+        <li class="lv1" id="ch3-s3"><div class="node"><span class="caret">▶</span>步骤三：记卡片盒笔记</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>超越文本既定框架</div>
+              <div class="card">罗卡的研究：成功博士生与不成功者的关键区别在于<span class="hl">能否超越文本既定框架思考</span>。最糟糕的研究方法是收集去语境化的引文——不把信息放回语境就无法理解意义，更无法重构。布鲁纳：只关注给定信息不可能进行科学性思考。推荐卢曼的做法：<span class="hl">简要描述主要观点</span>而非收集引文，并思考它们如何与其他语境的想法联系、能提出什么原作者未提出的问题。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>坚持每天记几条笔记</div>
+              <div class="card"><b>特罗洛普（储蓄罐）vs 卢曼（复利投资）：</b>特罗洛普每天定时定量写 250 字/15 分钟，写了 47 本小说；卢曼写了 58 本书和数百篇文章——因为卡片盒像<span class="hl">复利投资</span>：总价值超过所有笔记单个价值的总和。卢曼盒中约 9 万条笔记 ≈ 从开始到去世<span class="hl">每天只需写 6 条</span>。学术写作以"每天记 N 条笔记"衡量产出比"每天写几页"更实际。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>在大脑之外思考</div>
+              <div class="card">写 = <span class="hl">转化</span>：从一个语境到另一个语境、一种形式到另一种形式。仅靠大脑感觉良好——它会礼貌地忽略思维的不统一；大脑是"一台能跳跃式得出结论的机器"（卡尼曼），会重建改写记忆、填补空白。费曼对历史学家说："这些不是我思维过程的记录，<span class="hl">它们就是我的思维过程</span>。"卢曼："不写作，就不可能系统性地进行思考。"示例：《稀缺》读书 → 文献笔记 → 第一条永久笔记"任何对社会不平等的全面分析都必须包括稀缺性带来的认知效应"→ 引出"为什么"→ 后续问题链 → 发现与个人责任、自由意志等主题的潜在联系。<span class="hl">仅仅写下问题与可能的联系，就已经是概念和理论层面的研究</span>。</div>
+            </li>
+            <li class="lv2"><div class="node"><span class="caret">▶</span>告别死记硬背的学习</div>
+              <ul>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>遗忘的悖论：舍列舍夫斯基的教训</div><div class="card">记忆几乎所有事情的记忆大师，却因<span class="hl">无法忘记、无法主动抑制</span>无关联想而痛苦，几乎无法进行抽象思考（能逐字复述《罗密欧与朱丽叶》，却看不到故事背后的意义）。遗忘不是记忆丧失，而是意识与长期记忆之间的"思维屏风"（<span class="hl">主动抑制</span>）——没有过滤器的大脑会被记忆淹没。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>存储强度 vs 提取强度</div><div class="card">比约克夫妇的区分：<span class="hl">存储强度</span>一生只会增强；<span class="hl">提取强度</span>才是关键——通过"线索"触发记忆。绝大多数学习仍以提高存储强度为目的（死记硬背孤立事实），而真正有用的是把一条信息与<span class="hl">尽可能多有意义的上下文</span>联系起来，形成互为线索的思想网络。只依赖环境线索会在测试时造成过度自信。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>详细阐释与理解</div><div class="card">艾宾浩斯用无意义音节研究学习，却把学习过程从"学习"（建立有意义联系）中剥离了。记忆高手并非把信息塞进脑子，而是<span class="hl">赋予意义、接入已有知识网络</span>。例：理解"心脏把血液压入动脉"→ 动脉壁厚有弹性、静脉壁薄有瓣膜——一旦理解几乎不会忘记。<span class="hl">最好的科学家往往是最好的老师</span>（费曼以学生已有的理解为基础教学）。太多秩序阻碍学习：混合呈现不同艺术风格的学生更快学会区分风格（Kornell &amp; Bjork）。卡片盒不按主题分类，正是<span class="hl">积极建立笔记联系的前提</span>。</div></li>
+              </ul>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>将永久笔记添加到卡片盒（四步）</div>
+              <div class="card">① 添加到直接提及的笔记之后（无则加在最后一条），编连续号码，可随时另立分支；② 添加与已有笔记的双向链接；③ 确保能从索引中找到，必要时在索引加条目；④ 构建<span class="hl">心理模型的网格结构</span>。</div>
+            </li>
+          </ul>
+        </li>
+        <!-- 步骤四 -->
+        <li class="lv1" id="ch3-s4"><div class="node"><span class="caret">▶</span>步骤四：发展想法</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>笔记序列：摘要与主题排序的结合</div>
+              <div class="card">"每条笔记都是引用和反向引用系统网络中的一个元素，<span class="hl">笔记的质量就取决于这个网格</span>"（卢曼）。单纯的按主题排序需自上而下预设等级；单纯的摘要顺序无法自下而上构建思想集群；而<span class="hl">松散的笔记序列</span>兼具两者优点：允许自由改变方向，又提供足够结构来建立复杂性。卡片盒的目的是思考的工具而非百科全书——不必担心完整性，不必对它做概述（正如无法对思维做概述）。笔记集合从复杂逐渐变得有秩序。</div>
+            </li>
+            <li class="lv2"><div class="node"><span class="caret">▶</span>构建主题（索引与关键词）</div>
+              <ul>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>索引只是入口</div><div class="card">卢曼在索引关键词旁加一两条笔记编号作为切入点。<span class="hl">关键词要慎重、不能过多</span>：卡片盒不是档案馆而是思考工具箱——笔记间的引用关系远比目录索引关系重要。卡片盒还能提醒你忘记已久的想法、触发意想不到的新想法（只查目录得不到这种收获）。对主题的概括本身也是一条笔记，随理解发展更新替换。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>选关键词：档案管理员 vs 写作者</div><div class="card">档案管理员问："哪个关键词最合适（存哪里/如何提取）？"写作者问："<span class="hl">如果以后我已经忘记它了，我会在什么情况下偶然发现这条笔记？</span>"例：特沃斯基/卡尼曼的"具体事件更易被高估可能性"实验笔记——档案思维选"实验心理学"（无用）；写作者结合自己的课题选"资本配置问题"（经济学家）或"政治策略/选举"（政治学家）。好的关键词通常<span class="hl">不在笔记文本中出现</span>（如"模式变化"），软件无法自动给出。选关键词是思考过程的重要部分，不能自动化。</div></li>
+              </ul>
+            </li>
+            <li class="lv2"><div class="node"><span class="caret">▶</span>建立智能链接（卢曼的四种交叉引用）</div>
+              <ul>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>类型 ① 主题概述笔记</div><div class="card">被索引直接引用的切入点笔记，收集一个主题下相关笔记的链接并附一两个词的说明——组织思路、构建初稿的中间步骤（卢曼收集了 25 条）。随时间推移链接可不断增加；主题结构变化时用新笔记替代旧笔记接入索引，不会使其他笔记多余。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>类型 ② 相邻集群概览</div><div class="card">追踪卡片盒中<span class="hl">相邻位置</span>笔记所讨论的不同主题（弥补纸质插入笔记后思路被数百条笔记打断的问题）。使用软件则无需此类型。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>类型 ③ 逻辑前后索引</div><div class="card">指向当前笔记逻辑上的前一条与后一条（物理上不挨着）——同样只是纸笔的补救手段。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>类型 ④ 笔记—笔记链接（最常见）</div><div class="card">两条笔记间的直接相关链接——像社会关系中的"<span class="hl">弱连接</span>"（格兰诺维特）：不是首选求助对象，却常提供全新而有建设性的观点。多条链接建立后，新模式可能显现（类比卢曼：金钱、权力、爱情、真理、正义都可视为促进沟通的媒介）。建立链接不是维护苦差，而是<span class="hl">写文稿思考过程的关键环节</span>；卡片盒的内部结构由思考塑造，又反过来塑造思维。</div></li>
+              </ul>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>比较、纠正和区分笔记</div>
+              <div class="card">常用卡片盒后的深刻发现：你以为的伟大新想法原来已经在盒中（甚至不是你的）——没有系统记录的人从不会注意到这一点。与旧笔记对话能发现<span class="hl">微小但关键的差异</span>（如同一概念的不同用法）；比较帮助发现<span class="hl">矛盾、悖论或对立</span>——促进洞见产生的重要因素；构建对立面是产生新思想最可靠的方式（罗腾伯格）。新笔记常导致旧想法的修正、补充或改进，暴露所读文本的缺陷 → 要查证说法的原始来源。卡片盒还对抗<span class="hl">特征存在效应</span>：我们高估容易获得的信息，思维向最近获得的事实倾斜。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>卡片盒作为思考的工具箱</div>
+              <div class="card">闪卡虽比死记硬背有效，但信息孤立、缺乏上下文；科学术语只有置于理论背景才有意义。芒格：脑子里要有<span class="hl">大量思维模型</span>并把经验融入其中，否则"拿锤子看什么都像钉子"。"第一条规则是，如果你只记住了一些孤立的事实并试图硬凑起来使用，你就不可能真正理解任何事。"与卡片盒共同发展：有意识地在盒中建立联系时，大脑中也建立了同样的联系 → 进入<span class="hl">学习促进学习的良性循环</span>（萨克斯的三步：关注想记住的、适当编码、练习回忆）。使用卡片盒的过程天然包含：详细阐释、随机间隔提取、混合上下文。</div>
+            </li>
+            <li class="lv2"><div class="node"><span class="caret">▶</span>卡片盒作为创意机器</div>
+              <ul>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>洞见需要漫长积累："慢直觉"</div><div class="card">DNA 双螺旋、凯库勒苯环——之所以是他们而非路人，是因为花了很长时间思考、修正、尝试。弗莱克：对工具熟练到一定程度，是发现事物内在可能性的先决条件。史蒂芬·约翰逊"慢直觉"：需要让想法自由交融的<span class="hl">实验空间</span>——开放研究者的实验室、老巴黎的咖啡馆、卡片盒。创新多为循序渐进优化的结果；拉丁语 Novus 本义是"不同的、不寻常的"而非"全新的"——<span class="hl">寻找细微差异同样关键</span>。直觉是经验的沉淀，不是理性的对立面。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>抽象与再具体化</div><div class="card">要把想法从原上下文剥离（抽象）才能融合不同想法，再具体化后应用于独特的现实世界。达尔文若不能从麻雀的观察中抽象出一般性原理，就无法解释其他物种的进化。《罗密欧与朱丽叶》打动我们，靠的也是抽象。工程师的抽象能力越好，解决方案越有创造性、实用性和可行性。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>在卡片盒内思考：打破思维习惯</div><div class="card">独立思考的真正敌人不是外在权威，而是<span class="hl">自己的惰性</span>。不必"跳出卡片盒外思考"，而要让卡片盒成为打破思维习惯的工具。伯格《五维思考法》的策略：重视反馈循环、面对错误（卡片盒自带）；抓住要点（卡片盒推动）；<span class="hl">确保真正看到你认为看到的东西</span>（感知与理解同时发生 → 易陷入错觉）；询问自己"整体图景中缺了什么"——<span class="hl">瓦尔德与幸存者偏差</span>：在返航飞机没有弹孔的地方加装装甲；失败博物馆、麦克马思失败产品库；问"如果……怎么办？"</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>认真对待简单的想法</div><div class="card">"低买高卖"人人都有——但拥有想法 ≠ 理解它。理解"买股票 = 成为公司的一部分"才上了一层台阶。巴菲特只考虑<span class="hl">价格与价值的关系</span>；2008 年金融危机源于忽视"价格与价值不一定相同"这一简单事实。<span class="hl">简单的想法可以形成一致且复杂的理论，复杂的想法却做不到</span>。飞行史：排除细节干扰后发现关键在于翅膀的微妙弯曲。</div></li>
+              </ul>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>通过设限来促进创造力</div>
+              <div class="card">标准化（每张卡片一个想法、不超过一屏）让记笔记在技术层面自动化，把思维资源留给内容相关性。施瓦茨《选择的悖论》：减少选择提高生产力、增加自由。研究认为思考能力和创造力在<span class="hl">受限条件下更活跃</span>：科学革命始于标准化实验；俳句的形式限制反而成就其表现力；26 个字母写出一切；二进制只有 0/1 却开启前所未有的创造。画布没有限制画家（丰塔纳切割画布）反而创造可能。<span class="hl">对创造力最大的威胁是缺乏结构和限制</span>——没有结构就无法区分、比较、实验；没有限制就永远不会被迫做出决定。放弃结构和限制并不能让人更有创造力。</div>
+            </li>
+          </ul>
+        </li>
+
+        <!-- 步骤五 -->
+        <li class="lv1" id="ch3-s5"><div class="node"><span class="caret">▶</span>步骤五：分享你的洞见</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>从头脑风暴到卡片盒风暴</div>
+              <div class="card">芒格："一个想法或事实并不因为你很容易得到它而更有价值。"头脑风暴（奥斯本 1919 提出）实际是"凭记忆回忆"：大脑偏爱最近遇到的、有情感附加的、生动具体的或押韵的想法，且<span class="hl">最喜欢第一个想法</span>不愿放弃；人多反而好点子更少、话题更窄。使用卡片盒者无需头脑风暴：<span class="hl">头脑风暴是预测哪些想法值得写，卡片盒是真切地看到值得写的内容</span>。显性发展的想法集群吸引更多想法——自我强化。好的问题的特征：既相关又有趣、既不太容易回答、又有可能用现有材料解决。工作靠试错推进（进化论原理），而非事先计划。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>从自上而下到自下而上</div>
+              <div class="card">自下而上的巨大优势：使用的想法<span class="hl">嵌入丰富上下文并附带可用素材</span>。反直觉的收获：对已有想法越熟悉，就对新想法越开放（不看局限性就无法真正了解它）。葛佐斯与契克森米哈赖对艺术家的研究：在美学"问题"上花时间越多的艺术家，作品越被后世认为有创造性。还要能识别自己的常规思维——意识不到它就无法打破它。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>在兴趣的驱动下完成任务</div>
+              <div class="card">优秀学生最重要的指标：学习动机 + 掌控自己学习过程的感觉。高智商学生失败最常见原因：看不到所学内容的意义。被困在不值得的项目中会沮丧 → 灵活的组织方式降低这一风险。每步自问："这件事有什么有趣的地方？"DNA 结构研究最初为治疗癌症——按直觉和兴趣转向才有了发现；<span class="hl">完成项目的时刻才完成了对项目的实际规划</span>。掌控越多 → 越不需要意志力 → 工作本身成为动力源泉。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>完稿和修订（两个关键点）</div>
+              <div class="card"><ul>
+                <li><b>① 结构化 + 灵活性：</b>可视化确定草稿结构——先确定"某部分<span class="hl">不写</span>什么"（资料太多，要抑制全用上的冲动）。文章的结构是其内容的一部分，会不断变化；当结构不再大变，就可以称它为"目录"——但只作参考指南而非执行准则。</li>
+                <li><b>② 同时写多个项目：</b>发挥卡片盒的真正威力——类比化工业"一体化"（Verbund，如巴斯夫）：一条生产线的副产品成为另一条的原料。在一个项目上卡住或厌倦时切换到其他项目。卢曼："我总是在同时创作不同的稿件。用这种同时进行不同项目的方法，我从来不会遇到任何心理障碍。"像武术借力打力。</li>
+              </ul></div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>放弃做计划才能成为专家</div>
+              <div class="card">学生计划能力差的实验：实际用时超出"最坏情况"的估计；99% 把握的时限也只有 45% 按期完成——<span class="hl">经验教不会他们</span>（过度自信偏见，研究者自己也犯）。但想象"达成目标所需做的事情"（训练过程）确实有用，想象"胜利结果"没用。<span class="hl">计划谬误</span>的解药：把大挑战分解为小任务（每天 3 条笔记、回顾一段）→ 一年数百次反馈 → 从经验中成长。<span class="hl">帕金森定律</span>：预留再多的时间都不会有剩余——只适用于长时任务；一次性任务有明确终点、会加速完成（马拉松），所以仪式感有用。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>反复修改</div>
+              <div class="card">海明威：《永别了，武器》最后一页<span class="hl">重写了 39 次</span>，"为了找到更正确的词汇"。牢记：草稿只是草稿。齐泽克：先说服自己"只是为自己而写"。修改中最难的是删除对论点无用的内容（"杀死你的挚爱"）——心理技巧：把删掉的内容移入"XX剩余部分.doc"，告诉自己以后再用（其实从不回看）。</div>
+            </li>
+          </ul>
+        </li>
+
+        <!-- 步骤六 -->
+        <li class="lv1" id="ch3-s6"><div class="node"><span class="caret">▶</span>步骤六：养成习惯</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>意图无法预测长期行为，习惯可以</div>
+              <div class="card">怀特海："文明的进步，在于不断增加那些我们能够<span class="hl">不假思索</span>地做事情的数目。"意图只能决定很短时间内的行为；长期行为几乎复制过去的行为（研究难以找到目标与长期行为的量化联系）。讽刺的是：习惯越长期的人对自己的行为预测越自信，却越不准确——熟练感造成掌控的错觉（曝光效应）。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>策略性地建立新习惯</div>
+              <div class="card">诀窍：不与旧习惯决裂，也不靠意志力逼迫，而是<span class="hl">有策略地建立新习惯逐步取代旧习惯</span>。目标：每当阅读时拿起纸笔记录最重要、最有趣的内容 → 转化为永久笔记 → 与卡片盒建立联系。养成后便可毫不费力地凭直觉做事，借助"外部大脑"思考——而别人在句子下画线的笔记最终没有派上用场。</div>
+            </li>
+          </ul>
+        </li>
+
+      </ul></div>
+    </section>
+    <!-- ========== 后记 & 实践 ========== -->
+    <section class="section theme-purple" id="sec-epilogue">
+      <div class="sec-head"><span class="badge">后记</span><h3>后记</h3></div>
+      <div class="map"><ul>
+        <li class="lv1 leaf-node"><div class="node"><span class="caret">▶</span>为什么卡片盒方法仍难被广泛接受</div>
+          <div class="card"><ul>
+            <li>本书本身就是借助卡片盒写成的（如"科技、接受问题"笔记指出集装箱书中的答案）——卡片盒指出想法和联系，而非专门去找。</li>
+            <li><b>原因一：</b>以理解和兴趣为导向的、长期的、跨主题的笔记结构，与大学<span class="hl">模块化、自上而下</span>的课程组织方式相悖；学校教"复习学习"，而非在异质信息间建立网络。</li>
+            <li><b>原因二：</b>常见误解——把卡片盒当单纯工具、当档案库存取资料，不改变工作流程 → 必然失望。学习、思考和写作不应是为了积累知识，而是<span class="hl">让自己成为一个具有不同思维方式的人</span>。</li>
+            <li><b>原因三：</b>学生习惯临时抱佛脚，到写论文时压力已大 → <span class="hl">隧道效应</span>：压力越大越坚持原有方式。解法：解决方案必须<span class="hl">看起来简单</span>——而卡片笔记法恰恰不难：阅读时拿笔、做好卡片、建立联系，想法自动涌现。</li>
+          </ul></div>
+        </li>
+      </ul></div>
+    </section>
+
+    <section class="section theme-purple" id="sec-practice">
+      <div class="sec-head"><span class="badge">实践篇</span><h3>卡片笔记写作法实践（刘少楠 / flomo）</h3></div>
+      <div class="sec-desc">以"什么是交易平台"研究为例的三年实战：300 余张卡片、0 元费用，产出产品体系与爆款专题。</div>
+      <div class="map"><ul>
+        <li class="lv1" id="p1"><div class="node"><span class="caret">▶</span>一、重新认识笔记</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>一个案例数据</div>
+              <div class="card">积累 3 年；图书 10 余册、论文 20 余篇、文章近百篇、对谈 50+ 小时；卡片 300 余张；费用 0 元。成果：搭建"丁香医生在线问诊"平台体系、"产品沉思录"最受欢迎专题、系列课程与分享、促成 <span class="hl">flomo</span> 的诞生。工具选择不取决于功能丰富度，而取决于<span class="hl">适用的情境和需求</span>。当意识到许多领域不需要关心时，值得关心的问题自然从知识积累中浮现（"在交易中应该让谁先声明价格？"）。</div>
+            </li>
+          </ul>
+        </li>
+        <li class="lv1"><div class="node"><span class="caret">▶</span>二、管理知识体系：三个阶段</div>
+          <ul>
+            <li class="lv2"><div class="node"><span class="caret">▶</span>输入 · 重新定义</div>
+              <ul>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>把写卡片当作刻意练习</div><div class="card">尽可能多地捕捉想法和感兴趣的知识，但<span class="hl">避免不经思考地摘录</span>；用自己的话记录（内化的过程，也是向大脑"写入"的过程）。"摩擦"大反而记得牢。知识块独立，方便后续拼装和改善。</div></li>
+                <li class="lv3 leaf-node"><div class="node"><span class="caret">▶</span>flomo 的记录方式</div><div class="card">微信服务号速记群讨论问题；iOS 快捷指令阅读时快速摘录批注；API 配合扫描 App 保存书本内容。文献笔记：桌面端集中阅读 + mini 窗口摘录 + 标签回溯。</div></li>
+              </ul>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>让结构自然生长（拒绝刻意分类）</div>
+              <div class="card">传统分类像<span class="hl">建筑物</span>（设计好后需大幅重构才能改进）；知识更像<span class="hl">神经回路</span>/植物——记录增加后结构慢慢涌现。先记录，用多级标签关联卡片，尽可能多地添加线索，主题自然浮现：<span class="hl">结构越灵活，成长越有机会；积累越丰富，结构越能涌现</span>。定期围绕主题回顾：既检验内容能否经得起时间考验，也看到思维的变化。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>输出与实践</div>
+              <div class="card"><b>输出：</b>把知识和想法呈现出来，做思维的刻意练习——<span class="hl">完成比完美重要</span>，在练习中获得高质量反馈。推荐 Notion（表现力强、方便互动、易于迭代——Block 引用可分享类小型维基的专题并实时生效）。<b>实践：</b>将理念变成决策、观察决策与结果的影响——反馈直接反映在业绩指标上，加深记忆并迭代知识体系。</div>
+            </li>
+          </ul>
+        </li>
+        <li class="lv1"><div class="node"><span class="caret">▶</span>三、实践范例：建立"交易平台"专题</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>从碎片到体系</div>
+              <div class="card">一个好的问题胜过许多好的答案。利用碎片时间积累知识卡片，再找整块时间整理成体系。结构不是第一天想好的：卡片散落在 flomo 中，确定母题后在日常搜索、阅读、交谈中收集信息并打标签。安迪·马图施查克（Andy Matuschak）："像<span class="hl">原子样的笔记</span>，一次一件事"——每条 MEMO 尽量完整独立，既快速掌握全貌，又方便跨话题建立联系；太宽泛难聚焦，太零碎连接模糊。</div>
+            </li>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>结构如何涌现</div>
+              <div class="card">定期翻阅发现多个知识点都在探讨"交易平台谁来定价"→ 框架浮现：章节"交易的核心要素"源自《平台革命》；"平台治理"框架源自莱格斯《网络》；"交易成本"起源于科斯（补充《详谈：左晖》中介案例）；发现"平台治理"与赫维茨"公地理论"异曲同工。从文章提取关键内容、括号内补充自己的案例——这就是<span class="hl">内化</span>。小知识点附挂在结构上，回忆结构即可顺势提取。聚沙成塔：输出丰富 → 获得更多反馈和案例 → 研究更深入（正循环）。</div>
+            </li>
+          </ul>
+        </li>
+        <li class="lv1"><div class="node"><span class="caret">▶</span>四、积累知识的复利</div>
+          <ul>
+            <li class="lv2 leaf-node"><div class="node"><span class="caret">▶</span>像管理金融投资组合一样管理知识</div>
+              <div class="card">《程序员的修炼之道》（安德鲁·亨特）。知识复利的难点在于<span class="hl">量化知识是否在积累</span>——卡片笔记写作法正是"量化"知识积累的方式。像基金定投：不要求一开始巨大投入（如"每天写一篇"的写作营），而是选好赛道、日积月累、建立卡片间连接。<span class="hl">重要的不是更好地记录，而是更好地思考</span>。flomo = "浮墨"：浮于墨上——笔墨之上才是关注的根本。"不写，就无法思考。"</div>
+            </li>
+          </ul>
+        </li>
+      </ul></div>
+    </section>
+
+    <div class="footer">《卡片笔记写作法：如何实现从阅读到写作》 · [德] 申克·阿伦斯 著 · 陈琳 译 —— 知识脑图整理稿 · 供学习参考，建议配合原书阅读</div>
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- 左侧目录：竖向折叠树（默认折叠） ---------- */
+  document.querySelectorAll("#toc li").forEach(function (li) {
+    var item = li.querySelector(":scope > .toc-item");
+    if (!item || !item.querySelector(".arrow:not(.leaf)")) return; // 叶子节点不可折叠
+    item.addEventListener("click", function (e) {
+      if (e.target.closest(".toc-item.leaf")) return;
+      // 点击带子节点的项：切换折叠状态（同时保持跳转）
+      var wasOpen = li.classList.contains("open");
+      li.classList.toggle("open", !wasOpen);
+      var t = item.getAttribute("data-target");
+      if (t) scrollToSec(t);
+    });
+  });
+  document.querySelectorAll("#toc .toc-item.leaf").forEach(function (item) {
+    item.addEventListener("click", function () {
+      document.querySelectorAll("#toc .toc-item.active").forEach(function (a) { a.classList.remove("active"); });
+      item.classList.add("active");
+      var t = item.getAttribute("data-target");
+      if (t) scrollToSec(t);
+      // 自动展开父级
+      var p = item.closest("li") && item.closest("li").parentElement.closest("li");
+      if (p) p.classList.add("open");
+    });
+  });
+  document.getElementById("tocExpand").addEventListener("click", function () {
+    document.querySelectorAll("#toc li").forEach(function (li) {
+      if (li.querySelector(":scope > ul")) li.classList.add("open");
+    });
+  });
+  document.getElementById("tocCollapse").addEventListener("click", function () {
+    document.querySelectorAll("#toc li.open").forEach(function (li) { li.classList.remove("open"); });
+  });
+
+  function scrollToSec(id) {
+    var el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  /* ---------- 主脑图：节点折叠（默认展开，可收起分支） ---------- */
+  document.querySelectorAll(".map li").forEach(function (li) {
+    if (!li.querySelector(":scope > ul")) {
+      li.classList.add("leaf-node");
+      return;
+    }
+    li.classList.add("open");
+    var node = li.querySelector(":scope > .node");
+    if (node) {
+      node.addEventListener("click", function () { li.classList.toggle("open"); });
+    }
+  });
+
+  /* 双击章节标题：折叠/展开该章节全部 */
+  document.querySelectorAll(".map li.lv1 > .node").forEach(function (n) {
+    n.addEventListener("dblclick", function (e) {
+      e.preventDefault();
+      var li = n.parentElement;
+      var sub = li.querySelectorAll("li");
+      var anyOpen = Array.prototype.some.call(sub, function (s) { return s.classList.contains("open"); });
+      sub.forEach(function (s) { s.classList.toggle("open", !anyOpen); });
+    });
+  });
+})();
+</script>
+  </main>
+</div>
+</body>
+</html>

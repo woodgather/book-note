@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《打造第二大脑》知识脑图 | Tiago Forte</title>
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f5f7fa; --panel:#ffffff; --ink:#1f2937; --ink2:#4b5563; --ink3:#9ca3af;
+    --line:#e5e7eb; --accent:#2563eb;
+    --c0:#0f766e;            /* 总览 */
+    --c1:#2563eb;            /* 第一部分 */
+    --c2:#059669;            /* 第二部分 */
+    --c3:#d97706;            /* 第三部分 */
+    --c4:#7c3aed;            /* 番外与资源 */
+    --c5:#6b7280;            /* 致谢 */
+    --radius:12px;
+    --shadow:0 1px 3px rgba(16,24,40,.08),0 4px 16px rgba(16,24,40,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC",sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.75;font-size:15px}
+
+  /* ===== 顶部标题栏 ===== */
+  .topbar{position:fixed;top:0;left:0;right:0;height:60px;background:#0f172a;color:#f8fafc;
+          display:flex;align-items:center;gap:14px;padding:0 20px;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+  .topbar .brand{font-weight:700;font-size:17px;letter-spacing:.5px}
+  .topbar .brand small{font-weight:400;color:#94a3b8;margin-left:8px;font-size:12px}
+  .topbar .spacer{flex:1}
+  .topbar input{width:230px;max-width:32vw;padding:7px 12px;border-radius:8px;border:1px solid #334155;
+          background:#1e293b;color:#e2e8f0;font-size:13px;outline:none}
+  .topbar input::placeholder{color:#64748b}
+  .topbar input:focus{border-color:#3b82f6}
+  .tbtn{background:#1e293b;color:#cbd5e1;border:1px solid #334155;border-radius:8px;padding:7px 12px;
+        font-size:13px;cursor:pointer;transition:.15s}
+  .tbtn:hover{background:#334155;color:#fff}
+
+  /* ===== 布局 ===== */
+  .layout{display:flex;margin-top:60px;min-height:calc(100vh - 60px)}
+
+  /* ===== 左侧竖向可折叠目录导航 ===== */
+  .sidebar{width:300px;min-width:300px;background:#0f172a;color:#cbd5e1;height:calc(100vh - 60px);
+           position:sticky;top:60px;overflow-y:auto;padding:16px 10px 60px}
+  .sidebar::-webkit-scrollbar{width:6px}
+  .sidebar::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+  .sidebar .side-title{font-size:12px;color:#64748b;padding:6px 12px;letter-spacing:2px}
+  .nav{list-style:none}
+  .nav li{margin:1px 0}
+  .nav a.node{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;cursor:pointer;
+        color:#cbd5e1;text-decoration:none;font-size:14px;transition:.15s;line-height:1.4}
+  .nav a.node:hover{background:#1e293b;color:#fff}
+  .nav a.node.active{background:#1d4ed8;color:#fff}
+  .nav .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .nav .arrow{flex:none;width:16px;text-align:center;font-size:11px;color:#64748b;transition:transform .2s;
+        display:inline-block;cursor:pointer;user-select:none}
+  .nav .arrow.open{transform:rotate(90deg);color:#94a3b8}
+  .nav a.node.active .arrow{color:#fff}
+  .nav .nlabel{flex:1}
+  .nav ul{list-style:none;margin-left:14px;display:none;border-left:1px solid #1e293b}
+  .nav ul.show{display:block}
+  .nav .lvl2>a.node{font-size:13px;padding:6px 8px}
+  .nav .lvl3>a.node{font-size:12.5px;color:#94a3b8;padding:5px 8px}
+  .nav .lvl3>a.node:hover{color:#e2e8f0}
+
+  /* ===== 主内容 ===== */
+  main{flex:1;padding:28px 36px 120px;max-width:1020px;margin:0 auto;min-width:0}
+  .hero{background:linear-gradient(135deg,#0f172a,#1e3a5f 60%,#155e75);color:#f1f5f9;border-radius:18px;
+        padding:34px 38px;margin-bottom:26px;box-shadow:var(--shadow)}
+  .hero h1{font-size:26px;letter-spacing:1px;margin-bottom:8px}
+  .hero p{color:#cbd5e1;font-size:14px;max-width:720px}
+  .hero .chips{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:999px;
+        padding:4px 14px;font-size:12.5px;color:#e2e8f0}
+
+  .sec{margin-bottom:46px;scroll-margin-top:76px}
+  .sec-head{display:flex;align-items:center;gap:12px;margin-bottom:6px;cursor:pointer}
+  .sec-badge{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+        font-size:15px;font-weight:700;color:#fff;flex:none;box-shadow:var(--shadow)}
+  .sec-head h2{font-size:20px}
+  .sec-head .sub{font-size:12.5px;color:var(--ink3)}
+  .sec-quote{margin:6px 0 14px;padding:10px 16px;border-left:4px solid var(--line);color:var(--ink2);
+        font-size:13.5px;background:var(--panel);border-radius:0 var(--radius) var(--radius) 0;box-shadow:var(--shadow)}
+  .sec-quote em{color:var(--ink3);font-style:normal;margin-left:8px;font-size:12.5px}
+
+  /* 分支（脑图节点） */
+  .branch{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--bc,var(--accent));
+        border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+  .branch>h3{padding:12px 18px;font-size:15.5px;cursor:pointer;display:flex;align-items:center;gap:10px;user-select:none}
+  .branch>h3 .bmark{width:26px;height:26px;border-radius:8px;background:var(--bc,var(--accent));color:#fff;
+        display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none}
+  .branch>h3 .caret{margin-left:auto;color:var(--ink3);font-size:12px;transition:transform .2s}
+  .branch.folded>h3 .caret{transform:rotate(-90deg)}
+  .branch .body{padding:2px 20px 16px;border-top:1px dashed var(--line)}
+  .branch.folded .body{display:none}
+
+  ul.pts{list-style:none}
+  ul.pts>li{position:relative;padding:4px 0 4px 20px;color:var(--ink2);font-size:14px}
+  ul.pts>li::before{content:"";position:absolute;left:4px;top:13px;width:7px;height:7px;border-radius:50%;
+        background:var(--bc,var(--accent));opacity:.85}
+  ul.pts b{color:var(--ink)}
+  .subtree{margin:6px 0 4px 8px;padding-left:14px;border-left:2px solid var(--line)}
+  .subtree .st-title{font-size:13.5px;font-weight:700;color:var(--ink);margin:8px 0 2px;display:flex;gap:8px;align-items:center}
+  .subtree .st-title .tag{font-size:11px;color:var(--bc,var(--accent));border:1px solid var(--bc,var(--accent));
+        border-radius:999px;padding:0 8px;font-weight:400;white-space:nowrap}
+  ul.subs{list-style:none}
+  ul.subs>li{position:relative;padding:3px 0 3px 18px;font-size:13.5px;color:var(--ink2)}
+  ul.subs>li::before{content:"";position:absolute;left:2px;top:12px;width:6px;height:6px;border-radius:2px;
+        background:var(--bc,var(--accent));opacity:.6;transform:rotate(45deg)}
+
+  .part-divider{display:flex;align-items:center;gap:14px;margin:52px 0 8px}
+  .part-divider .line{flex:1;height:1px;background:var(--line)}
+  .foot{color:var(--ink3);font-size:12.5px;text-align:center;margin-top:60px}
+
+  mark.hit{background:#fde68a;padding:0 2px;border-radius:3px}
+
+  @media (max-width:900px){
+    .sidebar{position:fixed;left:-320px;transition:.25s;z-index:40}
+    .sidebar.open{left:0}
+    main{padding:20px 16px 100px}
+    .topbar input{width:150px}
+    .menu-btn{display:inline-block !important}
+  }
+  .menu-btn{display:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="tbtn menu-btn" id="menuBtn">☰ 目录</button>
+  <div class="brand">🧠 打造第二大脑 · 知识脑图<small>Building a Second Brain — 蒂亚戈·福特</small></div>
+  <div class="spacer"></div>
+  <button class="tbtn" id="expandAll">展开全部</button>
+  <button class="tbtn" id="foldAll">折叠导航</button>
+</div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="side-title">目 录 导 航（点击 ◂▸ 折叠/展开）</div>
+    <ul class="nav" id="nav"></ul>
+  </aside>
+
+  <main id="main">
+    <div class="hero">
+      <h1>《打造第二大脑》知识脑图</h1>
+      <p>蒂亚戈·福特（Tiago Forte）· 数字时代的个人知识管理方法论。第二大脑是一套数字档案系统，用以存储你最宝贵的记忆、想法和知识，
+         帮助你轻松完成工作、经营业务和管理生活，而无须耗费大量脑力记忆烦琐信息。核心方法即「信管法则 CODE」——抓取 Capture、组织 Organize、提炼 Distill、表达 Express。</p>
+      <div class="chips">
+        <span class="chip">CODE 信管法则</span><span class="chip">PARA 系统</span><span class="chip">渐进式归纳法</span>
+        <span class="chip">半熟素材</span><span class="chip">十二个兴趣问题</span><span class="chip">思想群岛</span>
+        <span class="chip">海明威之桥</span><span class="chip">压缩范围</span>
+      </div>
+    </div>
+    <div id="content"></div>
+    <div class="foot">— 完 —　依据《打造第二大脑》全书内容整理　·　点击章节标题 / 分支标题均可折叠　·　使用顶部按钮可展开全部或折叠导航</div>
+  </main>
+</div>
+
+<script>
+/* ============ 数据：全书知识结构 ============ */
+const DATA = [
+{
+  t:"全书速览", id:"ov", color:"var(--c0)", icon:"总",
+  branches:[
+    {t:"核心命题", pts:[
+      "头脑的价值在于<b>创意而非记忆</b>（戴维·艾伦）——生物大脑不该承担存储所有信息的重责大任",
+      "技术是一部<b>「心灵单车」</b>（乔布斯语）：善加运用，认知能力可获得显著增强",
+      "信息应区分「事关当下」与「需时间酝酿」——把重要信息<b>妥善打包、适时交付给未来的自己</b>",
+      "第二大脑 = 数字档案系统 / 口袋里的个人图书馆，别称：Zettelkasten（卡片盒·卢曼）、记忆扩展器（万尼瓦尔·布什）、数字花园、外部大脑"
+    ]},
+    {t:"本书能帮你", pts:[
+      "瞬时调取曾经学习、接触或思考过的任何信息",
+      "更有效地运用所学推进项目和目标；将绝妙想法妥善记录，以备不时之需",
+      "推动积极理念的跨界运用；引入可靠系统，轻松自信地驾驭各项工作",
+      "把追踪细节的任务托付给系统，节省时间投入最擅长的创造性工作"
+    ]},
+    {t:"全书结构", subtree:[
+      {t:"第一部分 · 万丈高楼平地起", tag:"铺垫", subs:["梦开始的地方（作者亲历）","何谓第二大脑","第二大脑的运作机理"]},
+      {t:"第二部分 · 方法，还是方法", tag:"CODE 四步", subs:["抓取：让笔记更「走心」","组织：以行动为导向","提炼：萃取本质","表达：成果展示"]},
+      {t:"第三部分 · 质变时刻", tag:"进阶", subs:["创新也有套路","数字信息管理者的必备习惯","自我表达的路径"]},
+      {t:"附录", tag:"延伸", subs:["番外篇：如何打造有效的标签系统","补充资源及指南","致谢"]}
+    ]},
+    {t:"关键概念速查", pts:[
+      "<b>CODE</b>：抓取 Capture / 组织 Organize / 提炼 Distill / 表达 Express",
+      "<b>PARA</b>：项目 Project / 领域 Area / 资源 Resource / 存档 Archive",
+      "<b>渐进式归纳法</b>：四层级重点标记，层层萃取笔记精华",
+      "<b>半熟素材（IP）</b>：可反复复用的中间创作元素；<b>兴趣问题</b>：费曼式十二问；<b>三大创作策略</b>：思想群岛 / 海明威之桥 / 压缩范围"
+    ]}
+  ]
+},
+{
+  t:"序：第二大脑，前景无限", id:"pre", color:"var(--c0)", icon:"序",
+  branches:[
+    {t:"时代困境", pts:[
+      "信息爆炸：海量的书籍、播客、文章和视频应接不暇；「人形存储器」囤积鸡汤反添焦虑",
+      "我们耗费大量时间阅读倾听，却很少细细咀嚼化为己有；所学多数未经实践检验便被抛诸脑后"
+    ]},
+    {t:"解决之道", pts:[
+      "培养专属于自己的知识体系：当机遇出现（工作变动、大型展示、产品发布、创办企业、组建家庭）时，充分调用知识与智慧",
+      "一切往往只须从<b>一次简单的记录行为</b>开始",
+      "个人知识管理（PKM）兴起于 20 世纪 90 年代，是组织知识管理在个人领域的对应概念"
+    ]},
+    {t:"信念", pts:[
+      "个人知识管理是当今世界最基础的挑战之一，也是最具潜力的机遇之一",
+      "第二大脑独立于我们自身之外，突破自身局限与约束——它与「自我提升」相对，让你接纳不完美、活在当下"
+    ]}
+  ]
+},
+{
+  t:"第一部分 · 万丈高楼平地起", id:"p1", color:"var(--c1)", icon:"Ⅰ", part:true,
+  branches:[
+    {t:"定位", pts:[
+      "回答三个问题：为什么需要第二大脑？它究竟是什么？它如何运作？",
+      "由作者的亲身经历切入，进而阐述第二大脑的四大超能力与 CODE 法则全景"
+    ]}
+  ],
+  chapters:[
+  {
+    t:"第一章 · 梦开始的地方", id:"ch1", color:"var(--c1)",
+    quote:"头脑的价值在于创意而非记忆。 — 戴维·艾伦",
+    branches:[
+      {t:"绝境：无法确诊的病痛", pts:[
+        "大学三年级突发咽喉痛，久治不愈，影响说话、吞咽与微笑；24 岁时因药物副作用（严重短期记忆丧失），大脑机能仅与 8 岁孩童相当",
+        "自我表达能力不断退化：友谊、爱情、旅行与职业似乎纷纷离去"
+      ]},
+      {t:"柳暗花明——文字记录的力量", pts:[
+        "决定对病情负起责任：以第一人称记录病史，罗列疗效、偏好与坚持",
+        "将数百页病历扫描电子化，转化为可搜索、重组、注释、共享的文本，成为自己病情的「经纪人」",
+        "整合信息后发现真凶：<b>功能性发声障碍</b>（涉及 50 多对肌肉）——药物掩盖了真正病因；需以生活方式调治（饮食、冥想、发声练习），几乎立竿见影",
+        "借鉴「数字化自我」社区（Quantified Self）的跟踪方法"
+      ]},
+      {t:"笔记系统改变人生轨迹", pts:[
+        "数字笔记融入学业：以可搜索的电子课程集替代凌乱活页本，最终以几乎全优的成绩毕业",
+        "2008 年金融危机后加入<b>和平队</b>，在乌克兰乡村支教两年——笔记系统成为匮乏资源下的「指路明灯」",
+        "回到硅谷做咨询分析师：用数字笔记记下所学的一切，成为办公室里的「关键先生」，同事口中的「大神」"
+      ]},
+      {t:"二次蜕变——发现分享的力量", pts:[
+        "意识到个人笔记库可成为随时间滚雪球的知识资产（人力资本价值远超有形资产）",
+        "同事们的问题：<b>有工具但缺乏系统性与目的性</b>，随意搬运信息而不考虑日后调取",
+        "午餐畅聊 → 兴趣小组 → 工作坊 → 面向公众的付费课程；将方法拓展为适用于一切目的的整体系统"
+      ]},
+      {t:"第二大脑系统：起源", pts:[
+        "在博客分享运作机制，获《哈佛商业评论》《大西洋月刊》等刊载；受邀赴基因泰克、丰田、泛美开发银行演讲",
+        "2017 年创立「打造第二大脑」在线课程，培训了全球一百多个国家的数千名学员，形成持续打磨系统的知识社区",
+        "核心态度：本书不兜售乌托邦——第二大脑让你接受自身的不完美，放飞身心、追寻生命真谛"
+      ]}
+    ]
+  },
+  {
+    t:"第二章 · 何谓第二大脑？", id:"ch2", color:"var(--c1)",
+    quote:"信息是一切工作的基石。信息越丰富，专注力就越匮乏。 — 赫伯特·西蒙",
+    branches:[
+      {t:"信息过载的代价", pts:[
+        "每人每天处理信息约 <b>34GB</b>，相当于 174 份报纸，比 1986 年高出 5 倍",
+        "美国员工平均每年花 <b>76 小时</b>寻找无序信息；脑力劳动者日常 <b>26%</b> 的时间用于搜寻拼凑信息，成功率仅 <b>56%</b>",
+        "「信息过载 → 信息倦怠」消耗精力，因怕遗忘而持续焦虑；从「信息过载」到「注意力匮乏」成为社会性问题"
+      ]},
+      {t:"札记本（Commonplace Book）的传统", pts:[
+        "从达·芬奇、约翰·洛克到伍尔芙、奥克塔维亚·巴特勒，知识分子以札记本追随瞬息万变的世界（工业革命时期尤为盛行）",
+        "中国有「笔记」传统，日本有 zuihitsu（枕边书）；近代早期阅读呈碎片化：摘录、重排、再创作——<b>读与写紧密交织</b>",
+        "札记本是知识分子与世界交流的门户，也是现代「求新、窥私」媒体潮流的逆行者——重塑更长久私密的信息关系"
+      ]},
+      {t:"电子札记本", pts:[
+        "数字化让笔记可检索、组织、同步、云端保管；克雷格·莫德：把海量观点与注解整合成功能空前强大的札记本",
+        "第二大脑 = 学习参考资料 + 工作行动指南 + 生活得力助手：思想实验室、创意工作坊、充满可能性的白画布",
+        "外部工具已成思维延伸：灵长类研究显示大脑会将常用工具视为身体一部分；日程应用、智能手机、云存储皆是能力拓展"
+      ]},
+      {t:"对笔记的再认识：知识模块", pts:[
+        "知识源自简单而历史悠久的笔记活动；学校式记笔记（为考试）与专业领域背道而驰",
+        "专业领域的现实：没人画重点、没人提示时机、「考试」随时出现、笔记须加工而非照抄",
+        "<b>知识模块</b>：带鲜明个人色彩、无须依赖大脑记忆的独立信息元素——如乐高积木，可搜寻、移动、组装、重组",
+        "长度与格式无关紧要：重要的是折射你的独到观点、品位、话语体系与生活经历"
+      ]},
+      {t:"两个大脑两台戏（对比场景）", subtree:[
+        {t:"没有第二大脑的尼娜", subs:["清晨思绪翻江倒海、被邮件吞没","疲于奔命后无力推进自己的计划","「为什么要开始？」——虎头蛇尾成为常态"]},
+        {t:"有第二大脑的星期一", subs:["灵感随想随记：数字笔记 + 语音备忘","会议前已有 1/3 关键事项、1/3 暂搁、1/3 备查的完整攻略","第二大脑如镜子：帮助认识自我、筛选值得跟进的想法——脑力倍增"]}
+      ]},
+      {t:"让科技助力思维", pts:[
+        "万尼瓦尔·布什的「记忆扩展器 Memex」愿景；20 世纪一代代学者的「扩展思维」构想",
+        "现实反差：沉迷社交转瞬即忘、收藏从未细读、文档尘封硬盘——我们走得太远而忘了为何出发",
+        "拐点已至：计算机愈发小巧强大直观，已成为思维活动的一部分——每个人都应当拥有扩展思维"
+      ]}
+    ]
+  },
+  {
+    t:"第三章 · 第二大脑的运作机理", id:"ch3", color:"var(--c1)",
+    quote:"记忆是迈向终极自由的天梯。我自由，因为我记得。 — 阿毗那婆笈多",
+    branches:[
+      {t:"四大超能力", subtree:[
+        {t:"① 推动抽象思维的具象化", subs:["沃森与克里克借鉴鲍林的方法，用折纸物理模型拼出 DNA 双螺旋——最顶尖的研究者也依赖最基本的媒介工具","数字笔记可视化：将模糊概念转化为可观察、重组、编辑的有形实体"]},
+        {t:"② 促进不同思想的融会贯通", subs:["创新型人才更善于「识别、笼络和联结各种关系」（安德瑞森）","将不同素材集中存放：哲学古籍与网络金句同文档、语音备忘与项目计划同打包——素材越多样，新关联越具开创性"]},
+        {t:"③ 辅助长期决策规划", subs:["破除「近期偏差」：偏好取决于时间邻近度而非对象优劣","「文火慢焙」：让创意如食材细焰慢炖，循序渐进积累，而非仓促点燃"]},
+        {t:"④ 形成鲜明而独到的观点", subs:["普林斯顿研究：最难被自动化取代的是「传播与解读信息」的工作","塞巴斯蒂安·荣格尔：文思易断不是脑子短路，而是知识库空空如也——瓶颈时需要的是案例、故事、数据等源头活水"]}
+      ]},
+      {t:"选择笔记应用：第二大脑的神经中枢", pts:[
+        "四大特质：<b>多媒体</b>（不限文字）、<b>非正式</b>（包容杂乱，利于创新）、<b>开放性</b>（鼓励自由探索）、<b>行为导向</b>（捕获闪念，不追求全面精确）",
+        "电子笔记与纸质笔记并非互斥；搜索、共享、备份、链接、同步等科技手段放大长期收益",
+        "不必陷入完美主义：找的不是完美器具而是可靠助手，不来电随时换；主流平台均支持标准格式导入导出"
+      ]},
+      {t:"个人知识管理的三个阶段", subtree:[
+        {t:"识记——记忆辅助工具", subs:["卡米尔（初创公司设计师）：将研究报告 PDF 导入笔记应用自由注释评论"]},
+        {t:"联结——由识记进化为思维工具", subs:["费尔南多（肿瘤学家）：管理病患诊疗记录，把培训所学与患者需求对接，制定更高效的诊疗方案"]},
+        {t:"创新——终极用途", subs:["特雷尔（科技从业者、三孩奶爸）：借助第二大脑开辟育儿 YouTube 频道，及时记录创意与制作细节"]}
+      ]},
+      {t:"信管法则（CODE）总览", subtree:[
+        {t:"抓取 Capture——让笔记更「走心」", subs:["像管理者一样筛选：只抓取最有价值的想法；遵从内心的快感、好奇、困惑与激情"]},
+        {t:"组织 Organize——以行动为导向", subs:["不预设缜密的分类体系；按「对推进手头项目有何助益」来安置信息，从根本精简信息流"]},
+        {t:"提炼 Distill——萃取本质", subs:["每个想法都有精髓；如 E=mc² 以简驭繁；带着「如何帮到未来的自己」的问题做笔记"]},
+        {t:"表达 Express——成果展示", subs:["既无价值也不生产价值的知识没有灵魂；把重点从「寻找优质内容」转向「生产优质内容」，越早起步越早改善"]}
+      ]},
+      {t:"科学注脚", pts:[
+        "莫泽夫妇的研究：大脑以「网格法则」（空间推理脑区）这种坐标系统高效表达海量信息——外部系统与此同理",
+        "构建第二大脑的大部分工作，本就是我们正在从事的日常活动：学习、吸收观点、积累信息——只须稍加主动管理"
+      ]}
+    ]
+  }]
+},
+{
+  t:"第二部分 · 方法，还是方法", id:"p2", color:"var(--c2)", icon:"Ⅱ", part:true,
+  branches:[
+    {t:"定位", pts:[
+      "逐一拆解信管法则的四大步骤：抓取 → 组织 → 提炼 → 表达，每步附立竿见影的实用技巧",
+      "无须高端科技，只需日常使用的电子设备与应用程序即可落地"
+    ]}
+  ],
+  chapters:[
+  {
+    t:"第四章 · 抓取：让笔记更「走心」", id:"ch4", color:"var(--c2)",
+    quote:"所有未保存的进度将会丢失。 — 任天堂退出界面提示",
+    branches:[
+      {t:"为什么抓取：案例与原理", pts:[
+        "泰勒·斯威夫特：随时用手机记录歌词旋律（如《空位》是所有灵感巧思的集大成）——再高的天赋也需要系统来培育",
+        "杰里·森菲尔德：每个有趣的梗都存进折叠文件夹；运动员、发明家、工程师的背后都有一套从创意到创造的流程",
+        "第二大脑是私密可靠的「知识花园」：引进最有趣、最深刻、最实用的想法，免受外界噪音侵蚀"
+      ]},
+      {t:"创建知识库：向思维活动索取复利", subtree:[
+        {t:"知识资本（外部来源）", subs:["亮点：书中极富见地的段落","引文：播客中令人印象深刻的内容","书签与收藏夹：迎合兴趣的链接","语音备忘 / 会议笔记 / 启发性图像 / 课程与会议的启示"]},
+        {t:"知识资本（内部来源）", subs:["故事：津津乐道的奇闻逸事","见解：对某话题的认识与领悟","记忆：难以忘怀的生活经历","反思：手册或日记中的思考 / 冥想：浴室灵感"]}
+      ]},
+      {t:"不推荐记录的四类内容", pts:[
+        "<b>敏感或涉密信息</b>：税务记录、政府文件、密码、健康记录等（跨设备共享降低安全性）",
+        "<b>需要专门应用打开的特殊格式</b>：如 Photoshop 文件、视频片段",
+        "<b>容量巨大的信息</b>：影响笔记应用运行效率",
+        "<b>需要协同编辑的信息</b>：实时多人协作请交给专业平台"
+      ]},
+      {t:"十二个兴趣问题（费曼抓取法）", pts:[
+        "费曼的秘诀：常备一打开放式问题，每当新知出现就用问题逐个测试，看能否提供新启发——跨领域联结成就诺贝尔级突破（餐盘旋转与摇摆频率 2:1 的典故）",
+        "问题可以宏观（社会公平）也可以具体（培养锻炼习惯）；关键在于<b>开放式措辞</b>，无须标准答案",
+        "操作建议：向亲友打听孩提时代的重度爱好；不必凑足十二个；不必追求完美清单；用问题清单决定抓取方向"
+      ]},
+      {t:"抓取标准：避免信息泛滥或匮乏", subtree:[
+        {t:"总原则", subs:["价值在一条内容中分布不均——只提取最具显著性、相关性和营养性的部分","篇幅上限：笔记至多不超过原文的 <b>10%</b>；保存链接以便日后跳转原文","以管理者/博物馆长的视角做信息的评价者、编辑者、诠释者"]},
+        {t:"标准一 · 启发性", subs:["灵感可遇不可求且无法搜索；不断收集启发性的对白、照片、设想与案例（作者的客户反馈文件夹）"]},
+        {t:"标准二 · 实用性", subs:["像木匠收藏边角料：统计数据、参考信息、研究发现、实用图表，低成本保存却常能派上大用场"]},
+        {t:"标准三 · 个性", subs:["个人观点、反思、记忆与念想最具保存价值——从对话、错误、成功与教训中积累的人生智慧无人可夺"]},
+        {t:"标准四 · 新奇性", subs:["香农对信息的定义：让你耳目一新的东西；对抗「确认偏误」，记录针锋相对的观点以防思维僵化"]}
+      ]},
+      {t:"终极标准：是否让你为之共鸣", pts:[
+        "冗长的清单式分析最耗脑力——把省下的精力留给高附加值的思维阶段（联想、想象、创新）",
+        "共鸣信号：眼睛瞪圆、心跳漏拍、喉咙发干、世界静止——这是直觉在提醒你记录",
+        "神经科学：情感能够引导而非扰乱理性；扑克牌实验证明潜意识可先于理性做出反应",
+        "细节：一并记录出处（网址、标题、作者、日期）；笔记是思考工具，不替代其他信息管理软件"
+      ]},
+      {t:"信息抓取工具箱", subtree:[
+        {t:"常见工具", subs:["电子书应用（批量导出重点注释）","稍后读应用（书签式收藏）","记事本应用（快速抓取短文本）","社交媒体收藏 / 剪藏应用 / 影音转录 / 第三方集成与插件"]},
+        {t:"典型场景", subs:["Kindle 划线一键导入笔记","网文暂存稍后读，有空细读标注","播客书签截取，语音转文字","语音备忘录自动转写","YouTube 字幕文本复制","邮件转发至笔记","任何有分享按钮的应用皆可导入"]}
+      ]},
+      {t:"思想具象化的惊人收获", pts:[
+        "<b>生成效应</b>：主动生成词语比单纯阅读激活更多脑区；<b>逸出增益</b>：把内心思想写出来能发现新的可能性",
+        "写作创造新知识：每段文字都可能触发「思想级联」，推动思想演化——写作既来源于思考又助力思考",
+        "健康福祉：研究表明表达性写作可降低就诊次数、改善免疫、缓解焦虑，且不依赖任何读者",
+        "摆脱「反应循环」：先让子弹飞一会儿，把冲动信息搁置稍后读，冷静后再处理"
+      ]}
+    ]
+  },
+  {
+    t:"第五章 · 组织：以行动为导向", id:"ch5", color:"var(--c2)",
+    quote:"只有让生活井井有条，才能让工作饱含激情。 — 福楼拜",
+    branches:[
+      {t:"开篇案例：特怀拉·萨普的「文件盒」", pts:[
+        "传奇编舞家（160+ 作品）：每个项目配一个文件盒，写上项目名即宣告开工——营造目标感与使命感",
+        "盒中第一份材料永远是写在便笺上的<b>初始目标</b>（如与比利·乔合作时的「说好故事」「挣够钞票」两张蓝色索引卡）",
+        "文件盒的价值：百宝箱与指南针、给予冒险的底气、便于反思（像考古一样回望每个项目）",
+        "启示：通俗易用、便于查找分享——不要让复杂烦琐的系统把工作变得更复杂"
+      ]},
+      {t:"大教堂效应：第二大脑是一种环境", pts:[
+        "环境对思维模式影响重大：开阔空间让思维格局打开，逼仄空间让思考变得具体",
+        "我们精雕细琢物理环境，却很少经营数字环境——数字世界的每分每秒都在消耗精神",
+        "第二大脑是知识的花园、思想上的大教堂：需要播撒花种、修剪杂草、打理步道"
+      ]},
+      {t:"PARA 系统：重行动、轻分类", pts:[
+        "命名取自希腊语「并行」——第二大脑与生物大脑并行不悖；4 是工作记忆的舒适区",
+        "只须回答一个问题：<b>「这条信息放在哪个项目里最管用？」</b>——告别主题式的杜威十进分类法",
+        "跨平台通用：笔记应用、电脑文件、云端存储沿用同一分类逻辑，频繁切换应用也能以不变应万变"
+      ]},
+      {t:"PARA 四大类别", subtree:[
+        {t:"项目 Project——正在从事的活动", subs:["短期、有始有终、以明确结果收尾（定案、许可、发动、出版）","工作：网页设计、幻灯片、招聘；个人：西语课程、度假攻略、家具选购；兼职：博客、播客评测、在线课程","「好莱坞模式」浪潮：确定项目、组建队伍、完成即散——项目化是大势所趋"]},
+        {t:"领域 Area——长期致力的事项", subs:["没有结束日期的责任：理财、健康、家庭、产品开发……与幸福满足感息息相关","无目标但有<b>标准</b>：按时付账、每周锻炼 N 次、周末家庭之夜","个人：家庭/备餐/旅游/车辆、亲友/孩童/宠物、健康/成长/财务；工作：部门职能、团队、职业发展"]},
+        {t:"资源 Resource——潜在参考价值", subs:["感兴趣但暂不属于项目或领域的主题","兴趣话题（建筑学、啤酒酿制）、研究课题（习惯养成、笔记制作）、参考信息、个人爱好"]},
+        {t:"存档 Archive——完结或搁置", subs:["完结/取消的项目、不再介入的领域、边缘化的资源","数字世界可永久保存休眠信息，不干扰当前工作，需要时几秒唤醒"]}
+      ]},
+      {t:"三层级结构与归类速查表", pts:[
+        "结构仅三层：PARA 顶层类别 → 项目/领域/资源子文件夹 → 具体笔记（同一时间参与项目约 5–15 个）",
+        "归类速查：<b>对哪个项目最有帮助？→ 哪个领域？→ 属于哪种资源？→ 都不是则归档</b>",
+        "抓取与组织必须分开：先暂存收件箱，专注捕捉感动；归类留待每周小结等专门时间",
+        "历史笔记不必重新整理：整体扔进「存档」即可，需要时搜索一如初见"
+      ]},
+      {t:"像管理厨房一样组织信息", pts:[
+        "<b>存档 = 冰柜</b>（冷冻备用）、<b>资源 = 食品柜</b>（不碍事但随取）、<b>领域 = 冰箱</b>（近期常用）、<b>项目 = 炉上的锅</b>（烹饪进行时）",
+        "按食材种类管理厨房显然离谱——同理，不要按来源囤放笔记（所有读书笔记放一起）；应以<b>「信息归宿」</b>为准绳",
+        "PARA 不是文件系统，而是<b>生产系统</b>：不存在「完美存放位置」，笔记应随目标变化灵活迁移（培训笔记：项目→领域→资源→存档→再回项目）"
+      ]},
+      {t:"历史项目是第二大脑的活力之源", pts:[
+        "苹果店兼职经历：客户要的不是井井有条的电脑，而是为纪念视频、蛋糕店网站、乐队唱片等目标而创作",
+        "把历史文件统统移入「存档+日期」文件夹——客户非但没丢失什么，反而创作频出",
+        "三条领悟：为创作营造清爽空间；创作本身才是重中之重；已完成的项目为系统提供养分与行动基础"
+      ]},
+      {t:"课后思考：雷厉风行，举重若轻", pts:[
+        "不要让「如何组织第二大脑」成为新的重负——找通往正确目标的捷径",
+        "从项目文件夹入手：检视想法、日程、任务清单、桌面/下载/书签/邮件，把与项目相关的信息归集进来",
+        "除笔记应用外三大平台：电脑「文档」文件夹、Dropbox 类云存储、Google Docs 类协作套件"
+      ]}
+    ]
+  },
+  {
+    t:"第六章 · 提炼：萃取本质", id:"ch6", color:"var(--c2)",
+    quote:"为学日益，为道日损。 — 老子",
+    branches:[
+      {t:"开篇案例：科波拉的《教父》提词本", pts:[
+        "不被看好的年轻导演接手《教父》：三环活页夹 + 剪贴原著 + 满页注释，「提词本就是我的剧本」",
+        "先通读记录第一印象（对价值体系的直观判断），再按五个维度逐一分解场景：<b>场景大纲、历史语境、观感格调、核心主旨、需要避免的误区</b>",
+        "「努力将每个场景的精髓提炼成一句话」——从厚重原著中重构出一个自创版本"
+      ]},
+      {t:"「量子笔记」：为未来的自己传递信息", pts:[
+        "抓取往往只有数秒——初次抓取的信息如同粗糙原石，须经打磨提纯才成知识资产",
+        "现学现用的概率很低：装修知识等搬家、时间管理文章等孩子出生、客户洞察等下一年度采购",
+        "记录笔记就是一场时光旅行：让曾令人激赏的信息经受住时间的考验、历久弥新"
+      ]},
+      {t:"可见性：易受忽视的独门秘诀", pts:[
+        "可见性 = 目标内容在文档/系统中的易见易寻度；笔记的体量与可见性成<b>反比</b>",
+        "把未来的自己想象成极度挑剔、忙碌、缺乏耐心的客户：每条笔记都是要「卖」给他的一份期货",
+        "有效沟通的核心奥义是提炼：越希望打动听众，越要言简意赅"
+      ]},
+      {t:"渐进式归纳法（Progressive Summarization）", subtree:[
+        {t:"第一层级 · 原始摘录（土壤）", subs:["只摘录「最好、最重要、最相关」的文字，保留原文链接即可回溯全貌"]},
+        {t:"第二层级 · 黑色加粗（原油）", subs:["空闲时见缝插针执行：加粗关键词、背景备注、金句——抓住粗体即可掌握核心要义"]},
+        {t:"第三层级 · 黄色高亮（黄金）", subs:["聚焦加粗部分再百里挑一；将全文浓缩为一两句梗概，几秒钟即可判断信息相关性"]},
+        {t:"第四层级 · 纲要（宝石）", subs:["仅对极特殊信息：在笔记顶部用自己的语言写概括性要点，并对晦涩术语加以解释"]}
+      ]},
+      {t:"收放自如的「知识版图」", pts:[
+        "如地图缩放：需要细节时放大看第一层级，涉猎全局时缩小看三、四层级",
+        "安全机制：原始笔记一字不动，随时可重置重来；把网页设计的巧思用于私人笔记的呈现",
+        "让注意力聚焦于内容与表达本身，而非标签、标记、链接等高级功能"
+      ]},
+      {t:"四个应用案例", subtree:[
+        {t:"维基百科", subs:["反复查阅「鲍莫尔成本病」：先摘录暂存资源文件夹，数月后加粗高亮——十秒调取，从容应对座谈"]},
+        {t:"在线文章", subs:["两年前收藏谷歌「结构化面试」文章 → 招聘首名员工时把文件夹从资源转项目，半小时复习加粗即成行动指南"]},
+        {t:"播客与音频", subs:["驾车听创业访谈（梅根·特普纳），到目的地即刻记下要点——最精华的内容可在脑海萦绕一两个小时；数月后启发课程定价与导师机制"]},
+        {t:"会议记录", subs:["工作室改造通话记录：路过五金店时加粗购物项并复制为清单——先提炼，再使用，普通对话亦能创造价值"]}
+      ]},
+      {t:"大师的提炼之道", pts:[
+        "毕加索《公牛》11 幅石版画：由繁到简层层解构——结果之「简」掩盖了过程之「繁」",
+        "纪录片导演肯·伯恩斯：原始镜头采用率低至 40:1 ~ 50:1，激进筛选最有趣、最新奇、最动人的片段",
+        "提炼的核心逻辑是<b>「断舍离」而非「滴水不漏」</b>：千淘万漉虽辛苦，吹尽狂沙始到金"
+      ]},
+      {t:"笔记新手最常犯的三个错误", subtree:[
+        {t:"错误一 · 过度标记重点", subs:["什么都想要最后什么都得不到；经验法则：每层级重点不超过上一层的 <b>10%–20%</b>（500 字摘抄→加粗≤100 字→高亮≤20 字）"]},
+        {t:"错误二 · 缺乏明确目标", subs:["在准备创作时才画重点（写博客前、见律师前）；「信息协同 stigmergy」——像蚁群留下信息素，每次接触信息都让它更便于未来的自己取用"]},
+        {t:"错误三 · 故作高深", subs:["无须分析阐释分类，听从直觉的悸动；可参照四大标准：新奇、实用、启发、个性"]}
+      ]}
+    ]
+  },
+  {
+    t:"第七章 · 表达：成果展示", id:"ch7", color:"var(--c2)",
+    quote:"真理不外乎创造。 — 维柯",
+    branches:[
+      {t:"开篇案例：奥克塔维亚·巴特勒", pts:[
+        "害羞、阅读障碍、被老师讥讽的女孩 → 首位获麦克阿瑟天才奖的科幻作家（雨果奖、星云奖常客），开创「非洲未来主义」流派",
+        "创业期三条规则：出门必带笔记本；处处眼观六路耳听八方；不为遗憾找借口",
+        "米德牌备忘录记录一切：购物清单、写作目标、研究课题、新闻细节——赴秘鲁遗址取材，如记者般偏爱冰冷的事实",
+        "逝后资料共 <b>9062 项、装满 386 个文件盒</b>——笔记和写作是她对抗恐惧与自卑的武器，逆境恰成创作素材"
+      ]},
+      {t:"专注力是最宝贵的资源", pts:[
+        "创作每个阶段都要求聚精会神；自主有章法地配置精力是稀缺的竞争优势",
+        "常见误区：只盯着最终结果，阶段性成果（笔记、草稿、大纲、反馈）被丢进废纸篓——前期心血如沙雕被冲垮",
+        "表达 = 分享认知的艺术：<b>时机趁早、频度更高、内容更细（步步试错）、边表达边倾听</b>"
+      ]},
+      {t:"半熟素材（Intermediate Packets）", pts:[
+        "定义：构建最终作品所必需的、个别的、具体的创作元素——会议纪要、研究列表、头脑风暴、市场分析幻灯片等（缩写 IP 恰是知识产权）",
+        "中间环节无处不在：软件的模块、创业的试运营、建筑的草图、剧集的试映集、原型的「小样」、文章的大纲",
+        "五种易创建可复用的类型：<b>干货笔记</b>（渐进式归纳的精要）、<b>落选素材</b>、<b>过程性文件</b>（模板）、<b>最终成果</b>、<b>他山之石</b>（注明出处并致谢）",
+        "四大益处：专注力强化（一次只管一个小库）、时间更灵活（碎片时间处理）、广纳良言提质（早反馈更具建设性）、拼凑即成大项目——「从零开始」从此消失"
+      ]},
+      {t:"创作元素大集结：平滑输出的秘诀", pts:[
+        "盘点日常产出：收藏夹、日记、重点段落、社媒消息、图表、思维导图、会议访谈记录、FAQ 回复、博客白皮书、议程模板",
+        "大型会议案例：议程参考模板、分组话题汇编、串词借鉴历史、通知邮件取材旧文档、网站从欣赏的会议找灵感",
+        "成功案例是创新思想的给养——前期步骤（抓取/组织/提炼）就绪后，表达即花式拼搭的智力游戏"
+      ]},
+      {t:"四种检索方法（配合使用）", subtree:[
+        {t:"① 搜索", subs:["笔记集中存放即可秒级检索；连续多组关键词顺藤摸瓜——首选利器；局限：不了解目标、图形图像时失效"]},
+        {t:"② 浏览", subs:["人偏爱手动浏览：空间思维优于抽象思维（特维斯基）；层层抽丝剥茧、多窗口对比、按时间线回溯"]},
+        {t:"③ 标签", subs:["跨越文件夹割裂建立关联：临时项目（如常见问答）快速集齐散落笔记；费时费力，作撒手锏待命而非首选"]},
+        {t:"④ 随缘（机缘巧合）", subs:["集中存放多样素材=打造创新基因池；启动新项目时翻阅 5–6 个 PARA 文件夹（借高亮约 30 秒/篇）；图文并茂促进视觉联想；与人分享收获意外观点"]}
+      ]},
+      {t:"表达三阶段实战案例", subtree:[
+        {t:"识记 · 贝尼尼奥（商业顾问）", subs:["8 分钟用渐进式归纳总结加密货币长文分享朋友——标记过的精华远胜一键转发"]},
+        {t:"联结 · 帕特里克（牧师）", subs:["录音转文字记录家属访谈，每场访谈只花一刻钟筛出最动人片段；经验法则：<b>只启动那些已完成 80% 的项目</b>"]},
+        {t:"创新 · 丽贝卡（大学教授）", subs:["三言两语随手记，构思讲演时半熟素材触手可及——只须串联即可大功告成"]}
+      ]},
+      {t:"无合作，不创新", pts:[
+        "看似最独立的写作也充满社交元素（作者与编辑）；半熟素材以更小切口鼓励更多共享协作",
+        "反馈 = 解锁第三人称视角，跳出「当局者迷」；让反馈环节尽可能早、频率尽可能高",
+        "通过不断分享才能发现哪些笔记是压箱之宝"
+      ]},
+      {t:"万变不离混搭", pts:[
+        "创造力源自对既有事物的混搭：电影模型「配件混搭 Kitbashing」（二战高射炮、坦克模型重组新场景）",
+        "混搭≠照抄：借鉴横幅形状、幻灯片布局、歌曲风格——务必标明出处，给予荣誉反而彰显自己的贡献",
+        "从「配置资产、组装模块」的角度思考工作，作品将获得独立于你本人的「身份」"
+      ]}
+    ]
+  }]
+},
+{
+  t:"第三部分 · 质变时刻", id:"p3", color:"var(--c3)", icon:"Ⅲ", part:true,
+  branches:[
+    {t:"定位", pts:[
+      "运用第二大脑的进阶实战：创新的套路、可持续运转的习惯，以及思维模式与自我表达的蜕变",
+      "从方法到心法：让秩序与创意相辅相成"
+    ]}
+  ],
+  chapters:[
+  {
+    t:"第八章 · 创新也有套路", id:"ch8", color:"var(--c3)",
+    quote:"创新的作品光怪陆离；创新的过程千篇一律。 — 西尔瓦诺·阿里蒂",
+    branches:[
+      {t:"开篇故事：画家的创作纪律", pts:[
+        "作者的父亲（菲律宾裔职业画家）：布道时涂鸦草图演变为 2.4–3 米的全尺寸作品；逛超市收藏「蔬果模特」；看电视时瞄墙上的未完成品找缺陷",
+        "启示：不要指望灵光乍现——先收集整理原材料，让想象力通过<b>常规做法</b>系统转化",
+        "标准化的创作过程亘古不变：产品形态常新（IG→Snapchat→TikTok），创作规律恒久"
+      ]},
+      {t:"发散与聚合（Diverge & Converge）", subtree:[
+        {t:"发散——为可能性打开空间", subs:["白板草图、废纸篓草稿、散落照片；自发、无序、杂糅——唯一任务是放飞想象","信管法则的前两步（抓取、组织）= 发散：研究、探索、萌发创意"]},
+        {t:"聚合——朝最终方案靠拢", subs:["淘汰选择、权衡轻重、推动进程、交付成果","信管法则的后两步（提炼、表达）= 聚合：停止吸纳，用知识模块创建新事物"]},
+        {t:"各领域的映射", subs:["作家：搜集素材↔大纲初稿；工程师：探索边界↔落地方案；设计师：用户访谈↔线框图；摄影师：大量拍摄↔选片成册"]}
+      ]},
+      {t:"策略一 · 思想群岛", pts:[
+        "得名于史蒂文·约翰逊：「素材如星罗棋布的群岛围绕着我，我只须在岛屿之间搭建桥梁」——对抗拖延的绝佳技巧",
+        "在发散阶段收集足够素材，达关键量后切换聚合模式，穿针引线",
+        "数字大纲的五大优点：延展灵活、可链接细节（点链接跳转笔记而非原文）、交互多媒体、可搜索、跨设备同步",
+        "本质：把「选择想法」（发散）与「逻辑排序」（聚合）拆分为两个步骤，分别完成"
+      ]},
+      {t:"策略二 · 海明威之桥", pts:[
+        "海明威：一旦明确后续章节思路就立即停笔——用今天的思路与精力为明天的写作注入动力（「以始为终」）",
+        "停笔前在笔记中写下四件事：<b>下一步的想法、当前的状态、易被遗忘的重要信息、下一阶段的工作目标</b>",
+        "潜意识在后台持续工作；还可将草稿/半熟素材发给亲友征询反馈，为下次重返蓄力"
+      ]},
+      {t:"策略三 · 压缩范围", pts:[
+        "源自软件开发：临近发布时压缩功能——延后社交模块、砍掉进度交互；最难的、成本最高的、与核心无关的先被缩减",
+        "「不要坐等所有交通灯同时变绿才发动汽车」；问题不在缺时间，而在缩小范围",
+        "被裁剪的材料进入第二大脑妥善保管：演示中剪掉的页面可变社媒帖子，删掉的观点可成演讲亮点——学会分享不完美",
+        "递减实例：写书→系列文章→社媒帖子；付费研讨→本地免费场→读书会；微电影→YouTube→直播→手机剪辑"
+      ]},
+      {t:"实战案例：车库改建家庭工作室", pts:[
+        "思想群岛：15 分钟列出纲要（简介、成本、设想、阶段、美学、视频会议、设备）",
+        "发散补充：Pinterest 照片、隔音谈话记录、承包商名单、数十段 YouTube 教程——碎片时间推进",
+        "海明威之桥：每次收尾记录进度，供下次参考；压缩范围：剔除不切实际的想法，设定预算与时限约束",
+        "课后练习：选项目→列大纲→移入半熟素材→限时 15–20 分钟用现有素材做出第一道工序；警惕 FOMO，搭建海明威之桥，必要时压缩范围"
+      ]}
+    ]
+  },
+  {
+    t:"第九章 · 数字信息管理者的必备习惯", id:"ch9", color:"var(--c3)",
+    quote:"习惯可以减轻认知负荷，释放思维能力。 — 詹姆斯·克利尔",
+    branches:[
+      {t:"像厨师一样工作：「餐前准备」", pts:[
+        "起源 19 世纪末法国：搅拌勺总在同一位置、刀具随用随擦、配料按序排列——边烹饪边保持整洁",
+        "厨师以「餐前准备」为外部大脑：把机械重复环节自动化，专注创造性工序",
+        "脑力工作者同理：不能停下工作重构数字世界，只能在执行常规的间隙维护系统——守序是一种习惯，不是性格特质"
+      ]},
+      {t:"习惯一 · 项目清单（知识复利的两个路口）", subtree:[
+        {t:"项目启动清单（20–30 分钟初检）", subs:["① 记录有关该项目的现实想法（头脑风暴：了解什么？缺什么？目标为何？向谁请教？）","② 检视可能包含相关笔记的文件夹（或标签）","③ 全盘搜索相关术语（管理者视角：库内笔记皆干货，与互联网搜索形成鲜明对比）","④ 移动（或标记）相关笔记至项目文件夹","⑤ 撰写笔记大纲和项目方案（思想群岛）","延伸：回答先决问题、与利益相关方沟通、定义成功标准、正式启动仪式"]},
+        {t:"项目完成清单（5–10 分钟）", subs:["① 在任务管理器中标记完成","② 划除项目目标并移至「已完成」列表（个人专属荣誉墙）","③ 重温半熟素材并移至其他文件夹（模板、面试题、评估议程皆可复用）","④ 项目文件归档并跨平台同步","⑤ 搁置的项目：归档前添加「当前状态」笔记（进展、原因、教训——海明威之桥，随时唤醒）","延伸：回答先决问题、通报成果、评估投资回报、正式庆祝"]}
+      ]},
+      {t:"习惯二 · 定期回顾", subtree:[
+        {t:"每周小结（每 3–7 天一次）", subs:["① 清理电子邮件收件箱（待办→任务管理器，笔记→笔记应用）","② 检查日历（回看查漏、前瞻准备）","③ 清理电脑桌面（相关文件移入 PARA 文件夹）","④ 清理笔记收件箱（每周约 5–15 条：加提示性标题、按第一反应归类）","⑤ 确定下周优先事项"]},
+        {t:"月度小结（偏重反思与整体）", subs:["① 评估更新目标（划除已达成、添加新目标）","② 评估更新项目列表（必须实时准确反映现实）","③ 评估责任领域（领域笔记常孕育潜在项目，如「居家」文件夹之于工作室改造）","④ 评估待办任务（「或有」任务：条件成熟即可提取，如养狗笔记）","⑤ 重排优先事项"]}
+      ]},
+      {t:"习惯三 · 处处留意（制造幸运）", pts:[
+        "七个留意示例：吸纳想法的潜在价值、顺手标记激起的涟漪、优化笔记标题、移动/链接笔记、组合半熟素材、合并相似笔记、分享尚不成熟的素材",
+        "笔记不同于待办：并不紧急，错过也不会产生负面影响——高容错率",
+        "不必停摆一整天做「系统重构」：在生活中步步为营，利用项目间隙的微操实时调整"
+      ]},
+      {t:"课后思考：好用的系统才完美", pts:[
+        "无须担心挂一漏万、无须频繁清空收件箱、无须严格时间表、归类不必纠结（搜索托底）",
+        "「必须做到极致完美才能可靠运行的系统」实则脆弱不堪——选一个并不完美但经久耐用的系统",
+        "维护第二大脑的目的：防止宝贵思想随时间流逝而淡出"
+      ]}
+    ]
+  },
+  {
+    t:"第十章 · 自我表达的路径", id:"ch10", color:"var(--c3)",
+    quote:"思想应当被广泛分享。分享可让思想变得更加丰富有趣，并让更多人因此受益。 — 阿德里安·玛丽·布朗",
+    branches:[
+      {t:"换工具不如换思维", pts:[
+        "限制个人潜能的从来不是工具，而是<b>思维模式</b>——你与信息的基本关系塑造于成长经历",
+        "时代之变：从「如何获取稀缺信息」到「如何阻断信息流」；劳动从体力转向脑力，知识成为最重要资产",
+        "学员阿米莉亚：从抵触互联网的「戾气之地」到择善而从——知识结构未变，观念选择变了"
+      ]},
+      {t:"对大脑的局限性保持敬畏", pts:[
+        "向生物大脑索取越多、压力越大，越易被压垮；它应被解放出来从事想象、发明、革新、创造",
+        "为大脑换岗：从记录员升任<b>生活首席执行官</b>——统筹信息价值创造、释放创意",
+        "把记忆重担交付系统后的心态变化：更淡定（创意被悉心照料）、更专注（随时搁置调取）、更开明包容（驾驭多元观点）",
+        "构建第二大脑的过程就是个人成长的过程：从随波逐流者变为生活的指挥家"
+      ]},
+      {t:"三重思维转变", subtree:[
+        {t:"从稀缺到充裕", subs:["稀缺性思维：信息囤积、多多益善、由恐慌驱动——收集再多也永远不够","充裕性思维：有价值的想法与合作机会无所不在；不必吸收全部信息，只须汲取灵感——生活会反复呢喃它的答案"]},
+        {t:"从责任到服务", subs:["知识的目的在于分享：它是唯一一种传播越广、增值越大的资源","赖德·卡罗尔：「你的一个创意也许会带来人性的一次改良」","总有些人只有你才能接触、教导与帮助——你就是他们的天选之人"]},
+        {t:"从摄取到创造", subs:["收集外界信息实为探索内心世界：每个心有戚戚的想法都是内心的映射","波兰尼悖论：「人类所知远胜于其所能言传」——隐性知识是自动化浪潮下人类最后的壁垒","第二大脑助你让隐性知识浮出水面：自知之明是自我导航的前提"]}
+      ]},
+      {t:"自我表达是基本需求", pts:[
+        "作者的两剂药方：<b>冥想与正念</b>（「我非我所思」——痛苦成为导师）与<b>公开写作</b>（内观禅修博文开启博客之旅）",
+        "自我表达与衣食住行同等重要：小到点滴感触，大到命运乐章，都值得分享",
+        "勇于分享：几乎每个人身上都有美好、动人、充满力量的故事——无须等待时机成熟"
+      ]},
+      {t:"最终思考：对你来说很简单", pts:[
+        "没有唯一正确的答案：系统在别人看来混乱不堪，但只要带来进步和快乐，它就是对的",
+        "化繁为简的路径：想扩大记忆范围→引入 PARA；想加强思维互联→渐进式归纳法；想事半功倍→半熟素材",
+        "一个项目一个项目稳扎稳打，遍历从抓取到表达的完整过程"
+      ]},
+      {t:"开始行动的 12 个实用步骤", subtree:[
+        {t:"第一至四步 · 打地基", subs:["① 明确信息抓取内容（选 2–3 种重点）","② 选择笔记应用程序","③ 选择信息抓取工具（从「延时阅读」应用开始）","④ 构建 PARA 系统框架（为每个活动项目建专用文件夹）"]},
+        {t:"第五至八步 · 养习惯", subs:["⑤ 写下 12 个兴趣问题作为抓取罗盘","⑥ 自动抓取电子读物的重点内容（系统集成）","⑦ 实践渐进式归纳法","⑧ 就「半熟素材」开展实验（分解项目、推进片段、分享反馈）"]},
+        {t:"第九至十二步 · 提境界", subs:["⑨ 用思想群岛、海明威之桥、压缩范围推动某个具体目标","⑩ 策划一次每周小结并标注日历","⑪ 评估自己的笔记记录能力（官网免费测评）","⑫ 加入个人知识管理社区（#第二大脑 #打造第二大脑）——培养新习惯的速成之道是与老手打成一片"]}
+      ]},
+      {t:"临别赠言", pts:[
+        "追随内心的悸动：为某段故事、某个想法或新的可能所吸引时，不要一了百了——这是任何科技都无法带来的宝贵机缘",
+        "「任何时候，笔记不能离身。」"
+      ]}
+    ]
+  }]
+},
+{
+  t:"番外篇 · 如何打造有效的标签系统", id:"bonus", color:"var(--c4)", icon:"附",
+  branches:[
+    {t:"要点", pts:[
+      "回应读者关于「标签」的技术问题：基于「可行性」原则为第二大脑打造高效标签系统",
+      "标签系统并非构建第二大脑的先决条件，但带来信息组织层级的进一步扩展",
+      "其作用会随着知识库的日益壮大而愈发凸显",
+      "完整章节可在官方网站免费下载（buildingasecondbrain.com/bonuschapter）"
+    ]}
+  ]
+},
+{
+  t:"补充资源及指南", id:"res", color:"var(--c4)", icon:"资",
+  branches:[
+    {t:"《第二大脑资源指南》", pts:[
+      "作为持续更新的公共资源，提供最佳笔记应用程序、信息抓取工具及其他实用程序的专业推荐",
+      "包含常见问题解答与其他相关建议指导",
+      "地址：buildingasecondbrain.com/resources"
+    ]}
+  ]
+},
+{
+  t:"致谢", id:"ack", color:"var(--c5)", icon:"谢",
+  branches:[
+    {t:"致谢对象", pts:[
+      "出版方与编辑团队：斯蒂芬妮·希区柯克与门廊书店（Atria）、编辑珍妮特·戈德斯坦、经纪人丽莎·迪莫娜",
+      "福特实验室团队、智囊团成员（大卫、乔尔、拉斐尔、德里克等）及诸位导师顾问（戴维·艾伦、詹姆斯·克利尔等）",
+      "全球粉丝、学员与社区：本书大量内容提炼自他们的故事、策略与技巧",
+      "家庭：父母韦恩与瓦莱里娅、亲属、伴侣劳伦与幼子凯奥——「是你们让这一切变得有意义」"
+    ]}
+  ]
+}
+];
+
+/* ============ 渲染 ============ */
+const nav = document.getElementById('nav');
+const content = document.getElementById('content');
+const esc = s => s; // 内容为内部生成，保留 <b> 标签
+
+/* 侧边导航：竖向可折叠，默认全部折叠 */
+function buildNav(){
+  DATA.forEach(sec=>{
+    const li0 = document.createElement('li'); li0.className='lvl1';
+    const a0 = document.createElement('a'); a0.className='node'; a0.href='#'+sec.id; a0.dataset.target=sec.id;
+    a0.innerHTML = `<span class="arrow" data-toggle="${sec.id}">▸</span><span class="dot" style="background:${sec.color}"></span><span class="nlabel">${sec.t}</span>`;
+    li0.appendChild(a0);
+    let ul1 = null;
+    const hasKids = (sec.chapters && sec.chapters.length) || (sec.branches && sec.branches.length);
+    if(hasKids){
+      ul1 = document.createElement('ul'); ul1.id='nav-'+sec.id;
+      if(sec.chapters) sec.chapters.forEach(ch=>{
+        const li1 = document.createElement('li'); li1.className='lvl2';
+        const a1 = document.createElement('a'); a1.className='node'; a1.href='#'+ch.id; a1.dataset.target=ch.id;
+        a1.innerHTML = `<span class="arrow" data-toggle="${ch.id}">▸</span><span class="dot" style="background:${sec.color}"></span><span class="nlabel">${ch.t}</span>`;
+        li1.appendChild(a1);
+        if(ch.branches){
+          const ul2 = document.createElement('ul'); ul2.id='nav-'+ch.id;
+          ch.branches.forEach(b=>{
+            const li2 = document.createElement('li'); li2.className='lvl3';
+            const a2 = document.createElement('a'); a2.className='node'; a2.href='#'+ch.id; a2.dataset.target=ch.id;
+            a2.innerHTML = `<span class="dot" style="background:${sec.color}"></span><span class="nlabel">${b.t}</span>`;
+            li2.appendChild(a2); ul2.appendChild(li2);
+          });
+          li1.appendChild(ul2);
+        }
+        ul1.appendChild(li1);
+      });
+      if(sec.branches) sec.branches.forEach(b=>{
+        const li1 = document.createElement('li'); li1.className='lvl2';
+        const a1 = document.createElement('a'); a1.className='node'; a1.href='#'+sec.id; a1.dataset.target=sec.id;
+        a1.innerHTML = `<span class="dot" style="background:${sec.color}"></span><span class="nlabel">${b.t}</span>`;
+        li1.appendChild(a1); ul1.appendChild(li1);
+      });
+      li0.appendChild(ul1);
+    }
+    nav.appendChild(li0);
+  });
+}
+buildNav();
+
+/* 主内容渲染 */
+function renderContent(){
+  DATA.forEach(sec=>{
+    const secEl = document.createElement('section'); secEl.className='sec'; secEl.id=sec.id;
+    secEl.style.setProperty('--bc', sec.color);
+    if(sec.part){
+      const dv=document.createElement('div'); dv.className='part-divider';
+      dv.innerHTML=`<span class="line"></span><span class="sec-badge" style="background:${sec.color}">${sec.icon}</span><span class="line"></span>`;
+      secEl.appendChild(dv);
+    }
+    const head=document.createElement('div'); head.className='sec-head';
+    head.innerHTML=`<div class="sec-badge" style="background:${sec.color}">${sec.icon}</div>
+      <div><h2>${sec.t}</h2><div class="sub">${sec.part?'共 '+(sec.chapters?sec.chapters.length:0)+' 章':'章节内容'}</div></div>`;
+    secEl.appendChild(head);
+
+    const secBranches = sec.branches||[];
+    secBranches.forEach((b,i)=>{
+      secEl.appendChild(branchNode(b, sec.color, i+1));
+    });
+
+    (sec.chapters||[]).forEach(ch=>{
+      const chEl=document.createElement('div'); chEl.className='sec'; chEl.id=ch.id;
+      chEl.style.setProperty('--bc', sec.color); chEl.style.scrollMarginTop='76px';
+      const chHead=document.createElement('div'); chHead.className='sec-head';
+      chHead.innerHTML=`<div class="sec-badge" style="background:${sec.color}">${sec.icon}</div>
+        <div><h2>${ch.t}</h2><div class="sub">${sec.t}</div></div>`;
+      chEl.appendChild(chHead);
+      if(ch.quote){const q=document.createElement('div');q.className='sec-quote';q.innerHTML=`「${ch.quote}」`;chEl.appendChild(q);}
+      ch.branches.forEach((b,i)=>{ chEl.appendChild(branchNode(b, sec.color, i+1)); });
+      secEl.appendChild(chEl);
+    });
+    content.appendChild(secEl);
+  });
+}
+function branchNode(b, color, idx){
+  const d=document.createElement('div'); d.className='branch';
+  d.style.setProperty('--bc', color);
+  const h=document.createElement('h3');
+  h.innerHTML=`<span class="bmark">${idx}</span><span>${b.t}</span><span class="caret">▾</span>`;
+  d.appendChild(h);
+  const body=document.createElement('div'); body.className='body';
+  if(b.pts){
+    const ul=document.createElement('ul'); ul.className='pts';
+    b.pts.forEach(p=>{const li=document.createElement('li');li.innerHTML=p;ul.appendChild(li);});
+    body.appendChild(ul);
+  }
+  if(b.subtree){
+    const wrap=document.createElement('div'); wrap.className='subtree';
+    b.subtree.forEach(st=>{
+      const t=document.createElement('div'); t.className='st-title';
+      t.innerHTML=`<span>${st.t}</span>`+(st.tag?`<span class="tag">${st.tag}</span>`:'');
+      wrap.appendChild(t);
+      if(st.subs){
+        const ul=document.createElement('ul'); ul.className='subs';
+        st.subs.forEach(s=>{const li=document.createElement('li');li.innerHTML=s;ul.appendChild(li);});
+        wrap.appendChild(ul);
+      }
+    });
+    body.appendChild(wrap);
+  }
+  d.appendChild(body);
+  h.addEventListener('click',()=>d.classList.toggle('folded'));
+  return d;
+}
+renderContent();
+
+/* 章节标题点击折叠其下分支 */
+document.querySelectorAll('.sec-head').forEach(h=>{
+  h.addEventListener('click',e=>{
+    const secEl=h.parentElement;
+    const branches=secEl.querySelectorAll(':scope > .branch');
+    const folded=[...branches].filter(b=>b.classList.contains('folded')).length;
+    const expand = folded > branches.length/2;
+    branches.forEach(b=>b.classList.toggle('folded', !expand));
+  });
+});
+
+/* 导航箭头折叠展开（默认全部折叠） */
+nav.addEventListener('click',e=>{
+  const ar=e.target.closest('.arrow');
+  if(ar){
+    e.preventDefault();
+    const ul=document.getElementById('nav-'+ar.dataset.toggle);
+    if(ul){ ul.classList.toggle('show'); ar.classList.toggle('open'); }
+    return;
+  }
+  const a=e.target.closest('a.node');
+  if(a){
+    document.querySelectorAll('.nav a.node').forEach(n=>n.classList.remove('active'));
+    a.classList.add('active');
+    if(window.innerWidth<=900) document.getElementById('sidebar').classList.remove('open');
+  }
+});
+
+/* 顶部按钮 */
+document.getElementById('expandAll').addEventListener('click',()=>{
+  document.querySelectorAll('.nav ul').forEach(u=>u.classList.add('show'));
+  document.querySelectorAll('.nav .arrow').forEach(a=>a.classList.add('open'));
+});
+document.getElementById('foldAll').addEventListener('click',()=>{
+  document.querySelectorAll('.nav ul').forEach(u=>u.classList.remove('show'));
+  document.querySelectorAll('.nav .arrow').forEach(a=>a.classList.remove('open'));
+});
+
+/* 搜索：过滤并高亮 */
+const searchInput=document.querySelector('.topbar input');
+searchInput.addEventListener('input',()=>{
+  const kw=searchInput.value.trim().toLowerCase();
+  document.querySelectorAll('mark.hit').forEach(m=>{const p=m.parentNode;p.replaceChild(document.createTextNode(m.textContent),m);p.normalize();});
+  if(!kw){
+    document.querySelectorAll('.branch,.sec').forEach(el=>el.style.display='');
+    document.querySelectorAll('.nav .lvl1,.nav .lvl2,.nav .lvl3').forEach(el=>el.style.display='');
+    return;
+  }
+  /* 内容过滤 */
+  document.querySelectorAll('.branch').forEach(b=>{
+    const hit=b.textContent.toLowerCase().includes(kw);
+    b.style.display=hit?'':'none';
+  });
+  document.querySelectorAll('main > .sec, .sec > .sec').forEach(sec=>{
+    const bs=[...sec.querySelectorAll(':scope > .branch')];
+    const secHit=sec.querySelector('.sec-head').textContent.toLowerCase().includes(kw);
+    const any=secHit||bs.some(b=>b.style.display!=='none');
+    sec.style.display=any?'':'none';
+  });
+  if(window.CSS&&CSS.highlights){/* 预留 */}
+  /* 高亮 */
+  const walker=document.createTreeWalker(document.getElementById('content'),NodeFilter.SHOW_TEXT);
+  const targets=[];
+  while(walker.nextNode()){const n=walker.currentNode;
+    if(n.textContent.toLowerCase().includes(kw)) targets.push(n);}
+  targets.forEach(n=>{
+    const idx=n.textContent.toLowerCase().indexOf(kw);
+    if(idx<0)return;
+    const r=document.createRange(); r.setStart(n,idx); r.setEnd(n,idx+kw.length);
+    const m=document.createElement('mark'); m.className='hit'; r.surroundContents(m);
+  });
+  /* 导航过滤：显示命中章节的路径 */
+  document.querySelectorAll('.nav .lvl1').forEach(l1=>{
+    const hit=l1.textContent.toLowerCase().includes(kw);
+    const show=hit;
+    l1.style.display=show?'':'none';
+    if(show){
+      const ul=l1.querySelector(':scope > ul');
+      if(ul){ul.classList.add('show'); const ar=l1.querySelector(':scope > a .arrow'); if(ar)ar.classList.add('open');}
+    }
+  });
+});
+
+/* 滚动高亮当前章节 */
+const spySections=[...document.querySelectorAll('.sec')];
+const spyMap={};
+spySections.forEach(s=>{if(s.id&&!spyMap[s.id])spyMap[s.id]=s;});
+window.addEventListener('scroll',()=>{
+  let cur=null;
+  for(const s of spySections){
+    if(s.style.display==='none')continue;
+    if(s.getBoundingClientRect().top<90) cur=s;
+  }
+  if(cur){
+    document.querySelectorAll('.nav a.node').forEach(n=>n.classList.remove('active'));
+    const link=document.querySelector(`.nav a.node[data-target="${cur.id}"]`);
+    if(link){link.classList.add('active');
+      let p=link.closest('ul');
+      while(p&&p.id!=='nav'){p.classList.add('show');const ar=p.previousElementSibling&&p.previousElementSibling.querySelector('.arrow');if(ar)ar.classList.add('open');p=p.parentElement?p.parentElement.closest('ul'):null;}
+    }
+  }
+},{passive:true});
+
+/* 移动端菜单 */
+document.getElementById('menuBtn').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+</script>
+</body>
+</html>
