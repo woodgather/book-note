@@ -26,7 +26,7 @@ git pull
 git add -A
 
 :: 提交更改
-git commit -sm "[config] update code %date_time%"
+git commit -sm "[config] update content %date_time%"
 
 :: 检查git commit是否成功
 if %errorlevel% equ 0 (
