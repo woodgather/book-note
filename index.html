@@ -243,6 +243,33 @@
     border-bottom: 1px solid var(--line-soft);
   }
 
+  /* Anki 卡片：以胶囊链接挂在对应条目的左下角 */
+  .entry .entry-anki {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0;
+    padding: 3px 12px;
+    margin: -14px 0 26px; /* 上提贴近 meta 行（间距约 6px），底部留白加大与下一条目分隔 */
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    color: var(--text-soft);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+
+  .entry .entry-anki:hover,
+  .entry .entry-anki:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    outline: none;
+  }
+
   .entry a {
     display: flex;
     flex-direction: column;
@@ -595,6 +622,7 @@
             <span class="entry-desc">如何建立个人知识管理系统</span>
             <span class="entry-meta">learn/打造第二大脑/</span>
           </a>
+          <a class="entry-anki" target="_blank" rel="noopener noreferrer" href="learn/打造第二大脑/打造第二大脑-Anki卡片.html">Anki卡片</a>
         </li>
         <li class="entry">
           <a target="_blank" rel="noopener noreferrer" href="learn/如何阅读一本书/如何阅读一本书-知识脑图.html">
@@ -616,6 +644,7 @@
             <span class="entry-desc">如何建立知识之间的逻辑关系</span>
             <span class="entry-meta">learn/学会提问/</span>
           </a>
+          <a class="entry-anki" target="_blank" rel="noopener noreferrer" href="learn/学会提问/学会提问-Anki卡片.html">Anki卡片</a>
         </li>
         <li class="entry">
           <a target="_blank" rel="noopener noreferrer" href="learn/系统之美/系统之美-知识脑图.html">
@@ -725,6 +754,7 @@
             <span class="entry-title">学会提问 · 知识脑图<span class="entry-arrow" aria-hidden="true">→</span></span>
             <span class="entry-meta">learn/学会提问/</span>
           </a>
+          <a class="entry-anki" target="_blank" rel="noopener noreferrer" href="learn/学会提问/学会提问-Anki卡片.html">Anki卡片</a>
         </li>
         <li class="entry">
           <a target="_blank" rel="noopener noreferrer" href="learn/系统之美/系统之美-知识脑图.html">

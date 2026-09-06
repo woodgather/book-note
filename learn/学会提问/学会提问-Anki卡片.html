@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《学会提问》Anki 记忆卡片 · 原书第11版</title>
+<style>
+:root{
+  color-scheme: light;
+  --paper:#F4F1EA; --card:#FFFFFF; --ink:#1F2A30; --muted:#66757E; --line:#E3DDCF;
+  --accent:#0E7490; --accent-soft:#E0F2F7; --gold:#B45309;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",-apple-system,"Segoe UI",sans-serif;
+  background:var(--paper); color:var(--ink); font-size:14px; line-height:1.75;
+}
+/* 顶栏 */
+.topbar{
+  position:sticky;top:0;z-index:50;background:rgba(244,241,234,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);padding:12px 22px 0;
+}
+.topbar-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.topbar .brand{display:flex;align-items:baseline;gap:10px;white-space:nowrap}
+.topbar .brand b{font-family:"Noto Serif SC","Songti SC",Georgia,serif;font-size:18px;letter-spacing:.06em}
+.topbar .brand span{font-size:12px;color:var(--muted)}
+.searchbox{flex:1;min-width:220px;max-width:380px;display:flex;align-items:center;gap:8px;
+  background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 14px;}
+.searchbox:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.searchbox input{border:none;outline:none;background:transparent;width:100%;font-size:13px;color:var(--ink)}
+.searchbox svg{flex:none;opacity:.45}
+.tools{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.tbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);
+  border-radius:8px;padding:5px 12px;font-size:12.5px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.tbtn:hover{border-color:var(--accent);color:var(--accent)}
+.tbtn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.tbtn.primary:hover{opacity:.9;color:#fff}
+.tbtn.on{background:var(--ink);border-color:var(--ink);color:#fff}
+/* 筛选条 */
+.filterbar{display:flex;flex-wrap:wrap;gap:6px;padding:10px 0 12px;align-items:center}
+.chip{
+  border:1px solid var(--line);background:var(--card);color:var(--muted);
+  border-radius:999px;padding:3px 12px;font-size:12px;cursor:pointer;transition:all .12s;user-select:none;
+}
+.chip:hover{color:var(--accent);border-color:var(--accent)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip .k{opacity:.75;margin-right:3px;font-family:Georgia,serif;font-size:11px}
+.sep{width:1px;height:18px;background:var(--line);margin:0 6px}
+.stat{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.stat b{color:var(--ink)}
+/* 主体 */
+.wrap{max-width:1200px;margin:0 auto;padding:24px 22px 80px}
+/* 浏览模式卡片墙 */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  display:flex;flex-direction:column;cursor:pointer;transition:box-shadow .15s, transform .15s;
+  break-inside:avoid;
+}
+.card:hover{box-shadow:0 6px 18px rgba(31,42,48,.08);transform:translateY(-2px)}
+.card-top{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px dashed var(--line);background:#FBF9F4}
+.card-no{font-family:Georgia,serif;font-size:11px;color:#A8B3BA;font-weight:700}
+.badge{font-size:10.5px;font-weight:700;letter-spacing:.08em;padding:2px 9px;border-radius:999px;color:#fff}
+.card-ch{font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-body{padding:10px 16px 16px;flex:1}
+.face .label{font-size:10.5px;letter-spacing:.25em;font-weight:700;margin-bottom:12px}
+.face .label.q{color:var(--accent)}
+.face .label.a{color:#15803D}
+.face .text{font-size:13.5px;color:var(--ink)}
+.face .text ul{margin:4px 0 0 18px}
+.face .text li{margin:2px 0}
+.card-body .hint{margin-top:12px;font-size:11px;color:#A8B3BA}
+.card.flipped .face.q{display:none}
+.card:not(.flipped) .face.a{display:none}
+.card.known{border-color:#BBD8BF}
+.card.known .card-top::after{content:"✓ 已掌握";font-size:10.5px;color:#15803D;font-weight:700;margin-left:auto}
+.card.known .card-ch{margin-left:0}
+/* 复习模式 */
+.study{display:none;max-width:720px;margin:0 auto}
+.study.on{display:block}
+.study-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:12.5px;color:var(--muted)}
+.progress{flex:1;height:8px;border-radius:99px;background:#E9E4D8;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .25s}
+.study-card{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;padding:34px 36px;
+  min-height:260px;display:flex;flex-direction:column;gap:12px;box-shadow:0 4px 16px rgba(31,42,48,.05);
+}
+.study-card .face .text{font-size:15.5px;line-height:1.9}
+.study-actions{display:flex;gap:10px;margin-top:18px;justify-content:center}
+.study-actions .tbtn{font-size:13.5px;padding:9px 22px}
+.tbtn.good{background:#15803D;border-color:#15803D;color:#fff}
+.tbtn.again{background:#C2410C;border-color:#C2410C;color:#fff}
+.study-done{text-align:center;padding:60px 20px;color:var(--muted)}
+.study-done b{display:block;font-size:20px;color:var(--ink);margin-bottom:8px;font-family:"Noto Serif SC",serif}
+/* 空结果 */
+.noresult{display:none;padding:40px;text-align:center;color:var(--muted);
+  background:var(--card);border:1px dashed var(--line);border-radius:12px;margin-top:20px}
+.intro{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin-bottom:20px;
+  font-size:13px;color:#42525B;
+}
+.intro b{color:var(--ink)}
+footer{margin-top:40px;font-size:12px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-row">
+    <div class="brand"><b>《学会提问》Anki 卡片</b><span id="brandSub">原书第11版 · 问答记忆卡</span></div>
+    <div class="searchbox">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="搜索问题或答案…(快捷键 /)" autocomplete="off">
+    </div>
+    <div class="tools">
+      <button class="tbtn" id="btnMode">切换复习模式</button>
+      <button class="tbtn" id="btnShuffle">打乱顺序</button>
+      <button class="tbtn primary" id="btnExport">导出 Anki 可导入的 .txt</button>
+    </div>
+  </div>
+  <div class="filterbar">
+    <span class="chip on" data-ch="all">全部章节</span>
+    <span id="chChips"></span>
+    <span class="sep"></span>
+    <span class="chip on" data-type="all">全部类型</span>
+    <span id="typeChips"></span>
+    <span class="stat" id="stat"></span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    <b>使用说明:</b>点击卡片可翻面查看答案;勾选章节/类型可只学某一部分;"复习模式"逐张抽认(已掌握的不再出现);点击"导出"可下载 <b>Anki 可直接导入的 .txt</b>(制表符分隔,含标签列,导入时选择"允许字段中使用 HTML"即可保留换行)。
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="study" id="study">
+    <div class="study-head">
+      <span id="studyPos"></span>
+      <div class="progress"><i id="studyBar" style="width:0%"></i></div>
+      <span id="studyLeft"></span>
+      <button class="tbtn" id="btnExit">退出复习</button>
+    </div>
+    <div class="study-card" id="studyCard"></div>
+    <div class="study-actions" id="studyActions"></div>
+  </div>
+
+  <div class="noresult" id="noresult">没有匹配的卡片,换个关键词试试。</div>
+  <footer>《学会提问(原书第11版)》Anki 记忆卡片 · 依据全书内容整理 · 供个人学习使用</footer>
+</div>
+
+<script>
+/* ============ 章节与类型 ============ */
+const CH = {1:'正确提问的好处和方法',2:'干扰批判性思维的障碍',3:'论题和结论是什么',4:'理由是什么',5:'哪些词语意思不明确',6:'价值观假设与描述性假设',7:'论证中有没有谬误',8:'证据的效力如何(一)',9:'证据的效力如何(二)',10:'有没有替代原因',11:'数据有没有欺骗性',12:'有什么重要信息被省略了',13:'能得出什么合理的结论',14:'最后的话'};
+const TYPES = {concept:['概念','#0E7490'],method:['方法','#1D4ED8'],fallacy:['谬误','#9D174D'],list:['清单','#6D28D9'],eg:['例子','#B45309'],warn:['易错','#C2410C'],tip:['贴士','#15803D'],vs:['比较','#4338CA']};
+
+/* ============ 卡片数据 {ch, type, q, a} ============ */
+const CARDS = [
+{ch:1,type:'concept',q:'什么是批判性思维?',a:'对耳闻目见的一切加以系统评判后做出回应。它建立在环环相扣的关键问题(critical questions)之上,提问的姿态是"我很好奇、想多了解、请帮帮我"。'},
+{ch:1,type:'list',q:'全书贯穿的 11 个关键问题是?',a:'①论题和结论是什么?②理由是什么?③哪些词语意思不明确?④价值观假设和描述性假设是什么?⑤论证中有没有谬误?⑥证据的效力如何(直觉、个人经历、典型案例、当事人证言、专家意见)?⑦证据的效力如何(个人观察、研究报告、类比)?⑧有没有替代原因?⑨数据有没有欺骗性?⑩有什么重要信息被省略了?⑪能得出什么合理的结论?'},
+{ch:1,type:'list',q:'批判性思维的三个维度?',a:'① 意识到一整套环环相扣的关键问题;② 有能力在适当时机以适当方式提出并回答这些问题;③ 积极主动使用这些关键问题的强烈渴望。'},
+{ch:1,type:'vs',q:'海绵式思维 vs 淘金式思维?',a:'海绵式:像海绵吸水般被动、充分吸收信息;优点是吸收多、轻松快捷,致命缺陷是无法判断该信什么、该弃什么——读到什么就信什么。<br>淘金式:主动与材料互动,不断提问并思考答案,批判性评价后得出自己的结论;最重要特点是<b>互动性参与</b>。两者互补:先有知识积累,才能淘金。'},
+{ch:1,type:'vs',q:'弱势批判性思维 vs 强势批判性思维?',a:'弱势:利用批判性思维捍卫自己当前的信念、驳倒异见者,不关心是否接近真理。<br>强势:利用批判性思维评估所有断言和信念——尤其是对自己的信念。检验后原信念可能更加坚定;自豪的观点应是理解并评估过其他观点后仍选择的。'},
+{ch:1,type:'concept',q:'什么是价值观?',a:'人们认为较有价值而没有明说的<b>抽象观念</b>;它树立行为准则,据此衡量行为品质。注意:价值观指抽象观念(如"生命的神圣性"),不是具体的人、物、行动。'},
+{ch:1,type:'list',q:'批判性思考者的四个主要价值观?',a:'① 自主决断(从最多、最全的可能中选);② 好奇心(对遇到的一切不断提问);③ 谦恭有礼(最聪明的人也每周犯错);④ 发自内心尊重严密论证(只认把理说到透彻的人)。'},
+{ch:1,type:'list',q:'让对话进行下去的策略(至少说出5条)?',a:'① 问"你是不是说……?"确认理解;② 问什么证据能让他改变想法;③ 提议休息,各自找支撑结论的最佳证据;④ 问对方为何认为你的证据薄弱;⑤ 把双方最好的理由放一起,找双方可接受的新结论;⑥ 寻找共同价值观或都认可的结论;⑦ 语气升温时提醒自己:目的是学习,不是舌战;⑧ 表情动作谦恭。'},
+{ch:1,type:'concept',q:'论证由什么构成?',a:'论证 = 结论 + 支持结论的理由;论证是充实和提炼结论的机制。论证与推理同义——用一个或多个想法支撑另一个想法。'},
+{ch:2,type:'list',q:'干扰批判性思维的障碍像"减速带",有哪三个特性?',a:'① 放慢速度即可克服;② 不管你是否注意它,都在那里;③ 注意到了,照样干扰你。了解潜在问题是解决问题的第一步。'},
+{ch:2,type:'concept',q:'系统1与系统2思维的区别?',a:'系统1(快思考):凭手边少量信息仓促决断,易受情感掌控(发怒的大象);<br>系统2(慢思考):吸收并理性评估别人的话,能否决系统1的决定。<br>本书的核心方法两个字:<b>放慢</b>。常问自己"我为什么要像现在这样想?"'},
+{ch:2,type:'concept',q:'什么是刻板印象?有何危害?',a:'因某人属于某集体,就断言他具有一系列明确特征(如"胖子快乐""年轻人草率")。危害:抢在理性分析之前形成成见、关闭思路、阻断开放心态、忽略有价值信息。'},
+{ch:2,type:'concept',q:'什么是晕轮效应?',a:'先看到某人积极(或消极)的特征,再将它与这个人的一切联系起来(例:名人唱歌好又乐善好施→染毒瘾令人震惊;讨厌的人说什么都自动屏蔽)。'},
+{ch:2,type:'vs',q:'信念固着与确认性偏见?',a:'信念固着:坚持个人信念绝不言弃,只偏爱当前观点。<br>确认性偏见:只把确认既有信念的证据当作可靠证据。<br>根源之一:对自身能力过分自信。"最大的偏见是认为只有自己没有偏见"。对策:记住所有判断都是临时性、情境相关的。'},
+{ch:2,type:'vs',q:'可得性启发与近因效应?',a:'可得性启发:只凭手边最容易获得的信息下结论(怕恐怖主义,却忽视每天6万多人死于饥饿和不洁饮水)。<br>近因效应:最新看到的信息成为思维基础(空难新闻后数月不敢乘飞机)。'},
+{ch:2,type:'concept',q:'什么是"答非所问"式思维错误?',a:'用自己容易回答的问题<b>偷换</b>别人的问题,把注意力引离原问题、开启无关讨论(例:问乔丹是否最佳球员,答"他输过300场")。'},
+{ch:2,type:'concept',q:'什么是"知识的诅咒"?',a:'不具备已知知识,就说不清这知识是什么——无法想象别人不知道它时的状态(例:谢尔顿给佩妮讲"符号学")。写东西时要特别警惕。'},
+{ch:2,type:'warn',q:'为什么说"一厢情愿"是批判性思维最大的障碍?',a:'"似是而非"(truthiness):宁愿相信自己希望为真的事,而不信已被证明为真的事;让事实去符合信念(而非相反)。<br>必自问:"这事是因为我希望它真才真,还是有确凿证据?"相关:奇迹式思维、"公正世界"信念。'},
+{ch:3,type:'concept',q:'什么是论题?',a:'引起对话或讨论的问题、争议,是后续讨论的原动力。评价论证前必须先找到论题。'},
+{ch:3,type:'concept',q:'什么是结论?',a:'作者/演说者希望你接受的信息(意图塑造你的信念或行为)。找不准结论→曲解作者意图→回应驴唇不对马嘴。'},
+{ch:3,type:'vs',q:'描述性论题 vs 规定性论题?',a:'描述性:针对过去/现在/将来的描述精确与否("音乐学习能否提高数学能力?"),回答"是什么"。<br>规定性:什么该做不该做、对错好坏("该不该立法禁止开车发短信?"),回答"应该不应该";社会争论多属此类。论题类型决定你判断和评价的方式。'},
+{ch:3,type:'method',q:'寻找论题的三条线索?',a:'① 作者直接说出(常在开头或标题,提示语如"我想问的问题是……");② 从暗示推断:作者是在对什么事进行回应?③ 查作者背景、所属组织机构。论题未明说时,最有效的方法是先找准结论。'},
+{ch:3,type:'list',q:'找到结论的五条线索?',a:'① 问问论题是什么——结论是对论题的回应;② 找指示词:因此、表明、由此可知、由此得出、显示出、证明、问题的实质是……;③ 结论常在开头或结尾;④ 记住不可能作为结论的:例证、数据、定义、背景材料、证据;⑤ 检查语境和作者背景(来源偏见)。'},
+{ch:3,type:'concept',q:'什么样的断言不是结论?',a:'没有支撑陈述的断言只是<b>纯观点</b>(mere opinion);例证、数据、定义、背景材料、证据都不能作为结论——用作支撑材料的观点是被拿来证明别的观点的。'},
+{ch:3,type:'warn',q:'写作/表达时如何避免沟通失败(第3章)?',a:'问题根源:读者听不到你内心的想法——"批判性思维的最大障碍是无法建立沟通的桥梁"。<br>① 写作前先将论题范围尽量缩小(警惕贪多嚼不烂);② 一步步引导读者得出你的结论——结论和理由一目了然、明确说出、强调一遍。'},
+{ch:4,type:'concept',q:'什么是理由?',a:'用来支撑或证明结论的信念、证据、隐喻、类比和其他陈述;是构建结论可信度的基础。没有理由的断言只能让人"干瞪眼"。'},
+{ch:4,type:'list',q:'论证的三个特点?',a:'① 必有目的:希望说服我们相信某事或以某种方式行事;② 质量有高有低,靠批判性思维判定;③ 两个必要组成部分:结论及支撑理由。'},
+{ch:4,type:'method',q:'找理由的提示词有哪些?',a:'因为、由于、因为这个原因、因为这个事实、鉴于、由以下材料支撑、因为证据显示、研究显示,以及"第一、第二、第三"。论证基本结构"甲之所以成立是因为乙"。'},
+{ch:4,type:'method',q:'什么是施惠原则?',a:'把每个好像被用来支持结论的想法都当成理由,即使你并不相信它支持有力——先找论证,后面有的是时间评价。'},
+{ch:4,type:'list',q:'证据的七种类型?',a:'事实、研究成果、生活实例、统计数据、专家或权威意见、当事人证言、类比。不同证据适用于不同场合;自问"需要哪类证据才能证明这个断言?"'},
+{ch:4,type:'warn',q:'什么是"逆向逻辑/反向论证"?如何识别?',a:'理由成马后炮、随结论变化——先有结论后编理由。<br>信号:为捍卫原观点当场编造理由;被问理由时一脸茫然或恼羞成怒。<br>理想状态:<b>先有理由,后有结论</b>——理由是模具,结论据此成型。'},
+{ch:5,type:'concept',q:'什么是歧义?',a:'一个(关键)词或短语可能存在多重含义的现象;在论证的上下文里让人捉摸不透。大多数词语不止一种含义,如"自由""公平""淫秽"。'},
+{ch:5,type:'method',q:'找准关键词和短语的方法?',a:'① 以论题为线索找关键词;② 在理由和结论中找论证结构里的关键词(其余可从淘金盘扔出去);③ 抽象度线索:词越抽象越可能被多重解读;④ 反串:若采取与作者相反的立场,我会不会用不同方式定义某些词?'},
+{ch:5,type:'method',q:'如何判定"重要歧义"?',a:'若对术语能找到两种以上含义,且每种含义放进论证语境都说得通,而不同含义会使理由支撑结论的效度大受影响——就找到了重要歧义。最好方法:把不同含义<b>替换</b>进论证结构检验。'},
+{ch:5,type:'concept',q:'什么是语境?为什么重要?',a:'作者/演说者的背景 + 词语在具体论证中的习惯用法 + 位于多义词前后的其他词语和陈述。作者很少给关键词下定义,理解模糊陈述通常唯一可依靠的是语境(例:"人权"在挪威领导人 vs 美国参议员口中含义不同)。'},
+{ch:5,type:'list',q:'意义的三种表现方式?',a:'① 同义替换(焦虑=紧张不安);② 举例说明(候选人打开电视看选举结果时的心情);③ 具体标准定义(指明决定性特征)。评价有争议论题时,前两种都不合适——有用的定义应指出具体使用规则,越具体越好。'},
+{ch:5,type:'concept',q:'外延意义与内涵意义?附加感情色彩的语言有何危害?',a:'外延:词约定俗成的、外在描述性的指称对象;内涵:附加给术语的感情联想意义。<br>附加感情色彩的术语(loaded terms)让思维"暂时性短路",绕过描述意义直接联通情感,从而欺骗思想(全球变暖 vs 气候改变;免税 vs 减税)。'},
+{ch:5,type:'tip',q:'面对歧义,责任在谁?',a:'你的责任:主动提问澄清歧义——但到此为止。<b>谁想说服你,谁就要负责解释清楚。</b>包含歧义、无法判断能否接受的理由,建议干脆忽略;你没有义务评价表述不清的想法。'},
+{ch:6,type:'list',q:'假设的四个特征?',a:'① 隐藏或没有明说出来(大多情况下);② 作者认为是理所当然的;③ 对决定结论有较大影响;④ 可能有一定的欺骗性。'},
+{ch:6,type:'vs',q:'价值观假设 vs 描述性假设?',a:'价值观假设:想当然地认为某些相互对立的价值观中一个比另一个更重要——告诉你作者希望世界<b>应该</b>怎样。<br>描述性假设:对这个世界过去、现在或未来是什么样的没有明说的信念——告诉你作者对世界本质及世人本性的认识。'},
+{ch:6,type:'method',q:'到哪儿去找假设?',a:'只找影响论证结构质量的假设,范围限定在理由与结论之中:<br>① 理由<b>需要它们才能证明结论</b>的假设 → 价值观假设;<br>② 理由<b>需要它们才能成立</b>的假设 → 描述性假设。<br>先检查理由,然后检查结论。'},
+{ch:6,type:'eg',q:'举出典型的价值观冲突(至少3组)?',a:'忠诚 vs 诚实(该不该告诉父母姐姐有药瘾);竞争 vs 合作(是否支持评分制);媒体自由 vs 国家安全;秩序 vs 言论自由(该不该监禁有种族主义思想的人);理性 vs 冲动(下注前该不该先查赔率)。特定论争往往牵涉好几个价值观冲突。'},
+{ch:6,type:'method',q:'如何从立论者的背景找价值观假设?有何注意?',a:'问:他最想保护什么利益?追求自身利益会限制其能包容的价值观假设(烟草公司总裁不会把同情弱势置于业绩之上)。<br>注意:不能因某人属于某团体就认定其必然认同该团体价值观——背景只是线索之一,也可能误导。'},
+{ch:6,type:'method',q:'如何从可能发生的后果找价值观假设?',a:'注意作者用来证实结论的理由,核心问句:"<b>为什么作者用作理由的特定后果或结果对他而言显得那样可取?</b>"——由此判断哪些价值倾向使作者认为这些理由更可取(例:"不该建核电厂,因为核废料污染环境"→公共健康 > 效率)。'},
+{ch:6,type:'list',q:'常见的描述性假设有哪些?',a:'① 发生在人们身上的事,主要是人们自己选择的结果;② 演说者或写作者就是个典型;③ 这个世界是公正的("浪漫的谬误":应该是真的就意味着必然是真的);④ 因为以前发生过,今后还会发生;⑤ 我的世界就是这个宇宙的中心。'},
+{ch:6,type:'method',q:'定位描述性假设的五条线索?',a:'① 不断思考结论和理由之间存在的鸿沟("如果理由成立,要得出结论还需要什么东西成立?");② 寻找支撑理由的没有明说的想法;③ 使自己站在作者或演说者的立场上;④ 使自己站在反对者的立场上;⑤ 避免把不完全成立的理由当成假设。'},
+{ch:6,type:'warn',q:'哪些是"无意义的假设",不必分析?',a:'① 假定立论者相信他的理由都能成立(可抨击理由不充足,但指出这一点毫无意义);② 假定作者相信理由与结论之间存在逻辑联系(重要的是联系怎么产生)。<br>只有隐藏的、有争议的缺失环节,寻找假设的辛苦才得到最好回报。'},
+{ch:7,type:'concept',q:'什么是谬误?包括哪三大类?',a:'谬误:论证中的<b>欺骗手段</b>,作者可能利用它来说服你采纳他的结论。三类:<br>① 需要明显错误或让人不能接受的假设才能成立;<br>② 把与结论无关的信息弄得好像有关,分散注意力;<br>③ 看似为结论找证据,而要使证据有效必须先假定结论成立(循环论证)。'},
+{ch:7,type:'method',q:'找谬误的三个思考步骤?',a:'① 找出并整理论证结构(先列结论和理由);<br>② 检查每个理由赖以成立的隐藏假设,判断其是否可接受;<br>③ 给不可接受的论证方式命名、抛弃。<br>另问:"作者有没有通过转移我们的注意力来欺骗我们?"'},
+{ch:7,type:'fallacy',q:'人身攻击谬误(ad hominem)?',a:'针对个人进行攻击,而不是直接反驳其提供的理由;攻击"送信人"而非"信息"。<br>例:"你当然那样说了,反正什么联谊会都不收你。"'},
+{ch:7,type:'fallacy',q:'滑坡谬误(slippery slope)?',a:'设想采取提议的步骤会引发一连串不可控的不利事件,而实际上却有现成程序可防止此类连锁事件。<br>例:允许禁播酒类广告→就会禁糖果→再禁牛奶鸡蛋广告。'},
+{ch:7,type:'fallacy',q:'追求完美解决方案谬误?',a:'错误地认为:因为尝试某种解决方案后还有遗留问题未解决,这种解决方案根本就不该采用。<br>例:"家里装安保系统是浪费钱,贼要光顾总归有办法。"<br>提醒:能提出特定方案总比束手无策强,可能是向彻底解决迈进的一步。'},
+{ch:7,type:'fallacy',q:'诉诸公众谬误(appeal to popularity)?',a:'引述"大部分人都持有该观点"来证明某个断言有道理;错误地以为流行的就是可取的。<br>例:73%民意支持药用大麻→就应让大麻成为医疗选择。公众往往未充分研究问题,不足以提供合理判断。'},
+{ch:7,type:'fallacy',q:'诉诸可疑权威谬误?',a:'引用某一权威的话来证明结论,而该权威对这一论题并没有特别的专门知识。<br>关键看权威据以做出判断的<b>证据</b>,而非权威纷纷支持。'},
+{ch:7,type:'fallacy',q:'诉诸感情谬误(appeal to emotion)?',a:'使用带强烈感情色彩的语言分散注意力,让人忽视相关理由和证据;常利用恐惧、希望、爱国主义、怜悯和同情。<br>三个特别常见的地方:广告、政治辩论、法庭辩论。常见形式"恶语中伤"(用引发不好联想的言辞给人戴帽子)。'},
+{ch:7,type:'fallacy',q:'稻草人谬误(straw-person)?',a:'歪曲对方的观点,使它容易受到攻击;实际攻击的观点根本不存在。<br>例:把儿童发展项目歪曲为"把儿童变成通用计划的试验品"。<br>检查法:立论者是否公正全面地展现了对方立场。'},
+{ch:7,type:'fallacy',q:'虚假的两难选择谬误(either-or false dilemma)?',a:'现实中存在两种以上选择时,却假想只有两种选择方案,过度简化论题。<br>警惕词汇:不是……就是;唯一的选择就是。<br>遇到时停下来问:"是否还有两种以上选择?"'},
+{ch:7,type:'fallacy',q:'乱扣帽子谬误(explaining by naming)?',a:'错误地以为给某个事件或行为起了个名字,就合理解释了这一事件;用标签隐藏对复杂因果关系的无知。<br>例:"为什么老爸行为古怪?""他遇到了中年危机。""他就是个混账。"'},
+{ch:7,type:'fallacy',q:'计划谬误(planning fallacy)?',a:'人们或机构倾向于<b>低估</b>完成一项工作所需的时间,尽管无数过去的经验显示他们一直低估。是一厢情愿的特殊例子——对项目结果做出过于乐观、不现实的预计。'},
+{ch:7,type:'fallacy',q:'光环效应谬误(glittering generality)?',a:'使用模糊、引发强烈感情认同的品德词汇,使人倾向同意某事而不细查理由;是诽谤中伤的"颠倒版"。<br>例:竞选演说罗列"充满爱心、勇往直前、投真理一票"却无任何具体政绩和立场。'},
+{ch:7,type:'fallacy',q:'转移话题谬误(red herring)?',a:'插入一个看似与原论题相关、实则不相干的话题,把注意力转移开以赢得论证。<br>谬误顺序:甲主题正被讨论→引入乙主题→甲主题被置之不理。<br>例:"你为什么跟男朋友撒谎?""你总是挑我的错。"<br>识别法:脑中谨记真正的论题和所需证据。'},
+{ch:7,type:'fallacy',q:'循环论证谬误(begging the question)?',a:'论证过程中已假设自己的结论成立——结论由同一个结论来证明(只是措辞改变),在回避问题而非回答问题。<br>例:"退学不可取,因为它是不好的。"<br>识别法:检查理由是否仅用不同词语重复结论,结论是否被拿来证明理由。'},
+{ch:7,type:'tip',q:'找到一个谬误之后怎么办?',a:'找到一个谬误 = 找到拒绝接受该部分论证的合理根据;但仍需考虑立论者提出的不属于谬误的其他理由。<br>口头论辩中最有效的措施:问对方"有没有更好的理由来证实他的结论";发生转移话题时,请对方回到原来的论题。'},
+{ch:8,type:'concept',q:'什么是事实断言?什么是孤立断言?',a:'事实断言:立论者希望我们当作"事实"接受的、关于世界曾经/现在/将来是什么样子的信念;可以是<b>结论、理由或假设</b>。<br>需要证据却没看到证据 = 孤立断言(mere assertion),应严肃质疑其可靠性。'},
+{ch:8,type:'list',q:'什么时候可以接受一个事实断言?',a:'① 表现为无可置疑的常识(如"举重可锻炼肌肉");<br>② 是从无懈可击的论证中得出的结论;<br>③ 有坚实的证据合理支撑。<br>事实是"程度"问题:支撑证据数量越多、质量越高,断言越可称为"事实"。'},
+{ch:8,type:'method',q:'事实断言出现在哪三个位置?分别该问什么?',a:'① 描述性的结论本身→"这个结论能不能由这个证据来证明?";<br>② 用来证实结论的理由→"这个理由能不能由证据来证明?";<br>③ 描述性的假设(常是隐蔽的事实断言)→"证据证明这个假设的效力怎么样?"'},
+{ch:8,type:'concept',q:'什么是证据?评价路径是什么?',a:'证据:立论者告知的明确信息,用来支撑或证明一个事实断言的可靠性。<br>评价路径:先问"这是什么类型的证据?"再按类型提出相应问题;证据质量主要取决于类型。<br>提醒:没有哪种证据能像灌篮那样一锤定音。'},
+{ch:8,type:'warn',q:'直觉作为证据有什么问题?',a:'① 最大问题是<b>私密性</b>——别人根本无法判断其可靠性,直觉冲突时缺乏判断取舍的基础;② 依赖无意识处理,极大忽略相关证据,反映强烈偏见。<br>例外:经验丰富的从业者的直觉可能基于大量经验(如飞行员凭直觉感到飞机不对劲)——此时应赞成进一步检查。'},
+{ch:8,type:'warn',q:'个人经历作为证据有什么问题?',a:'个人经历(甚至总和)<b>不是有代表性的经历样本</b>,导致以偏概全谬误(hasty generalization):仅根据群体中极小部分人的经历就得出整个群体的结论。<br>一次突出经历只说明结果"有可能"出现,不能说明其具有代表性或极有可能发生。'},
+{ch:8,type:'warn',q:'典型案例作为证据有什么问题?有何用处?',a:'问题:具体、生动、情节感人,激发情感回应,分散注意力,使我们不再搜寻更相关的研究证据,还可能让我们忽略此类案例极为罕见的事实。<br>用处(不当有力证据时):展现各种重要可能;让抽象数据呈现人性化一面;让人对论题产生兴趣。'},
+{ch:8,type:'list',q:'核查当事人证言的四个问题?',a:'① 选择性:说服者小心挑选证人和证言——"你相信什么就看得见什么";问"没机会听到反馈的人,经历感受是什么样的?"<br>② 个人利益:作证者与其提倡的东西之间有无利益关系。<br>③ 省略信息:证言很少提供足够信息作判断基础。<br>④ 人为因素:来自充满激情、看似信得过的人,不是证据质量的保证。'},
+{ch:8,type:'list',q:'评价专家意见的问题清单?',a:'① 该专家在该主题上拥有多少专长、训练或特别知识?<br>② 专家的地位是否使其有特别好的渠道获取第一手资料?<br>③ 有没有较好理由相信专家相对更难遭受各种歪曲影响(个人需求、原来预期、一般看法、态度、价值观、意识形态)?<br>④ 搜寻"专家在该主题上的个人利益"(偏见)——但不能仅因怀疑利益影响就抛弃断言;检查持不同观点的各路专家是否同意。'},
+{ch:8,type:'warn',q:'判断网上信息不可靠的线索?',a:'帖子无发表日期;外观不专业;断言模糊;一概而论(总用"总是""从来不");感性而非小心求证的一边倒观点;缺乏第一手资料来源;拿道听途说的证据就用;数不清的论证谬误。<br>(研究发现很多网站多达1/3的评论是伪造的)'},
+{ch:8,type:'method',q:'学术写作中什么样的证据价值较高?',a:'能<b>公开证实、依据科学方法进行、出版前接受同行评价</b>的研究。<br>学术写作中应留意仅靠直觉、个人经历、当事人证言或专家意见支持的理由。'},
+{ch:9,type:'warn',q:'个人观察作为证据有什么问题?什么样的观察最可信?',a:'观察者给不出"纯粹"的观察:所见所说都经过价值观、偏见、态度、期待的过滤;人们只挑选、记住与以往经历一致的侧面。<br>最可信的报道 = 最近得来的观察 + 最佳环境中多人同时观察 + 观察者无明显期待与偏见。'},
+{ch:9,type:'list',q:'科学方法的三大特征?',a:'① 公开可验证的数据(可复制、重复得到);<br>② 可控性(多人共同观察、实验室控制外部因素;但人类社会比物理世界更难控制);<br>③ 语言的精确性。'},
+{ch:9,type:'list',q:'对研究证据要记住的8点?',a:'① 研究质量有高有低,发表不等于没有重大缺陷;② 成果常互相矛盾,单一研究脱离大环境易误导(41%被复检的医学断言被证伪或夸大);③ 只能"支持"结论而非"证明"结论;④ 研究人员也有期待、价值观、需求,带偏见;⑤ 转述者常歪曲或简化研究结论;⑥ 研究"事实"随时间改变;⑦ 研究的人工程度影响推广;⑧ 经济效益、地位、安全需求影响结果。'},
+{ch:9,type:'list',q:'评价科学研究的10条线索?',a:'① 资料来源质量(同行评审期刊最佳);② 有无其他显示研究出色的线索;③ 研究距今多久;④ 有没有被其他研究重复过;⑤ 是否精挑细选、忽略相反结论的研究;⑥ 有无强势批判思维的证据;⑦ 有无蓄意歪曲研究的理由;⑧ 研究条件是否人工制造而被扭曲;⑨ 根据样本能概括的范围有多大;⑩ 测量有无偏见歪曲。'},
+{ch:9,type:'method',q:'评价样本的三要素?',a:'① 覆盖率要大到足以产生概括(1000名大学生 > 100名);<br>② 覆盖范围/多样性要足够;<br>③ 随机性越大越好(避免片面取样:自愿参加者、心理课堂学生)。<br>谬误:过度概括/以偏概全——结论远超研究能保证的范围。'},
+{ch:9,type:'method',q:'从研究的测量方法来概括,该问什么?',a:'任何结论只适用于所使用的具体测量方法。<br>问:"采用了什么样的测量方法,满意度怎么样?""有没有其他测量方法?结果会不会不同?"<br>把自己放在被测量者的位置(例:"结过婚的人更快乐"实为"基于一次性自我报告问卷的‘幸福’")。'},
+{ch:9,type:'warn',q:'片面的调查和问卷有哪三大问题?',a:'① 回答未必实话实说(给"应然"答案、不假思索)——不能想当然认为答案反映真实态度;<br>② 问题措辞模棱两可,不同人其实在回答不同问题;<br>③ 调查本身包含偏见:措辞偏见(引导性词语)、语境偏见(前面问题影响后续回答)、问卷过长后半部分敷衍。'},
+{ch:9,type:'method',q:'评价类比的两大因素?什么是强势类比?',a:'① 两事物相同和不同的方式;② 相同点与不同点之间的<b>相关性</b>。<br>任意两事物几乎都能找到共同点,共同点多不等于有说服力。<br>强势类比 = 有相关共同点、缺相关不同点;类比要展示"潜在原则"。<br>谬误:错误类比谬误——类比中存在重要且特别相关的不同点。'},
+{ch:9,type:'eg',q:'"狗不能乱跑,所以对16岁女儿应实行八点宵禁"——这个类比错在哪?',a:'相关不同点:女儿有认知能力、能分辨对错、拥有权利与自主权——与狗有重要且特别相关的不同。<br>这是<b>错误类比谬误</b>。评价类比看两点:①相同和不同的方式;②相同点与不同点之间的相关性。'},
+{ch:9,type:'list',q:'专家观点什么时候最可信?',a:'① 已用系统2思维而非系统1思维判断;<br>② 思维领先、情感随后(想立刻转发到社交平台是警示);<br>③ 通过了批判性问题的盘问(精心设计的研究、无过度利益冲突);<br>④ 认识到适用范围局限,不过度概括;<br>⑤ 处于研究大背景中(非单一吸引眼球的研究);<br>⑥ 经受住相关领域其他专家的批判性审查。'},
+{ch:10,type:'concept',q:'什么是替代原因?为什么要自己找?',a:'替代原因(rival causes):一个言之成理的替代解释,能说明特定结果为何发生。<br>专家常不主动透露替代原因(以免削弱其断言),须自己发掘。因果指示词:由……导致的、……的影响、因为、是……的起因、与……有联系。'},
+{ch:10,type:'method',q:'寻找替代原因的四个自查问题?',a:'① 能不能找到其他方法解读这个证据?<br>② 还有什么别的东西可能引发这个行动、导致这些发现?<br>③ 从另一个角度看,哪些东西会被当成重要原因?<br>④ 若这个解读不正确,还有什么别的解读说得通?'},
+{ch:10,type:'warn',q:'唯一的原因,还是原因之一?',a:'事件常由多种共同起作用的原因结合导致;涉及人类特征/活动时,多因共同作用更常见。任何单独原因都极可能只是<b>"促成原因"</b>而非唯一原因。<br>谬误:过度简化因果关系——用不足以解释整个事件的因果因素解释事件,或过分强调其中一个或几个因素。'},
+{ch:10,type:'warn',q:'组间差异研究(实验组vs控制组)要警惕什么?',a:'研究组几乎总在不止一个重要方面有差异→组间差异伴随多种可能原因。<br>必问:"有没有可能存在替代原因也可以解释这种组间差异?"<br>例:上备考培训班的学生分数高——或因专业/经济背景、动力差异(报名者本就想通过考试)。<br>随机化实验设计是最大限度减少替代原因的"黄金标准"。'},
+{ch:10,type:'list',q:'解释"甲与乙相关"的四种假设?(相关性不能证明因果关系)',a:'① 甲是乙的原因;<br>② 乙是甲的原因;<br>③ 第三因素丙同时导致甲和乙;<br>④ 甲乙相互影响。<br>例:"吃冰激凌导致犯罪"——实为夏季气温升高同时推高两者。'},
+{ch:10,type:'fallacy',q:'因果混淆谬误与忽略常见原因谬误?',a:'因果混淆(confusion of cause and effect):混淆因果,或认不出二者相互影响。<br>忽略常见原因(neglect of common cause):认不出两事相关是第三因素在起作用。'},
+{ch:10,type:'fallacy',q:'事后归因谬误(post hoc)?',a:'仅因乙紧随甲之后发生,就断定甲引发乙(post hoc, ergo propter hoc)。<br>是许多迷信的直接原因(幸运帽);政商人物爱把上任后的好事揽给自己、坏事推给别人。<br>必问:"除先后发生外,还有没有其他过硬证据?"(可能只是巧合)'},
+{ch:10,type:'concept',q:'什么是基本归因错误?',a:'解释他人行为时,<b>高估个人内部倾向(性格)</b>,低估外部环境因素。<br>例:把偷窃归为"没良心",而非贫困、同伴压力。'},
+{ch:10,type:'list',q:'比较替代原因的六条标准?',a:'① 逻辑上的合理性;<br>② 与其他所学知识的一致性;<br>③ 过去解释/预测类似事件的成功率;<br>④ 大量已接受事实能说明该解释的程度;<br>⑤ 被极少已接受信念推翻的程度;<br>⑥ 与其他解释相比,解释大量事实及各类型事实的效力。<br>原则:替代原因越言之有理,对原解释的信心越该打折扣。'},
+{ch:10,type:'tip',q:'关于替代原因的五条教训?',a:'① 很多类型的事件都可以通过多种替代原因来解释;② 专家可以检查同一个证据却发现不同的原因;③ 持论者大多只提供自己喜欢的原因;④ 想出替代原因是创造性过程,通常不会一目了然;⑤ 特定因果断言的确定性与言之成理的替代原因数量成反比——找到多个替代原因让人获得"理智上的谦逊"。'},
+{ch:11,type:'warn',q:'面对不知来历的统计数据,该怎么办?',a:'任何统计数字都要求某些事件能被界定并准确识别——这常极难做到。<br>问:"作者是怎样得出这个估计的?"<br>数据采集的拦路虎:关键词模棱两可、识别相关人员/事件困难、人们不愿提供真实信息、事件未被报告。<br>统计数据往往只是基于事实的估计;估计有用也可能欺骗。'},
+{ch:11,type:'method',q:'三种平均值是什么?为什么必须问清?',a:'平均数(mean):总和÷数目;中位数(median):最中间的数值;众数(mode):出现频率最高的数值。<br>区别巨大:NFL球星平均工资180万美元被超高薪拉高,中位数仅77万——想让工资显得高就选平均数。<br>还要了解<b>全距</b>(最大值与最小值之差)和<b>数值分布</b>。'},
+{ch:11,type:'warn',q:'如何识破"把一件事的结论用来证明另一件事"?',a:'数据能证明一件事,立论者却宣称它证明了另一件事。<br>① 对数据视而不见,先问"什么样的统计数据才有助于证明其结论?"再与给出的数据比较;<br>② 先不看结论,从数据出发问"能得出什么合适的结论?"再与作者结论比较。<br>教训:加倍注意统计数据和结论的措辞是否指同一件事。'},
+{ch:11,type:'warn',q:'通过省略信息欺骗数据的两种形式?',a:'① 有百分比、缺绝对数值:"大公司数目增长75%"——从4家到7家,还是12家到21家?<br>② 有绝对数值、缺百分比/基数:跳伞死3人 vs 车祸死176人——没算参加人数的比率。<br>方法:只有绝对数值时问百分比;只有百分比时问绝对数值。'},
+{ch:11,type:'list',q:'评估数据的六条线索?',a:'① 尽量找出数据如何获得的信息,问"作者是怎么知道的?"(尤其警惕用大数字吓人或动人的场合);② 对平均值类型感到好奇,分析全距和分布;③ 特别当心拿一件事的结论证明另一件事;④ 先不看作者的数据,把"所需"证据与实际提供的数据比较;⑤ 从数据得出自己的结论,不一致则可能有问题;⑥ 判断缺少了什么信息。'},
+{ch:12,type:'list',q:'不完整的论证在所难免的五个理由?',a:'① 时空限制(社论字数限制、广告必须切中要害);<br>② 注意力持续时间有限,信息必须尽快传达;<br>③ 立论者的知识总是不全面;<br>④ 作者直接想欺骗;<br>⑤ 立论者的价值观、信仰、态度与你不同→论证受不同假设引导。<br>比喻:特定视角像马眼罩——专注正前方,却遮蔽其他参照系至关重要的信息。'},
+{ch:12,type:'list',q:'识别省略信息的提问清单(说出至少6条)?',a:'① 常见的反驳论证:反对者会提供什么理由?有没有相冲突的研究?<br>② 遗漏的定义:关键词换一种定义,论证会有何不同?<br>③ 遗漏的价值取向或视角;<br>④ "事实"的来源;<br>⑤ 获得事实的程序细节(多少人完成问卷?问题怎样措辞?);<br>⑥ 收集/组织证据的其他技巧;<br>⑦ 遗漏/不完整的数字、图表、数据;<br>⑧ 省略的结果:正反面、长短期、代价与好处;<br>⑨ 预测技巧的失败记录。'},
+{ch:12,type:'warn',q:'为什么需要知道确切的数字?',a:'很多词暗示大小、范围、比例(更大、更多、更快)。<br>例:美国幸福指数高于丹麦——刻度是1~2还是1~100?分数差距是几乎一样还是差50分?意义完全不同。<br>凡可用具体单位测量的字词,做决定前就应<b>要求得到具体数值</b>。'},
+{ch:12,type:'list',q:'考虑负面效果的四个必问问题?',a:'① 社会的哪部分没有受益?谁蒙受损失?受损者怎么说?<br>② 对权力分配有什么影响?<br>③ 对我们的健康有什么影响?<br>④ 怎样影响人际关系、与自然环境的关系?<br>对每一项都要再问:"这个行动潜在的长期的负面效果是什么?"'},
+{ch:12,type:'tip',q:'省略的信息还是找不到,怎么办?',a:'三个选择:<br>① 表达对论证的不快;<br>② 继续搜寻所需信息;<br>③ 谨慎地同意该论证(理由是它比对手的论证更好)。<br>注意:不要因信息找不到就拒绝形成任何观点——论证从来都不完整。'},
+{ch:13,type:'warn',q:'二分式思维的问题是什么?如何破解?',a:'二分式思维:非黑即白、非是即否,把可能有多种答案的问题假设成只有两个答案;重大问题很少能用简单的"是/不是"回答;与"虚假的两难选择"谬误同源。<br>破解:给结论限定条件,把结论放到具体语境中——"这取决于……"'},
+{ch:13,type:'method',q:'对任一结论要提的三个问题?',a:'① 结论在<b>什么时候</b>是准确的?<br>② 结论在<b>什么地方</b>是准确的?<br>③ 结论<b>为什么/为了什么目的</b>才是准确的?'},
+{ch:13,type:'method',q:'条件句的衍生能力是什么?',a:'条件句中陈述一个假设的条件,以帮助得出某个特定结论;指明结论建立在不确定的断言或假设之上。<br>让我们不必对争论假装知道本来不知道的一切——与"谦卑"这一重要价值观一致。特别有助于评价型论证(需要表明用什么标准评价)。'},
+{ch:13,type:'method',q:'如何用"备选的解决方法"寻找结论?',a:'把"该不该采取甲措施?"的二分式问题,重新表述为"<b>我们应该怎样处理乙问题?</b>"——从理由提出解决问题的方法,大大增加思维灵活性。<br>例:"要不要关闭市中心酒吧?"→"怎样解决大学生酒精中毒问题?"→"不关闭,而应严格执行饮酒年龄限制、对卖酒给未成年人的酒吧罚款。"'},
+{ch:13,type:'list',q:'辨认备选结论的三条提示?',a:'① 努力找出从理由中可推导出的尽可能多的结论;<br>② 使用条件句来限定备选结论;<br>③ 重新表述论题为"我们该怎样来处理乙问题?"'},
+{ch:13,type:'warn',q:'"许多专家都不同意"这类说法有什么问题?',a:'它暗示分歧确立后论证地位相等——这是对批判性思维的无礼。<br><b>不是所有结论都生来平等</b>:有些结论比其他结论更站得住脚;最值得相信的是最能影响你对作者论证做出反应的结论。批判性思考者有细心论证的标准来识别最强论证。'},
+{ch:14,type:'tip',q:'传达批判性思维的最佳方式与最致命态度?',a:'最佳:大声把判断性问题说出来,仿佛充满好奇。<br>最致命:"哈哈,我可逮着你的一个错了"——把批判性思维当攻击武器会毁掉它的作用。<br>目标:让批判性思维成为友善的工具,改善作者与读者、演说者与听众的生活质量。'},
+{ch:14,type:'tip',q:'如何让批判性思维真正落地?',a:'① 把批判性思维与不同论题结合——不是考试临阵磨枪、显摆智力的业余爱好;<br>② 它是通情达理的人相互采取联合行动的坚实基础;<br>③ 信念的回报寓于随后的行为之中:找到问题的最佳答案后,依据答案采取行动。'}
+];
+
+/* ============ 状态 ============ */
+let mode = 'browse';               // browse | study
+let fCh = 'all', fType = 'all', query = '';
+let known = new Set();             // 已掌握卡片下标
+try{ known = new Set(JSON.parse(localStorage.getItem('stq-known') || '[]')); }catch(e){}
+function saveKnown(){ try{ localStorage.setItem('stq-known', JSON.stringify([...known])); }catch(e){} }
+let deck = [], deckIdx = 0, revealed = false, doneCount = 0;
+let shuffleBrowse = false;
+
+const CH_ORDER = Object.keys(CH).map(Number).sort((a,b)=>a-b);
+const CH_COLORS = ['#0E7490','#B45309','#1D4ED8','#9D174D','#6D28D9','#15803D'];
+const chColor = c => CH_COLORS[CH_ORDER.indexOf(c) % CH_COLORS.length];
+
+/* ============ 筛选 ============ */
+function filtered(){
+  const q = query.toLowerCase();
+  return CARDS.filter(c=>{
+    if(fCh !== 'all' && c.ch !== +fCh) return false;
+    if(fType !== 'all' && c.type !== fType) return false;
+    if(q && !((c.q + ' ' + c.a).toLowerCase().includes(q))) return false;
+    return true;
+  });
+}
+
+/* ============ 筛选条 ============ */
+function renderChips(){
+  const used = [...new Set(CARDS.map(c=>c.ch))].sort((a,b)=>a-b);
+  document.getElementById('chChips').innerHTML = used.map(c=>{
+    const name = c===14 ? '最后的话' : CH[c];
+    const short = name.length > 7 ? name.slice(0,7)+'…' : name;
+    return '<span class="chip'+(String(fCh)===String(c)?' on':'')+'" data-ch="'+c+'" title="'+name+'" style="'+(String(fCh)===String(c)?'background:'+chColor(c)+';border-color:'+chColor(c)+';color:#fff':'')+'"><span class="k">'+(c===14?'末':'0'+c)+'</span>'+short+'</span>';
+  }).join('');
+  const usedT = [...new Set(CARDS.map(c=>c.type))];
+  document.getElementById('typeChips').innerHTML = usedT.map(t=>{
+    const on = fType === t;
+    return '<span class="chip'+(on?' on':'')+'" data-type="'+t+'" style="'+(on?'background:'+TYPES[t][1]+';border-color:'+TYPES[t][1]+';color:#fff':'color:'+TYPES[t][1]+';border-color:'+TYPES[t][1]+'55')+'">'+TYPES[t][0]+'</span>';
+  }).join('');
+}
+
+/* ============ 浏览模式 ============ */
+function renderGrid(){
+  let cards = filtered();
+  if(shuffleBrowse && mode === 'browse'){
+    for(let i=cards.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cards[i],cards[j]]=[cards[j],cards[i]]; }
+  }
+  document.getElementById('stat').innerHTML =
+    '共 <b>'+CARDS.length+'</b> 张 · 当前显示 <b>'+cards.length+'</b> 张 · 已掌握 <b>'+known.size+'</b> 张';
+  const grid = document.getElementById('grid');
+  let h = '';
+  cards.forEach(c=>{
+    const idx = CARDS.indexOf(c);
+    const col = TYPES[c.type][1];
+    h += '<div class="card'+(known.has(idx)?' known':'')+'" data-idx="'+idx+'">';
+    h += '<div class="card-top"><span class="badge" style="background:'+col+'">'+TYPES[c.type][0]+'</span>';
+    h += '<span class="card-ch">'+(c.ch===14?'最后的话':'第'+(c.ch<10?'0':'')+c.ch+'章 · '+CH[c.ch])+'</span></div>';
+    h += '<div class="card-body">';
+    h += '<div class="face q"><div class="label q">Q · 问题</div><div class="text">'+c.q+'</div><div class="hint">点击卡片查看答案</div></div>';
+    h += '<div class="face a"><div class="label a">A · 答案</div><div class="text">'+c.a+'</div></div>';
+    h += '</div></div>';
+  });
+  grid.innerHTML = h;
+  document.getElementById('noresult').style.display = cards.length ? 'none' : 'block';
+  grid.querySelectorAll('.card').forEach(el=>{
+    el.addEventListener('click', ()=> el.classList.toggle('flipped'));
+  });
+}
+
+/* ============ 复习模式 ============ */
+function renderStudy(){
+  const box = document.getElementById('studyCard');
+  const acts = document.getElementById('studyActions');
+  if(deck.length === 0 || deckIdx >= deck.length){
+    box.innerHTML = '<div class="study-done"><b>本轮复习完成!</b>本轮 '+doneCount+' 张已掌握,'+(deck.length-doneCount)+' 张待再次巩固。可退出后再点"切换复习模式"重新开始。</div>';
+    acts.innerHTML = '';
+    document.getElementById('studyPos').textContent = '完成';
+    document.getElementById('studyLeft').textContent = '';
+    document.getElementById('studyBar').style.width = '100%';
+    return;
+  }
+  const c = deck[deckIdx];
+  const idx = CARDS.indexOf(c);
+  const col = TYPES[c.type][1];
+  let h = '<div class="face q"'+(revealed?' style="display:none"':'')+'><div class="label q" style="color:'+col+'">Q · '+(c.ch===14?'最后的话':'第'+(c.ch<10?'0':'')+c.ch+'章 '+CH[c.ch])+' · '+TYPES[c.type][0]+'</div>';
+  h += '<div class="text">'+c.q+'</div></div>';
+  h += '<div class="face a"'+(revealed?'':' style="display:none"')+'><div class="label a">A · 答案</div><div class="text">'+c.a+'</div></div>';
+  box.innerHTML = h;
+  acts.innerHTML = revealed
+    ? '<button class="tbtn again" id="stAgain">还没记住 ↻</button><button class="tbtn good" id="stGood">已掌握 ✓</button>'
+    : '<button class="tbtn primary" id="stReveal">显示答案</button>';
+  document.getElementById('studyPos').textContent = '第 '+(deckIdx+1)+' / '+deck.length+' 张';
+  document.getElementById('studyLeft').textContent = '剩余 '+ (deck.length - deckIdx) +' 张';
+  document.getElementById('studyBar').style.width = (deckIdx/deck.length*100)+'%';
+  if(revealed){
+    document.getElementById('stAgain').onclick = ()=>{ deckIdx++; revealed=false; renderStudy(); };
+    document.getElementById('stGood').onclick = ()=>{
+      known.add(idx); saveKnown(); doneCount++;
+      deck.splice(deckIdx,1); revealed=false;
+      if(mode==='study') renderGrid();
+      renderStudy();
+    };
+  } else {
+    document.getElementById('stReveal').onclick = ()=>{ revealed = true; renderStudy(); };
+  }
+}
+function startStudy(){
+  deck = filtered().filter(c=>!known.has(CARDS.indexOf(c)));
+  deckIdx = 0; revealed = false; doneCount = 0;
+  if(deck.length === 0){
+    document.getElementById('studyCard').innerHTML = '<div class="study-done"><b>没有待复习的卡片</b>当前筛选下所有卡片都已掌握,或无匹配卡片。</div>';
+    document.getElementById('studyActions').innerHTML = '';
+    document.getElementById('studyPos').textContent = '';
+    document.getElementById('studyLeft').textContent = '';
+    document.getElementById('studyBar').style.width = '0%';
+    return;
+  }
+  renderStudy();
+}
+
+/* ============ 导出 Anki txt ============ */
+function exportTxt(){
+  const cards = filtered();
+  const lines = ['#separator:tab','#html:true','#tags column:3'];
+  cards.forEach(c=>{
+    const tags = ['学会提问', (c.ch===14?'最后的话':'ch'+String(c.ch).padStart(2,'0')), TYPES[c.type][0]];
+    const front = c.q.replace(/\t/g,' ');
+    const back = c.a.replace(/\t/g,' ');
+    lines.push(front + '\t' + back + '\t' + tags.join(' '));
+  });
+  const blob = new Blob(['﻿' + lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '学会提问-Anki卡片.txt';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* ============ 模式切换与事件 ============ */
+function setMode(m){
+  mode = m;
+  document.getElementById('grid').style.display = m==='browse' ? 'grid' : 'none';
+  document.getElementById('study').classList.toggle('on', m==='study');
+  document.getElementById('btnMode').classList.toggle('on', m==='study');
+  document.getElementById('btnMode').textContent = m==='study' ? '返回浏览模式' : '切换复习模式';
+  if(m==='study'){ startStudy(); } else { renderGrid(); }
+}
+function refresh(){ mode==='study' ? startStudy() : renderGrid(); }
+
+function bind(){
+  // 章节与类型筛选(事件委托)
+  document.querySelector('.filterbar').addEventListener('click', e=>{
+    const el = e.target.closest('.chip'); if(!el) return;
+    if(el.hasAttribute('data-ch')) fCh = el.dataset.ch;
+    if(el.hasAttribute('data-type')) fType = el.dataset.type;
+    renderChips(); refresh();
+  });
+  document.getElementById('btnMode').addEventListener('click', ()=> setMode(mode==='browse'?'study':'browse'));
+  document.getElementById('btnShuffle').addEventListener('click', ()=>{
+    if(mode==='study'){
+      for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+      deckIdx = 0; revealed = false; renderStudy();
+    } else {
+      shuffleBrowse = !shuffleBrowse; renderGrid();
+    }
+  });
+  document.getElementById('btnExport').addEventListener('click', exportTxt);
+  document.getElementById('btnExit').addEventListener('click', ()=> setMode('browse'));
+  const input = document.getElementById('searchInput');
+  input.addEventListener('input', ()=>{ query = input.value.trim(); refresh(); });
+  document.addEventListener('keydown', e=>{
+    if(e.key === '/' && document.activeElement !== input){ e.preventDefault(); input.focus(); }
+    if(mode==='study'){
+      if(e.key === ' '){ const b=document.getElementById('stReveal')||document.getElementById('stAgain'); if(b){ e.preventDefault(); b.click(); } }
+      if(e.key === 'Enter'){ const b=document.getElementById('stGood'); if(b) b.click(); }
+    }
+  });
+}
+
+renderChips();
+renderGrid();
+bind();
+</script>
+</body>
+</html>
