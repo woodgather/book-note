@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>系统之美 · Anki 精华卡片</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #EDF1F0;
+    --card: #FDFEFE;
+    --ink: #1E2A30;
+    --ink-soft: #5C6B72;
+    --line: #D4DDDB;
+    --b: #23617A;   /* 调节回路蓝 */
+    --r: #B4432F;   /* 增强回路红 */
+    --serif: Georgia, "Times New Roman", "Songti SC", "Noto Serif CJK SC", SimSun, serif;
+    --sans: "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.7;
+    padding: 48px 24px 96px;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; }
+
+  /* ---------- 页头 ---------- */
+  header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    gap: 32px; padding-bottom: 28px; border-bottom: 2px solid var(--ink);
+  }
+  .book-title { font-family: var(--serif); font-size: 2.6rem; font-weight: 700; letter-spacing: .04em; }
+  .book-sub { font-family: var(--serif); font-style: italic; color: var(--ink-soft); margin-top: 2px; font-size: 1.05rem; }
+  .meta { margin-top: 14px; font-size: .88rem; color: var(--ink-soft); }
+  .meta b { color: var(--ink); }
+  .diagram { flex-shrink: 0; }
+  @media (max-width: 720px) { .diagram { display: none; } .book-title { font-size: 2rem; } header { flex-direction: column; align-items: flex-start; gap: 16px;} }
+
+  /* ---------- 工具栏 ---------- */
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 22px 0 6px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    border: 1px solid var(--line); background: var(--card);
+    padding: 5px 13px; border-radius: 999px;
+    font-size: .82rem; color: var(--ink-soft); cursor: pointer;
+    font-family: var(--sans); transition: border-color .15s, color .15s, box-shadow .15s;
+  }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, #999); }
+  .chip:hover { border-color: var(--c, var(--ink)); color: var(--ink); }
+  .chip.active { border-color: var(--ink); color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .tools { margin-left: auto; display: flex; gap: 8px; }
+  .btn {
+    border: 1px solid var(--ink); background: transparent; color: var(--ink);
+    padding: 5px 14px; border-radius: 999px; font-size: .82rem; cursor: pointer; font-family: var(--sans);
+    transition: background .15s, color .15s;
+  }
+  .btn:hover, .btn:focus-visible { background: var(--ink); color: var(--paper); }
+  .hint { font-size: .8rem; color: var(--ink-soft); margin: 4px 0 18px; }
+
+  /* ---------- 卡片网格 ---------- */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+  .divider { grid-column: 1 / -1; margin-top: 18px; display: flex; align-items: baseline; gap: 14px; }
+  .divider h2 { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; letter-spacing: .06em; }
+  .divider .rule { flex: 1; border-top: 1px solid var(--line); transform: translateY(-4px); }
+  .divider .count { font-size: .78rem; color: var(--ink-soft); }
+  .divider .loop { font-family: var(--serif); font-size: .9rem; font-weight: 700; color: var(--c); }
+
+  /* ---------- 翻卡 ---------- */
+  .card {
+    position: relative; min-height: 250px; perspective: 1400px;
+    background: none; border: none; padding: 0; text-align: left; cursor: pointer;
+  }
+  .card:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 10px; }
+  .card-inner {
+    display: grid;
+    width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transition: transform .55s cubic-bezier(.4, .1, .2, 1);
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  .face {
+    grid-area: 1 / 1;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 10px; padding: 22px 24px 18px;
+    display: flex; flex-direction: column;
+    border: 1px solid var(--line);
+  }
+  .face.front { background: var(--card); box-shadow: 0 1px 2px rgba(30,42,48,.06); }
+  .face.back  {
+    transform: rotateY(180deg);
+    background: var(--tint, #fff);
+    border-left: 3px solid var(--c, var(--ink));
+  }
+  .face .tag {
+    align-self: flex-start; font-size: .7rem; letter-spacing: .08em;
+    color: var(--c); border: 1px solid currentColor; border-radius: 3px;
+    padding: 1px 8px; margin-bottom: 14px;
+  }
+  .q { font-family: var(--serif); font-size: 1.12rem; font-weight: 700; line-height: 1.65; }
+  .a { font-size: .92rem; line-height: 1.8; }
+  .a em { font-style: normal; color: var(--c); font-weight: 700; }
+  .spacer { flex: 1; }
+  .foot { display: flex; justify-content: space-between; align-items: baseline; margin-top: 16px; font-size: .72rem; color: var(--ink-soft); }
+  .foot .turn { letter-spacing: .1em; }
+  .num { font-family: Georgia, serif; font-variant-numeric: tabular-nums; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-inner { transition: none; }
+  }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="book-title">系统之美</div>
+      <div class="book-sub">Thinking in Systems — A Primer · 决策者的系统思考 · 精华卡片</div>
+      <div class="meta">[美] 德内拉·梅多斯 著 · 邱昭良 译 &nbsp;|&nbsp; 共 <b id="total">0</b> 张卡片 · 覆盖全书 <b>8</b> 个部分</div>
+    </div>
+    <div class="diagram">
+      <svg width="240" height="120" viewBox="0 0 240 120" fill="none" aria-hidden="true">
+        <rect x="92" y="38" width="56" height="36" stroke="#1E2A30" stroke-width="1.6"/>
+        <path d="M92 56 H30" stroke="#23617A" stroke-width="1.6"/>
+        <path d="M30 38 v36 M22 44 l8 -8 8 8 M22 68 l8 8 8 -8" stroke="#23617A" stroke-width="1.4"/>
+        <path d="M148 56 H212" stroke="#B4432F" stroke-width="1.6"/>
+        <path d="M204 50 l9 6 -9 6" stroke="#B4432F" stroke-width="1.6"/>
+        <ellipse cx="226" cy="56" rx="9" ry="12" stroke="#B4432F" stroke-width="1.2"/>
+        <path d="M120 38 v-16 M112 30 h16 M120 22 c-6 -8 6 -12 0 -16" stroke="#1E2A30" stroke-width="1.4"/>
+        <text x="120" y="96" text-anchor="middle" font-family="Georgia" font-size="10" fill="#5C6B72">存量 · 流量 · 反馈</text>
+      </svg>
+    </div>
+  </header>
+
+  <div class="toolbar" id="filters"></div>
+  <div class="tools-row" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+    <div class="hint" id="hint">点击卡片翻面查看答案；卡片按全书章节排列，可筛选、可洗牌。</div>
+    <div class="tools" style="margin-left:auto;">
+      <button class="btn" id="shuffle">洗牌</button>
+      <button class="btn" id="flipAll">全部翻开</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const CATS = [
+  { id:0, name:"引言 · 系统之思", c:"#5C6B72", loop:"—" },
+  { id:1, name:"第1章 · 系统之基础", c:"#23617A", loop:"B" },
+  { id:2, name:"第2章 · 系统大观园", c:"#0E7A6F", loop:"B" },
+  { id:3, name:"第3章 · 系统的3大特征", c:"#467A3E", loop:"B" },
+  { id:4, name:"第4章 · 系统的6大障碍", c:"#6E5AA0", loop:"B" },
+  { id:5, name:"第5章 · 系统的8大陷阱", c:"#B4432F", loop:"R" },
+  { id:6, name:"第6章 · 12大杠杆点", c:"#A8720C", loop:"R" },
+  { id:7, name:"第7章 · 15大生存法则", c:"#8A4E75", loop:"B" },
+];
+
+const CARDS = [
+/* ============ 引言 ============ */
+{c:0, q:"梅多斯用“机灵鬼”（弹簧玩具）说明系统思考的哪个核心观点？",
+ a:"“机灵鬼”上下弹跳不是因为手的动作，而是<em>自身结构</em>使然——行为源于结构，而非外部事件。一旦看清结构与行为的关系，就能理解系统如何运作、问题从何而来。", src:"引言 · 无处不在的系统"},
+{c:0, q:"为什么“归罪于外”的思维习惯会妨碍解决系统性问题？",
+ a:"工业社会偏好还原论，习惯把原因归结为“外部”，从而责备他人、迷恋寻找“控制按钮”。但饥荒、贫困、经济波动、成瘾等本质是<em>系统性问题</em>——内在结构决定了不想要的行为，唯有重塑结构才能真正解决。", src:"引言 · 重塑系统"},
+{c:0, q:"“盲人摸象”的寓言揭示了系统思考的什么道理？",
+ a:"每个盲人都真切感知到大象的一部分，但理解都是片面的。不能只通过了解系统的各个构成部分来认识系统整体的行为——<em>总体大于部分之和</em>。", src:"引言 · 系统寓言"},
+
+/* ============ 第1章 ============ */
+{c:1, q:"什么是系统？它的三种构成要件是什么？",
+ a:"系统并非事物的简单集合，而是由一组<em>相互连接的要素</em>构成的、能够实现某个目标的整体。三要件：<em>要素、连接、功能或目标</em>。", src:"第1章 · 系统之基础"},
+{c:1, q:"一堆沙子为什么不是系统？",
+ a:"没有内在连接或功能的随机组合不是系统：沙粒之间没有稳定连接、没有特定功能，任意增减沙子它仍是沙堆。判断关键在于是否存在<em>连接</em>与<em>目标</em>。", src:"第1章 · 系统之基础"},
+{c:1, q:"改变要素、连接、目标三者，对系统的影响有何不同？",
+ a:"改变<em>要素</em>影响最小（换掉全部球员仍是球队）；改变<em>内在连接</em>会使系统显著变化；<em>目标</em>最不显眼，却常是系统行为最关键的决定因素，改变目标会极大改变系统。", src:"第1章 · 系统之基础"},
+{c:1, q:"如何推断一个系统的功能或目标？",
+ a:"只能通过<em>观察系统一段时间的实际行为</em>来推断，而不能只看言辞或标榜的目标。政府宣称保护环境却拨款很少，其真实目标便不是环保。", src:"第1章 · 系统之基础"},
+{c:1, q:"什么是存量（Stock）？",
+ a:"任何时刻都能观察、感知、计数和测量的要素，是一段时间内物料或信息的<em>积累量</em>，是对系统变化量的历史记录——如浴缸中的水、人口、存款，也可以是自信、口碑等非物质量。", src:"第1章 · 系统之基础"},
+{c:1, q:"什么是流量（Flow）？在图中如何表示？",
+ a:"流量是<em>一段时间内改变存量的量</em>，如出生与死亡、存入与取出。图中存量画成方框，流量是带箭头的“水管”，水龙头表示可调节，云朵表示流量的来源与去处。", src:"第1章 · 系统之基础"},
+{c:1, q:"浴缸模型揭示了哪三条存量—流量动态原则？",
+ a:"①流入＞流出，存量<em>上升</em>；②流出＞流入，存量<em>下降</em>；③二者相等，存量不变（<em>动态平衡</em>）。因此想增加存量，既可以提高流入，也可以降低流出。", src:"第1章 · 系统之基础"},
+{c:1, q:"为什么说存量变化缓慢？它在系统中起什么作用？",
+ a:"存量需流量持续作用一段时间才能改变，因此起<em>延迟、缓存、减震器</em>的作用，是系统稳定性的根源与动量源泉。水库让居民不受来水波动影响，库存让生产不受需求波动影响。", src:"第1章 · 系统之基础"},
+{c:1, q:"存量的存在带来的一条重要原则是什么？",
+ a:"由于存量的存在，<em>流入量和流出量可以相互分离、各自独立</em>，并在一定时期内暂时失衡——这正是各种“存储”机制带来稳定性与可预测性的原因。", src:"第1章 · 系统之基础"},
+{c:1, q:"什么是反馈回路？",
+ a:"一条<em>闭合的因果关系链</em>：从某存量出发，根据其当时状况，经一系列决策、规则、物理法则或行动，影响相关流量，又反过来改变该存量。长期一致的行为模式是反馈回路存在的首要线索。", src:"第1章 · 系统之基础"},
+{c:1, q:"什么是调节回路（Balancing Loop）？行为特征是什么？",
+ a:"使存量趋向目标、保持稳定的反馈回路（图中标 <em>B</em>），特征是“寻的”：无论初始值偏高或偏低，都会先快后慢地拉回目标。它既是<em>稳定性</em>的根源，也是<em>抵制变革</em>的根源。", src:"第1章 · 系统之基础"},
+{c:1, q:"什么是增强回路（Reinforcing Loop）？",
+ a:"<em>自我强化</em>的反馈回路（图中标 <em>R</em>）：存量越大，流入越多，存量更大，导致<em>指数级增长或加速崩溃</em>，如银行复利、人口增长、物价—工资螺旋。它是良性或恶性循环的引擎。", src:"第1章 · 系统之基础"},
+{c:1, q:"指数增长的“70法则”是什么？",
+ a:"存量<em>翻倍所需时间 ≈ 70 ÷ 增长率</em>（百分数）。年利率7%时，100美元约10年翻倍；5%则需14年。", src:"第1章 · 系统之基础"},
+
+/* ============ 第2章 ============ */
+{c:2, q:"“一个存量 + 两个调节回路”（温控系统）有何特点？",
+ a:"制热回路以<em>设定温度</em>为目标，散热回路以<em>室内外温度一致</em>为目标，两回路此消彼长。室温均衡值常略低于设定值；散热超过供热能力时散热回路主导，室温下降。类似结构：库存、现金、水库。", src:"第2章 · 系统大观园"},
+{c:2, q:"反馈信息传递的一条重要原则是什么？",
+ a:"由反馈回路传递的信息只能影响<em>未来的行为</em>，无法立即修正当前的行为——信息传递需要时间。设定目标时，还必须<em>补偿</em>对存量有重要影响的流入与流出。", src:"第2章 · 系统大观园"},
+{c:2, q:"什么是回路的“主导地位”（Dominance）？",
+ a:"多个回路同时作用时，占主导的回路决定系统行为：出生率＞死亡率时增强回路主导，呈指数增长；两者相等时达动态平衡。<em>主导地位转换</em>时，系统行为模式会随之突变甚至波动。", src:"第2章 · 系统大观园"},
+{c:2, q:"人口与工业经济的共同结构说明了什么原理？",
+ a:"都是一个存量（人口／资本）受一个<em>增强回路</em>（出生／投资）与一个<em>调节回路</em>（死亡／折旧）共同作用。<em>具有相似反馈结构的系统，会产生相似的动态行为</em>——即使外在表现完全不同。", src:"第2章 · 系统大观园"},
+{c:2, q:"时间延迟如何让库存系统产生振荡？",
+ a:"感知、反应、交货三类延迟使调节无法及时到位，库存围绕目标量<em>上下振荡</em>。反直觉的是：缩短感知或反应延迟会使振荡<em>恶化</em>，延长反而更平缓。", src:"第2章 · 系统大观园"},
+{c:2, q:"不可再生资源约束下，经济系统如何演变？",
+ a:"石油经济中：资本越多开采越快 → 储量越少 → 单位资本收益越低 → 利润不足以维持投资。资本<em>先指数增长后迅速崩溃</em>；储量翻番只能将开采高峰延长约14年。<em>不可再生资源受限于存量</em>。", src:"第2章 · 系统大观园"},
+{c:2, q:"可再生资源系统有哪三种可能结局？取决于什么？",
+ a:"过度开发后：①调整至<em>稳定平衡</em>；②<em>上下振荡</em>；③资源<em>枯竭崩溃</em>。取决于“关键转折点”（低于它种群失去再生能力）是否被突破，以及抑制投资的调节回路能否及时起作用。<em>可再生资源受限于流量</em>，一旦衰竭即成不可再生。", src:"第2章 · 系统大观园"},
+
+/* ============ 第3章 ============ */
+{c:3, q:"什么是系统的“适应力”（Resilience）？",
+ a:"系统在多变环境中<em>保持自身存在与运作的能力</em>，与脆弱性、刚性相对。来源是内部多个相互支撑的反馈回路——机制不同、周期不同、互为冗余，受扰后能以多种方式恢复。", src:"第3章 · 系统的3大特征"},
+{c:3, q:"什么是“元适应力”与“元元适应力”？",
+ a:"若系统有一组能<em>修复、重建反馈回路</em>的回路，适应力更强，称为元适应力；由更高适应力的回路组成、能<em>学习、创造、设计和进化</em>的结构，称为元元适应力。", src:"第3章 · 系统的3大特征"},
+{c:3, q:"适应力与“静态稳定”有何区别？",
+ a:"一直保持恒定的系统恰恰<em>不具备</em>适应力；有适应力的系统经常动态变化——短期振荡、周期性兴衰都是正常状况。适应力平时难以观察，只有超出限度、回路受损时才显现。", src:"第3章 · 系统的3大特征"},
+{c:3, q:"人们如何在无意中牺牲系统的适应力？",
+ a:"为追求生产率和稳定：给奶牛注射激素增产却损害健康；“及时生产”降成本却使系统脆弱；单一树种人工林高产却易受病虫害。慢性病与大型组织的僵化，也源于<em>适应力机制的崩溃</em>。", src:"第3章 · 系统的3大特征"},
+{c:3, q:"如何保持或增强系统的适应力？",
+ a:"利用系统<em>自身康复能力</em>：用捕食者控制害虫、养生增强免疫力、“授之以鱼不如授之以渔”——创造条件让人们自给自足，而非只提供食物或金钱。", src:"第3章 · 系统的3大特征"},
+{c:3, q:"什么是“自组织”（Self-organization）？",
+ a:"系统使自身结构<em>更为复杂化</em>的能力：学习、多元化、复杂化和进化，如受精卵发育成人、社区自发组织。它产生异质性与不可预测性，需要<em>自由、试验和一定程度的混乱</em>。", src:"第3章 · 系统的3大特征"},
+{c:3, q:"为什么简单的规则能产生复杂的系统？",
+ a:"<em>科赫雪花</em>仅凭一条分形规则演化出复杂图形；肺细胞按分形规则排列，使有限空间内的表面积覆盖整个网球场。非常复杂的自组织形式，可能产生于<em>相对简单的组织规则</em>。", src:"第3章 · 系统的3大特征"},
+{c:3, q:"什么是系统的“层次性”？",
+ a:"大系统包含子系统、子系统再含更小子系统的<em>包含与生成关系</em>。层次性使系统更稳定、更有适应力，并减少信息量；每层<em>内部联系强于层间联系</em>。", src:"第3章 · 系统的3大特征"},
+{c:3, q:"钟表匠霍拉与坦帕斯的寓言说明了什么？",
+ a:"霍拉先组装稳定部件再拼成整体，被打扰只损失一小步；坦帕斯整体组装，一被打扰前功尽弃。只有存在<em>稳定的媒介形式</em>，简单系统才能进化成复杂系统——复杂系统天然具有层次性。", src:"第3章 · 系统的3大特征"},
+{c:3, q:"什么是“次优化”？它同样有害的反面是什么？",
+ a:"次优化指<em>子系统目标凌驾于整体目标</em>之上（癌细胞疯狂繁殖、学生只为高分作弊）。同样有害的是<em>过多中央控制</em>（大脑直接控制每个细胞）。层次系统须平衡中央协调与子系统自主——<em>上层级服务于低层级</em>。", src:"第3章 · 系统的3大特征"},
+
+/* ============ 第4章 ============ */
+{c:4, q:"为什么说“别被表象所迷惑”？事件、行为、结构是什么关系？",
+ a:"事件只是冰山露出水面的一角；<em>结构</em>（存量、流量、反馈回路的关联）是行为的根源，行为是随时间展开的一系列事件。应看<em>长期行为趋势</em>，从结构上理解“知其所以然”。", src:"第4章 · 系统的6大障碍"},
+{c:4, q:"为什么非线性关系如此重要？",
+ a:"非线性改变反馈回路的<em>相对力量</em>，可能导致“主导地位转换”——系统从指数增长突变为衰退。在非线性的世界里用线性思维模式，会一再碰壁。", src:"第4章 · 系统的6大障碍"},
+{c:4, q:"云杉色卷蛾案例的教训是什么？",
+ a:"虫害爆发的可能性随冷杉密度<em>非线性</em>上升；喷洒杀虫剂杀死天敌、削弱自然反馈回路，使害虫长期处于“亚爆发状态”——干预破坏回路后，人类深陷其中欲罢不能。", src:"第4章 · 系统的6大障碍"},
+{c:4, q:"系统边界为什么是“人为的”？划得太窄或太宽各有什么问题？",
+ a:"世上没有孤立的系统，边界只是出于观察与交流需要而设定的<em>虚拟边界</em>。太窄会漏掉关键因素（治拥堵却不管居住模式）而产生意外；太宽则信息庞杂、遮掩答案。<em>边界取决于你的分析目的</em>。", src:"第4章 · 系统的6大障碍"},
+{c:4, q:"什么是“限制因素”（最小因子定律）？",
+ a:"李比希定律：缺少任一必要要素（如磷），再多其他要素也无用。任一时刻，对系统最重要的输入是<em>限制最大的那个因素</em>，且主导限制因素会随成长不断变化。", src:"第4章 · 系统的6大障碍"},
+{c:4, q:"为什么“关键不是追求持续成长”？",
+ a:"任何成长都存在限制，<em>没有任何物质实体可以永远增长</em>。根本问题是选择在哪些限制之下维持生存——若不自觉控制成长，环境也会替你做出选择并施加限制。", src:"第4章 · 系统的6大障碍"},
+{c:4, q:"时间延迟为何普遍且重要？",
+ a:"每个存量都是延迟，流量还有运输、感知、成熟等延迟（猪周期4年、奶牛7年、可可树11年）。延迟引起<em>矫枉过正、振荡和崩溃</em>；延迟较长时，预见性必不可少。福瑞斯特建议：估计出延迟后再<em>扩大三倍</em>。", src:"第4章 · 系统的6大障碍"},
+{c:4, q:"什么是“有限理性”（Bounded Rationality）？",
+ a:"西蒙提出：人们基于<em>所掌握的信息</em>理性决策，但信息有限、不完整（尤其对系统远处），故个体理性未必带来整体最优——与“看不见的手”的完全理性假设相矛盾（戴利戏称“看不见的脚”）。", src:"第4章 · 系统的6大障碍"},
+{c:4, q:"面对有限理性，如何改善系统表现？",
+ a:"<em>责备个人无用</em>——换一个人结果仍相同。要重构<em>信息流、激励或限制因素</em>，让有限的理性行动累加后产生整体期望结果：荷兰把电表装在前厅让用量可见，耗电即降三分之一。", src:"第4章 · 系统的6大障碍"},
+
+/* ============ 第5章 ============ */
+{c:5, q:"陷阱① 政策阻力（Policy Resistance）如何形成？对策是什么？",
+ a:"多个参与者目标不一致，各自把存量往不同方向拉，任何新政策都引发抵抗，各方努力相互抵消。对策：放弃压制或单方面目标，召集所有参与者寻找<em>“皆大欢喜”</em>的方案，或重新定义一个<em>更大的、更重要的总体目标</em>。", src:"第5章 · 系统的8大陷阱与对策"},
+{c:5, q:"陷阱② 公地悲剧（Tragedy of the Commons）的三种对策？",
+ a:"共享资源收益归个体、成本由大家分担，反馈缺失导致耗竭。对策：①<em>教育劝诫</em>，激发美德并以舆论威慑；②<em>私有化</em>，让使用者直接承担滥用后果；③<em>管制</em>——配额、许可、税收，须有强制监管和惩罚。", src:"第5章 · 系统的8大陷阱与对策"},
+{c:5, q:"陷阱③ 目标侵蚀（Drift to Low Performance）如何形成？对策是什么？",
+ a:"过于关注坏消息 → 感知变差 → 目标随之下调 → 修正行动减少 → 绩效更差，形成<em>下行增强回路</em>（温水煮青蛙）。对策：保持<em>绝对标准</em>；更好做法是将目标锚定于<em>过去的最佳水平</em>，使恶性循环转为良性循环。", src:"第5章 · 系统的8大陷阱与对策"},
+{c:5, q:"陷阱④ 竞争升级（Escalation）如何形成？对策是什么？",
+ a:"双方目标是相对的（要超过对方），形成增强回路，以指数速度激化——军备竞赛、价格战，最终一方被击倒或两败俱伤。对策：最佳是<em>避免陷入</em>该结构；已深陷则<em>单方面让步</em>切断回路，或协商<em>引入调节回路</em>限制竞争。", src:"第5章 · 系统的8大陷阱与对策"},
+{c:5, q:"陷阱⑤ 富者愈富（Success to the Successful）的对策有哪些？",
+ a:"赢家持续强化其获胜手段，形成增强回路，最终赢家通吃。对策：<em>多元化</em>（让输家开新博弈）；<em>反垄断法</em>限制最大份额；<em>修正规则</em>、扶持弱者（税赋调节、转移支付）；对获胜者给予<em>多样化奖励</em>。", src:"第5章 · 系统的8大陷阱与对策"},
+{c:5, q:"陷阱⑥ 转嫁负担（Shifting the Burden）如何形成？对策是什么？",
+ a:"只缓解症状的干预（药物、补贴、化肥）不触及根本问题，还削弱系统自我调节能力——能力越差越依赖干预，形成<em>破坏性增强回路</em>。对策：最好<em>提前预防</em>；关注点从短期救济转向<em>长期结构性重建</em>；帮助系统恢复自身能力后<em>择机退出</em>。", src:"第5章 · 系统的8大陷阱与对策"},
+{c:5, q:"陷阱⑦ 规避规则（Rule Beating）如何形成？对策是什么？",
+ a:"“上有政策，下有对策”：名义上遵守规则条文，实质上规避规则本意（年末突击花钱、杀掉濒危物种再开发）。对策：不要强化规则去镇压，而应把规避行为视为<em>创造性反馈</em>，<em>重新设计规则</em>，使其实现本来目的。", src:"第5章 · 系统的8大陷阱与对策"},
+{c:5, q:"陷阱⑧ 目标错位（Seeking the Wrong Goal）与规避规则有何区别？对策是什么？",
+ a:"目标定义不准确或不完整（以军费定义国家安全、以GNP衡量成就、以分数定义教育），系统忠实执行却产出人们不想要的结果。区别：规避规则是“绕过规则”，目标错位是“<em>因为这是规则</em>”而做蠢事。对策：<em>恰当设定目标与指标</em>，反映系统真正福利；勿将努力与结果混淆。", src:"第5章 · 系统的8大陷阱与对策"},
+
+/* ============ 第6章 ============ */
+{c:6, q:"杠杆点12（效力最低）：“数字”——各种常数和参数，为什么调参数几乎无效？",
+ a:"参数如最低工资、税率、配额，只调节“水龙头”大小，<em>不改变系统结构</em>。若信息、目标、规则不变，系统行为不会有大的变化——如同重排泰坦尼克号甲板座椅。大多数人却把90%的注意力放在参数上。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"杠杆点11：“缓冲器”——比流量更大更稳定的存量。",
+ a:"扩大缓冲器（如湖泊之于河流）可使系统稳定，效力高于调参数；但缓冲器是<em>物理实体</em>，改变往往耗时耗资巨大甚至不可行，过大还会使系统<em>缺乏弹性</em>。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"杠杆点10：“存量—流量结构”——实体系统及其交叉节点。",
+ a:"物理连接的结构决定系统如何运作，重建可产生根本改变；但实体重建是<em>最慢、最昂贵</em>的办法，有的结构（如人口年龄结构）根本不可改。恰当的杠杆点需在<em>当初设计时</em>就安排好。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"杠杆点9：“时间延迟”——系统对变化做出反应的速度。",
+ a:"延迟是造成<em>振荡</em>的主因。延迟通常难以改变，更有效的做法是<em>放慢系统变化速度</em>，让技术与价格跟得上；有时缩短延迟也有效，但须谨慎——金融市场上加快信息与资金转移反而加剧风暴。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"杠杆点8：“调节回路”——试图修正外界影响的反馈力量。",
+ a:"增强调节回路（三要素：目标、监测、反应机制）可提升系统<em>自我校正</em>能力，如信息公开法、保护举报者、排污费。其力量必须与待校正的影响相匹配；也<em>不可拆除</em>平时不用的“应急”回路。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"杠杆点7：“增强回路”——驱动收益增长的反馈力量。",
+ a:"增强回路是增长、爆发、腐蚀和崩溃的根源（复利、“富者愈富”）。<em>放缓增强回路</em>（累进税、遗产税、控制出生率）比事后用软弱的调节回路补救更有效——如开快车时<em>减速比依赖刹车</em>更有力。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"杠杆点6：“信息流”——谁能获得信息的结构。",
+ a:"<em>信息流的缺失是系统功能不良最常见的原因之一</em>。在恰当位置增加或恢复缺失的反馈（荷兰电表装前厅，耗电降30%）能形成新回路，且通常比重建物理设施更容易、成本低。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"杠杆点5：“系统规则”——激励、惩罚和限制条件。",
+ a:"规则（宪法、法律、合同）定义系统的范围、边界和自由度。<em>规则一变，人们的行为随之大变</em>——说客云集国会即因其力量。宪法法院比国会更有权，因为宪法是“<em>制定规则的规则</em>”。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"杠杆点4：“自组织”——系统结构增加、变化或进化的力量。",
+ a:"自组织能改变自身的结构、回路和规则（生物进化、技术进步、社会革命）。支持它需要<em>原材料、多样性和实验条件</em>；鼓励多样性和实验虽不受欢迎，却是高杠杆介入点——单一化使系统僵化，长期注定灭亡。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"杠杆点3：“目标”——系统的目的或功能。",
+ a:"正是系统目标推动人们控制或消除多样性；整体系统常有比宣称目标更大、更隐蔽的真实目标。能<em>清晰设定并坚持新目标</em>的参与者，可引导整个系统转向，效果惊人。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"杠杆点2：“社会范式”——决定系统之所以为系统的心智模式。",
+ a:"范式是社会普遍相信的、关于世界如何运作的基本假设（如“金钱衡量价值”“增长是好事”）。系统的目标、规则、结构皆源自范式，故改变范式能<em>从根本上</em>改变系统；且个人范式转变可<em>在瞬间发生</em>，无需高昂代价。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"杠杆点1（效力最高）：“超越范式”指什么？",
+ a:"使自己<em>摆脱任何范式的控制</em>，以“空”（not-knowing）的心态认识到没有任何范式是“真实”的——不执着于某一信念，就能为实现目标选用任何合适的手段。杠杆点层次越高，杠杆作用越大，但系统<em>抵制变化的力量也越强</em>。", src:"第6章 · 系统之杠杆点"},
+{c:6, q:"为什么梅多斯说杠杆点是“违反直觉”的？",
+ a:"身处系统的人凭直觉判断杠杆点，却往往<em>推错方向</em>，把问题弄得更糟：各国领导人全力推动的“增长”恰是错误方向（需要的是更慢、不同的增长）；低收入住房补贴越多，城市反而越衰落。寻找和撬动杠杆点<em>不能靠直觉</em>。", src:"第6章 · 系统之杠杆点"},
+
+/* ============ 第7章 ============ */
+{c:7, q:"系统世界的15大生存法则，分别是什么？",
+ a:"①跟上系统的节拍 ②把你的心智模式展现在阳光下 ③相信、尊重并分享信息 ④谨慎地使用语言，并用系统的概念丰富语言 ⑤关注重要的，而不只是容易衡量的 ⑥为反馈系统制定带有反馈功能的政策 ⑦追求整体利益 ⑧聆听系统的智慧 ⑨界定系统的职责 ⑩保持谦逊，做一名学习者 ⑪庆祝复杂性 ⑫扩展时间的范围 ⑬打破各种清规戒律 ⑭扩大关切的范围 ⑮不要降低“善”的标准。", src:"第7章 · 与系统共舞"},
+{c:7, q:"“跟上系统的节拍”与“把心智模式展现在阳光下”要求什么？",
+ a:"前者：干预前先<em>观察系统实际运作</em>，研究其历史和真实数据，关注事实而非理论和记忆。后者：把隐藏的假设清晰表述出来（画结构图、写方程），接受挑战和检验，无证据支撑就<em>勇于舍弃</em>——这就是科学的态度。", src:"第7章 · 与系统共舞"},
+{c:7, q:"“相信、尊重并分享信息”与“谨慎使用语言”讲了什么？",
+ a:"<em>信息就是权力</em>，不能歪曲、延迟或隐瞒；信息更及时、准确、完整，系统就运作更好（美国《有害气体排放法案》公开数据后两年内排放降40%）。<em>语言塑造感知与行动</em>，要保持真实具体，并扩展谈论复杂性的词汇。", src:"第7章 · 与系统共舞"},
+{c:7, q:"“关注重要的而不只是容易衡量的”与“为反馈系统制定带反馈的政策”指什么？",
+ a:"不要因难以量化就忽视“偏见”“自尊”“正义”等真正重要的东西。对动态反馈系统不能用静止刚性政策——好政策须<em>包含反馈回路</em>并随系统状态调整（如《蒙特利尔议定书》定期依臭氧层实况调整时间表），把<em>学习功能</em>融入管理。", src:"第7章 · 与系统共舞"},
+{c:7, q:"“追求整体利益、聆听系统智慧、界定系统职责”强调什么？",
+ a:"层级组织为底层服务，勿让子系统凌驾于整体；不破坏系统内在的<em>自我调节力量</em>；<em>让决策者直接承受其决策后果</em>（内在责任）。", src:"第7章 · 与系统共舞"},
+{c:7, q:"“保持谦逊、庆祝复杂性、扩展时间范围、不降低‘善’的标准”各是什么？",
+ a:"承认无知，小步试验，“<em>拥抱失误</em>”；欢迎非线性与多样性；把时间范围扩展到未来几代人；跨领域打破戒律、扩大关切范围；警惕<em>目标侵蚀</em>，永不降低道德的“善”的标准。", src:"第7章 · 与系统共舞"},
+];
+
+/* ---------- 渲染 ---------- */
+const grid = document.getElementById('grid');
+const filters = document.getElementById('filters');
+let activeCat = 'all';
+let order = CARDS.map((_, i) => i);
+
+function hexToTint(hex, a=0.07) {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+}
+
+function render() {
+  grid.innerHTML = '';
+  let lastCat = null, idx = 0;
+  for (const i of order) {
+    const d = CARDS[i];
+    if (activeCat !== 'all' && d.c !== activeCat) continue;
+    if (d.c !== lastCat && activeCat === 'all') {
+      const cat = CATS[d.c];
+      const div = document.createElement('div');
+      div.className = 'divider';
+      div.style.setProperty('--c', cat.c);
+      div.innerHTML = `<span class="loop">${cat.loop}</span><h2>${cat.name}</h2><span class="rule"></span><span class="count">${CARDS.filter(x=>x.c===d.c).length} 张</span>`;
+      grid.appendChild(div);
+      lastCat = d.c;
+    }
+    idx++;
+    const cat = CATS[d.c];
+    const btn = document.createElement('button');
+    btn.className = 'card';
+    btn.setAttribute('aria-label', '翻卡：' + d.q.replace(/<[^>]+>/g,''));
+    btn.style.setProperty('--c', cat.c);
+    btn.style.setProperty('--tint', hexToTint(cat.c));
+    btn.innerHTML = `
+      <div class="card-inner">
+        <div class="face front">
+          <span class="tag">${cat.name}</span>
+          <div class="q">${d.q}</div>
+          <div class="spacer"></div>
+          <div class="foot"><span class="num">${String(idx).padStart(2,'0')}</span><span class="turn">点击翻面</span></div>
+        </div>
+        <div class="face back">
+          <span class="tag">答案</span>
+          <div class="a">${d.a}</div>
+          <div class="spacer"></div>
+          <div class="foot"><span>${d.src}</span><span class="turn">点击翻回</span></div>
+        </div>
+      </div>`;
+    btn.addEventListener('click', () => btn.classList.toggle('flipped'));
+    grid.appendChild(btn);
+  }
+  document.getElementById('hint').textContent =
+    idx ? `共显示 ${idx} 张卡片 · 点击卡片翻面查看答案` : '该章节暂无卡片';
+}
+
+document.getElementById('total').textContent = CARDS.length;
+
+/* 筛选 chips */
+const allChip = makeChip('all', '全部', '#1E2A30');
+filters.appendChild(allChip);
+CATS.forEach(cat => filters.appendChild(makeChip(cat.id, cat.name, cat.c)));
+function makeChip(val, label, color) {
+  const b = document.createElement('button');
+  b.className = 'chip';
+  b.style.setProperty('--c', color);
+  b.innerHTML = `<span class="dot"></span>${label}`;
+  b.addEventListener('click', () => {
+    activeCat = val;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    b.classList.add('active');
+    render();
+  });
+  if (val === 'all') b.classList.add('active');
+  return b;
+}
+
+/* 洗牌 */
+document.getElementById('shuffle').addEventListener('click', () => {
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  render();
+});
+
+/* 全部翻开 / 合上 */
+let allFlipped = false;
+document.getElementById('flipAll').addEventListener('click', (e) => {
+  allFlipped = !allFlipped;
+  document.querySelectorAll('.card').forEach(c => c.classList.toggle('flipped', allFlipped));
+  e.target.textContent = allFlipped ? '全部合上' : '全部翻开';
+});
+
+render();
+</script>
+</body>
+</html>

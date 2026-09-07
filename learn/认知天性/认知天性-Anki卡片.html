@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>认知天性 · 精华 Anki 卡片</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #F3F2EE;
+    --card-front: #FFFFFF;
+    --card-back: #FBFAF6;
+    --ink: #22303C;
+    --ink-soft: #5A6672;
+    --hairline: #DDD9D0;
+    --ch1: #B0452F; --ch2: #0E6B58; --ch3: #1E5FA8; --ch4: #6F4BA8;
+    --ch5: #946B00; --ch6: #A83A6E; --ch7: #10708E; --ch8: #5A6420;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.7;
+    padding: 0 20px 64px;
+  }
+  /* ---------- 页头 ---------- */
+  header {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 44px 8px 20px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .book-line {
+    font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+    color: var(--ink-soft);
+    font-size: 14px;
+    letter-spacing: .1em;
+  }
+  h1 {
+    font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+    font-weight: 900;
+    font-size: clamp(26px, 4vw, 40px);
+    margin: 6px 0 4px;
+    line-height: 1.25;
+  }
+  .sub {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    max-width: 640px;
+  }
+  .stats {
+    display: flex; flex-wrap: wrap; gap: 8px 22px;
+    margin: 18px 0 14px;
+    font-size: 13.5px; color: var(--ink-soft);
+  }
+  .stats b { color: var(--ink); font-size: 17px; font-variant-numeric: tabular-nums; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+  .controls button {
+    font: inherit; font-size: 13.5px;
+    background: var(--ink); color: #fff;
+    border: none; border-radius: 4px;
+    padding: 7px 16px; cursor: pointer;
+  }
+  .controls button.ghost {
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .controls button:hover { opacity: .85; }
+  .controls button:focus-visible, .card:focus-visible { outline: 3px solid var(--ch3); outline-offset: 2px; }
+  /* ---------- 章节筛选 ---------- */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 8px; }
+  .chip {
+    font: inherit; font-size: 13px; cursor: pointer;
+    border: 1px solid var(--hairline);
+    background: var(--card-front); color: var(--ink-soft);
+    border-radius: 999px; padding: 4px 13px;
+    transition: border-color .15s, color .15s;
+  }
+  .chip[aria-pressed="true"] {
+    color: #fff; border-color: transparent;
+    background: var(--chip-color, var(--ink));
+  }
+  /* ---------- 卡片网格 ---------- */
+  .grid {
+    max-width: 1080px;
+    margin: 22px auto 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  .scene { perspective: 1400px; height: 380px; }
+  .card {
+    position: relative; width: 100%; height: 100%;
+    cursor: pointer; border: none; background: none; padding: 0;
+    font: inherit; text-align: left; color: inherit;
+  }
+  .inner {
+    position: relative; width: 100%; height: 100%;
+    transition: transform .55s cubic-bezier(.4,.15,.2,1);
+    transform-style: preserve-3d;
+  }
+  @media (prefers-reduced-motion: reduce) { .inner { transition: none; } }
+  .card.flipped .inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border: 1px solid var(--hairline); border-radius: 10px;
+    padding: 26px 26px 20px;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .face.front { background: var(--card-front); box-shadow: 0 1px 3px rgba(34,48,60,.07); }
+  .face.back {
+    background: var(--card-back);
+    transform: rotateY(180deg);
+    border-left: 4px solid var(--cc, var(--ink));
+    box-shadow: 0 1px 3px rgba(34,48,60,.07);
+  }
+  .tag {
+    align-self: flex-start;
+    font-size: 11.5px; letter-spacing: .08em;
+    color: #fff; background: var(--cc, var(--ink));
+    border-radius: 3px; padding: 2px 9px;
+    margin-bottom: 14px;
+  }
+  .q {
+    font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+    font-weight: 700; font-size: 19.5px; line-height: 1.55;
+    flex: 1;
+  }
+  .front-foot {
+    color: #A8A29A; font-size: 12.5px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 12px;
+  }
+  .num { font-variant-numeric: tabular-nums; letter-spacing: .05em; }
+  .a { font-size: 14.5px; line-height: 1.85; flex: 1; overflow-y: auto; }
+  .a em { font-style: normal; font-weight: 700; color: var(--cc, var(--ink)); }
+  .a p + p { margin-top: 8px; }
+  .src { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--hairline); font-size: 12px; color: var(--ink-soft); }
+  /* 空状态 / 页脚 */
+  .empty { max-width: 1080px; margin: 40px auto; color: var(--ink-soft); font-size: 14px; }
+  footer { max-width: 1080px; margin: 36px auto 0; color: #A8A29A; font-size: 12.5px; border-top: 1px solid var(--hairline); padding-top: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="book-line">《认知天性：让学习轻而易举的心理学规律》 · 彼得·C. 布朗 / 亨利·L. 罗迪格三世 / 马克·A. 麦克丹尼尔</div>
+  <h1>精华 Anki 卡片</h1>
+  <p class="sub">基于全书 8 章提炼的检索式自测卡片。先在心里作答，再点击卡片翻面对答案——这正是书中推崇的「检索练习」。</p>
+  <div class="stats" id="stats"></div>
+  <div class="controls">
+    <button id="flipAll">全部翻开</button>
+    <button id="unflipAll" class="ghost">全部翻回</button>
+    <button id="shuffle" class="ghost">打乱顺序</button>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main class="grid" id="grid"></main>
+<div class="empty" id="empty" hidden>该章节暂无卡片。</div>
+<footer>卡片内容整理自《认知天性》（中信出版集团，邓峰 译）正文与实证研究案例，仅供个人学习复习使用。点击卡片翻面；按 Tab 聚焦后可用 Enter / 空格翻面。</footer>
+
+<script>
+const CHAPTERS = {
+  1: { name: "学习的误区", color: "var(--ch1)" },
+  2: { name: "检索与测验效应", color: "var(--ch2)" },
+  3: { name: "间隔·穿插·多样化", color: "var(--ch3)" },
+  4: { name: "合意困难", color: "var(--ch4)" },
+  5: { name: "心智模型", color: "var(--ch5)" },
+  6: { name: "学习风格", color: "var(--ch6)" },
+  7: { name: "终身学习", color: "var(--ch7)" },
+  8: { name: "实践策略", color: "var(--ch8)" }
+};
+
+const CARDS = [
+// ===== 第1章 学习是挑战天性的必修课 =====
+{ ch: 1, q: "为什么说「反复阅读 + 集中练习」是效率最低的学习方式？",
+  a: "<p>调查显示<em>超过 80% 的大学生</em>以此为主要学习方法，但它有三大不足：<em>浪费时间、无法产生持久的记忆</em>，而且文本越读越流利，会制造「已掌握」的错觉。集中练习（填鸭式）的效果只停留在短期记忆上，很快消退。</p>",
+  src: "Karpicke 等（2010）学习策略调查；华盛顿大学 148 名学生重读实验（2009）" },
+{ ch: 1, q: "什么是检索式练习？为什么比重读有效？",
+  a: "<p>不重看资料，而是<em>主动回想</em>事实、概念或事件——自测、抽认卡、小测验都是典型形式。检索会强化记忆、中止遗忘，并强化大脑中用于检索知识的神经回路，效果远好于重复接触最初的资料。</p>",
+  src: "测验效应（testing effect），Roediger & Karpicke 综述" },
+{ ch: 1, q: "感觉学习「又慢又吃力、毫无进展」，意味着什么？",
+  a: "<p>恰恰说明你正在获得<em>更深层、更持久</em>的学习。耗费心血的学习才是深层次的——「不花力气的学习就像在沙子上写字，今天写上，明天字就消失了。」主观感受最容易骗人。</p>",
+  src: "第1章核心论点" },
+{ ch: 1, q: "把考试当作「学习工具」而非「评估标尺」，有哪两大好处？",
+  a: "<p>① 告诉你<em>哪些你知道、哪些不知道</em>，帮你定位薄弱环节；② 回想会让大脑<em>重新巩固记忆</em>，强化新知与已知的联系。检索时花费的心思越多，受益越大。</p>",
+  src: "第1章「考试是最有效的学习策略之一」" },
+{ ch: 1, q: "什么是元认知错觉？它如何让学生高估自己？",
+  a: "<p>元认知是对「自己掌握程度」的判断。反复阅读让文字越来越<em>流利</em>，让人误以为已掌握内容；听讲清晰、条理分明的课也让人误以为不需要再学。不给自己出题的学生看不到「未知的未知」，直到考试才暴露。</p>",
+  src: "拉姆斯菲尔德「已知的未知 / 未知的未知」" },
+{ ch: 1, q: "能流畅地背出笔记，就等于掌握了吗？",
+  a: "<p>不。背诵课文<em>不代表理解要义</em>，不代表会应用，也不代表知道如何把它与已知联系起来。「掌握某节课或某章」和「掌握其背后的道理」不是同一件事。</p>" },
+{ ch: 1, q: "「知识多不等于学习能力强」对吗？创造力能脱离知识吗？",
+  a: "<p>这个二分法是错的。没有扎实的知识，分析、综合与创造性地解决问题就成了无源之水。正如心理学家斯滕伯格所说：「<em>对要用到的东西一无所知，是不配谈实用的</em>。」二者都需要，而非二选一。</p>" },
+{ ch: 1, q: "什么是「细化」（elaboration）？请举例。",
+  a: "<p>用自己的语言把新知识表达出来，并把它和已知联系起来。例如把角动量原理联系到「<em>花样滑冰运动员收拢手臂时旋转更快</em>」；把热对流想象成亚特兰大闷热、凤凰城凉爽的体感差异。新旧知识的关联越多，记忆越牢固，而且可以无止境地学下去。</p>" },
+{ ch: 1, q: "什么是心智模型？书中的经典例子是什么？",
+  a: "<p>心智模型是从新知识中提取关键概念、组织成的对外部现实的<em>心理表征</em>。棒球击球手靠投手挥臂动作、球缝线旋转等微小线索识别球路，把击球、跑垒、对手防守等模型层层关联，在电光火石间做出正确反应——经验丰富的球员因此上垒率更高。</p>" },
+{ ch: 1, q: "「重复接触」能强化记忆吗？有哪些反直觉的证据？",
+  a: "<p>不能。托尔文（1966）让被试把词组念 6 遍，之后记忆名词的成绩与没念过的<em>完全一样</em>。你见过无数次的硬币却画不对图案；UCLA 一位在办公室工作 25 年的教授，找不到就在门口几英寸外的灭火器。仅靠重复无法带来长期记忆。</p>",
+  src: "Tulving（1966）；Nickerson & Adams（1979）；Castel 等（2012）" },
+// ===== 第2章 学习的本质：知识链和记忆结 =====
+{ ch: 2, q: "遗忘曲线揭示了什么？学习的核心挑战是什么？",
+  a: "<p>艾宾浩斯（1885）发现：刚读过的东西约 <em>70%</em> 会在极短时间内被忘却，之后遗忘速度放缓。改善学习的一大挑战，就是找到办法<em>中断遗忘的过程</em>。</p>" },
+{ ch: 2, q: "什么是「测验效应」（检索练习效应）？",
+  a: "<p>从记忆中<em>检索</em>知识，比重复接触原始资料更能巩固记忆。亚里士多德早已写道「反复回忆一件事情可以增强记忆」；1917 年的研究发现把 60% 学习时间用于默诵的学生成绩最好；1939 年对 3000 多名小学生的研究发现，参加过一次测验后几乎不再遗忘。</p>" },
+{ ch: 2, q: "只需 1 次自测，一周后的记忆能提升多少？",
+  a: "<p>学生听一段含 60 个实物名称的故事：未测验组一周后只能回忆 <em>28%</em>；测验 1 次的组回忆 <em>39%</em>——一次测验提升 11 个百分点。测验 3 次的组一周后仍保持 53%，对遗忘产生了「免疫」。多次、有间隔的检索效果最好。</p>" },
+{ ch: 2, q: "填鸭式学习 vs 检索练习，两天后各忘掉多少？",
+  a: "<p>集中学习两天后忘掉约 <em>50%</em>；同期做检索练习的只忘掉 <em>13%</em>。集中学习能让「马上要考的试」分数更高，但成果很快消退。</p>",
+  src: "Wheeler & Roediger（1992）" },
+{ ch: 2, q: "回忆测验 vs 重新学习，差距有多大？",
+  a: "<p>学完科普文章后：两天后，回忆测验组记住 <em>68%</em>，重新学习组只有 54%；一周后为 56% 对 42%。差距不仅存在，还会随时间扩大。</p>",
+  src: "Roediger & Karpicke（2006）" },
+{ ch: 2, q: "哥伦比亚中学课堂实验的结果如何？",
+  a: "<p>六年级社会学课：对约三分之一内容做课前/课后/考前小测验，这部分内容的单元考成绩<em>高出十多分</em>。八年级科学课：未测验内容平均 79 分（C+），测验过的内容 92 分（A-），效果持续 8 个月。64% 的学生表示小测验减轻了考试焦虑。</p>",
+  src: "Roediger、Agarwal、McDaniel 等（2011）" },
+{ ch: 2, q: "反馈应该立即给，还是延迟给？",
+  a: "<p><em>稍微延迟</em>的反馈产生更好的长期学习效果。立即反馈像自行车的辅助轮，会让人产生依赖、打断学习过程；延迟反馈相当于给学生增加了间隔练习。开卷考试（持续反馈）即时成绩虽好，事后反馈组的后续表现更出色。</p>" },
+{ ch: 2, q: "什么样的检索练习更有效？努力程度重要吗？",
+  a: "<p>检索时付出的<em>认知努力越大，记忆效果越好</em>。需要主动作答的测验（简答、短文、抽认卡）比选择题、判断题更有效；但任何形式的检索练习都有帮助。研究显示只有 11% 的大学生使用检索练习——多数人只把它当「查漏工具」，不知道检索本身就能强化记忆。</p>" },
+{ ch: 2, q: "为什么「反思」是一种强大的学习方式？",
+  a: "<p>反思同时涉及多种认知活动：<em>检索</em>（回顾发生了什么）、<em>联系</em>（把新体验与已有知识关联）、<em>预演</em>（下次怎么做会更好）。神经外科医生埃伯索尔德每晚复盘手术，把修复技术反复演练成条件反射——病人在 1 分钟失血 200 毫升时，他才能不假思索地正确处置。</p>" },
+{ ch: 2, q: "「知识链和记忆结」比喻的是什么？",
+  a: "<p>知识像穿蔓越莓的绳子，不打结珠子就会从另一端掉落。<em>检索给记忆这条绳子打了结</em>；重复检索让记忆更清透，又把绳子多缠了一圈，变得更牢靠。</p>" },
+// ===== 第3章 「后刻意练习」时代的到来 =====
+{ ch: 3, q: "集中练习为什么「感觉有效」却长期无效？",
+  a: "<p>集中练习时表现快速提升，<em>眼睛被骗了</em>：这种收效只作用在短期记忆上，随后而来的是快速遗忘。间隔练习感觉成效慢，你会觉得生疏、没把握，但知识存储得更牢固、更持久。</p>" },
+{ ch: 3, q: "38 名外科住院医生的显微手术实验说明了什么？",
+  a: "<p>4 节显微血管吻合课：一组<em>一天上完</em>，另一组<em>每节课间隔一周</em>。一个月后测验，间隔组在手术时间、手部动作次数、血管再接成功率等所有环节全面胜出；一天组中有 16% 的人还损伤了实验白鼠的其他血管。</p>" },
+{ ch: 3, q: "为什么间隔练习更有效？",
+  a: "<p>向长期记忆存放新知识需要<em>巩固过程</em>，要花数小时甚至数天。快速频繁的练习只产生短期记忆；间隔中出现一些遗忘后，再检索要花更多力气，会<em>重新触发巩固</em>、进一步强化记忆。</p>" },
+{ ch: 3, q: "穿插练习实验：两种练法，一周后成绩差多少？",
+  a: "<p>练习计算 4 种几何体体积：按题型集中练习的组练习时正确率 <em>89%</em>，混合题型的穿插组只有 60%。但一周后最终测验反转：集中组 <em>20%</em>，穿插组 <em>63%</em>——穿插练习让最终成绩提高了 215%。</p>",
+  src: "Rohrer & Taylor 等几何体研究" },
+{ ch: 3, q: "穿插练习效果更好，为什么几乎没人用？",
+  a: "<p>教师嫌它<em>见效太慢</em>，学生觉得刚有点懂就要换内容、产生混淆感。但混合题型迫使你学会辨别「这是什么类型的问题」、提炼基本原理——这正是真实情境（题型随机出现）中解决问题的关键能力。</p>" },
+{ ch: 3, q: "掷沙包实验说明了什么？",
+  a: "<p>练习把沙包投进 3 英尺外的篮子：只练 2 英尺和 4 英尺（<em>从未练过 3 英尺</em>）的孩子在最终测验中表现最好，只练 3 英尺的反而最差。<em>多样化练习</em>提高的是活学活用、举一反三的能力。</p>" },
+{ ch: 3, q: "什么是「合意困难」（desirable difficulties）？",
+  a: "<p>比约克夫妇提出：在学习时故意给自己制造的麻烦——间隔、穿插、多样化、生成等。它们让短期学习<em>更难、更慢</em>，但从长期看能换来更牢固、更准确、更持久的学习成果。美国陆军跳伞学校不允许记笔记、测验时刻进行，就是利用合意困难开展培训的典型。</p>" },
+{ ch: 3, q: "棒球击球训练：分组练习 vs 随机投球，哪种出好手？",
+  a: "<p>分组练习（先 15 个快速球、再 15 个弧线球、再 15 个变速球）的球员在<em>练习中表现更好</em>；但练习中随机混合球路的球员培养了辨析每次投球球路的能力，最终成为<em>更出色的击球手</em>。</p>",
+  src: "Hall 等（1994）" },
+// ===== 第4章 知识的「滚雪球」效应 =====
+{ ch: 4, q: "学习的三个关键步骤是什么？",
+  a: "<p><em>编码</em>：大脑把感知信息转化成心理表征（记忆痕迹），只是短期记忆；<em>巩固</em>：把它强化为长期记忆，赋予含义、与已知联系，需要数小时或更久，睡眠有助于巩固；<em>检索</em>：在需要时从记忆中调取并更新所学。</p>" },
+{ ch: 4, q: "什么是「再巩固」？它为什么让间隔检索更有效？",
+  a: "<p>从长期记忆中检索一段内容，既强化记忆痕迹，又让它<em>重新变得可修改</em>——可以与最近学到的东西关联、被新信息更新。所以间隔后再检索，比刚学完立刻检索对记忆的改变更深刻。</p>" },
+{ ch: 4, q: "为什么说「越容易想起，越不容易记住」？",
+  a: "<p>检索练习没什么难度时，就无法强化所学。刚学完立刻回忆几乎不费力，收效甚微；间隔后再回忆，你必须<em>努力重建</em>，这种费力的检索才真正把记忆巩固得更牢。</p>" },
+{ ch: 4, q: "什么是「良性干扰」？请举几个例子。",
+  a: "<p>稍微增加学习难度、却能提升记忆的干扰：<em>生成效应</em>（用「foot-s_ _e」补全比直接学「foot-shoe」记得更牢）、漏字母填空、用不常见的字体阅读。在别人给出答案前先<em>自己尝试解决问题</em>（哪怕犯错），之后也能记得更牢。</p>" },
+{ ch: 4, q: "为什么「欲求新知，先忘旧事」？",
+  a: "<p>过去所学的知识会<em>干扰</em>新知识（负迁移）。让先前所学略微淡去，可以为重新学习腾出空间、消除干扰。适度的遗忘是学习新知的一部分。</p>" },
+{ ch: 4, q: "如何化解因学习失败带来的焦虑感？",
+  a: "<p>把错误当作<em>努力过的证明</em>和信息来源：判断自己是该更努力，还是该尝试其他方法。犯错误并改正错误，其实是在搭建通往高层次学习的桥梁。感到吃力，说明你正在学重要的东西。</p>" },
+// ===== 第5章 打造适合自己的心智模型 =====
+{ ch: 5, q: "「机制1」和「机制2」分别指什么？",
+  a: "<p><em>机制1</em>是无意识、直觉式、瞬发式的自动机制——熟练司机、经验丰富的击球手都在用它；<em>机制2</em>是有意识的分析与推理，较慢——检查冲动、预先计划、分辨选择。技能要靠机制2反复练习，最终交由机制1瞬间执行。</p>" },
+{ ch: 5, q: "机制1为什么会带来危险？",
+  a: "<p>机制1强大但极易受<em>错觉</em>影响：感知错觉、失实的叙事、记忆扭曲、认知偏见。法航 447 坠机即为例子：机组凭直觉误判飞行姿态，未能用机制2冷静对照仪表盘。熟练的感觉可能掩盖真实漏洞。</p>" },
+{ ch: 5, q: "如何校准自己的判断、避免错觉？",
+  a: "<p>用<em>自身之外的客观标准</em>替代主观经验：测验、模拟真实条件的演练、同伴检查。对自己知识的自信是一回事，把熟练掌握表现出来是另一回事——只有反复取得成绩、通过模拟真实条件的测验后，信心才可靠。</p>" },
+{ ch: 5, q: "怎样才能发现并弥补学习漏洞？",
+  a: "<p>靠<em>实践和测验</em>，而不是重读笔记。飞行员在模拟器中遭遇液压系统失灵，很快就能知道自己是否真正掌握修正程序。测验帮你发现薄弱环节，然后针对性地集中改进。</p>" },
+// ===== 第6章 选择适合自己的学习风格 =====
+{ ch: 6, q: "「视觉型/听觉型学习风格」理论科学吗？",
+  a: "<p>实证研究<em>并不支持</em>「按学习风格教学效果更好」。人类学习时可运用多种天分，「眼观六路、耳听八方」地动用全部才能学习，效果超过只用最熟悉的风格。不要给自己贴风格标签，限制了自己的学习方式。</p>" },
+{ ch: 6, q: "主动学习能带来什么？",
+  a: "<p><em>掌控感</em>。自己掌控学习进程（自测、安排间隔与穿插）的学习者，比被动接受者学得更好。你无法从不擅长的事情里学到知识——学不好的领域恰恰暴露了能力结构的短板，提示你要集中补强。</p>" },
+{ ch: 6, q: "如何用「搭积木」的方式构建知识？",
+  a: "<p>学习总是建立在<em>已知</em>基础之上：学三角函数前要先懂代数与几何；学木匠活要先了解木材质地。把新知识拆成组件，不断嵌入已有的心智模型、与已知建立多重联系，复合型知识才能「立体」起来。</p>" },
+// ===== 第7章 终身学习者 =====
+{ ch: 7, q: "智力是天生注定的吗？",
+  a: "<p>不是。每当你学到新东西，<em>大脑就会发生改变</em>。天资固然有差异，但影响智力水平的因素在很大程度上由你本人掌控：通过学习、开发心智模型，可以获得分析问题、解决问题和创造新事物的能力。</p>" },
+{ ch: 7, q: "抽认卡怎么用才科学？最常见的误区是什么？",
+  a: "<p>误区：认对一两次就把卡片拿走——研究显示这<em>远未达到掌握程度</em>。正确做法：打乱顺序持续自测；熟练后放到一边，但每月定期复习一次（间隔检索）。「莱特纳盒子」就是抽认卡版的间隔练习体系。</p>",
+  src: "Kornell & Bjork（2008）；Karpicke（2009）" },
+{ ch: 7, q: "有哪些实用的记忆方法（助记术）？",
+  a: "<p><em>记忆宫殿</em>（把核心观点与脑海中的位置一一对应并可视化，适合组织大量资料）、字钩法、首字母法、韵语等。助记为你提供检索的「口袋线索」，帮你组织知识以便随时提取——但不能替代理解与检索练习。</p>" },
+{ ch: 7, q: "终身成长，关键靠什么？",
+  a: "<p>像专家一样思考，而且<em>学习执行力比学习技巧更重要</em>：把检索、间隔、细化训练成习惯并坚持执行，胜过收集一堆方法。脑力训练提升的是学习自信，真正的提升来自持续运用有效的学习方法。</p>" },
+// ===== 第8章 写给大家的学习策略 =====
+{ ch: 8, q: "给学生的三个基本学习方法是什么？",
+  a: "<p>① <em>练习从记忆中检索</em>：放弃反复阅读，合上书自问核心概念是什么、如何定义、与已知有何联系，把答案写下来；② <em>有间隔地安排检索练习</em>：新内容隔一两天温习，之后隔数天或一周，已掌握的隔月自测；③ <em>穿插安排不同类型的问题</em>：轮换考查自己，练出辨析问题类型的能力。</p>" },
+{ ch: 8, q: "给职场人士的核心学习建议？",
+  a: "<p>主动检索 + 模拟演练 + 反馈：像飞行员每半年重考与模拟飞行那样，定期检索关键知识。农夫保险公司用<em>「螺旋式」培训</em>：以看似随机的顺序反复复习关键技能，每次都添加新的背景与含义。</p>" },
+{ ch: 8, q: "低权重的频繁小测验，有哪些额外好处？",
+  a: "<p>改善出勤、促进预习、提升课上注意力；让学生更准确了解自己知道什么；缓解考试焦虑（成绩被分担，不再是「一锤子买卖」）；帮助教师发现理解差异、因材施教。课堂上加一次小测验，期末成绩就能显著提高，且越频繁收效越大。</p>" },
+{ ch: 8, q: "为什么说「学习时制造困难」是给未来的自己投资？",
+  a: "<p>间隔、穿插、生成、延迟反馈等合意困难都在当下制造生疏与挫败感，但每一次<em>费力的检索都在加深记忆、拓展检索线索</em>，换来的是长期记忆与灵活运用。接受新知识需要一定难度这个事实，困难就变得有价值。</p>" }
+];
+
+// ---------- 渲染 ----------
+const grid = document.getElementById("grid");
+const emptyBox = document.getElementById("empty");
+const chipsBox = document.getElementById("chips");
+const statsBox = document.getElementById("stats");
+let activeCh = 0; // 0 = 全部
+
+function shuffleArr(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+let order = CARDS.map((_, i) => i);
+
+function cardHTML(idx, n) {
+  const c = CARDS[idx];
+  const chMeta = CHAPTERS[c.ch];
+  return `
+  <div class="scene">
+    <button class="card" data-idx="${idx}" style="--cc:${chMeta.color}" aria-pressed="false">
+      <div class="inner">
+        <div class="face front">
+          <span class="tag">第${c.ch}章 · ${chMeta.name}</span>
+          <div class="q">${c.q}</div>
+          <div class="front-foot"><span class="num">No.${String(n + 1).padStart(2, "0")}</span><span>点击翻面 · 查看答案</span></div>
+        </div>
+        <div class="face back">
+          <span class="tag">答案</span>
+          <div class="a">${c.a}</div>
+          ${c.src ? `<div class="src">研究出处：${c.src}</div>` : ""}
+        </div>
+      </div>
+    </button>
+  </div>`;
+}
+
+function render() {
+  const list = order.filter(i => !activeCh || CARDS[i].ch === activeCh);
+  grid.innerHTML = list.map((i, n) => cardHTML(i, n)).join("");
+  emptyBox.hidden = list.length > 0;
+  const flipped = grid.querySelectorAll(".card.flipped").length;
+  statsBox.innerHTML = `
+    <span><b>${CARDS.length}</b> 张精华卡片</span>
+    <span><b>8</b> 个章节</span>
+    <span><b>${flipped}</b> 张已翻开</span>
+    <span>来源：《认知天性》全书 8 章</span>`;
+}
+
+function updateStats() {
+  const flipped = grid.querySelectorAll(".card.flipped").length;
+  const total = grid.querySelectorAll(".card").length;
+  statsBox.innerHTML = `
+    <span><b>${CARDS.length}</b> 张精华卡片</span>
+    <span><b>8</b> 个章节</span>
+    <span><b>${flipped}</b> / ${total} 张已翻开</span>`;
+}
+
+// 章节筛选 chips
+function buildChips() {
+  const mk = (label, val, color) => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = label;
+    if (color) b.style.setProperty("--chip-color", color);
+    b.setAttribute("aria-pressed", String(activeCh === val));
+    b.onclick = () => { activeCh = val; buildChips(); render(); };
+    return b;
+  };
+  chipsBox.innerHTML = "";
+  chipsBox.appendChild(mk(`全部 · ${CARDS.length}`, 0));
+  for (const [n, meta] of Object.entries(CHAPTERS)) {
+    const count = CARDS.filter(c => c.ch == n).length;
+    chipsBox.appendChild(mk(`${n} ${meta.name} · ${count}`, Number(n), meta.color));
+  }
+}
+
+// 翻卡（事件委托，支持点击与键盘）
+grid.addEventListener("click", e => {
+  const card = e.target.closest(".card");
+  if (!card) return;
+  card.classList.toggle("flipped");
+  card.setAttribute("aria-pressed", card.classList.contains("flipped"));
+  updateStats();
+});
+grid.addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("card")) {
+    e.preventDefault();
+    e.target.classList.toggle("flipped");
+    e.target.setAttribute("aria-pressed", e.target.classList.contains("flipped"));
+    updateStats();
+  }
+});
+
+document.getElementById("flipAll").onclick = () => {
+  grid.querySelectorAll(".card:not(.flipped)").forEach(c => {
+    c.classList.add("flipped"); c.setAttribute("aria-pressed", "true");
+  });
+  updateStats();
+};
+document.getElementById("unflipAll").onclick = () => {
+  grid.querySelectorAll(".card.flipped").forEach(c => {
+    c.classList.remove("flipped"); c.setAttribute("aria-pressed", "false");
+  });
+  updateStats();
+};
+document.getElementById("shuffle").onclick = () => {
+  order = shuffleArr(order);
+  render();
+};
+
+buildChips();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《Linux内核设计与实现》精华卡片</title>
+<style>
+:root { color-scheme: light; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: "PingFang SC","Microsoft YaHei","Source Han Sans SC",sans-serif;
+  background:#f4f1ea; color:#2b2b2b; min-height:100vh;
+}
+header {
+  background:linear-gradient(135deg,#1a2332 0%,#2c3e50 100%);
+  color:#fff; padding:28px 24px 20px; text-align:center;
+  box-shadow:0 2px 12px rgba(0,0,0,.15);
+}
+header h1 { font-size:24px; letter-spacing:2px; font-weight:600; }
+header p { margin-top:8px; font-size:13px; color:#a8b8c8; }
+.stats { margin-top:12px; font-size:13px; color:#d0d8e0; }
+.stats span { background:rgba(255,255,255,.12); padding:3px 12px; border-radius:12px; margin:0 4px; display:inline-block; }
+.toolbar { text-align:center; padding:14px; }
+.toolbar button {
+  border:1px solid #c8bfae; background:#fff; color:#5a5347; padding:7px 18px;
+  border-radius:20px; cursor:pointer; font-size:13px; margin:0 6px; transition:.2s;
+}
+.toolbar button:hover { background:#1a2332; color:#fff; border-color:#1a2332; }
+.grid {
+  display:grid; grid-template-columns:repeat(2,1fr); gap:18px;
+  max-width:1280px; margin:0 auto; padding:8px 24px 48px;
+}
+@media (max-width:860px){ .grid{ grid-template-columns:1fr; } }
+.chapter-title {
+  grid-column:1 / -1; margin-top:16px; padding-left:10px;
+  border-left:4px solid #c0392b; font-size:17px; font-weight:600; color:#1a2332;
+}
+/* 翻转卡片 */
+.card-wrap { perspective:1200px; height:240px; }
+.card {
+  position:relative; width:100%; height:100%; cursor:pointer;
+  transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.2,.2,1);
+}
+.card.flipped { transform:rotateY(180deg); }
+.face {
+  position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  border-radius:12px; padding:18px 20px; display:flex; flex-direction:column;
+  box-shadow:0 3px 10px rgba(0,0,0,.08); overflow:auto;
+}
+.face-front { background:#fff; border:1px solid #e5dfd2; }
+.face-back {
+  background:#1a2332; color:#e8edf2; transform:rotateY(180deg);
+  border:1px solid #1a2332;
+}
+.q-label, .a-label {
+  font-size:11px; font-weight:600; letter-spacing:1px; margin-bottom:8px; flex-shrink:0;
+}
+.q-label { color:#c0392b; }
+.a-label { color:#7fb3d5; }
+.question { font-size:15px; font-weight:600; line-height:1.55; flex:1; display:flex; align-items:center; }
+.answer { font-size:13.5px; line-height:1.7; flex:1; overflow:auto; }
+.answer b { color:#ffd479; font-weight:600; }
+.hint {
+  font-size:11px; color:#a39c8d; text-align:right; margin-top:8px; flex-shrink:0;
+}
+.face-back .hint { color:#6d7d8d; }
+footer { text-align:center; padding:20px; color:#8a8375; font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📖 Linux内核设计与实现 · 精华卡片</h1>
+  <p>Linux Kernel Development (3rd Edition) — Robert Love 著 · 基于原书20章内容提炼</p>
+  <div class="stats" id="stats"></div>
+</header>
+<div class="toolbar">
+  <button onclick="flipAll(true)">全部翻开答案</button>
+  <button onclick="flipAll(false)">全部复原问题</button>
+  <button onclick="shuffleCards()">🔀 随机打乱</button>
+</div>
+<div class="grid" id="grid"></div>
+<footer>点击卡片可翻转查看答案 · 内容提炼自《Linux内核设计与实现（原书第3版）》各章核心概念</footer>
+<script>
+const cards = [
+/* ============ 第1章 ============ */
+{ch:"第1章 · Linux内核简介", tag:"内核形态", q:"Linux 是单内核还是微内核？它如何“取长补短”？",
+ a:"Linux 是<b>单内核（宏内核）</b>：所有内核服务都运行在一个大内核地址空间中，函数调用简单高效、无消息传递开销。但它同时借鉴了微内核的优点——<b>模块化设计</b>、<b>动态装载内核模块</b>、<b>支持 SMP</b> 以及内核抢占等，兼具性能与灵活性。"},
+{ch:"第1章 · Linux内核简介", tag:"用户空间/内核空间", q:"用户空间和内核空间为什么要分离？两者的分界线是什么？",
+ a:"现代操作系统将虚拟地址空间分为<b>用户空间（用户态）</b>和<b>内核空间（内核态）</b>，硬件通过不同保护级别（如 x86 的 ring0/ring3）隔离。用户程序运行于低特权级，不能直接访问硬件；分界线是<b>系统调用</b>——用户程序通过它陷入内核，由内核代替其执行特权操作。"},
+{ch:"第1章 · Linux内核简介", tag:"Unix设计原则", q:"Unix 操作系统的三大基本设计机制/理念是什么？",
+ a:"① <b>一切皆文件</b>：通过统一的文件接口操作各种对象，如设备、管道、socket；② <b>用 C 语言编写</b>：可移植性好；③ <b>快速简洁的进程创建模型</b>（fork/exec）与简单稳定的进程间通信机制（如管道）。"},
+
+/* ============ 第2章 ============ */
+{ch:"第2章 · 从内核出发", tag:"编译内核", q:"编译并安装 Linux 内核的基本步骤有哪些？",
+ a:"① 下载并解压源码；② <b>make defconfig / make menuconfig</b> 配置内核（生成 .config）；③ <b>make</b> 编译；④ <b>make modules_install</b> 安装模块到 /lib/modules；⑤ <b>make install</b> 安装内核镜像并配置引导程序（GRUB）。"},
+{ch:"第2章 · 从内核出发", tag:"内核开发特点", q:"与用户空间程序开发相比，Linux 内核编程有哪些独特之处？",
+ a:"① <b>不能访问 C 库</b>（也没有 printf，只有 printk）；② <b>使用 GNU C</b>（内联汇编、内联函数等扩展）；③ <b>没有内存保护机制</b>，非法访问直接导致内核崩溃；④ <b>难以使用浮点运算</b>（保存/恢复浮点寄存器开销大）；⑤ 每个进程只有<b>很小的定长内核栈</b>（通常两页，如 8KB）；⑥ <b>同步与并发</b>问题突出；⑦ 须时刻考虑<b>可移植性</b>。"},
+{ch:"第2章 · 从内核出发", tag:"源码目录结构", q:"内核源码树顶层的主要目录分别存放什么内容？",
+ a:"<b>arch</b>：体系结构相关代码；<b>drivers</b>：设备驱动；<b>fs</b>：文件系统（VFS及各文件系统）；<b>init</b>：内核初始化（main.c）；<b>kernel</b>：核心子系统（调度器、fork、定时等）；<b>mm</b>：内存管理；<b>net</b>：网络协议栈；<b>ipc</b>：进程间通信；<b>include</b>：内核头文件。"},
+
+/* ============ 第3章 ============ */
+{ch:"第3章 · 进程管理", tag:"task_struct", q:"内核如何描述一个进程？task_struct 中包含哪些关键信息？",
+ a:"内核用<b>进程描述符 task_struct</b>（定义于 &lt;linux/sched.h&gt;）描述进程，包含：打开的文件、进程地址空间、挂起的信号、进程状态、PID、标识父子关系的指针（parent / children 链表）等。内核通过 slab 分配器分配 task_struct，栈底存放 thread_info 以便快速定位。"},
+{ch:"第3章 · 进程管理", tag:"fork与exec", q:"fork() 与 exec() 如何配合完成进程创建？vfork 和 clone 的意义是什么？",
+ a:"<b>fork()</b> 通过复制当前进程创建子进程（写时复制 COW，延迟页复制）；<b>exec()</b> 读取可执行文件载入地址空间开始运行。fork 由 <b>clone()</b> 系统调用实现，通过 clone 传入的标志（如 CLONE_VM、CLONE_FS）决定父子共享哪些资源；<b>vfork()</b> 是不复制页表、子进程必须立即 exec 的优化（现代 COW 使其意义不大）。"},
+{ch:"第3章 · 进程管理", tag:"进程状态", q:"Linux 进程有哪几种主要状态？僵尸进程是怎么产生的？",
+ a:"<b>TASK_RUNNING</b>（可运行）、<b>TASK_INTERRUPTIBLE</b>（可中断睡眠）、<b>TASK_UNINTERRUPTIBLE</b>（不可中断睡眠，不响应信号）、<b>__TASK_TRACED/STOPPED</b>（被跟踪/暂停）、<b>EXIT_ZOMBIE</b>（僵死）、<b>EXIT_DEAD</b>（终态）。子进程退出而父进程未调用 wait() 领取其退出信息时，子进程就成为<b>僵尸进程</b>，只剩 task_struct 空壳；父进程先退出则由 init 进程收养并清理。"},
+
+/* ============ 第4章 ============ */
+{ch:"第4章 · 进程调度", tag:"CFS核心", q:"完全公平调度器（CFS）如何实现“公平”？vruntime 的作用是什么？",
+ a:"CFS 的理念是给每个进程一个<b>虚拟运行时间 vruntime</b>，理想情况下所有可运行进程的 vruntime 应相等。调度器总是选择 <b>vruntime 最小</b>的进程运行（用红黑树高效组织，最左节点即下一个运行者）。<b>nice 值越低（优先级越高），权重越大，vruntime 增长越慢</b>，从而获得更多的处理器时间，实现按权重比例的公平。"},
+{ch:"第4章 · 进程调度", tag:"调度策略", q:"Linux 支持哪些调度策略？I/O 消耗型和处理器消耗型进程分别如何对待？",
+ a:"<b>SCHED_NORMAL</b>（普通进程，走CFS）、<b>SCHED_FIFO</b> 和 <b>SCHED_RR</b>（实时进程，高优先级，FIFO 不限时间片、RR 轮转）。<b>I/O 消耗型</b>进程频繁睡眠等待 I/O，应快速唤醒响应；<b>处理器消耗型</b>进程需要更长运行时间。CFS 通过 vruntime 机制自然兼顾：交互式进程睡眠后 vruntime 停止增长，醒来后易被优先调度。"},
+{ch:"第4章 · 进程调度", tag:"抢占与切换", q:"Linux 何时发生进程抢占？什么是内核抢占？上下文切换做了什么？",
+ a:"<b>用户态抢占</b>：进程耗尽时间片、或被更高优先级进程唤醒时；<b>内核抢占（2.6 起支持）</b>：在中断返回内核态时、内核代码再次变为可抢占时（preempt_count 为0）或显式调用调度时发生。上下文切换 = 从 task_struct 中换入换出：<b>切换页表（mm切换）+ 切换处理器寄存器和内核栈</b>（switch_mm 与 switch_to）。"},
+
+/* ============ 第5章 ============ */
+{ch:"第5章 · 系统调用", tag:"系统调用实现", q:"一个系统调用从用户空间发起后，内核侧的执行路径是什么？",
+ a:"用户程序通过 C 库的函数封装，用<b>软中断/陷入指令（x86 上是 int $0x80 或 sysenter/syscall）</b>触发切换到内核态，执行<b>系统调用处理程序 system_call()</b>：根据系统调用号（eax）在 <b>sys_call_table</b> 中索引到对应服务例程，校验并传递参数（存于寄存器），执行后返回用户空间。"},
+{ch:"第5章 · 系统调用", tag:"参数验证", q:"为什么系统调用必须仔细验证所有参数？如何安全地在用户空间和内核空间之间传数据？",
+ a:"系统调用运行在内核态，若信任用户指针会导致内核崩溃或安全漏洞（可访问任意内存）。必须验证：<b>指针合法性</b>、<b>用户空间读写权限</b>、是否越界等。数据传递须使用 <b>copy_to_user()</b> / <b>copy_from_user()</b>：它们会检查用户空间地址有效性（页错误时进行安全处理），保证失败时返回未拷贝的字节数而不是内核崩溃。"},
+{ch:"第5章 · 系统调用", tag:"实现要点", q:"实现一个新的 Linux 系统调用需要注意什么？它与内核API函数有何区别？",
+ a:"系统调用是用户空间进入内核的<b>唯一合法入口</b>，需注册系统调用号（sys_call_table）、以 sys_ 前缀命名、参数通过寄存器传递。要点：接口<b>简洁</b>、参数少、参数中不携带复杂结构/指针语义（尽量传值）、行为要<b>通用且向前兼容</b>（永远不能随意更改语义）。内核内部函数则无这些约束，随时可改。"},
+
+/* ============ 第6章 ============ */
+{ch:"第6章 · 内核数据结构", tag:"list_head", q:"内核链表为什么不用数据类型嵌入的方式实现？list_head 如何工作？",
+ a:"内核链表是<b>循环双向链表</b>，实现为把 <b>struct list_head</b>（含 prev/next 指针）嵌入到任何需要链表能力的结构中，再用 <b>container_of()</b> 从 list_head 指针反推宿主结构指针——这是“侵入式”链表，避免了对数据类型的依赖，一套代码通用于所有结构。常用操作：list_add / list_del / list_for_each_entry。"},
+{ch:"第6章 · 内核数据结构", tag:"红黑树", q:"内核大量使用红黑树而不是平衡二叉树/哈希表，为什么？红黑树用在哪些地方？",
+ a:"红黑树是<b>自平衡二叉搜索树</b>：查找、插入、删除都是 O(log n)，且通过红黑着色规则与旋转维持近似平衡，调整代价低于严格平衡的 AVL 树。内核中的应用：<b>CFS 调度器的可运行队列</b>（按 vruntime 组织）、<b>进程地址空间的 vm_area_struct 管理</b>、I/O 调度器等。"},
+{ch:"第6章 · 内核数据结构", tag:"其他容器", q:"内核还提供了哪些重要数据结构？各适用什么场景？",
+ a:"<b>队列 kfifo</b>：先进先出，生产者-消费者场景，保证队列为2的幂以用位掩码取模；<b>基数树 radix tree</b>：以长整型为键的紧凑多叉树，页高速缓存用其按页偏移快速查找页；<b>散列表/散列表辅助接口</b>：键值映射、平均 O(1) 查找；<b>位图与位运算</b>：如 cpumask 描述处理器集合。"},
+
+/* ============ 第7章 ============ */
+{ch:"第7章 · 中断和中断处理", tag:"中断处理程序", q:"中断处理程序为什么被称为“上半部”？它有什么特殊约束？",
+ a:"中断处理程序是内核响应硬件中断的回调，运行于<b>中断上下文</b>：它不属于任何进程、不可睡眠（没有可被重新调度的进程背景）、执行要尽量快，所以只做<b>紧急且耗时短</b>的工作——应答硬件、拷贝数据，而把耗时处理推给“下半部”执行，故称上半部。通过 <b>request_irq()</b> 注册，参数包括 IRQ 号、处理函数、标志（如 IRQF_SHARED 共享中断线）等。"},
+{ch:"第7章 · 中断和中断处理", tag:"中断上下文", q:"中断上下文和进程上下文的本质区别是什么？",
+ a:"进程上下文中，内核代表进程执行，可以睡眠（调度器切换到其他进程）；<b>中断上下文没有后备进程</b>，不可睡眠、不能被调度，代码要原子、迅速。中断处理程序运行于该处理器上以<b>禁止本地中断</b>的状态下（同一中断线在所有处理器上被屏蔽）。中断上下文有着严格的时间和栈限制（使用中断栈或被中断进程的内核栈）。"},
+{ch:"第7章 · 中断和中断处理", tag:"/proc/interrupts", q:"如何查看系统中的中断统计？中断会嵌套吗？",
+ a:"通过 <b>/proc/interrupts</b> 文件可查看每条中断线在每个处理器上的触发次数及注册的处理函数；/proc/stat 也记录统计。Linux 中断处理程序本身<b>不会嵌套</b>——当前中断处理程序执行时，该线（及本地其他中断）被禁止；新中断被挂起等待或由其他处理器处理。"},
+
+/* ============ 第8章 ============ */
+{ch:"第8章 · 下半部和推后执行的工作", tag:"三种机制对比", q:"软中断、tasklet、工作队列三者有什么区别？各自的使用场景？",
+ a:"<b>软中断（softirq）</b>：静态编译定义（不可动态创建）、可在所有处理器上<b>并发执行</b>（需可重入）、性能最好，用于网络等极高频子系统；<b>tasklet</b>：基于软中断实现，同一 tasklet <b>不会在两个处理器同时运行</b>（无需重入），接口简单，是多数下半部的首选；<b>工作队列（work queue）</b>：运行在<b>进程上下文</b>（worker线程），<b>可以睡眠</b>，适合需要睡眠、分配大量内存或获取信号量的工作。"},
+{ch:"第8章 · 下半部和推后执行的工作", tag:"选择依据", q:"如何在“立即执行”与“可睡眠”之间选择下半部机制？",
+ a:"经验法则：若处理程序<b>需要睡眠</b>（如需要与用户空间同步、获取信号量、阻塞I/O）→ <b>工作队列</b>；否则 → <b>tasklet</b>（更简单）或软中断（仅当性能确实关键且代码可安全并发时，如网络收发包）。核心判断：<b>只要涉及睡眠就只能用工作队列</b>，因为软中断和 tasklet 都运行在中断上下文。"},
+{ch:"第8章 · 下半部和推后执行的工作", tag:"执行时机", q:"软中断和 tasklet 在什么时机被执行？",
+ a:"中断处理程序返回时（irq_exit 中）会检查并执行待处理的软中断（do_softirq，从最低编号开始依次处理，编号小的优先）；也可在 ksoftirqd/n 内核线程中执行、或在 local_bh_enable()（开下半部）时执行。tasklet 由 <b>TASKLET_SOFTIRQ/HI_SOFTIRQ</b> 两类软中断调度执行，raise 后在下一次软中断处理时运行。"},
+
+/* ============ 第9章 ============ */
+{ch:"第9章 · 内核同步介绍", tag:"竞态与临界区", q:"什么是竞态条件和临界区？为什么内核代码必须防备并发？",
+ a:"多个执行路径（进程、中断、内核抢占、SMP 其他处理器）<b>同时访问共享数据</b>且至少一个是写操作，结果依赖于执行顺序，即为<b>竞态条件</b>；访问并操作共享数据的代码段称为<b>临界区</b>。内核并发来源：中断/软中断随时打断内核代码、内核抢占、SMP 多处理器并行——因此锁是必需的，加锁的目的不是保护代码而是<b>保护数据</b>。"},
+{ch:"第9章 · 内核同步介绍", tag:"锁的真相", q:"给数据加锁的本质是什么？“锁住代码”这种说法为什么不对？",
+ a:"锁的本质是<b>以强制串行化访问共享数据</b>来维护数据一致性——两个执行线程处于同一临界区，意味着数据被保护。锁并非“锁住一段代码”，代码本身无需保护，需要保护的是代码所操作的<b>数据</b>。锁的开销：竞争时会睡眠或自旋，还会降低可扩展性，所以锁粒度要在<b>性能与简单性</b>之间权衡。"},
+{ch:"第9章 · 内核同步介绍", tag:"死锁", q:"什么是死锁？内核开发者应遵循哪些简单的加锁规则来避免死锁？",
+ a:"多个执行体<b>相互等待对方持有的锁</b>，永远无法继续。避免规则：① 按<b>相同顺序</b>加锁（锁排序）；② 加锁与解锁必须<b>成对</b>出现在同一函数/局部；③ 不要重复请求自己已持有的锁（自死锁）；④ 尽量保持加锁区域简短、逻辑简单，复杂逻辑应拆分。"},
+
+/* ============ 第10章 ============ */
+{ch:"第10章 · 内核同步方法", tag:"自旋锁vs信号量", q:"自旋锁和信号量的核心区别是什么？各自适用什么场景？",
+ a:"<b>自旋锁</b>：拿不到锁时<b>忙等（原地自旋）</b>，可在中断上下文使用（中断处理程序不能睡眠），适合<b>锁持有时间极短</b>、代码不能睡眠的场合；<b>信号量</b>：拿不到锁时<b>睡眠</b>，让出处理器，只可用于进程上下文，适合锁会被<b>长时间持有</b>的场景。简记：中断上下文→自旋锁；进程上下文且持有时间长→信号量（现代内核多用 mutex）。"},
+{ch:"第10章 · 内核同步方法", tag:"读写与顺序锁", q:"读写自旋锁和顺序锁（seqlock）分别解决什么问题？",
+ a:"<b>读写锁（rwlock）</b>：区分读者和写者——多个读者可同时持有读锁，写者独占，适合<b>读多写少</b>的数据；缺点是读者多了可能饿死写者（或反之）。<b>顺序锁 seqlock</b>：写者随时可进入（加大写优先），读者在读写前后检查<b>顺序计数器</b>是否变化，若写者插入则重读；适合写少、数据简单、读时可重试的场合（如 jiffies 读取）。"},
+{ch:"第10章 · 内核同步方法", tag:"同步方法全家福", q:"除了锁，内核还提供哪些同步手段？",
+ a:"<b>原子操作</b>（atomic_t、位操作，无需锁）；<b>互斥体 mutex</b>：比信号量更简单严格的睡眠锁（谁加锁谁解锁、不可递归）；<b>完成变量 completion</b>：等待某事件完成（替代信号量做同步而非互斥）；<b>BIG-LINUX锁 BKL</b>（全局大锁，已淘汰）；<b>禁止抢占 preempt_disable</b>、<b>禁止中断 local_irq_disable</b>：保护与中断/抢占相关的临界区；<b>RCU</b> 与 <b>per-CPU 数据</b>：读侧零开销/无锁的高性能方案。"},
+
+/* ============ 第11章 ============ */
+{ch:"第11章 · 定时器和时间管理", tag:"HZ与jiffies", q:"HZ 和 jiffies 是什么？节拍率为什么不能太低也不能盲目调高？",
+ a:"<b>HZ</b> 是内核的节拍率（时钟中断每秒次数，如 100/250/1000），节拍间隔即 1/HZ 秒（tick）；<b>jiffies</b> 是全局变量，记录系统启动以来的节拍数，内核靠它计算系统运行时间和墙上时间。节拍率低→定时精度差；过高→时钟中断处理开销大。jiffies 会回绕（溢出），须用 time_after/time_before 等宏比较。"},
+{ch:"第11章 · 定时器和时间管理", tag:"动态定时器", q:"内核动态定时器如何使用？与静态定时器有何不同？",
+ a:"动态定时器是内核在运行期按需创建/销毁的定时器：初始化 <b>timer_list</b>（expires 到期节拍、function 回调），用 <b>add_timer()/mod_timer()</b> 激活，<b>del_timer()/del_timer_sync()</b> 删除（后者等待正在其他处理器上执行的定时器处理程序退出）。回调运行于中断上下文，<b>不可睡眠</b>。区别于进程调度器用的时间片统计等静态机制，动态定时器数量不受限、随时创建。"},
+{ch:"第11章 · 定时器和时间管理", tag:"墙上时间", q:"内核如何维护“墙上时间”（实际时间）？",
+ a:"内核依靠时钟中断维护节拍数，再由<b>实时时钟 RTC</b>（开机时读取初始值）+ jiffies 推算墙上时间；更新通过 xtime 变量及 settimeofday/gettimeofday 系统调用接口暴露给用户空间。高精度需求下，内核还可利用 TSC 等硬件时钟源。"},
+
+/* ============ 第12章 ============ */
+{ch:"第12章 · 内存管理", tag:"页与区", q:"内核为什么以“页”为单位管理内存？物理内存为何划分为区（zone）？",
+ a:"内核把物理内存划分为<b>页（通常4KB）</b>，页是内存分配与管理的基本单位（struct page 描述每页）。分为区是因为硬件限制：<b>ZONE_DMA</b>（DMA使用的内存）、<b>ZONE_NORMAL</b>（常规、能永久映射内核地址空间）、<b>ZONE_HIGHMEM</b>（高端内存，不能永久被内核直接映射）。分配必须从满足条件的区进行，如 DMA 设备只能用 ZONE_DMA。"},
+{ch:"第12章 · 内存管理", tag:"kmalloc/vmalloc", q:"kmalloc()、vmalloc()、__get_free_pages() 有何区别？",
+ a:"<b>kmalloc()</b>：以字节为单位分配<b>物理连续</b>内存（基于slab，常用，适合DMA），标志 GFP_KERNEL（可睡眠）或 GFP_ATOMIC（不可睡眠）；<b>__get_free_pages()</b>：按页分配物理连续页；<b>vmalloc()</b>：分配<b>虚拟连续</b>但物理可能不连续的内存（改页表，开销大），用于大块且不要求物理连续的场合（如模块加载）。用户空间malloc分配的是虚拟连续页。"},
+{ch:"第12章 · 内存管理", tag:"slab层", q:"slab 分配器的设计目标是什么？它如何组织对象？",
+ a:"slab 层针对内核频繁分配/释放<b>同类对象</b>（如 task_struct、inode）的痛点：减少内部碎片、对象<b>缓存复用</b>（释放的对象保留初始化状态，二次分配更快）、避免伙伴系统直接管理的低效。结构：<b>高速缓存（kmem_cache，每种对象类型一个）→ slab（若干页组成的面板）→ 对象</b>；slab 分满/部分满/空三种状态。通过 kmem_cache_create 创建，kmem_cache_alloc/free 分配释放。"},
+
+/* ============ 第13章 ============ */
+{ch:"第13章 · 虚拟文件系统", tag:"VFS抽象", q:"VFS 如何做到让用户用同一套接口操作几十种文件系统？",
+ a:"VFS（虚拟文件系统）为用户空间提供<b>统一的文件系统抽象接口</b>（open/read/write 等），各具体文件系统（ext4、NFS、procfs…）实现 VFS 规定的函数表。核心是四个对象模型：<b>超级块（superblock）</b>——已安装文件系统的信息与操作表 s_op；<b>索引节点（inode）</b>——具体文件的元数据与操作 i_op/i_fop；<b>目录项（dentry）</b>——路径的一个组成部分，便于查找缓存；<b>文件（file）</b>——进程打开文件的实例。"},
+{ch:"第13章 · 虚拟文件系统", tag:"inode与dentry", q:"索引节点（inode）和目录项（dentry）有什么区别？dentry cache 是什么？",
+ a:"<b>inode</b> 代表文件系统中的<b>实际物理文件/对象</b>（元数据：权限、大小、时间戳、块位置），每个文件唯一，不包含文件名；<b>dentry</b> 只是路径中的一个<b>组成部分</b>（如 /tmp/myfile 中 tmp、myfile 各是一个 dentry），用于目录查找，没有对应的磁盘存储（目录项不落盘）。<b>dentry cache（dcache）</b> 缓存最近的 dentry，加速路径解析；dentry 有三种状态：被使用、未被使用、负状态（无效）。"},
+{ch:"第13章 · 虚拟文件系统", tag:"file对象", q:"file 对象和 inode 有何不同？两个进程打开同一个文件时会共享什么？",
+ a:"<b>file 对象</b>是进程打开文件的<b>实例</b>，存储 f_op（文件操作表：read/write/llseek）、当前偏移 f_pos、打开模式等——同一文件被不同进程（甚至同进程多次）打开，会产生<b>各自独立的 file 对象</b>（独立偏移）；但它们指向<b>同一个 inode</b>。file 对象仅存在于内存中。"},
+
+/* ============ 第14章 ============ */
+{ch:"第14章 · 块I/O层", tag:"块设备", q:"块设备和字符设备的本质区别是什么？为什么“块”的概念如此重要？",
+ a:"<b>块设备</b>按<b>固定大小块</b>（通常512B/4KB）寻址、可随机访问（硬盘、SSD），支持挂载文件系统；<b>字符设备</b>按字符流顺序访问（键盘、串口），不可随机寻址。块设备与页高速缓存交互、可缓冲随机访问，这是“块”抽象的意义所在——文件系统只能安装在块设备上。"},
+{ch:"第14章 · 块I/O层", tag:"请求与bio", q:"块I/O 层的核心数据结构请求队列和 bio 有什么关系？",
+ a:"<b>请求队列（request_queue）</b>缓存并排序块设备的待执行 I/O 请求（struct request），由 I/O 调度器管理；<b>bio 结构</b>表示活跃的块 I/O 操作：由若干 <b>bio_vec（段）</b>组成，描述内存中若干页片段与磁盘扇区的映射关系，可表示不连续内存的 I/O。请求由多个 bio 合并而成；驱动通过 make_request 提交。相比旧式缓冲区头（buffer_head），bio 更灵活高效。"},
+{ch:"第14章 · 块I/O层", tag:"I/O调度器", q:"I/O 调度器的作用是什么？Linux 提供了哪些调度算法？",
+ a:"I/O 调度器管理块设备的请求队列：<b>合并</b>相邻请求、<b>排序</b>以减少寻道，最小化磁盘寻址时间。算法：<b>CFQ（完全公平排队，默认）</b>按进程公平分配I/O带宽，交互性好；<b>期限调度（deadline）</b>给请求设超时期限防饿死，读优先；<b>noop</b> 仅做简单合并（适合SSD等无寻道开销设备）；<b>预期调度（anticipatory）</b>利用I/O请求的时间局部性。"},
+
+/* ============ 第15章 ============ */
+{ch:"第15章 · 进程地址空间", tag:"内存描述符", q:"进程地址空间由哪些数据结构描述？mm_struct 包含什么？",
+ a:"内核用<b>内存描述符 mm_struct</b>（mm字段）表示进程的地址空间，包含：mm_users/mm_count 引用计数、代码段/数据段起始结束地址、堆（start_brk/brk）、用户栈、mmap 基地址、页目录 PGD 以及 <b>vm_area_struct 红黑树/mmap链表</b>。内核线程没有自己的地址空间（mm 为 NULL），运行时借用前一个进程的 mm（active_mm）。"},
+{ch:"第15章 · 进程地址空间", tag:"vm_area_struct", q:"什么是 VMA？为什么内核用 vm_area_struct 而不是页表来管理地址空间？",
+ a:"VMA（虚拟内存区域）描述地址空间中<b>一段连续、具有相同属性</b>（如权限、映射文件、锁页等）的区间——如代码段、数据段、mmap区、栈各为一个VMA。若按每页管理开销过大，VMA 以区间为单位高效管理，页表只是 VMA 的实现细节。操作：mmap() 创建地址空间映射，munmap() 移除，缺页异常时按 VMA 属性建立页表映射。"},
+{ch:"第15章 · 进程地址空间", tag:"页表与缺页", q:"硬件页表在地址翻译中的角色是什么？三级页表如何适配64位系统？",
+ a:"页表把<b>虚拟地址翻译为物理地址</b>，并提供访问权限位（读/写/用户/超级用户）。直接多级线性表在64位下太大，Linux 用<b>多级页表</b>（如 PGD→PUD→PMD→PTE 三级/四级）：每级按需建立、稀疏存储，节省内存。页未映射或权限不符时触发<b>缺页异常</b>，由缺页处理程序（do_page_fault）按 VMA 加载页面或报告段错误。"},
+
+/* ============ 第16章 ============ */
+{ch:"第16章 · 页高速缓存和页回写", tag:"页缓存", q:"页高速缓存是什么？为什么说它是页I/O操作的中枢？",
+ a:"页高速缓存是内核把磁盘数据<b>以页为单位缓存在内存</b>的机制：读文件时先查缓存（未命中才读磁盘），写操作走缓存（延迟写）。绝大多数 I/O 都要经过它，减少磁盘访问、聚合写操作。缓存页由 <b>address_space 对象</b>管理（i_pages 基数树组织），一个 address_space 对应一个文件的缓存。"},
+{ch:"第16章 · 页高速缓存和页回写", tag:"脏页回写", q:"脏页何时写回磁盘？内核的回写机制经历了怎样的演变？",
+ a:"被修改的缓存页称为<b>脏页（dirty page）</b>，由<b>回写线程（flusher线程，早期是 pdflush/bdflush/kupdated）</b>在特定条件触发写回：空闲内存低于阈值（为腾出内存）、脏页超时（如30秒，防数据丢失）、用户调用 sync()/fsync() 强制。演变：周期+延迟机制→pdflush（多线程动态分配）→按 backing_dev（块设备）划分的 flusher 线程，扩展性更好。"},
+{ch:"第16章 · 页高速缓存和页回写", tag:"LRU链表", q:"内核如何挑选“受害者”页回收？活跃/非活跃链表如何工作？",
+ a:"内核用<b>伪 LRU 双链表</b>：<b>活跃链表（active）</b>存放正被使用的页，<b>非活跃链表（inactive）</b>存放可被换出/回收的候选页。页面访问时从活跃链表晋升、闲置则降级到非活跃链表尾部（队尾进队头出，队列式近似LRU），两链表保持平衡（活跃链表过长则回收降级）。回收时优先选择“干净”且非活跃的页。"},
+
+/* ============ 第17章 ============ */
+{ch:"第17章 · 设备与模块", tag:"设备类型", q:"Linux 有哪三类设备？设备模型如何表示它们？",
+ a:"<b>字符设备</b>（顺序流式，如键盘）、<b>块设备</b>（可寻址随机访问，如磁盘）、<b>网络设备</b>（特殊，通过 socket 接口而非设备文件）。设备模型用 <b>kobject</b> 为所有设备提供统一的对象表示（引用计数 sysfs 导出），其上构建设备结构。字符/块设备通过设备节点（/dev 下）访问，主设备号标识驱动、次设备号标识具体设备。"},
+{ch:"第17章 · 设备与模块", tag:"内核模块", q:"内核模块是什么？模块的生命周期涉及哪些操作？",
+ a:"模块是可在运行期<b>动态装载/卸载</b>的内核代码（.ko），让内核不必把所有功能编进去，减小体积、便于驱动开发。生命周期：初始化 module_init（注册功能，可能失败则回滚）→ 使用 → 卸载 module_exit（清理）。管理命令：insmod/rmmod/modprobe（自动处理依赖），lsmod 查看。模块代码运行于内核上下文，无任何保护——崩溃即内核崩溃。"},
+{ch:"第17章 · 设备与模块", tag:"sysfs", q:"sysfs 文件系统的角色是什么？它与 /proc 有何不同？",
+ a:"sysfs 挂载于 /sys，是设备模型的<b>用户空间视图</b>：把 kobject 层级以目录/文件形式导出，展示设备树（devices/、bus/、class/ 等），可读写设备属性。/proc 起源于暴露<b>进程信息</b>，后来混杂了各种参数调节；sysfs 则是<b>统一、规范</b>的设备模型导出接口，专用于设备与驱动信息。"},
+
+/* ============ 第18章 ============ */
+{ch:"第18章 · 调试", tag:"printk", q:"printk 与用户空间 printf 有什么区别？日志级别有什么作用？",
+ a:"printk 是内核的打印函数：无需 C 库、可在中断上下文使用、支持<b>8个日志级别</b>（KERN_EMERG 最高 → KERN_DEBUG 最低），低于控制台阈值的消息只写入内核日志缓冲区（用 <b>dmesg</b> 查看）。级别用于分类消息重要性； printk 也有速率限制（printk_ratelimit）防刷屏。"},
+{ch:"第18章 · 调试", tag:"oops", q:"内核发生 oops 是什么？它和 panic 有什么区别？如何分析 oops 信息？",
+ a:"<b>oops</b> 是内核检测到非法操作（如空指针解引用）时打印的出错信息，包含寄存器状态、栈回溯、出错指令（EIP）；单个 oops 后内核可能仍部分可用，但相关进程被杀、系统可靠性受损。<b>panic()</b> 则是致命错误，系统立即停机。分析：用 <b>ksymoops 或 kallsyms</b> 将地址解析为函数名和偏移，对照源码定位；常配合内核调试选项（如 CONFIG_DEBUG_INFO）与 gdb。"},
+{ch:"第18章 · 调试", tag:"调试手段", q:"除 printk 外，内核开发还有哪些常用调试手段？",
+ a:"<b>CONFIG_DEBUG_* 内核配置选项</b>（调试锁、内存分配等，如 spinlock 调试、内存泄露检测）；<b>BUG()/BUG_ON()</b>：触发 oops 标记不该发生的断言（BUG_ON 更可读，编译期可剔除）；<b>WARN_ON</b>：不致命警告；<b>gdb/kdb/kgdb</b> 源码级调试；<b>strace/ltrace</b> 跟踪系统调用；<b>UID 反转概率法</b>等启发式调试；以及内核社区的经验——<b>先怀疑自己的代码</b>，用二分法缩小范围。"},
+
+/* ============ 第19章 ============ */
+{ch:"第19章 · 可移植性", tag:"字长", q:"Linux 内核可移植性设计中，关于字长有哪些关键规则？",
+ a:"内核把 <b>long/指针 的位数定义为字长</b>，处理体系结构差异：① 不要假设字长（用 long 或 &lt;asm/types.h&gt; 的定长类型 s8/u32 等）；② 长度可变类型间运算要小心（符号扩展问题）；③ 数据对齐（不对齐访问需小心，packed 属性会取消优化）；④ 使用 &lt;linux/kernel.h&gt; 的字节序转换宏（cpu_to_be32 等）处理<b>大小端</b>差异。"},
+{ch:"第19章 · 可移植性", tag:"大小端", q:"什么是字节序问题？内核代码如何安全处理？",
+ a:"<b>小端</b>（x86）低位字节存低地址，<b>大端</b>（网络字节序、多数RISC）相反。可移植代码必须通过宏转换：cpu_to_le32/cpu_to_be32（CPU→指定端）、le32_to_cpu 等，或统一使用内核定义的定长类型，避免直接以字节指针解释多字节数据。网络协议一律用网络字节序（大端）。"},
+{ch:"第19章 · 可移植性", tag:"移植性编码", q:"写出可移植内核代码，还有哪些通用原则？",
+ a:"① 使用内核提供的<b>抽象接口</b>而非直接硬件假设（如用 page 而非假设页大小4KB——其实内核普遍假设4KB但可移植层允许变体）；② 注意<b>有符号/无符号</b>混用与整数提升；③ 不假设结构体布局与填充；④ 谨慎处理 64 位值在 32 位机上的运算（do_div）；⑤ 用预处理条件（#ifdef __LITTLE_ENDIAN__ 等）是最后手段，优先用通用宏。"},
+
+/* ============ 第20章 ============ */
+{ch:"第20章 · 补丁、开发和社区", tag:"编码风格", q:"Linux 内核编码风格有哪些最重要的规定？",
+ a:"① <b>缩进用制表符，8个字符宽</b>（嵌套深就是该重构了）；② 每行不超过80字符；③ 函数要短小、单一职责；④ K&R 风格大括号（函数名下行，其他同行）；⑤ switch 中 case 对齐；⑥ 命名简洁不用匈牙利命名法；⑦ 注释说明“为什么”而非“怎么做的”；⑧ Linus 原话：跟选择什么风格相比，<b>保持一致</b>更重要——照着内核现有风格做。"},
+{ch:"第20章 · 补丁、开发和社区", tag:"补丁流程", q:"如何向 Linux 内核社区提交补丁？",
+ a:"① 用 <b>git</b> 管理修改，生成补丁（git format-patch）；② 遵守编码风格、写清 commit message；③ 用 <b>checkpatch.pl</b> 检查风格错误；④ 发送邮件给<b>相关子系统的维护者</b>（MAINTAINERS 文件里查）并抄送相应邮件列表（如 LKML linux-kernel@vger.kernel.org），用 git send-email；⑤ 复审讨论、迭代修改（v2/v3…）；⑥ 被子系统树接受后经 linux-next 集成，最终进入 Linus 的主线树。"},
+{ch:"第20章 · 补丁、开发和社区", tag:"社区文化", q:"Linux 内核社区有什么特点？开发者应抱什么心态参与？",
+ a:"社区以<b>邮件列表</b>为中心，扁平、公开、技术驱动：代码审查严格，批评针对代码而非个人（言辞可能犀利）。参与要点：从修小 bug、代码清理起步；先 lurk（潜水阅读）了解惯例；耐心、坚持、脸皮厚；遵循“越多的眼睛，越浅的 bug”的开源信条；贡献不限于写代码——测试、文档、报告 bug 都是贡献。"}
+];
+let lastCh = null;
+function chapterTitle(ch) {
+  const div = document.createElement('div');
+  div.className = 'chapter-title';
+  div.textContent = ch;
+  return div;
+}
+function render() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  lastCh = null;
+  cards.forEach((c) => {
+    if (c.ch !== lastCh) { grid.appendChild(chapterTitle(c.ch)); lastCh = c.ch; }
+    const wrap = document.createElement('div');
+    wrap.className = 'card-wrap';
+    wrap.innerHTML = `
+      <div class="card" onclick="this.classList.toggle('flipped')">
+        <div class="face face-front">
+          <div class="q-label">Q · ${c.tag}</div>
+          <div class="question">${c.q}</div>
+          <div class="hint">点击翻面看答案 ↻</div>
+        </div>
+        <div class="face face-back">
+          <div class="a-label">A · ${c.tag}</div>
+          <div class="answer">${c.a}</div>
+          <div class="hint">↺ 再次点击返回问题</div>
+        </div>
+      </div>`;
+    grid.appendChild(wrap);
+  });
+  const chapters = new Set(cards.map(c => c.ch)).size;
+  document.getElementById('stats').innerHTML =
+    `<span>共 ${cards.length} 张精华卡片</span><span>覆盖全书 20 章</span><span>${chapters} 个知识板块</span>`;
+}
+function flipAll(v) {
+  document.querySelectorAll('.card').forEach(c => c.classList.toggle('flipped', v));
+}
+function shuffleCards() {
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+  render();
+}
+render();
+</script>
+</body>
+</html>

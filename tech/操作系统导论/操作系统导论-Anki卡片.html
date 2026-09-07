@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>操作系统导论 · Anki 精华卡片</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f3f5f4;
+    --card: #fdfefe;
+    --ink: #1d2733;
+    --ink-soft: #4d5a68;
+    --hairline: #d8dee0;
+    --c-intro: #5d6b7a;
+    --c-virt: #2f66a8;
+    --c-conc: #b05a12;
+    --c-pers: #2c7a58;
+    --c-dist: #6f52a8;
+    --serif: Georgia, "Times New Roman", "Songti SC", "STSong", SimSun, serif;
+    --sans: system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.65;
+    padding: 40px 28px 80px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  /* ---------- header ---------- */
+  header { text-align: left; max-width: 640px; margin-bottom: 28px; }
+  .book-title {
+    font-family: var(--serif);
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    line-height: 1.25;
+  }
+  .book-sub {
+    margin-top: 8px;
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+  .book-sub em { font-style: normal; color: var(--ink); border-bottom: 2px solid #b9c4c0; }
+
+  /* ---------- controls ---------- */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 26px 0 8px;
+    padding-top: 18px;
+    border-top: 1px solid var(--hairline);
+  }
+  .chip {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    padding: 6px 14px;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: border-color .15s, color .15s, box-shadow .15s;
+  }
+  .chip:hover { border-color: #a7b1b4; color: var(--ink); }
+  .chip[aria-pressed="true"] {
+    color: var(--ink);
+    border-color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--ink);
+  }
+  .chip .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+  .spacer { flex: 1; }
+  .btn {
+    font-size: 13.5px;
+    padding: 6px 14px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    background: var(--ink);
+    color: #fdfefe;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .82; }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .stat {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-left: 2px;
+  }
+
+  /* ---------- grid & cards ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+    margin-top: 18px;
+  }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+  .card { perspective: 1600px; outline: none; }
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform .45s cubic-bezier(.4,.1,.2,1);
+    cursor: pointer;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    border-top: 3px solid var(--accent, #999);
+    border-radius: 10px;
+    padding: 18px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .face.back { transform: rotateY(180deg); background: #fbfcfc; }
+  .card:focus-visible .card-inner {
+    box-shadow: 0 0 0 3px rgba(47,102,168,.35);
+  }
+  .card .hint {
+    position: absolute;
+    right: 16px;
+    bottom: 12px;
+    font-size: 11.5px;
+    color: #9aa5a9;
+    pointer-events: none;
+  }
+  .tag {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .tag .part {
+    font-size: 11.5px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .tag .chap { font-size: 11.5px; color: var(--ink-soft); }
+  .q {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.6;
+    overflow: hidden;
+  }
+  .a {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    overflow: hidden;
+  }
+  .a strong, .a b { color: var(--ink); }
+  .a code, .q code {
+    font-family: ui-monospace, "SF Mono", Consolas, "Courier New", monospace;
+    font-size: .9em;
+    background: #eef1f1;
+    padding: 0 4px;
+    border-radius: 4px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-inner { transition: none; }
+  }
+  /* measurement mode: render faces statically so both faces can be measured */
+  .card.measuring .card-inner { transform: none; }
+  .card.measuring .face { position: static; backface-visibility: visible; }
+  .card.measuring .face.back { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="book-title">操作系统导论<br>OSTEP 精华卡片</h1>
+    <p class="book-sub">依本书内容整理 · <em>虚拟化</em> · <em>并发</em> · <em>持久性</em> · 分布式。点击卡片翻面查看答案。</p>
+  </header>
+
+  <div class="controls" id="controls">
+    <span class="stat" id="stat"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const PARTS = [
+  { id: "intro", name: "引言",    color: "var(--c-intro)" },
+  { id: "virt",  name: "虚拟化",  color: "var(--c-virt)"  },
+  { id: "conc",  name: "并发",    color: "var(--c-conc)"  },
+  { id: "pers",  name: "持久性",  color: "var(--c-pers)"  },
+  { id: "dist",  name: "分布式",  color: "var(--c-dist)"  }
+];
+
+const CARDS = [
+/* ================= 引言 ================= */
+{ part:"intro", ch:"第2章", q:"操作系统的三大核心职责是什么？",
+  a:"<b>虚拟化</b>：把 CPU、内存等物理资源变成易于使用的虚拟形式；<b>并发</b>：让多线程正确、高效地同时执行；<b>持久性</b>：以文件系统形式可靠地长期存储数据。全书即按这三部分展开。" },
+{ part:"intro", ch:"第2章", q:"进程与程序有什么区别？",
+  a:"程序只是磁盘上的指令和静态数据，本身没有生命周期；<b>进程是运行中的程序</b>——操作系统把代码与数据装入内存、建立栈和堆、维护寄存器状态（PC 等）后，程序才“活”了起来。" },
+{ part:"intro", ch:"第2章", q:"OS 通过什么接口为进程提供服务？",
+  a:"<b>系统调用</b>：进程从用户态陷入内核态，请求 OS 完成特权操作（创建进程、访问文件、分配内存等）。OS 对外以标准 API 库的形式暴露这些调用（如 <code>fork()</code>、<code>exec()</code>）。" },
+
+/* ================= 虚拟化：CPU ================= */
+{ part:"virt", ch:"第4章", q:"时分共享与空分共享的区别？",
+  a:"<b>时分共享</b>：资源按时间轮流由不同实体使用一小段时间，如 CPU、网络链路；<b>空分共享</b>：资源在空间上划分给使用者，如内存、磁盘块。二者是 OS 共享资源的基本技术。" },
+{ part:"virt", ch:"第4章", q:"机制（mechanism）与策略（policy）的区别？",
+  a:"<b>机制</b>是低级方法或协议，回答“如何做”，如上下文切换；<b>策略</b>是高层智能，回答“做哪一个”，如调度策略。OS 设计中二者分离，便于策略灵活替换。" },
+{ part:"virt", ch:"第4章", q:"进程的机器状态包含哪些内容？",
+  a:"① <b>内存</b>：代码、栈、堆；② <b>寄存器</b>：程序计数器（PC）、栈指针等；③ <b>I/O 状态</b>：打开的文件列表等。OS 的进程列表（进程控制块 PCB）保存这些信息。" },
+{ part:"virt", ch:"第4章", q:"进程有哪些生命周期状态？",
+  a:"<b>运行</b>（正在 CPU 上执行）、<b>就绪</b>（可运行但未获 CPU）、<b>阻塞</b>（等待 I/O 等事件）。此外还有初始、终止/僵尸状态。运行→阻塞由进程自身（如发起 I/O）触发，运行→就绪由调度决定。" },
+{ part:"virt", ch:"第5章", q:"fork() 与 exec() 分别做什么？",
+  a:"<code>fork()</code> 复制当前进程：父进程返回子进程 PID，子进程返回 0；<code>exec()</code> 用新程序替换当前进程的代码与数据段。二者组合是 shell 运行命令的基础：fork 出子进程后，由子进程 exec 加载目标程序。" },
+{ part:"virt", ch:"第5章", q:"wait() 的作用是什么？",
+  a:"父进程调用 <code>wait()</code> 等待子进程结束并读取其退出码。子进程结束后、被 wait 之前是<b>僵尸进程</b>（已结束但资源未回收）；wait 使 OS 回收子进程的最终状态。" },
+{ part:"virt", ch:"第6章", q:"受限直接执行（LDE）如何兼顾高效与可控？",
+  a:"“<b>直接执行</b>”：程序直接在 CPU 上运行，几乎没有额外开销；“<b>受限</b>”：通过用户模式/内核模式限制特权操作，敏感操作必须经系统调用陷入内核；OS 再借助<b>时钟中断</b>定期收回 CPU 控制权。" },
+{ part:"virt", ch:"第6章", q:"为什么需要时钟中断？",
+  a:"若进程永不主动让出 CPU（非协作式），OS 将完全失去控制。<b>时钟中断</b>由硬件定期触发，保证 OS 每隔一段时间就重新获得控制权，从而能执行调度、切换进程。" },
+{ part:"virt", ch:"第6章", q:"上下文切换的过程是怎样的？",
+  a:"OS（在时钟中断或系统调用时）将当前进程的寄存器等状态保存到其 PCB，恢复下一个进程的上下文（含切换页表基址），再切换内核栈并返回，从上次停止处继续执行新进程。" },
+{ part:"virt", ch:"第7章", q:"FIFO、SJF、STCF、RR 各有什么特点？",
+  a:"<b>FIFO</b>：非抢占，有护航效应（长任务阻塞短任务）；<b>SJF/STCF</b>：最优化周转时间，但需预知任务长度；<b>RR</b>（时间片轮转）：优化响应时间。周转时间与响应时间本质冲突，没有策略能同时最优。" },
+{ part:"virt", ch:"第8章", q:"多级反馈队列（MLFQ）的核心规则？",
+  a:"多个优先级队列：高优先级任务优先运行，同级用轮转。新任务进入最高级；<b>用完整个时间片则降级</b>（视为 CPU 密集型）；时间片内主动让出则保持；并<b>定期将所有任务提升回最高级</b>，防止交互型任务饿死。" },
+{ part:"virt", ch:"第8章", q:"MLFQ 如何区分交互型与 CPU 密集型任务？",
+  a:"靠<b>观察行为</b>：交互型任务频繁让出 CPU（如等待键盘输入），留在高优先级获得快速响应；CPU 密集型任务总是用满时间片，逐步降级到低优先级，只在高层任务空闲时运行。" },
+{ part:"virt", ch:"第9章", q:"彩票调度的核心思想是什么？",
+  a:"属于<b>比例份额</b>调度：每个进程持有若干彩票，票数比例代表其应得的 CPU 份额，每次随机抽取一张彩票决定运行者。简单、无需记录历史状态；长期看份额趋近比例，但短期可能不公平。" },
+{ part:"virt", ch:"第9章", q:"Linux 的 CFS 如何体现比例份额思想？",
+  a:"<b>完全公平调度器</b>：为每个进程记录虚拟运行时间 vruntime，总是运行 vruntime 最小的进程；低优先级进程的 vruntime 增长更快，从而分得更少 CPU。用红黑树高效找到“最该运行”的进程。" },
+{ part:"virt", ch:"第10章", q:"多处理器上为什么不用单一调度队列？",
+  a:"单队列缺乏<b>可扩展性</b>（各 CPU 抢队列锁）且<b>缓存亲和性</b>差（进程频繁换 CPU，缓存失效）。因此每 CPU 维护一个多队列；代价是负载不均，需要周期性负载均衡与进程迁移。" },
+{ part:"virt", ch:"第10章", q:"什么是缓存亲和性？",
+  a:"尽量让进程在同一个 CPU 上运行，使其数据仍留在该 CPU 的高速缓存中，避免重新填充缓存带来的性能损失。多队列调度天然具备缓存亲和性。" },
+
+/* ================= 虚拟化：内存 ================= */
+{ part:"virt", ch:"第13章", q:"地址空间由哪三部分组成？",
+  a:"① <b>代码</b>：程序指令，静态；② <b>栈</b>：函数调用帧、局部变量，向下增长；③ <b>堆</b>：动态分配的内存（malloc/new），向上增长。栈和堆之间的空隙就是虚拟化的地址空间给每个进程的“幻象”。" },
+{ part:"virt", ch:"第13章", q:"虚拟化内存要达成哪些目标？",
+  a:"<b>易用</b>：每个进程拥有私有的连续地址空间；<b>高效</b>：借助硬件（地址转换、TLB）控制开销；<b>保护</b>：进程间互相隔离，不能访问他人内存；同时支持受控的共享（如共享库）。" },
+{ part:"virt", ch:"第14章", q:"malloc/free 的底层机制与常见误区？",
+  a:"malloc 通过系统调用（<code>brk</code>/<code>mmap</code>）向 OS 要堆内存，再用空闲列表管理小块分配；free 只把块标记为空闲、并不真正归还 OS。常见错误：忘记 free（泄漏，但进程退出后 OS 全部回收）、越界写、重复释放、释放非 malloc 起始地址。" },
+{ part:"virt", ch:"第15章", q:"基址 + 界限寄存器（动态重定位）如何工作？",
+  a:"每个进程一对硬件寄存器：虚拟地址 + <b>基址</b> = 物理地址；硬件同时检查地址 &lt; <b>界限</b>，越界则触发异常。进程看到的是从 0 开始的连续地址空间，OS 负责分配物理位置——这就是早期虚拟内存的全部机制。" },
+{ part:"virt", ch:"第16章", q:"分段解决了什么问题？怎么做的？",
+  a:"基址/界限只支持整体连续映射，浪费大。<b>分段</b>为代码、栈、堆各设一对基址/界限，三段独立映射、各自增长（栈带方向位反向生长），还带保护位支持共享。代价是产生<b>外部碎片</b>。" },
+{ part:"virt", ch:"第17章", q:"常见空闲空间管理策略有哪些？",
+  a:"<b>最优匹配</b>（找最小够用块）、最坏匹配、首次匹配、下次匹配、分离空闲列表（按大小分组）、伙伴分配等。目标：减少碎片、加快分配；通常需要在块头部存大小、支持合并相邻空闲块。" },
+{ part:"virt", ch:"第17章", q:"内部碎片与外部碎片的区别？",
+  a:"<b>内部碎片</b>：分配出去的块内部有没用上的空间（块给大了）；<b>外部碎片</b>：空闲内存被切成不连续的小块，总量够却满足不了大块请求。固定大小分配（如分页）只产生内部碎片，可变大小分配（如分段）才有外部碎片。" },
+{ part:"virt", ch:"第18章", q:"分页的基本思想是什么？",
+  a:"把虚拟地址空间切成固定大小的<b>页</b>（如 4KB），物理内存切成同样大小的<b>页帧</b>；页表把虚拟页号（VPN）映射到物理页帧号（PFN），页内偏移不变。固定大小彻底消除外部碎片，分配简单灵活。" },
+{ part:"virt", ch:"第18章", q:"页表项（PTE）里有哪些关键的位？",
+  a:"物理页帧号（PFN），以及：<b>有效位</b>（是否分配）、<b>存在位</b>（是否在内存）、<b>保护位</b>（读/写/执行）、<b>脏位</b>（是否被修改）、<b>参考位</b>（近期是否访问，供置换算法使用）。" },
+{ part:"virt", ch:"第18章", q:"分页带来哪两个性能问题？",
+  a:"① <b>页表太大</b>：32 位地址空间 + 4KB 页需 100 万项，且每个进程一份；② <b>额外访存</b>：每次取指/访存都要先查页表，一次访存变两次，速度几乎减半。后续的 TLB 与多级页表正是为解决这两个问题。" },
+{ part:"virt", ch:"第19章", q:"TLB 为什么能大幅加速地址转换？",
+  a:"TLB（转换检测缓冲区）是地址转换的<b>硬件缓存</b>：命中则完全绕过页表。由于程序的时间/空间局部性，一次访存后附近的页很快会被再次访问，TLB 命中率极高（>99%），地址转换开销接近于零。" },
+{ part:"virt", ch:"第19章", q:"TLB 未命中由硬件还是软件处理？",
+  a:"两种路线：x86 等由<b>硬件</b>查找页表并填充 TLB（页表结构被硬件固定）；MIPS/RISC 等由<b>软件</b>处理——未命中触发异常，OS 的 TLB 处理程序查页表后重试指令，页表结构可以更灵活。" },
+{ part:"virt", ch:"第19章", q:"进程切换时 TLB 怎么办？",
+  a:"旧进程的 TLB 条目对新进程无意义。方案：① 切换时<b>全部清空</b>（简单，但切换频繁时代价大）；② TLB 条目加<b>地址空间标识符 ASID</b>，区分不同进程的转换，命中判断时比对 ASID。" },
+{ part:"virt", ch:"第20章", q:"为什么需要多级页表？",
+  a:"线性页表对稀疏地址空间也全量分配，太浪费。<b>多级页表</b>用页目录按页逐级索引：某页无效则其页表页根本不存在，页表大小与实际使用成正比；页表页本身也按页分配，无外部碎片。" },
+{ part:"virt", ch:"第20章", q:"多级页表的代价是什么？",
+  a:"TLB 未命中时需要<b>多次访存</b>（先查页目录、再查二级页表）才能完成一次转换，比线性页表更慢；实现也更复杂。这是典型的空间（省内存）与时间（多访存）权衡。" },
+{ part:"virt", ch:"第21章", q:"交换空间（swap space）的作用？",
+  a:"在磁盘上预留空间存放换出的页。内存紧张时 OS 把不常用页<b>换出</b>（swap out）到磁盘，访问时再换入；使 OS 能为进程提供“<b>超过物理内存大小</b>”的假象，是透明的虚拟内存扩展。" },
+{ part:"virt", ch:"第22章", q:"为什么 LRU 是好策略却难实现？",
+  a:"LRU 利用历史（时间局部性）预测未来，接近最优。但精确实现要记录每次访问的时间戳，开销太大。实际用<b>时钟算法</b>近似：用 PTE 的参考位，指针周期性清零参考位并顺时针扫描，挑参考位为 0 的页替换。" },
+{ part:"virt", ch:"第22章", q:"最优置换算法 OPT/MIN 是什么地位？",
+  a:"替换“未来最久才会用到”的页，是<b>理论最优</b>（缺页最少），但需要预知未来、无法实现。它的价值是作为<b>基准</b>：用可模拟的 OPT 对比，评估 LRU、时钟等实际算法的差距。" },
+{ part:"virt", ch:"第22章", q:"什么是抖动（thrashing）？如何应对？",
+  a:"内存超订时，各进程<b>工作集</b>之和超过物理内存，系统不断换页、几乎不做有用工作。应对：<b>准入控制</b>——减少同时运行的进程数，让留下的每个进程的工作集都能装下，比让所有进程都慢下来更好。" },
+
+/* ================= 并发 ================= */
+{ part:"conc", ch:"第26章", q:"什么是竞态条件与临界区？",
+  a:"多线程并发访问共享数据且结果<b>取决于执行时序</b>，就是竞态条件；访问共享变量的代码段叫<b>临界区</b>。解决之道是让临界区<b>原子地</b>执行——一次只有一个线程进入，如靠锁实现互斥。" },
+{ part:"conc", ch:"第26章", q:"线程与进程的关键区别？",
+  a:"同一进程的线程<b>共享地址空间</b>（代码、堆、全局数据），但各自拥有独立的<b>栈和寄存器</b>（含 PC）。因此线程切换不必换地址空间，代价是共享带来的数据竞争需要同步机制。" },
+{ part:"conc", ch:"第28章", q:"锁的正确实现为什么必须靠硬件原子指令？",
+  a:"纯软件的“先检查再上锁”本身可能被打断，依然有竞态。硬件提供原子指令，如 <b>test-and-set</b>、<b>compare-and-swap</b>，一条指令内不可分割地完成读取—判断—写入，才能构建正确的互斥锁。" },
+{ part:"conc", ch:"第28章", q:"自旋锁与互斥锁（睡眠锁）如何取舍？",
+  a:"<b>自旋锁</b>：原地忙等，适合临界区极短、多处理器的场景；<b>睡眠锁</b>：抢不到锁就让出 CPU 睡眠，避免单 CPU 上自旋白白耗尽时间片。实践中的<b>两阶段锁</b>：先自旋一小段时间，不行再睡眠。" },
+{ part:"conc", ch:"第30章", q:"条件变量的正确用法？",
+  a:"<code>wait()</code> 原子地<b>释放锁并睡眠</b>，被 signal/broadcast 唤醒后重新拿锁；<code>signal()</code> 只用于状态改变之后。检查条件必须用 <b>while 循环</b>而非 if——被唤醒时条件可能已被别的线程改掉。" },
+{ part:"conc", ch:"第30章", q:"生产者—消费者问题的标准解法？",
+  a:"互斥锁 + <b>两个条件变量</b>（notFull、notEmpty）+ 计数器。生产者在缓冲满时 wait(notFull)，放入后 signal(notEmpty)；消费者对称。要点：① 用 while 检查条件；② 先释放锁再 signal（Mesa 语义下更高效）。" },
+{ part:"conc", ch:"第31章", q:"信号量是什么？如何用它实现互斥与同步？",
+  a:"信号量是带初值的原子整数：<code>sem_wait()</code> 减 1，为负则阻塞；<code>sem_post()</code> 加 1 并唤醒等待者。<b>互斥</b>：初值 1（二值信号量）；<b>同步/次序</b>：初值 0，如父进程 wait 一个初值为 0 的信号量来等子进程完成。" },
+{ part:"conc", ch:"第31章", q:"如何用信号量实现有界缓冲？顺序错了会怎样？",
+  a:"三个信号量：<code>empty=N</code>（空槽数）、<code>full=0</code>（满槽数）、<code>mutex=1</code>。生产者 wait(empty) → wait(mutex) → 写入 → post(mutex) → post(full)。若把 <b>wait(mutex) 放在 wait(empty) 之前</b>，缓冲满时生产者会持锁睡眠，消费者永远进不来——<b>死锁</b>。" },
+{ part:"conc", ch:"第31章", q:"哲学家进餐问题与解法？",
+  a:"五位哲学家围桌，每只手拿一支叉子才能吃饭；若所有人都先拿左叉，则互相等待——<b>死锁</b>。解法核心是<b>打破对称性</b>：让最后一位先拿右叉，或用信号量限制同时进食的人数 ≤ 4。" },
+{ part:"conc", ch:"第32章", q:"死锁的四个必要条件是什么？",
+  a:"① <b>互斥</b>：资源不能共享；② <b>持有并等待</b>：握着已有的还要新的；③ <b>非抢占</b>：资源不能被强行夺走；④ <b>循环等待</b>：形成环形等待链。打破任意一条即可预防，最常用的是给锁<b>全序编号</b>消除循环等待。" },
+{ part:"conc", ch:"第32章", q:"常见的两类并发 bug 是什么？",
+  a:"① <b>原子性违背</b>：该加锁的地方没加锁（如忘了对共享变量互斥访问）；② <b>顺序违背</b>：本应“A 完成后 B 才能执行”却没同步保证（如忘记用条件变量等待初始化完成）。此外还有死锁类 bug。" },
+{ part:"conc", ch:"第33章", q:"基于事件的并发（事件循环）是什么？",
+  a:"单线程循环：等待事件（如 <code>select</code>/<code>epoll</code> 的 socket 就绪）→ 分发到处理函数。避免了锁和线程切换开销，典型如 Node.js。局限：任何<b>阻塞调用</b>都会卡死整个循环，且异步处理函数无法用常规栈，需手动管理状态。" },
+
+/* ================= 持久性 ================= */
+{ part:"pers", ch:"第36章", q:"让 I/O 高效的两大技术是什么？",
+  a:"① <b>中断</b>：设备完成时通知 CPU，免去忙等轮询；② <b>DMA</b>：设备控制器直接在内存与设备间传输数据，不占用 CPU。另有内存映射 I/O / in-out 指令用于 CPU 与设备通信。" },
+{ part:"pers", ch:"第37章", q:"磁盘一次 I/O 的时间由哪几部分组成？",
+  a:"<b>寻道时间</b>（磁头移到目标磁道）+ <b>旋转延迟</b>（转到目标扇区）+ <b>传输时间</b>。寻道和旋转占大头，导致<b>随机访问远慢于顺序访问</b>——上层系统（FS、RAID）的设计都围绕这一点。" },
+{ part:"pers", ch:"第38章", q:"常见 RAID 级别的取舍？",
+  a:"<b>RAID-0</b> 条带化：最快、容量满额，但无冗余；<b>RAID-1</b> 镜像：可容忍一盘故障，容量减半；<b>RAID-4</b> 单奇偶校验盘：每次写都更新校验盘成为瓶颈；<b>RAID-5</b> 分布式校验：消除校验盘瓶颈，最常用；另有 RAID-10（镜像+条带）。" },
+{ part:"pers", ch:"第39章", q:"文件与目录的本质是什么？",
+  a:"<b>文件</b>：线性字节数组，可读写；<b>目录</b>：特殊文件，内容是（条目名 → inode 号）的列表，构成层次命名空间。<b>硬链接</b>是同一 inode 的另一个名字（引用计数 +1）；<b>符号链接</b>只是存了一个路径字符串，可能悬空。" },
+{ part:"pers", ch:"第39章", q:"inode 存储什么信息？",
+  a:"文件的<b>索引节点</b>：大小、权限、时间等元数据 + 指向数据块的指针（若干直接指针 + 间接/双重/三重间接指针，兼顾小文件高效与大文件可扩展）。inode 号是文件在文件系统内的唯一标识；目录项只存名字与 inode 号。" },
+{ part:"pers", ch:"第40章", q:"vsfs（简单文件系统）如何组织磁盘？",
+  a:"把磁盘分成：<b>超级块</b>（FS 元信息）、<b>inode 位图</b>、<b>数据位图</b>、<b>inode 表</b>、<b>数据区域</b>。创建文件要依次：读位图分配 inode 与数据块、写位图、初始化 inode、填数据、更新目录。" },
+{ part:"pers", ch:"第40章", q:"为什么文件系统“这么慢”？",
+  a:"一次简单写要更新<b>大量分散的元数据</b>：位图、inode、父目录的数据块等，多次随机 I/O；且为一致性和持久性要做多个同步写（<b>写放大</b>）。缓解手段：内存缓存、延迟写、批量合并。" },
+{ part:"pers", ch:"第40章", q:"文件缓存（页缓存）为什么重要？",
+  a:"读：利用局部性缓存热门块，命中即免磁盘 I/O；写：OS 采用<b>写缓冲</b>（延迟写），多次写合并成一次磁盘操作，大幅提效。代价是宕机丢数据，应用可用 <code>fsync()</code> 强制落盘。" },
+{ part:"pers", ch:"第41章", q:"FFS（快速文件系统）如何利用局部性？",
+  a:"把磁盘划分为<b>柱面组</b>，每个组内有独立的 inode 与数据块；文件的数据与其 inode 放同一组，同目录的文件尽量聚在一起，顺序读时磁盘不需来回寻道；还加大了块尺寸并优化小文件（内嵌块）。" },
+{ part:"pers", ch:"第42章", q:"崩溃一致性问题是什么？fsck 与日志分别怎么解决？",
+  a:"一次写涉及多个块，中途断电磁盘会处于<b>不一致</b>状态（如位图说已分配但 inode 没写）。<b>fsck</b>：崩溃后全盘扫描修复，慢且不彻底；<b>日志（WAL）</b>：写数据前先把意图写入日志，崩溃后重放日志即可快速恢复，是现代 FS 的标准做法（元数据日志为常见折中）。" },
+{ part:"pers", ch:"第42章", q:"日志（journaling）的写入流程？",
+  a:"① <b>日志写入</b>：把待更新块（含校验）写入日志区；② <b>日志提交</b>：写提交块，标志事务完整；③ <b>加检查点</b>：把更新真正写到最终位置；④ 之后释放日志空间。常见的<b>有序日志/元数据日志</b>只把元数据记入日志、数据先写，兼顾性能与安全。" },
+{ part:"pers", ch:"第43章", q:"日志结构文件系统（LFS）的核心思想？",
+  a:"把<b>所有更新（含数据）顺序写入磁盘末端的日志</b>，把随机写变成顺序写，充分发挥现代磁盘顺序性能。inode 直接写在日志中；用<b>检查点区域（CR）</b>定位 inode；日志增长后由<b>段清理</b>线程回收旧版本空间。" },
+{ part:"pers", ch:"第44章", q:"校验和如何保护数据完整性？",
+  a:"为每个扇区/块计算校验和（如 <b>CRC、Fletcher</b>）随数据存储，读取时重算比对，可发现<b>位损坏</b>。发现后可用其他副本或奇偶校验尝试<b>恢复</b>；配合定期后台“擦净”（scrubbing）主动检查全盘，防止静默损坏长期潜伏。" },
+
+/* ================= 分布式 ================= */
+{ part:"dist", ch:"第47章", q:"分布式系统通信的基本构件？",
+  a:"<b>RPC</b>（远程过程调用）：让调用远程函数像本地调用一样——存根打包参数（marshal）、经网络传输、服务端解包执行。<b>通信层</b>：在不可靠的 UDP 之上用确认、重传、超时构建可靠通信；两军问题表明无法做到绝对可靠。" },
+{ part:"dist", ch:"第48章", q:"NFS 的核心设计思想？",
+  a:"<b>无状态服务器</b> + <b>幂等操作</b>：服务器不记录客户端状态，崩溃重启后客户端重试即可，恢复极其简单。客户端通过文件句柄访问；性能靠客户端缓存，但需定期向服务器检查属性（GETATTR）来缓解一致性问题。" },
+{ part:"dist", ch:"第49章", q:"AFS 与 NFS 的关键区别？",
+  a:"AFS 是<b>有状态</b>、<b>整文件缓存</b>的设计：打开时下载整个文件到本地磁盘缓存，服务器用<b>回调（callback）</b>机制在文件更新时通知缓存失效，保证较强一致性；在大规模部署下性能明显优于逐块缓存、弱一致性的 NFS。" }
+];
+
+/* ---------- build controls ---------- */
+const controls = document.getElementById("controls");
+const statEl = document.getElementById("stat");
+
+function makeChip(label, color, pressed, onclick) {
+  const b = document.createElement("button");
+  b.className = "chip";
+  b.setAttribute("aria-pressed", pressed);
+  b.innerHTML = (color ? '<span class="dot" style="background:' + color + '"></span>' : "") + label;
+  b.addEventListener("click", onclick);
+  return b;
+}
+
+const btnAll = makeChip("全部（" + CARDS.length + " 张）", null, true, () => setFilter("all"));
+controls.insertBefore(btnAll, statEl);
+PARTS.forEach(p => {
+  const n = CARDS.filter(c => c.part === p.id).length;
+  const chip = makeChip(p.name + "（" + n + "）", p.color, false, () => setFilter(p.id));
+  controls.insertBefore(chip, statEl);
+});
+
+const btnFlipAll = document.createElement("button");
+btnFlipAll.className = "btn ghost";
+btnFlipAll.textContent = "全部翻开";
+btnFlipAll.addEventListener("click", () => {
+  const cards = grid.querySelectorAll(".card");
+  const anyClosed = [...cards].some(c => !c.classList.contains("flipped"));
+  cards.forEach(c => c.classList.toggle("flipped", anyClosed));
+  btnFlipAll.textContent = anyClosed ? "全部翻回" : "全部翻开";
+  flippedCount = anyClosed ? cards.length : 0;
+  updateStat();
+});
+controls.appendChild(btnFlipAll);
+
+const btnShuffle = document.createElement("button");
+btnShuffle.className = "btn ghost";
+btnShuffle.textContent = "乱序";
+btnShuffle.addEventListener("click", () => {
+  const cards = [...grid.querySelectorAll(".card")];
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+  cards.forEach(c => grid.appendChild(c));
+});
+controls.appendChild(btnShuffle);
+
+controls.appendChild(statEl);
+
+/* ---------- build grid ---------- */
+const grid = document.getElementById("grid");
+let flippedCount = 0;
+const total = CARDS.length;
+
+function updateStat() {
+  statEl.textContent = "共 " + total + " 张精华卡片 · 已翻开 " + flippedCount;
+}
+
+function buildCard(c) {
+  const part = PARTS.find(p => p.id === c.part);
+  const card = document.createElement("div");
+  card.className = "card";
+  card.tabIndex = 0;
+  card.setAttribute("role", "button");
+  card.setAttribute("aria-label", "卡片：" + c.q);
+  card.style.setProperty("--accent", part.color);
+
+  const inner = document.createElement("div");
+  inner.className = "card-inner";
+
+  const front = document.createElement("div");
+  front.className = "face front";
+  front.innerHTML =
+    '<div class="tag"><span class="part">' + part.name + '</span><span class="chap">' + c.ch + '</span></div>' +
+    '<div class="q">' + c.q + '</div>' +
+    '<span class="hint">点击翻面 →</span>';
+
+  const back = document.createElement("div");
+  back.className = "face back";
+  back.innerHTML =
+    '<div class="tag"><span class="part">' + part.name + '</span><span class="chap">' + c.ch + ' · 答案</span></div>' +
+    '<div class="a">' + c.a + '</div>' +
+    '<span class="hint">点击翻回</span>';
+
+  inner.appendChild(front);
+  inner.appendChild(back);
+  card.appendChild(inner);
+
+  function toggle() {
+    const now = !card.classList.contains("flipped");
+    card.classList.toggle("flipped", now);
+    flippedCount += now ? 1 : -1;
+    updateStat();
+  }
+  card.addEventListener("click", toggle);
+  card.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+  });
+  return card;
+}
+
+CARDS.forEach(c => grid.appendChild(buildCard(c)));
+updateStat();
+
+/* ---------- sizing: make both faces fit, height = max(front, back) ---------- */
+function sizeCards() {
+  grid.querySelectorAll(".card").forEach(card => {
+    card.classList.add("measuring");
+    card.style.height = "auto";
+    const h1 = card.querySelector(".front").offsetHeight;
+    const h2 = card.querySelector(".back").offsetHeight;
+    card.classList.remove("measuring");
+    card.style.height = Math.max(h1, h2, 150) + "px";
+  });
+}
+
+function setFilter(partId) {
+  [...controls.querySelectorAll(".chip")].forEach(ch => ch.setAttribute("aria-pressed", "false"));
+  grid.querySelectorAll(".card").forEach(card => card.remove());
+  const list = partId === "all" ? CARDS : CARDS.filter(c => c.part === partId);
+  list.forEach(c => grid.appendChild(buildCard(c)));
+  flippedCount = 0;
+  updateStat();
+  // set chip pressed state
+  const idx = partId === "all" ? 0 : PARTS.findIndex(p => p.id === partId) + 1;
+  controls.querySelectorAll(".chip")[idx].setAttribute("aria-pressed", "true");
+  requestAnimationFrame(sizeCards);
+}
+
+window.addEventListener("resize", () => requestAnimationFrame(sizeCards));
+requestAnimationFrame(sizeCards);
+window.addEventListener("load", () => requestAnimationFrame(sizeCards));
+</script>
+</body>
+</html>

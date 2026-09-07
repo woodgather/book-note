@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>深入理解计算机系统 · Anki 精华卡片</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f4f2ec;
+    --card-bg: #ffffff;
+    --ink: #2b2a26;
+    --muted: #8a857a;
+    --accent: #b3541e;
+    --accent-soft: #fdf1e7;
+    --ch1: #2f6f6a;
+    --ch1-soft: #e7f2f1;
+    --ch2: #8a5a1e;
+    --ch2-soft: #faf1e2;
+    --border: #e3ded2;
+    --shadow: 0 1px 3px rgba(60,55,40,.08), 0 8px 24px rgba(60,55,40,.07);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.75;
+    padding: 32px 20px 60px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  /* ===== Header ===== */
+  header { margin-bottom: 28px; }
+  .kicker {
+    font-size: 13px; letter-spacing: .35em; color: var(--accent);
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  h1 { font-size: 30px; font-weight: 700; letter-spacing: .02em; }
+  .sub { color: var(--muted); font-size: 15px; margin-top: 8px; }
+  .sub b { color: var(--ink); }
+
+  /* ===== Toolbar ===== */
+  .toolbar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    margin: 22px 0 26px; padding: 14px 16px;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 14px; box-shadow: var(--shadow);
+  }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    border: 1px solid var(--border); background: #fff; color: var(--ink);
+    padding: 6px 16px; border-radius: 999px; font-size: 14px; cursor: pointer;
+    font-family: inherit; transition: all .18s ease;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .chip .n { font-size: 12px; opacity: .7; margin-left: 4px; }
+  .spacer { flex: 1; }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    border: 1px solid var(--border); background: #faf8f3; color: var(--ink);
+    padding: 6px 14px; border-radius: 10px; font-size: 13.5px; cursor: pointer;
+    font-family: inherit; transition: all .18s ease;
+  }
+  .btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .count { font-size: 13.5px; color: var(--muted); }
+  .count b { color: var(--accent); font-size: 16px; }
+
+  /* ===== Flip grid (2 columns) ===== */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    perspective: 1600px;
+  }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+
+  .card { min-height: 240px; cursor: pointer; outline: none; }
+  .card:focus-visible .inner { box-shadow: 0 0 0 3px var(--accent); }
+  .inner {
+    position: relative; width: 100%; height: 100%;
+    min-height: 240px; transform-style: preserve-3d;
+    transition: transform .55s cubic-bezier(.4,.1,.2,1);
+  }
+  .card.flipped .inner { transform: rotateY(180deg); }
+
+  .face {
+    position: absolute; inset: 0; backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 16px; box-shadow: var(--shadow);
+    padding: 22px 24px; display: flex; flex-direction: column; overflow: auto;
+  }
+  .face.back { transform: rotateY(180deg); background: #fffdf8; }
+
+  .tag {
+    align-self: flex-start; font-size: 11.5px; letter-spacing: .12em;
+    padding: 3px 10px; border-radius: 999px; margin-bottom: 12px; font-weight: 600;
+  }
+  .tag.c1 { background: var(--ch1-soft); color: var(--ch1); }
+  .tag.c2 { background: var(--ch2-soft); color: var(--ch2); }
+  .tag.num { background: transparent; color: var(--muted); border: 1px dashed var(--border); letter-spacing: 0; font-weight: 400; }
+
+  .q { font-size: 17.5px; font-weight: 700; line-height: 1.6; }
+  .hint { margin-top: auto; padding-top: 14px; font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .hint svg { flex: none; }
+
+  .a { font-size: 15px; line-height: 1.85; color: #3d3a33; }
+  .a p { margin-bottom: 8px; }
+  .a p:last-child { margin-bottom: 0; }
+  .a .kw { color: var(--accent); font-weight: 600; }
+  .a .mono {
+    font-family: "SF Mono", Consolas, "Courier New", monospace;
+    background: #f4efe4; border-radius: 5px; padding: 0 5px; font-size: 13.5px; color: #7a5210;
+  }
+  .a .note { color: var(--muted); font-size: 13px; }
+
+  footer { margin-top: 40px; text-align: center; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">ANKI 精华卡片</div>
+    <h1>深入理解计算机系统（原书第 2 版）</h1>
+    <div class="sub">Randal E. Bryant · David R. O'Hallaron 著 —— 本套卡片根据本书收录正文提炼：<b>第 1 章 计算机系统漫游</b> 与 <b>第 2 章 信息的表示和处理</b>（含练习题要点）</div>
+  </header>
+
+  <div class="toolbar">
+    <div class="chips" id="chips">
+      <button class="chip active" data-ch="all">全部卡片<span class="n" id="n-all"></span></button>
+      <button class="chip" data-ch="1">第 1 章 · 计算机系统漫游<span class="n" id="n-1"></span></button>
+      <button class="chip" data-ch="2">第 2 章 · 信息的表示和处理<span class="n" id="n-2"></span></button>
+    </div>
+    <div class="spacer"></div>
+    <div class="count">共 <b id="count">0</b> 张</div>
+    <div class="tools">
+      <button class="btn" id="flipAll">全部翻面</button>
+      <button class="btn" id="shuffle">随机打乱</button>
+      <button class="btn" id="reset">还原顺序</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>点击卡片翻面查看答案 · 再次点击翻回</footer>
+</div>
+
+<script>
+const CARDS = [
+  /* ============ 第 1 章 计算机系统漫游 ============ */
+  {ch:1, q:"计算机系统中“信息”的本质是什么？", a:"<p>系统中所有的信息——磁盘文件、存储器中的程序、存储器中存放的用户数据以及网络上传输的数据，都是由一串<span class='kw'>位（bit）</span>表示的。</p><p>区分不同数据对象的唯一方法是我们读到这些数据对象时的<span class='kw'>上下文（context）</span>：同样的字节序列，在不同的上下文中可能表示整数、字符串或机器指令。</p>"},
+  {ch:1, q:"hello.c 从源程序到可执行文件要经过哪四个阶段？", a:"<p>由编译器驱动程序完成，四个阶段合称<span class='kw'>编译系统</span>：</p><p><span class='kw'>预处理</span>（cpp，hello.c → hello.i）→ <span class='kw'>编译</span>（cc1，hello.i → hello.s 汇编程序）→ <span class='kw'>汇编</span>（as，hello.s → 可重定位目标文件 hello.o）→ <span class='kw'>链接</span>（ld，合并 printf.o 等库 → 可执行文件 hello）。</p>"},
+  {ch:1, q:"预处理阶段（cpp）具体做什么？", a:"<p>预处理器根据以字符 <span class='mono'>#</span> 开头的命令修改原始的 C 程序。</p><p>例如 <span class='mono'>#include &lt;stdio.h&gt;</span> 命令告诉预处理器读取系统头文件 stdio.h 的内容，并把它直接插入到程序文本中，得到另一个 C 程序（通常以 <span class='mono'>.i</span> 为扩展名）。</p>"},
+  {ch:1, q:"编译阶段和汇编阶段分别产出什么？", a:"<p><span class='kw'>编译</span>：编译器 cc1 将文本文件 hello.i 翻译成文本文件 hello.s，包含一个<span class='kw'>汇编语言程序</span>——它为不同高级语言的不同编译器提供了通用的输出语言。</p><p><span class='kw'>汇编</span>：汇编器 as 将 hello.s 翻译成机器语言指令，打包成<span class='kw'>可重定位目标程序</span>格式，保存在二进制文件 hello.o 中。</p>"},
+  {ch:1, q:"链接阶段（ld）为什么是必需的？", a:"<p>hello 程序调用的 printf 函数存在于单独预编译好的目标文件 printf.o 中，这个文件必须以某种方式合并到 hello.o 程序中。</p><p><span class='kw'>链接器 ld</span> 就负责处理这种合并，结果得到可执行目标文件，可被加载到内存中由系统执行。</p>"},
+  {ch:1, q:"了解编译系统如何工作，对程序员有什么实际好处？", a:"<p><span class='kw'>优化程序性能</span>：如 switch 是否总比一系列 if-else 高效、函数调用开销有多大、把求和结果放到本地变量为何更快等。</p><p><span class='kw'>理解链接时出现的错误</span>：如链接器无法解析引用意味着什么、静态变量与全局变量的区别。</p><p><span class='kw'>避免安全漏洞</span>：理解数据和控制信息在栈上的存放方式，才能理解缓冲区溢出攻击的原理。</p>"},
+  {ch:1, q:"一个典型系统的硬件组成包括哪几大部分？", a:"<p><span class='kw'>总线</span>：贯穿整个系统的电子管道，携带信息字节并在各部件间传递，通常设计为传送定长的字节块（字 word）。</p><p><span class='kw'>I/O 设备</span>：系统与外界的联系通道，如键盘鼠标、显示器、磁盘，每个设备通过控制器或适配器与 I/O 总线相连。</p><p><span class='kw'>主存</span>：临时存储设备，处理器执行程序时存放程序和数据，由 DRAM 组成。</p><p><span class='kw'>处理器（CPU）</span>：解释（执行）存储在主存中指令的引擎。</p>"},
+  {ch:1, q:"CPU 中程序计数器（PC）和寄存器文件的作用是什么？", a:"<p><span class='kw'>程序计数器（PC）</span>：一个字大小的存储区域（寄存器），存放的是某条指令的地址，指向当前正在执行的指令。</p><p><span class='kw'>寄存器文件</span>：由一些单字长的寄存器组成，每个寄存器都有唯一的名字，用于存放指令执行时需要的数据。</p><p><span class='kw'>ALU（算术/逻辑单元）</span>：计算新的数据和地址值。</p>"},
+  {ch:1, q:"运行 hello 程序的过程中，操作系统扮演了什么角色？", a:"<p>shell 读入命令后加载并运行 hello 程序，用 <span class='kw'>DMA（直接存储器存取）</span>技术把磁盘上 hello 目标文件的数据直接送入主存，不经过处理器。</p><p>处理器执行机器语言指令把输出字符串从存储器复制到显示器。当 shell 收到 hello 进程结束的信号后重新等待下一条命令。</p><p>操作系统通过<span class='kw'>进程</span>抽象来跟踪程序运行的所有状态：包括程序的代码和数据、栈、通用寄存器的内容、程序计数器（PC）、环境变量以及打开的文件等。</p>"},
+  {ch:1, q:"为什么说“高速缓存至关重要”？", a:"<p>处理器与主存之间的速度差距越来越大，从处理器到磁盘的访问延迟跨越多个数量级。</p><p>系统在 CPU 中集成了 <span class='kw'>L1 高速缓存</span>（访问速度几乎和寄存器一样快），通常还有更大的 <span class='kw'>L2 / L3 高速缓存</span>，用更快的 SRAM 技术实现，暂时存放处理器近期可能需要的信息。</p><p>编写程序时利用<span class='kw'>局部性原理</span>，让经常访问的数据尽量放在缓存中，可以大幅提升性能。</p>"},
+  {ch:1, q:"存储器层次结构的排列顺序是怎样的？核心思想是什么？", a:"<p>从上到下（越往下访问越慢、越便宜、容量越大）：</p><p><span class='mono'>L0 寄存器 → L1~L3 高速缓存 → 主存（DRAM）→ 本地二级存储（磁盘）→ 远程二级存储（分布式文件系统/网络服务器）</span></p><p>核心思想：每层存储设备都是较低一层的<span class='kw'>缓存</span>。位于 k 层的存储器是 k+1 层的缓存，数据总是以块为单位在相邻层之间来回拷贝。</p>"},
+  {ch:1, q:"操作系统的两个基本功能是什么？", a:"<p>① <span class='kw'>防止硬件被失控的应用程序滥用</span>；</p><p>② <span class='kw'>向应用程序提供简单一致的机制</span>来控制复杂而又通常大相径庭的低级硬件设备。</p><p>操作系统通过进程、虚拟存储器和文件这几个基本的抽象概念来实现这两个功能。</p>"},
+  {ch:1, q:"什么是进程？操作系统如何实现“多个进程并发运行”的假象？", a:"<p><span class='kw'>进程</span>是操作系统对<span class='kw'>一个正在运行的程序</span>的一种抽象。操作系统内核保存进程的<span class='kw'>上下文</span>——程序正确运行所需的状态，包括程序的代码和数据、栈、通用寄存器的内容、程序计数器、环境变量以及打开文件的信息。</p><p>通过<span class='kw'>上下文切换</span>：保存当前进程的上下文，然后恢复新进程的上下文，将控制权转移到新进程，就实现了同时运行多个程序的假象。</p>"},
+  {ch:1, q:"线程是什么？与进程的关系如何？", a:"<p>一个进程实际上可以由多个称为<span class='kw'>线程</span>的执行单元组成。</p><p>每个线程都运行在进程的上下文中，<span class='kw'>共享</span>同样的代码和全局数据。</p><p>多线程之间比多进程之间更容易共享数据，而且线程一般来说都比进程更高效——这也是现代服务器普遍采用多线程的原因之一。</p>"},
+  {ch:1, q:"虚拟存储器是什么？它给进程提供了什么假象？", a:"<p><span class='kw'>虚拟存储器</span>是一个抽象，它为每个进程提供了一个假象：好像每个进程都<span class='kw'>独占地使用主存</span>。</p><p>每个进程看到的存储器都是一致的，称为<span class='kw'>虚拟地址空间</span>。最底端是 0，向上增长。</p><p>每个进程看到的虚拟地址空间由大量准确定义的<span class='kw'>区（area）</span>构成，各区域专用于专门的目的。</p>"},
+  {ch:1, q:"进程的虚拟地址空间从低到高依次包含哪些区域？", a:"<p><span class='kw'>程序代码和数据</span>：从可执行目标文件加载，代码总是从同一地址开始；</p><p><span class='kw'>堆</span>：作为调用 malloc/free 等 C 标准库函数的结果，可在运行时动态扩展和收缩；</p><p><span class='kw'>共享库</span>：存放如 C 标准库和数学库这类公共代码；</p><p><span class='kw'>栈</span>：位于用户虚拟地址空间顶部，编译器用它实现函数调用，可动态扩展收缩；</p><p><span class='kw'>内核虚拟存储器</span>：地址空间顶部的区域，保留给内核，应用程序不允许读写这个区域的内容或直接调用内核中定义的函数。</p>"},
+  {ch:1, q:"操作系统中“文件”的定义及其意义？", a:"<p><span class='kw'>文件</span>就是<span class='kw'>字节序列</span>，仅此而已。</p><p>每个 I/O 设备，包括磁盘、键盘、显示器甚至网络，都可以看成是文件。</p><p>系统中的所有输入输出都是通过使用一小组称为 Unix I/O 的系统函数调用读写文件来实现的。这个简单精致抽象的表示方法非常有用——它使得应用程序能够统一地看待各种各式各样的 I/O 设备。</p>"},
+  {ch:1, q:"并发和并行的区别？并行的三个层次是什么？", a:"<p><span class='kw'>并发（concurrency）</span>是一个通用的概念，指一个同时具有多个活动的系统；</p><p><span class='kw'>并行（parallelism）</span>指的是用并发来使一个系统运行得更快。</p><p>并行的三个层次：① <span class='kw'>线程级并行</span>（多核/超线程）；② <span class='kw'>指令级并行</span>（流水线、超标量处理器同时执行多条指令）；③ <span class='kw'>单指令、多数据并行（SIMD）</span>（一条指令对多个数据并行运算，常用于图像、声音处理）。</p>"},
+  {ch:1, q:"计算机系统中“抽象”的重要性体现在哪些层次？", a:"<p>抽象是计算机科学中最为重要的概念之一。在处理器里，指令集架构提供了对实际处理器硬件的抽象。</p><p>操作系统的三个基本抽象：<span class='kw'>文件</span>是对 I/O 设备的抽象；<span class='kw'>虚拟存储器</span>是对程序存储器的抽象；<span class='kw'>进程</span>是对一个正在运行的程序的抽象。</p><p>更进一步，<span class='kw'>虚拟机</span>则提供了对整个计算机的抽象，包括操作系统、处理器和程序。</p>"},
+  {ch:1, q:"C 语言为什么能成功？它有哪些局限？", a:"<p>C 由贝尔实验室的 <span class='kw'>Dennis Ritchie</span> 于 1969～1973 年间创建。成功的三个原因：</p><p>① 与 Unix 操作系统关系密切（Unix 大部分内核和支撑工具都用 C 编写）；② <span class='kw'>小而简单</span>，由一个人掌控设计，简洁一致、易于学习移植；③ <span class='kw'>为实践目的设计</span>，最初为实现 Unix 而生。</p><p>局限：C 语言的<span class='kw'>指针</span>是造成困惑和程序错误的常见原因；C 语言还缺乏对类、对象和异常等非常有用的抽象的显式支持（C++、Java 解决了这些问题）。</p>"},
+  {ch:1, q:"GNU 项目是什么？与 Linux 有什么关系？", a:"<p>GNU 是 “GNU's Not Unix” 的缩写，1984 年由 <span class='kw'>Richard Stallman</span> 发起，目标是开发一个完整的类 Unix 系统，其源代码能够不受限制地被修改和传播。</p><p>GNU 环境包括 EMACS 编辑器、<span class='kw'>GCC 编译器</span>、GDB 调试器、汇编器、链接器等。</p><p>GNU 项目养成了现代开放源码运动的思想起源。Linux 如此受欢迎在很大程度上要归功于 GNU 工具，因为它们给 Linux 内核提供了环境。</p>"},
+  {ch:1, q:"网络也可以被看作一种 I/O 设备吗？", a:"<p>可以。现代系统经常通过网络和其他系统连接到一起。</p><p>从一个单独的系统角度来看，<span class='kw'>网络就是一种 I/O 设备</span>：当系统从主存复制一串字节到网络适配器时，数据就会经过网络到达另一台机器，反之亦然。</p><p>例如 Telnet 服务器、Web 浏览器、电子邮件等应用，本质上都是通过文件这个统一抽象在网络间传输字节。</p>"},
+  /* ============ 第 2 章 信息的表示和处理 ============ */
+  {ch:2, q:"为什么计算机使用二进制而不是十进制？", a:"<p>对于有 10 个手指的人类来说十进制很自然，但当构造存储和处理信息的机器时，<span class='kw'>二进制的值工作得更好</span>。</p><p>二值信号能够很容易地被表示、存储和传输——例如穿孔卡片上有洞或无洞、导线上的高电压或低电压、顺时针或逆时针的磁场。</p><p>对二值信号进行存储和执行计算的电子电路非常<span class='kw'>简单和可靠</span>，制造商能在一个硅片上集成数十亿个这样的电路。</p>"},
+  {ch:2, q:"孤立的单个位没什么用，如何让它表示信息？", a:"<p>当把位组合在一起，再加上某种<span class='kw'>解释（interpretation）</span>，即给不同的可能位模式赋予含义，我们就能够表示任何有限集合的元素。</p><p>比如用二进制数字系统编码非负数；用标准的字符码对文档中的字母符号编码。</p><p>这就是本章的核心主题：<span class='kw'>信息 = 位 + 上下文</span>。</p>"},
+  {ch:2, q:"十六进制与二进制之间如何快速转换？2 的幂如何快速写成十六进制？", a:"<p>一个十六进制数字对应 <span class='kw'>4 位二进制</span>，反之把二进制每 4 位一组（最左边不足 4 位前面补 0）转成十六进制即可。</p><p>当 <span class='mono'>x = 2^n</span> 且 n = i + 4j（0≤i≤3）时，x 的十六进制表示为：开头的数字是 1（i=0）、2（i=1）、4（i=2）或 8（i=3），后面跟 j 个十六进制的 0。</p><p>例如 <span class='mono'>2048 = 2^11</span>，n = 11 = 3 + 4×2，所以是 <span class='mono'>0x800</span>。</p>"},
+  {ch:2, q:"十进制与十六进制之间如何互相转换？", a:"<p><span class='kw'>十进制 → 十六进制</span>：反复用 16 除 x，得到商 q 和余数 r（x = q×16 + r），余数 r 即为从低位到高位的十六进制数字，对商重复此过程。</p><p><span class='kw'>十六进制 → 十进制</span>：用相应的 16 的幂乘以每个十六进制数字再求和。例如 <span class='mono'>0x7AF = 7×256 + 10×16 + 15 = 1967</span>。</p>"},
+  {ch:2, q:"“字长”和“字”在计算机中指什么？", a:"<p>每台计算机都有一个<span class='kw'>字长（word size）</span>，指明指针数据的<span class='kw'>标称大小（nominal size）</span>。</p><p>因为虚拟地址是以这样一个字来编码的，所以字长决定的最重要的系统参数就是<span class='kw'>虚拟地址空间的最大大小</span>。</p><p>对于一个 w 位字长的机器而言，虚拟地址的范围为 0 ～ 2^w − 1：32 位字长限制虚拟地址空间为 4 GB，而 64 位字长则可达 16 EB（目前大多数 64 位机器用 48 位地址，空间 256 TB）。</p>"},
+  {ch:2, q:"C 语言基本数据类型的典型大小（32 位 vs 64 位）？", a:"<p><span class='mono'>char</span> 1 字节；<span class='mono'>short int</span> 2 字节；<span class='mono'>int</span> 4 字节；<span class='mono'>float</span> 单精度 4 字节；<span class='mono'>double</span> 双精度 8 字节。</p><p>差别在 <span class='mono'>long int</span>：32 位程序为 4 字节，64 位程序为 8 字节。指针 <span class='mono'>char *</span> 也如此：32 位为 4 字节，64 位为 8 字节。</p><p class='note'>准确大小由编译器决定，C 标准只规定下限。</p>"},
+  {ch:2, q:"小端法和大端法的区别？为什么程序员需要关心字节顺序？", a:"<p>多字节对象存储为连续的字节序列，对象的地址为所使用字节中最小的地址。</p><p><span class='kw'>小端法（little endian）</span>：最低有效字节在最前面的方式（低地址存低字节）；<span class='kw'>大端法（big endian）</span>：最高有效字节在最前面的方式。大多数 Intel 兼容机采用小端法，IBM 和 Oracle 的大型机多用大端法，如 ARM 芯片两种皆可。</p><p>关心字节顺序的三种情况：① 不同类型机器间通过网络传送二进制数据；② 阅读表示整数数据的机器级程序时；③ 编写规避正常类型系统的程序（如用强制类型转换访问字节）时。</p>"},
+  {ch:2, q:"C 语言中的字符串在存储器中如何表示？与字节顺序有关吗？", a:"<p>C 语言中字符串被编码为一个以 <span class='kw'>null 字符（0x00）</span>结尾的字符数组。</p><p>每个字符都由某个标准编码来表示，最常见的是 <span class='kw'>ASCII 字符码</span>。例如 “12345” 的编码为 31 32 33 34 35 00。</p><p>使用 ASCII 码作为字符码的任何系统都将得到<span class='kw'>相同的结果</span>，与字节顺序和字大小规则无关——因此文本数据比二进制数据具有更强的<span class='kw'>平台独立性</span>。</p>"},
+  {ch:2, q:"布尔代数的四种位级运算及德摩根定律是什么？", a:"<p>四种运算：<span class='kw'>~</span>（NOT 非）、<span class='kw'>&amp;</span>（AND 与）、<span class='kw'>|</span>（OR 或）、<span class='kw'>^</span>（EXCLUSIVE-OR 异或）。</p><p>布尔运算可扩展到位向量上，按位运算。例如 0110 ^ 0101 = 0011。</p><p>德摩根定律：<span class='mono'>~(a &amp; b) = ~a | ~b</span>；<span class='mono'>~(a | b) = ~a &amp; ~b</span>。</p><p>位向量常用来表示有限集合，&amp; 对应交集、| 对应并集、~ 对应补集。</p>"},
+  {ch:2, q:"C 语言的位级运算、逻辑运算有什么区别？", a:"<p><span class='kw'>位级运算</span>（&amp;、|、^、~）是对位向量逐位进行的运算。</p><p><span class='kw'>逻辑运算</span>（&amp;&amp;、||、!）则把任何非零参数都表示为 <span class='kw'>TRUE</span>，而参数 0 表示 FALSE，返回值是 1 或 0，表明表达式是否为真。</p><p>重要区别：逻辑运算具有<span class='kw'>短路</span>性质——如果第一个参数就能确定表达式的结果，就不会对第二个参数求值。例如 <span class='mono'>(a &amp;&amp; b) != (a &amp; b)</span>。</p>"},
+  {ch:2, q:"左移和右移运算的行为？逻辑右移与算术右移的区别？", a:"<p><span class='kw'>左移 &lt;&lt;</span>：向左移动 k 位，丢弃最高的 k 位，并在右端补 k 个 0。左移相当于乘以 2^k。</p><p><span class='kw'>右移 &gt;&gt;</span> 分两种：<span class='kw'>逻辑右移</span>——在左端补 k 个 0；<span class='kw'>算术右移</span>——在左端补 k 个最高有效位的值（复制符号位）。</p><p>C 语言标准未明确定义有符号数用哪种右移——实际上几乎所有的编译器/机器组合都对<span class='kw'>有符号数使用算术右移</span>，对无符号数使用逻辑右移。Java 中 <span class='mono'>&gt;&gt;</span> 为算术右移、<span class='mono'>&gt;&gt;&gt;</span> 为逻辑右移。</p>"},
+  {ch:2, q:"无符号数的编码（B2U）是怎样的？", a:"<p>无符号数编码：设位向量 [x_{w−1}, x_{w−2}, …, x_0]，则</p><p><span class='kw'>B2U_w(x⃗) = Σ x_i · 2^i</span></p><p>即每个位 i 的权重是 2^i。这是一个<span class='kw'>双射</span>：每个长度为 w 的位向量都对应一个 0 ～ 2^w − 1 之间的唯一值，反之亦然。</p><p>例如 w=4 时，[0101] 表示 5，[1111] 表示 15（UMax）。</p>"},
+  {ch:2, q:"补码编码（B2T）是怎样的？TMin 和 TMax 有什么特殊性？", a:"<p>补码编码：最高有效位（符号位）权重为负，</p><p><span class='kw'>B2T_w(x⃗) = −x_{w−1}·2^{w−1} + Σ_{i=0}^{w−2} x_i · 2^i</span></p><p><span class='kw'>TMin_w = −2^{w−1}</span>（w=32 时即 −2 147 483 648），<span class='kw'>TMax_w = 2^{w−1} − 1</span>。</p><p>不对称性：<span class='kw'>|TMin| = TMax + 1</span>——TMin 没有与之对应的正数。UMax = 2·TMax + 1。补码也是位向量与值之间的双射。</p>"},
+  {ch:2, q:"有符号数和无符号数之间转换的规则是什么？", a:"<p>C 语言允许各种不同的数字类型之间做强制类型转换，转换的结果保持<span class='kw'>位值不变</span>，只是改变了解释这些位的方式。</p><p>规则：T2U_w(x) = x + 2^w（当 x &lt; 0），U2B 逆运算类似——即补码转无符号：负数加 2^w；无符号转补码：大于 TMax 的数减 2^w。</p><p>例如 w=32 时 <span class='mono'>T2U(−1) = UMax</span>（就是 4 294 967 295）。这也是为什么 <span class='mono'>−1 == 0xFFFFFFFF</span>。</p>"},
+  {ch:2, q:"C 语言中有符号数与无符号数混用时会发生什么？经典陷阱？", a:"<p>C 语言中当执行一个运算时，如果它的任何一个运算数是<span class='kw'>无符号</span>的，那么 C 语言会<span class='kw'>隐式地将有符号数强制类型转换为无符号数</span>，并假设这两个数都是非负的来执行这个运算。</p><p>经典陷阱：<span class='mono'>-1 &lt; 0U</span> 的结果是<span class='kw'>假（0）</span>，因为 −1 被转换成 UMax；<span class='mono'>2147483647U &gt; (int) 2147483648U</span> 同理也为假。</p><p>另一陷阱：<span class='mono'>strlen(s) &lt;= -1</span> 永远为假，因为 strlen 返回 size_t（无符号）。</p>"},
+  {ch:2, q:"什么是符号扩展？为什么能保持值不变？", a:"<p>符号扩展（sign extension）：把一个 w 位的补码数字转换为 w+k 位时，在表示中<span class='kw'>添加 k 位最高有效位的副本</span>。</p><p>如 [101] = −3，扩展到 4 位是 [1101] = −3，值不变。</p><p>原理：在位级表示中，添加的最高位权重是 −2^{w−1}，加上副本后新增的部分正好相互抵消（2^{w−1} − 2^{w−1} = 0），因此值保持不变。</p><p>无符号数转换到更大的数据类型则简单地在开头<span class='kw'>添加 0</span>（零扩展）。</p>"},
+  {ch:2, q:"截断数字时会发生什么？", a:"<p>将一个 w 位的数截断为 k 位时，直接<span class='kw'>丢弃最高的 w−k 位</span>。</p><p>截断相当于<span class='kw'>取模运算</span>：</p><p>无符号数：结果 ≡ x mod 2^k；</p><p>补码数：先按无符号取模 2^k，再按补码解释（U2B），因此可能改变数值和符号。</p><p>例如将 9（[1001]）截断为 3 位得 [001] = 1，因为 9 mod 8 = 1。</p>"},
+  {ch:2, q:"无符号数加法的规则和溢出条件？", a:"<p>无符号加法等价于<span class='kw'>模 2^w 的加法</span>（丢弃进位）：</p><p>当 x + y ≥ 2^w（即 UMax）时发生<span class='kw'>溢出</span>，实际结果为 s = x + y − 2^w。</p><p>溢出检测：因为 s = x + y（mod 2^w），若 s &lt; x（或 s &lt; y）则溢出。</p><p>一个重要性质：无符号加法运算<span class='kw'>形成了阿贝尔群</span>——可交换、可结合、有单位元 0、每个元素都有加法逆元（x 的逆元是 2^w − x，0 的逆元是 0）。</p>"},
+  {ch:2, q:"补码加法的规则和溢出判断？", a:"<p>补码加法与无符号加法有<span class='kw'>相同的位级表示</span>，即都是 mod 2^w 加法。</p><p>溢出判断：</p><p><span class='kw'>正溢出</span>：x, y 均为正数但 s ≤ 0 —— 结果 s − 2^w；</p><p><span class='kw'>负溢出</span>：x, y 均为负数但 s ≥ 0 —— 结果 s + 2^w；</p><p>否则不溢出，结果就是 s。</p><p>例：TMin + TMin = −2^w，mod 2^w 后为 0。</p>"},
+  {ch:2, q:"补码的“非”（加法逆元）有什么特殊之处？", a:"<p>对于范围 −2^{w−1} ≤ x &lt; 2^{w−1} 内的 x，除了<span class='kw'>TMin</span> 以外，补码的加法逆元就是 −x。</p><p>而 <span class='kw'>TMin_w 的加法逆元是它本身</span>：−TMin = 2^{w−1} 无法表示为 w 位数，而 TMin + TMin = −2^w，mod 2^w 后结果为 0。</p><p>位级实现：<span class='mono'>−x = ~x + 1</span>（对每一位取反再加 1）。这个公式对 TMin 也成立。</p>"},
+  {ch:2, q:"编译器如何用移位和加减法代替乘以常数？", a:"<p>利用 <span class='kw'>2^k 与左移的等价性</span>：x × 2^k = x &lt;&lt; k。</p><p>把常数分解为 2 的幂的和（形式 A）或差（形式 B），就能只用移位和加/减法计算乘法：</p><p><span class='mono'>x × 14 = (x&lt;&lt;3) + (x&lt;&lt;2) + (x&lt;&lt;1)</span>（14 = 2³+2²+2¹）或 <span class='mono'>x × 14 = (x&lt;&lt;4) − (x&lt;&lt;1)</span>（14 = 2⁴−2¹）。</p><p>原则：当 n = m+1 时两种形式都需要 2 个移位 1 个加法；当 n &gt; m+1 时，形式 B（2 个移位 1 个减法）更优。</p>"},
+  {ch:2, q:"补码数除以 2 的幂时为什么不能直接右移？正确做法是什么？", a:"<p>右移相当于<span class='kw'>向下舍入（向 −∞ 舍入）</span>，而 C 除法要求<span class='kw'>向零舍入</span>。对负数直接算术右移会产生 −1 的偏差，例如 −7/2 应为 −3，而 −7 &gt;&gt; 1 得 −4。</p><p>正确做法：先加一个<span class='kw'>偏置量（bias）(1&lt;&lt;k) − 1</span>，再算术右移：</p><p><span class='mono'>(x + (1&lt;&lt;k) − 1) &gt;&gt; k</span></p><p>偏置技术利用了向上舍入 y = ⌈x/2^k⌉ = ⌊(x + 2^k − 1)/2^k⌋ 的性质。无需任何测试或条件运算——可用 <span class='mono'>x&gt;&gt;31</span> 生成掩码（负数为全 1，非负为全 0）来得到偏置值。</p>"},
+  {ch:2, q:"为什么许多整数（如 0.1）无法用二进制小数精确表示？", a:"<p>二进制小数中，小数点后的位权是 2^{−1}, 2^{−2}, …，即 1/2、1/4、1/8……</p><p>只有那些能表示成形如 <span class='kw'>x/2^k</span> 的数才能被精确表示，其他值只能近似。十进制的 0.1 = 1/10 就无法精确表示。</p><p>用有限精度近似 0.1 的误差看似很小（约 9.54×10⁻⁸），但在 <span class='kw'>爱国者导弹</span> 与 <span class='kw'>阿丽亚娜 5 号火箭</span> 等案例中，累积误差或转换溢出造成了重大事故——浮点精度问题必须严肃对待。</p>"},
+  {ch:2, q:"IEEE 浮点标准用公式表示是什么？三个字段分别是什么？", a:"<p>IEEE 标准 754 用 <span class='kw'>V = (−1)^s × M × 2^E</span> 的形式来表示一个数：</p><p><span class='kw'>符号 s</span>：决定正负（对 0 有 ±0 之分）；</p><p><span class='kw'>尾数 M</span>：是一个二进制小数，范围 1～2−ε 或 0～1−ε；</p><p><span class='kw'>阶码 E</span>：对浮点数加权，权重是 2 的 E 次幂（可能是负数）。</p><p>位表示划分为三段：<span class='mono'>[s | 阶码 exp | 尾数 frac]</span>。单精度：1 位符号、k=8 位阶码、n=23 位尾数；双精度：k=11、n=52。</p>"},
+  {ch:2, q:"规格化值、非规格化值和特殊值如何区分和编码？", a:"<p>根据 exp（阶码字段）的值，编码分三种情况：</p><p><span class='kw'>规格化</span>：exp 不全为 0 也不全为 1。E = e − Bias（Bias = 2^{k−1} − 1，单精度 127），尾数<span class='kw'>隐含开头的 1</span>：M = 1 + f。</p><p><span class='kw'>非规格化</span>：exp 全 0。E = 1 − Bias，M = f（无隐含 1）。用来表示 0（+0/−0）以及非常接近 0.0 的数，并实现到规格化数的<span class='kw'>平滑过渡</span>。</p><p><span class='kw'>特殊值</span>：exp 全 1。frac 全 0 表示 +∞/−∞（可用于溢出）；frac 非 0 表示 <span class='kw'>NaN</span>（如 √−1、∞−∞ 的结果）。</p>"},
+  {ch:2, q:"IEEE 浮点采用什么舍入方式？为什么选它？", a:"<p>IEEE 定义了四种舍入方式，默认采用<span class='kw'>向偶数舍入（round-to-even）</span>，也叫“最接近的值舍入”。</p><p>规则：找到最接近的匹配值；如果数位于两个可能结果的正中间，则舍入到使<span class='kw'>最低有效数字是偶数</span>的那个值。</p><p>例如 1.5 和 2.5 都舍入到 2.0，−1.5 和 −2.5 都舍入到 −2.0。</p><p>选择它的原因：如果总是向上或向下舍入，一组数的平均值会系统性地偏高或偏低；而向偶数舍入在大多数现实场景中避免了这种<span class='kw'>统计偏差</span>。</p>"},
+  {ch:2, q:"浮点运算有哪些与整数运算（数学直觉）不同的性质？", a:"<p>浮点运算<span class='kw'>不遵守结合性</span>：</p><p><span class='mono'>(3.14 + 1e20) − 1e20 ≠ 3.14</span>（前半部分舍入丢失了 3.14）；<span class='mono'>1e20 × (1e20 − 1e20) ≠ 1e20×1e20 − 1e20×1e20</span>。</p><p>浮点乘法满足交换律（a×b = b×a）但不满足结合律，也不满足分配律。</p><p>但 <span class='mono'>1.0/2 == 1/2.0</span> 为真（除法前都转成浮点），<span class='mono'>f == -(-f)</span> 为真（取非只改符号位），<span class='mono'>d*d &gt;= 0.0</span> 为真（可能溢出到 +∞，但仍 ≥ 0）。</p>"},
+  {ch:2, q:"int、float、double 之间的强制类型转换各有什么规则？", a:"<p><span class='mono'>x == (int)(double)x</span>：<span class='kw'>真</span>，double 的精度和范围都大于 int；</p><p><span class='mono'>x == (int)(float)x</span>：<span class='kw'>假</span>，例如 x 为 TMax 时（float 只有 24 位尾数精度）；</p><p><span class='mono'>d == (double)(float)d</span>：<span class='kw'>假</span>，例如 d 超出 float 范围时右边得到 +∞；</p><p><span class='mono'>f == (float)(double)f</span>：<span class='kw'>真</span>。</p><p><span class='mono'>(f+d)−f == d</span>：<span class='kw'>假</span>，例如 f = 1.0e20、d = 1.0 时 f+d 舍回 1.0e20，左边等于 0。</p>"},
+  {ch:2, q:"为什么说“C 的谜题”提醒程序员必须理解机器级运算？", a:"<p>C 语言标准故意<span class='kw'>不定义</span>字长、有符号数表示等细节，以便在更大范围的不同机器上实现，这带来了可移植的代价：程序行为依赖机器。</p><p>理解补码、无符号转换、溢出和浮点舍入，才能避免这些陷阱：</p><p>如 <span class='mono'>(x*x) &gt;= 0</span> 可能为假（x=65535 时溢出为负）、<span class='mono'>x &gt; 0 || -x &gt;= 0</span> 可能为假（x = TMin）等。</p><p>这类知识是写出<span class='kw'>安全、可靠、可移植</span>程序的基础。</p>"},
+  {ch:2, q:"第 2 章小结：整数的表示与运算要点是什么？", a:"<p>计算机对整数的编码（无符号与补码）是<span class='kw'>精确的</span>，但其运算规则与数学直觉不同：</p><p>① 表示范围有限且<span class='kw'>不对称</span>（|TMin| 比 |TMax| 大 1）；</p><p>② 运算本质上都是<span class='kw'>模 2^w 的环</span>，会溢出；</p><p>③ 有符号/无符号混用时会发生<span class='kw'>隐式转换</span>，这是许多 bug 的来源；</p><p>④ 无符号乘法与补码乘法位级行为相同（截断到 w 位结果一致），具有可交换、可结合性。</p>"},
+  {ch:2, q:"第 2 章小结：浮点数的表示要点是什么？", a:"<p>浮点通过把数字编码为 <span class='kw'>x × 2^y</span> 的形式来近似实数，由 IEEE 标准 754 定义。</p><p>提供单精度（32 位）和双精度（64 位）两种最常见格式，还能表示特殊值 <span class='kw'>+∞、−∞ 和 NaN</span>。</p><p>掩码运算技巧：<span class='mono'>(1&lt;&lt;k) − 1</span> 可生成 k 位全 1 的掩码（如 (1&lt;&lt;8)−1 = 0xFF）。</p><p>必须非常小心地使用浮点运算，因为其<span class='kw'>范围和精度有限</span>，且不遵守结合性等普遍算术属性。</p>"},
+  {ch:2, q:"（练习）如何不用任何条件运算，把补码除法做对？", a:"<p>利用 <span class='mono'>x &gt;&gt; 31</span> 产生一个字：x 为负数时为全 1，否则为全 0。</p><p>通过<span class='kw'>掩码屏蔽</span>适当的位，就能得到期望的偏置量 (1&lt;&lt;k)−1 或 0：</p><p><span class='mono'>(x + ((x&gt;&gt;31) &amp; ((1&lt;&lt;k)−1))) &gt;&gt; k</span></p><p>这是练习题 2.42 的核心技巧——把“负数才加偏置”的逻辑变成纯粹的位级运算，不引入任何分支。</p>"},
+  {ch:2, q:"（练习）检查机器字节顺序的经典函数是什么？", a:"<p>用 <span class='kw'>show_bytes</span> 系列程序：把对象的地址强制类型转换为 <span class='mono'>unsigned char *</span>，然后用字节指针逐个打印对象的每个字节。</p><p>例如对 <span class='mono'>int x = 0x1234567</span>，小端机器输出 <span class='mono'>67 45 23 01</span>，大端机器输出 <span class='mono'>01 23 45 67</span>。</p><p>家庭作业 2.58 要求编写 <span class='kw'>is_little_endian</span>：在小端机器上返回 1，在大端机器上返回 0，且要能运行在任何字长的机器上。</p>"}
+];
+
+const grid = document.getElementById('grid');
+let current = CARDS.slice();
+let flippedAll = false;
+
+function esc(s){return s;}
+function cardHTML(c, i){
+  const tag = c.ch===1 ? '<span class="tag c1">第 1 章 · 计算机系统漫游</span>' : '<span class="tag c2">第 2 章 · 信息的表示和处理</span>';
+  return `<div class="card" tabindex="0" data-i="${i}">
+    <div class="inner">
+      <div class="face front">${tag}
+        <div class="q">${c.q}</div>
+        <div class="hint"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a857a" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>点击卡片查看答案</div>
+      </div>
+      <div class="face back">${tag}<span class="tag num">第 ${i+1} 张</span>
+        <div class="a">${c.a}</div>
+        <div class="hint">再次点击翻回正面</div>
+      </div>
+    </div>
+  </div>`;
+}
+function render(list){
+  grid.innerHTML = list.map((c,i)=>cardHTML(c,i)).join('');
+  document.getElementById('count').textContent = list.length;
+  if(flippedAll) grid.querySelectorAll('.card').forEach(el=>el.classList.add('flipped'));
+}
+grid.addEventListener('click', e=>{
+  const card = e.target.closest('.card');
+  if(card) card.classList.toggle('flipped');
+});
+grid.addEventListener('keydown', e=>{
+  if((e.key==='Enter'||e.key===' ') && e.target.classList.contains('card')){
+    e.preventDefault(); e.target.classList.toggle('flipped');
+  }
+});
+document.getElementById('flipAll').addEventListener('click', ()=>{
+  flippedAll = !flippedAll;
+  document.getElementById('flipAll').textContent = flippedAll ? '全部翻回' : '全部翻面';
+  grid.querySelectorAll('.card').forEach(el=>el.classList.toggle('flipped', flippedAll));
+});
+document.getElementById('shuffle').addEventListener('click', ()=>{
+  const chip = document.querySelector('.chip.active').dataset.ch;
+  let list = (chip==='all' ? CARDS.slice() : CARDS.filter(c=>c.ch==chip));
+  for(let i=list.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[list[i],list[j]]=[list[j],list[i]];}
+  current = list; render(current);
+});
+document.getElementById('reset').addEventListener('click', ()=>{
+  const chip = document.querySelector('.chip.active').dataset.ch;
+  current = (chip==='all' ? CARDS.slice() : CARDS.filter(c=>c.ch==chip));
+  render(current);
+});
+document.getElementById('chips').addEventListener('click', e=>{
+  const chip = e.target.closest('.chip'); if(!chip) return;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  const v = chip.dataset.ch;
+  current = (v==='all') ? CARDS.slice() : CARDS.filter(c=>c.ch==v);
+  render(current);
+});
+document.getElementById('n-all').textContent = `(${CARDS.length})`;
+document.getElementById('n-1').textContent = `(${CARDS.filter(c=>c.ch===1).length})`;
+document.getElementById('n-2').textContent = `(${CARDS.filter(c=>c.ch===2).length})`;
+render(current);
+</script>
+</body>
+</html>
