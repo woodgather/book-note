@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《打造第二大脑》· Anki 精华卡片</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f4f1ea;
+    --card-front: #fffdf8;
+    --card-back: #1f2933;
+    --ink: #2d3748;
+    --ink-soft: #5f6b76;
+    --accent: #c05621;
+    --accent-soft: #fdf0e3;
+    --line: #e3ddd0;
+    --core: #c05621; --capture: #2b6cb0; --organize: #2f855a; --distill: #805ad5; --express: #b83280; --habit: #b7791f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    padding: 32px 20px 60px;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 26px; }
+  .book-tag {
+    display: inline-block; font-size: 12px; letter-spacing: 3px; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 3px 14px; margin-bottom: 12px;
+  }
+  h1 { font-size: 30px; font-weight: 700; letter-spacing: 1px; }
+  h1 .en { display:block; font-size: 13px; font-weight: 400; color: var(--ink-soft); letter-spacing: 4px; margin-top: 4px; }
+  .desc { color: var(--ink-soft); font-size: 14px; margin-top: 10px; max-width: 620px; margin-left: auto; margin-right: auto; }
+
+  .stats { display: flex; justify-content: center; gap: 26px; margin-top: 16px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat b { font-size: 20px; color: var(--accent); }
+  .stat span { display: block; font-size: 12px; color: var(--ink-soft); }
+
+  .filters { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 22px 0 8px; }
+  .chip {
+    cursor: pointer; border: 1px solid var(--line); background: var(--card-front);
+    border-radius: 999px; padding: 6px 16px; font-size: 13px; color: var(--ink-soft);
+    transition: all .18s ease; user-select: none;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .tip { text-align: center; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 20px; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+
+  .scene { perspective: 1400px; }
+  .card {
+    position: relative; width: 100%; min-height: 210px; cursor: pointer;
+    transform-style: preserve-3d; transition: transform .55s cubic-bezier(.4,.1,.2,1);
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 14px; padding: 20px 22px 18px; display: flex; flex-direction: column;
+    box-shadow: 0 2px 6px rgba(60,50,30,.08), 0 10px 24px rgba(60,50,30,.07);
+  }
+  .front { background: var(--card-front); border: 1px solid var(--line); }
+  .back {
+    background: var(--card-back); color: #eef1f4; transform: rotateY(180deg);
+    border: 1px solid #141c23; overflow-y: auto;
+  }
+  .face .meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .cat {
+    font-size: 11px; padding: 2px 10px; border-radius: 999px; color: #fff; letter-spacing: 1px; flex-shrink: 0;
+  }
+  .num { font-size: 11px; color: var(--ink-soft); }
+  .back .num { color: #9aa5b1; margin-left: auto; }
+  .q { font-size: 16.5px; font-weight: 600; line-height: 1.65; flex: 1; }
+  .a { font-size: 14.5px; line-height: 1.8; flex: 1; }
+  .a b, .a strong { color: #ffd8a8; font-weight: 600; }
+  .a .src { display: block; margin-top: 10px; font-size: 12px; color: #9aa5b1; }
+  .flip-hint { align-self: flex-end; font-size: 11px; color: var(--ink-soft); margin-top: 10px; letter-spacing: 1px; }
+  .back .flip-hint { color: #6b7683; }
+
+  .c-core { background: var(--core); } .c-capture { background: var(--capture); }
+  .c-organize { background: var(--organize); } .c-distill { background: var(--distill); }
+  .c-express { background: var(--express); } .c-habit { background: var(--habit); }
+
+  footer { text-align: center; margin-top: 40px; color: var(--ink-soft); font-size: 12.5px; }
+  footer .dot { margin: 0 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="book-tag">读 书 精 华 · ANKI 卡 片</div>
+    <h1>《打造第二大脑》<span class="en">BUILDING A SECOND BRAIN — Tiago Forte</span></h1>
+    <p class="desc">基于全书内容提炼的精华问答卡片。点击卡片即可翻面查看答案；使用分类标签可按主题筛选浏览。</p>
+    <div class="stats">
+      <div class="stat"><b id="stat-total">0</b><span>精华卡片</span></div>
+      <div class="stat"><b>6</b><span>主题分类</span></div>
+      <div class="stat"><b>CODE</b><span>四步核心法则</span></div>
+    </div>
+  </header>
+
+  <div class="filters" id="filters"></div>
+  <p class="tip">🖱️ 单击卡片翻面 · 再次单击翻回</p>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    整理自《打造第二大脑》（蒂亚戈·福特）中文版全书
+    <span class="dot">·</span>核心方法论：CODE 信管法则（抓取 → 组织 → 提炼 → 表达）与 PARA 组织系统
+  </footer>
+</div>
+
+<script>
+const cards = [
+/* ============ 核心概念 ============ */
+{cat:"core", q:"什么是“第二大脑”？它用一句话如何定义？",
+ a:"一套<b>数字档案系统</b>，用以存储你最宝贵的记忆、想法和知识，帮助你更轻松地完成工作、经营业务和管理生活，<b>无须耗费脑力记忆繁琐信息</b>。它好比装在口袋里的个人图书馆，是札记本传统在现代的数字化进化。"},
+{cat:"core", q:"为什么不该让生物大脑承担存储所有信息的任务？",
+ a:"当今生活的认知需求与日俱增，但大脑与 20 万年前并无差别。把精力耗费在记忆上，会挤占人类独有的活动：<b>发明创造、归纳模式、遵循直觉、制定计划</b>。头脑的价值在于创意，而非记忆（戴维·艾伦）。"},
+{cat:"core", q:"信息过载的时代有多严重？（书中给出的数据）",
+ a:"每人每天处理信息量高达 <b>34GB</b>（约 174 份报纸，比 1986 年高 5 倍）；美国员工平均每年花 <b>76 小时</b>寻找无序信息；脑力劳动者 26% 的时间用于搜寻拼凑信息，且成功率仅 <b>56%</b>。"},
+{cat:"core", q:"第二大脑的四大“超能力”是什么？",
+ a:"① 推动<b>抽象思维的具象化</b>（如沃森、克里克用折纸模型发现 DNA 双螺旋）；② 促进不同思想间的<b>融会贯通</b>；③ 辅助<b>长期决策规划</b>（“文火慢焙”对抗近期偏差）；④ 形成鲜明而<b>独到的观点</b>。"},
+{cat:"core", q:"什么是 CODE 信管法则？",
+ a:"构建第二大脑的四步法：<b>抓取 Capture</b>（让笔记更走心）→ <b>组织 Organize</b>（以行动为导向）→ <b>提炼 Distill</b>（萃取本质）→ <b>表达 Express</b>（成果展示）。既是入门方法，又是长期策略。"},
+{cat:"core", q:"CODE 四步与“发散—聚合”创新模型如何对应？",
+ a:"前两步<b>抓取+组织 = 发散</b>（研究、探索、萌发创意，广泛收集）；后两步<b>提炼+表达 = 聚合</b>（停止吸纳，用已有素材创造新事物）。创作即在这两个模式间循环往复。"},
+{cat:"core", q:"什么是“知识模块”？它与乐高积木有何相似？",
+ a:"现代化、专业化的笔记——<b>带有鲜明个人色彩、无须依赖大脑记忆的独立信息元素</b>。如乐高积木可被快速搜寻、移动、组装与重组，知识模块一旦成型便可不断组合混搭，形成报告、论文、策划等更高层级的成果。"},
+{cat:"core", q:"个人知识管理的三个阶段是什么？",
+ a:"① <b>识记</b>：记忆辅助工具，保存易忘的信息；② <b>联结</b>：将不同想法串联，进化为思维工具；③ <b>创新</b>：终极用途，用积累的资料开拓创造、造福他人。"},
+{cat:"core", q:"数字笔记应用具备哪四大特质，使其适合充当第二大脑？",
+ a:"① <b>多媒体</b>——存储形式和空间远超纸质；② <b>非正式</b>——包容杂乱，利于流畅记录；③ <b>开放性</b>——淡化目的，鼓励自由探索；④ <b>行为导向</b>——帮你捕捉稍纵即逝的闪念，安心专注手头工作。"},
+{cat:"core", q:"哪些内容不建议存入第二大脑（笔记应用）？",
+ a:"四类：<b>敏感或涉密信息</b>（税务、密码、健康记录）；<b>需要专门应用打开的特殊格式</b>（PSD、视频）；<b>容量巨大的文件</b>（影响运行效率）；<b>需要多人协同编辑的信息</b>（应选专业协作平台）。"},
+
+/* ============ 抓取 ============ */
+{cat:"capture", q:"抓取笔记的核心原则是什么？只记什么？",
+ a:"只记录<b>震撼人心的“重磅信息”</b>，其余能省则省。判断标准是内心的共鸣：眼睛瞪圆、心跳漏拍、世界静止——不必保持理性、不必刨根问底，遵从直觉的悸动即可记录。"},
+{cat:"capture", q:"信息抓取的四大标准是什么？",
+ a:"① <b>启发性</b>——是否激发灵感（如客户感言库）；② <b>实用性</b>——是否随时可用（如木匠的边角料）；③ <b>个性化</b>——个人观点、反思与记忆；④ <b>新奇性</b>——是否颠覆固有认知（香农：信息就是让你耳目一新的东西）。"},
+{cat:"capture", q:"抓取笔记时，篇幅应控制在原文的多少以内？为什么？",
+ a:"至多不超过原文的 <b>10%</b>。超过这一比例会大大增加日后重温的难度。只摘精选段落，不整章照搬；不整页保存，只截有趣片段——像博物馆长遴选藏品一样挑剔。"},
+{cat:"capture", q:"什么是费曼的“十二个兴趣问题”抓取法？",
+ a:"在脑海常备一打<b>开放式问题</b>（无须标准答案）。每当接触新知识，就用这十二个问题逐一测试，看能否提供启发。以此决定抓取取舍，让好奇心而非焦虑引领信息摄入，让看似无关的事物产生联结。"},
+{cat:"capture", q:"什么是“生成效应”？为何笔记有助于记忆？",
+ a:"相比单纯阅读，当人们通过<b>读、写等活动主动生成词语</b>时，会有更多脑区被激活，记忆更牢固。写作还会触发“思想级联”，创造原本不存在的新知识——写作既来源于思考，又有助于思考。"},
+{cat:"capture", q:"哪些属于值得抓取的“外部知识”和“内部知识”？",
+ a:"外部：<b>亮点、引文、书签收藏、语音备忘、会议笔记、图像、启示</b>；内部：<b>故事、见解、记忆、反思、冥想</b>（浴室灵感）。建议从其中挑选 2~3 种自己储备最多的内容开始入手。"},
+
+/* ============ 组织 ============ */
+{cat:"organize", q:"什么是 PARA 系统？四个字母分别代表什么？",
+ a:"以行动为导向的信息组织法：<b>Project 项目</b>（正在进行的短期活动）、<b>Area 领域</b>（长期履行的责任）、<b>Resource 资源</b>（潜在有用的兴趣课题）、<b>Archive 存档</b>（以上之外的休眠信息）。"},
+{cat:"organize", q:"PARA 与传统“按主题分类”的根本区别是什么？",
+ a:"PARA <b>重行动、轻分类</b>。按主题（如心理学文件夹）分类过于宽泛难检索；PARA 只问一个问题：“这条信息放在哪个项目里最管用？”知识必须有利于推进项目，否则便是有害无益的。"},
+{cat:"organize", q:"“项目”与“领域”的关键区别是什么？",
+ a:"项目：<b>有始有终</b>的短期追求，以明确结果收尾（定案、发布、出版）；领域：<b>没有终点</b>的长期责任（理财、健康、家庭），不以目标为准，而以需要坚持的<b>标准</b>来衡量。"},
+{cat:"organize", q:"一条新笔记，按什么顺序决定它归入 PARA 哪一类？",
+ a:"速查表自上而下：① 对哪个<b>项目</b>最有帮助？② 若无——对哪个<b>领域</b>最有帮助？③ 若无——属于哪种<b>资源</b>？④ 若无——归入<b>存档</b>。按实用性和时效性两个维度判断。"},
+{cat:"organize", q:"PARA 与厨房类比是如何对应的？",
+ a:"<b>项目 = 炉灶上的锅具</b>（烹饪进行时）；<b>领域 = 冰箱</b>（近期常用）；<b>资源 = 食品柜</b>（不碍事又随时可用）；<b>存档 = 冰柜</b>（冷冻备日后）。按与目标菜肴的关联程度存放，而非按食材种类。"},
+{cat:"organize", q:"为什么抓取和组织必须分成两个独立步骤？",
+ a:"记录的第一时间<b>不是确定笔记性质的最佳时机</b>。边抓取边分类会增加心理负担、降低记录积极性。应先用“收件箱/每日一记”暂存，之后（如每周小结时）再从容归类——走心记录是独立的决策。"},
+{cat:"organize", q:"什么是“大教堂效应”？它与第二大脑有何关系？",
+ a:"研究发现<b>环境会塑造思维模式</b>：开阔空间让思维格局打开，逼仄空间让思考更具体。第二大脑不仅是一种工具，更是一种环境——一座思想上的大教堂，应像打理物理空间一样精心设计数字环境。"},
+
+/* ============ 提炼 ============ */
+{cat:"distill", q:"什么是“可见性”？为什么它是笔记的关键？",
+ a:"指信息内涵与用途的<b>易见度</b>。笔记体量越大，重温所需时间越多——体量与可见性成反比。每条笔记都是为未来的自己准备的“期货”：若无法让忙碌、挑剔、没耐心的未来的你快速抓住要点，心血便付诸东流。"},
+{cat:"distill", q:"“渐进式归纳法”的四个层级分别是什么？",
+ a:"① 原文摘录（<b>土壤</b>）；② 黑色<b>加粗</b>关键句（原油）；③ 黄色<b>高亮</b>最精华处（黄金）；④ 笔记顶部用<b>自己的语言写纲要</b>（宝石）。层层递进，随时可依时间多少选择阅读深度——如同可缩放的知识版图。"},
+{cat:"distill", q:"渐进式归纳法各层级的内容比例应为多少？",
+ a:"经验法则：每一层级的重点<b>不应超过上一层级内容的 10%~20%</b>。如摘抄 500 字，加粗不超过 100 字，高亮不超过 20 字。掌握“见好就收”，避免把荧光笔画满全书。"},
+{cat:"distill", q:"笔记新手在提炼时最常犯的三个错误是什么？",
+ a:"① <b>过度标记</b>——什么都想要，最后什么都得不到；② <b>缺乏明确目标</b>——无目的地地毯式提炼，时间投入与回报不成比例；③ <b>故作高深</b>——过度分析，应凭直觉和共鸣来判断重点。"},
+{cat:"distill", q:"什么是“信息协同”（stigmergy）？",
+ a:"源自蚁群觅食策略：蚂蚁沿途留下信息素，让同伴高效找到食物。对应到笔记——<b>“接触信息”与“改善信息”必须同步进行</b>：每次翻阅笔记时都顺手画重点、加标题、做注释，使未来的自己更容易挖掘其价值。"},
+{cat:"distill", q:"毕加索的《公牛》系列说明什么提炼道理？",
+ a:"11 幅石版画逐步解构公牛形态，最终寥寥数笔却神韵尽显——“结果之简掩盖了过程之繁”。提炼之道即<b>先予后取、不断去粗取精</b>：不可能让笔记既突出重点又一字不落，有舍才能有得。"},
+{cat:"distill", q:"提炼笔记时，应带着哪个关键问题？",
+ a:"“<b>如何记录才能更好地帮到今后的自己？</b>”笔记不是官方文档，无须滴水不漏；它像书签，帮你需要时迅速定位。检验标准：搁置一段时间后，30 秒内能否借高亮文字重拾全部记忆。"},
+
+/* ============ 表达 ============ */
+{cat:"express", q:"什么是“半熟素材”（Intermediate Packets）？",
+ a:"构建最终作品所需的<b>个别的、具体的创作元素</b>：会议纪要、研究成果、头脑风暴、幻灯片、行动项目等。它们是你的知识产权（缩写同为 IP）。像乐高积木一样，积木越多，拼搭作品越容易——新项目不再起步于白纸。"},
+{cat:"express", q:"五种易于创建和再利用的“半熟素材”是什么？",
+ a:"① <b>干货笔记</b>（通读提炼的精要）；② <b>落选素材</b>（被项目砍掉但有潜力的材料）；③ <b>过程性文件</b>（文档、模板、日程）；④ <b>最终成果</b>（可复用的交付物）；⑤ <b>他山之石</b>（团队成员、客户的可用素材，须标明出处）。"},
+{cat:"express", q:"检索笔记信息的四种方法是什么？",
+ a:"① <b>搜索</b>——首选利器，几秒定位；② <b>浏览</b>——按文件夹层层发掘，符合人类空间思维；③ <b>标签</b>——突破分类限制，适合临时起意的项目；④ <b>随缘</b>——机缘巧合的意外发现，靠素材的多样集中存放来促成。"},
+{cat:"express", q:"什么是“思想群岛”（Archipelago of Ideas）策略？",
+ a:"启动项目前，先在“发散”阶段收集足够素材，再切换至“聚合”模式，像群岛间搭桥一样<b>将要点串联成数字大纲</b>。它将“选择想法”（发散）与“逻辑排序”（聚合）分成两步，摆脱面对白纸的拖延与茫然。"},
+{cat:"express", q:"什么是“海明威之桥”策略？",
+ a:"海明威一旦明确后续章节的思路，<b>便立刻停笔</b>，而非写到手思枯竭。停笔前在笔记中写下：下一步想法、当前状态、易被遗忘的要点、下一阶段目标——用今天的余力为明天的开局铺路。"},
+{cat:"express", q:"什么是“压缩范围”策略？",
+ a:"源自软件开发：临近发布时<b>砍掉最昂贵、最不确定、离核心最远的功能</b>，而非推迟发布。被删的内容存入第二大脑，日后可能激活另一个项目——写书可先写帖子，办研讨会可先办读书会。学会分享自己的不完美。"},
+{cat:"express", q:"“只启动已经完成了 80% 的项目”是什么意思？",
+ a:"当你通过抓取、组织、提炼已完成大部分前期工作（素材已备齐、大纲已成型），才正式启动创作。这看似悖论，实则确保你<b>永远不会启动一项无法完成的工程</b>——牧师策划悼念仪式的案例便是如此。"},
+{cat:"express", q:"为什么说“创造力源自对既有事物的混搭”？",
+ a:"没人能真正无中生有，我们都站在前人肩膀上。如《星球大战》模型的“配件混搭”（Kitbashing）：将预制配件重组为新模型。混搭≠照抄——借鉴闪光部分（布局、风格、形式），并始终标明出处。"},
+
+/* ============ 习惯与心法 ============ */
+{cat:"habit", q:"餐厅后厨的“餐前准备”（mise en place）给知识工作者什么启示？",
+ a:"厨师在烹饪中<b>同步保持环境整洁</b>：工具定位、刀具随用随擦、配料按序排列。脑力工作者同样无法停下工作专门“大扫除”，须把系统维护融入日常碎片时间，而不是等系统崩溃才临时抱佛脚。"},
+{cat:"habit", q:"“项目启动清单”包含哪五步？",
+ a:"① 记录对项目的现实想法（头脑风暴）；② 检视可能含相关笔记的文件夹；③ <b>全盘搜索</b>相关术语；④ 移动相关笔记至项目文件夹；⑤ 撰写笔记大纲和项目方案。整体约 20~30 分钟，相当于项目的“飞行预检单”。"},
+{cat:"habit", q:"“项目完成清单”包含哪五步？",
+ a:"① 在任务管理器中标记完成；② 回顾目标是否达成并移入“已完成”列表；③ <b>重温半熟素材</b>并移至其他文件夹复用；④ 项目文件夹整体归档（跨平台同步）；⑤ 对搁置项目添加一条“当前状态”笔记（海明威之桥）。约 5~10 分钟。"},
+{cat:"habit", q:"“每周小结”的五个步骤是什么？",
+ a:"① 清理电子邮件收件箱；② 检查日历；③ 清理电脑桌面；④ <b>清理笔记收件箱</b>——给每条笔记加提示性标题、移入合适的 PARA 文件夹；⑤ 确定下周优先事项。重点在养成定期清理的习惯，而非机械执行。"},
+{cat:"habit", q:"“月度小结”与每周小结有何不同？包含哪些步骤？",
+ a:"月度小结更偏<b>反思与整体调整</b>：① 评估更新目标；② 评估更新项目列表；③ 评估责任领域（领域笔记常孕育新项目）；④ 评估待办任务（“或有”事项可能时机成熟）；⑤ 重新排列优先事项。"},
+{cat:"habit", q:"什么是“处处留意”的习惯？",
+ a:"随时随地发现改善笔记的小机会：优化标题、移动或链接笔记、合并相似内容、分享不成熟的素材给他人……如同厨师的“微操”。笔记不是紧急事项，漏掉一条并无大碍，系统<b>容错率很高</b>。"},
+{cat:"habit", q:"第二大脑带来哪两种思维模式的转变？",
+ a:"从<b>稀缺性思维</b>（恐慌性囤积信息、多多益善）转向<b>充裕性思维</b>（有价值的想法无处不在，只须汲取灵感）；从<b>履行责任</b>转向<b>提供服务</b>——知识越传播越强大，是唯一分享后反而增值的资源。"},
+{cat:"habit", q:"什么是“波兰尼悖论”？它与第二大脑有何关系？",
+ a:"“<b>人类所知远胜于其所能言传</b>。”隐性知识存在于潜意识和肌肉记忆中，无法精确表述。构建第二大脑收集事实只是手段，真正的目的是<b>发掘内心深处的隐性知识</b>——这是人类相对机器的最后壁垒。"},
+{cat:"habit", q:"为什么不该执着于寻找“完美的笔记应用”？",
+ a:"限制个人潜能的从来不是某套工具，而是<b>思维模式</b>。换工具不如换思维。我们寻找的不是完美器具，而是一位可靠助手，不来电随时可换。任何必须做到极致完美才能运行的系统，往往恰恰脆弱不堪。"},
+{cat:"habit", q:"作者本人如何与第二大脑结缘？",
+ a:"大学时作者突发不明<b>慢性咽喉疼痛</b>，药物副作用又导致严重失忆。他开始用数字方式整理病史、记录观察，最终发现病因是“功能性发声障碍”并靠生活方式调整好转——笔记在他康复中的作用不输任何药物。"},
+{cat:"habit", q:"构建第二大脑的 12 步中，最应先做的前几步是什么？",
+ a:"① 明确 2~3 种最想抓取的内容；② 选定笔记应用；③ 选择抓取工具（如“稍后读”应用）；④ 搭建 PARA 四类文件夹；⑤ 写下<b>12 个兴趣问题</b>。之后循序渐进：渐进式归纳 → 半熟素材实验 → 每周小结，一步一个脚印。"},
+{cat:"habit", q:"札记本（Commonplace Book）传统是怎么回事？",
+ a:"自古希腊起，达·芬奇、洛克、伍尔芙、巴特勒等均随身携带札记本摘录灵感。18~19 世纪信息超载时尤为盛行。近代读者的“读”与“写”交织：<b>摘录、重组、再创作</b>——第二大脑正是这一传统的现代数字化重生。"}
+];
+
+const catMeta = {
+  core:{name:"核心概念", cls:"c-core"},
+  capture:{name:"抓取", cls:"c-capture"},
+  organize:{name:"组织", cls:"c-organize"},
+  distill:{name:"提炼", cls:"c-distill"},
+  express:{name:"表达", cls:"c-express"},
+  habit:{name:"习惯与心法", cls:"c-habit"}
+};
+
+const grid = document.getElementById('grid');
+const filters = document.getElementById('filters');
+let activeCat = 'all';
+
+function render(){
+  grid.innerHTML = '';
+  let n = 0;
+  cards.forEach((c, i) => {
+    if (activeCat !== 'all' && c.cat !== activeCat) return;
+    n++;
+    const m = catMeta[c.cat];
+    const scene = document.createElement('div');
+    scene.className = 'scene';
+    scene.innerHTML = `
+      <div class="card">
+        <div class="face front">
+          <div class="meta">
+            <span class="cat ${m.cls}">${m.name}</span>
+            <span class="num">No.${String(i+1).padStart(2,'0')}</span>
+          </div>
+          <div class="q">${c.q}</div>
+          <span class="flip-hint">点 击 翻 面 ↻</span>
+        </div>
+        <div class="face back">
+          <div class="meta">
+            <span class="cat ${m.cls}">${m.name}</span>
+            <span class="num">No.${String(i+1).padStart(2,'0')}</span>
+          </div>
+          <div class="a">${c.a}</div>
+          <span class="flip-hint">点 击 翻 回 ↺</span>
+        </div>
+      </div>`;
+    scene.querySelector('.card').addEventListener('click', function(){
+      this.classList.toggle('flipped');
+    });
+    grid.appendChild(scene);
+  });
+  document.getElementById('stat-total').textContent = n;
+}
+
+function buildFilters(){
+  const all = [{key:'all', name:'全部'}];
+  Object.entries(catMeta).forEach(([k,v]) => all.push({key:k, name:v.name}));
+  all.forEach((f, idx) => {
+    const chip = document.createElement('span');
+    chip.className = 'chip' + (idx === 0 ? ' active' : '');
+    chip.textContent = f.name;
+    chip.onclick = () => {
+      activeCat = f.key;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      render();
+    };
+    filters.appendChild(chip);
+  });
+}
+
+buildFilters();
+render();
+</script>
+</body>
+</html>

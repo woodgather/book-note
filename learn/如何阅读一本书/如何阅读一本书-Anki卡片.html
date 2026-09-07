@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《如何阅读一本书》· 精华 Anki 卡片</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f7f3ea;
+    --card-front: #fffdf8;
+    --card-back: #fbf8f0;
+    --ink: #2b2620;
+    --ink-soft: #6b6155;
+    --accent: #8c3b2e;
+    --accent-soft: #b5645a;
+    --gold: #a98b4f;
+    --border: #e4dccb;
+    --shadow: 0 6px 20px rgba(80, 60, 30, 0.10);
+    --shadow-lift: 0 14px 34px rgba(80, 60, 30, 0.16);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", Georgia, serif;
+    background: var(--paper);
+    background-image: radial-gradient(rgba(140,59,46,0.04) 1px, transparent 1px);
+    background-size: 22px 22px;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 40px 28px 80px;
+  }
+  .container { max-width: 1180px; margin: 0 auto; }
+
+  /* ---------- Header ---------- */
+  header { text-align: center; margin-bottom: 30px; }
+  .book-eyebrow {
+    display: inline-block; font-size: 13px; letter-spacing: 6px;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 12px;
+  }
+  h1 { font-size: 34px; font-weight: 700; letter-spacing: 2px; }
+  h1 .title-dash { color: var(--gold); margin: 0 8px; }
+  .subtitle { margin-top: 10px; color: var(--ink-soft); font-size: 15px; line-height: 1.8; }
+  .divider {
+    width: 120px; height: 2px; margin: 20px auto 0;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .stats { display: flex; justify-content: center; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
+  .stat-chip {
+    background: var(--card-front); border: 1px solid var(--border);
+    border-radius: 999px; padding: 6px 16px; font-size: 13px; color: var(--ink-soft);
+    box-shadow: var(--shadow);
+  }
+  .stat-chip b { color: var(--accent); font-size: 15px; }
+
+  /* ---------- Toolbar ---------- */
+  .toolbar {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    align-items: center; margin: 26px 0 8px;
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(247,243,234,0.92); backdrop-filter: blur(6px);
+    padding: 12px 8px; border-radius: 14px;
+  }
+  .chip {
+    border: 1px solid var(--border); background: var(--card-front);
+    color: var(--ink-soft); border-radius: 999px; padding: 7px 16px;
+    font-size: 13.5px; cursor: pointer; font-family: inherit;
+    transition: all .2s ease; letter-spacing: 1px;
+  }
+  .chip:hover { border-color: var(--accent-soft); color: var(--accent); transform: translateY(-1px); }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(140,59,46,.28); }
+  .search-box {
+    border: 1px solid var(--border); border-radius: 999px; padding: 7px 18px;
+    font-size: 13.5px; font-family: inherit; width: 200px; color: var(--ink);
+    background: var(--card-front); outline: none; transition: all .2s ease;
+  }
+  .search-box:focus { border-color: var(--gold); width: 240px; box-shadow: 0 0 0 3px rgba(169,139,79,.12); }
+  .btn-flip-all {
+    border: 1px solid var(--gold); background: transparent; color: var(--gold);
+    border-radius: 999px; padding: 7px 18px; font-size: 13.5px; cursor: pointer;
+    font-family: inherit; transition: all .2s ease; letter-spacing: 1px;
+  }
+  .btn-flip-all:hover { background: var(--gold); color: #fff; }
+  .hint { text-align: center; color: var(--ink-soft); font-size: 12.5px; margin-bottom: 26px; letter-spacing: 1px; }
+
+  /* ---------- Card Grid (2 columns) ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+  /* ---------- Flip Card ---------- */
+  .card { perspective: 1600px; min-height: 250px; }
+  .card-inner {
+    position: relative; width: 100%; height: 100%; min-height: 250px;
+    transform-style: preserve-3d;
+    transition: transform .65s cubic-bezier(.4,.2,.2,1);
+    cursor: pointer;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  .card-face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 14px; border: 1px solid var(--border);
+    padding: 24px 26px 20px; display: flex; flex-direction: column;
+    box-shadow: var(--shadow);
+    transition: box-shadow .25s ease;
+    overflow: hidden;
+  }
+  .card:hover .card-face { box-shadow: var(--shadow-lift); }
+  .face-front { background: var(--card-front); }
+  .face-back {
+    background: var(--card-back); transform: rotateY(180deg);
+    border-color: #ddcfb4;
+  }
+
+  .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .tag {
+    font-size: 11.5px; letter-spacing: 2px; padding: 4px 12px; border-radius: 999px;
+    color: #fff; font-weight: 500; white-space: nowrap;
+  }
+  .card-no { font-size: 12px; color: var(--gold); font-family: Georgia, serif; letter-spacing: 1px; }
+
+  .q-mark {
+    font-size: 26px; color: var(--gold); font-family: Georgia, serif;
+    line-height: 1; margin: 2px 0 10px;
+  }
+  .q-text { font-size: 16.5px; font-weight: 700; line-height: 1.75; letter-spacing: .5px; }
+  .a-text { font-size: 14px; line-height: 1.95; color: var(--ink); text-align: justify; }
+  .a-text .em { color: var(--accent); font-weight: 700; }
+
+  .face-bottom { margin-top: auto; padding-top: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .src { font-size: 12px; color: var(--ink-soft); font-style: italic; }
+  .flip-cue { font-size: 11.5px; color: var(--gold); letter-spacing: 2px; }
+  .face-back .flip-cue { color: var(--accent-soft); }
+
+  .face-back .back-head {
+    display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px;
+    padding-bottom: 8px; border-bottom: 1px dashed var(--border);
+  }
+  .back-head .q-mini { font-size: 12.5px; color: var(--ink-soft); }
+  .back-head .tag-mini {
+    font-size: 11px; color: var(--accent); letter-spacing: 2px; white-space: nowrap;
+  }
+
+  .empty {
+    grid-column: 1 / -1; text-align: center; padding: 60px 0;
+    color: var(--ink-soft); font-size: 15px;
+  }
+
+  footer {
+    margin-top: 60px; text-align: center; color: var(--ink-soft);
+    font-size: 12.5px; line-height: 2;
+  }
+  footer .divider { margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="book-eyebrow">ANKI · 精华卡片</div>
+    <h1>如何阅读一本书<span class="title-dash">·</span>精华卡片</h1>
+    <p class="subtitle">[美] 莫提默·J·艾德勒 / 查尔斯·范多伦 &nbsp;|&nbsp; 点击卡片翻面查看答案</p>
+    <div class="divider"></div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="toolbar" id="toolbar">
+    <button class="chip active" data-cat="全部">全部</button>
+    <div id="cat-chips" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"></div>
+    <button class="btn-flip-all" id="flip-all">全部翻面</button>
+    <input type="text" class="search-box" id="search" placeholder="搜索关键词…">
+  </div>
+  <p class="hint">卡片正面为问题，点击翻面查看答案与出处 · 四个阅读层次循序渐进、层层包含</p>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <div class="divider"></div>
+    内容提炼自《如何阅读一本书》（Mortimer J. Adler &amp; Charles Van Doren 著），
+    覆盖基础阅读、检视阅读、分析阅读、主题阅读四个层次与各类读物的阅读方法。<br>
+    「主动阅读的艺术，就是在阅读中以适当的顺序提出适当的问题。」
+  </footer>
+</div>
+
+<script>
+const CARDS = [
+/* ============ 总论 · 阅读的目标与艺术 ============ */
+{cat:"总论", src:"第一章 阅读的活力与艺术",
+ q:"本书所说的“阅读”，最重要的目标是什么？",
+ a:"为<span class='em'>增进理解</span>而读，而非仅为获得资讯或消遣。要读那种“一开始不完全懂”的书——作者的理解水平略高于你，通过主动阅读拉近与作者的差距，让理解力得到提升。只读完全明白的书，只是把已知的东西换个说法而已。"},
+{cat:"总论", src:"第一章 阅读的活力与艺术",
+ q:"什么是“阅读的艺术”？",
+ a:"阅读的艺术是凭借头脑的运作——敏锐的观察、可靠的记忆、想象的空间，以及<span class='em'>训练有素的分析与省思能力</span>——尽可能掌握作者想传达的理解。它像其他艺术一样，需要规则与刻意练习才能臻于成熟。"},
+{cat:"总论", src:"第一章 阅读的活力与艺术",
+ q:"为什么“读得多”不等于“读得好”？",
+ a:"阅读的收获取决于<span class='em'>技巧而非数量</span>。同样的时间内，读得好的人比读得多而不求甚解的人收获更大；甚至读得少而读得好的人，比读得太多的人收获更多。许多速读课程只解决了基础层次的问题，理解力才是瓶颈。"},
+{cat:"总论", src:"第二章 阅读的层次",
+ q:"阅读的四个层次是什么？彼此是什么关系？",
+ a:"①基础阅读 ②检视阅读 ③分析阅读 ④主题阅读。四个层次是<span class='em'>渐进且包含</span>的关系：后一层次包含前面所有层次，主题阅读是最高层次，涵盖并超越所有层次。"},
+{cat:"总论", src:"第四章 检视阅读·末尾",
+ q:"主动阅读的核心是什么？",
+ a:"<span class='em'>在阅读时提出问题，并且自己尝试回答。</span>只要是超越基础阅读的阅读，阅读的艺术就是以适当的顺序提出适当的问题。带着问题读，并在过程中寻找答案，就是主动的阅读。"},
+
+/* ============ 基础阅读 ============ */
+{cat:"基础阅读", src:"第三章 基础阅读",
+ q:"基础阅读是什么？分为哪四个阶段？",
+ a:"摆脱文盲状态、学会认字的基本阅读，通常在小学完成。四阶段：①<span class='em'>阅读准备</span>（学前教育）；②<span class='em'>认字</span>（一年级）；③<span class='em'>字汇增长与运用</span>（四年级，功能性读写）；④<span class='em'>精练与增进</span>（成熟读写能力）。"},
+
+/* ============ 检视阅读 ============ */
+{cat:"检视阅读", src:"第四章 检视阅读",
+ q:"检视阅读有哪两个子层次？",
+ a:"①<span class='em'>有系统的略读或粗读</span>：快速判断这本书值不值得花时间细读；②<span class='em'>粗浅的阅读</span>：第一遍通读全书，不求甚解。两者都是分析阅读的必要准备。"},
+{cat:"检视阅读", src:"第四章 检视阅读",
+ q:"有系统的略读，具体怎么做（六个建议）？",
+ a:"①看书名页与序言，把书归类；②研究目录页，掌握全书架构；③检阅索引，估量书涉及的议题与引用书目；④读出版者的介绍（可能有全书主旨）；⑤挑几个与主题相关的篇章浏览；⑥东翻西翻，读一两段或几页，留意开头与结尾。"},
+{cat:"检视阅读", src:"第四章 检视阅读",
+ q:"为什么说花时间略读一本书，绝没有浪费？",
+ a:"略读像“打谷”，帮你从糙糠中滤出营养的谷核：即使最终决定不细读，你也知道了作者的重要主张、这本书到底是本什么样的书；若决定细读，略读已为分析阅读打下基础。"},
+{cat:"检视阅读", src:"第四章 检视阅读",
+ q:"面对一本难读的书，“粗浅的阅读”规则是什么？",
+ a:"头一次面对难书，<span class='em'>从头到尾先读完一遍，碰到不懂的地方不要停下来查询或思索</span>。只注意能理解的部分，继续读下去。如果你被某个顽固的段落绑住纠缠，你就被打败了；读第二遍时，那个地方你多半会懂得更多。"},
+{cat:"检视阅读", src:"第四章 检视阅读",
+ q:"关于阅读速度，正确的心态是什么？",
+ a:"该快则快、该慢则慢——帕斯卡尔说：“读得太快或太慢，都一无所获。”理想的速度不是一味求快，而是知道<span class='em'>什么书、什么部分该用什么速度</span>。超快的速读只是表现你在读一本不值得读的读物。"},
+
+/* ============ 自我要求的读者 ============ */
+{cat:"自我要求", src:"第五章 如何做一个自我要求的读者",
+ q:"阅读一个论说性作品时，要提出的四个基本问题是什么？",
+ a:"①<span class='em'>整体来说，这本书到底在谈些什么？</span>（主题与发展）②<span class='em'>作者细部说了什么，怎么说的？</span>（主旨与论点）③<span class='em'>这本书说得有道理吗？</span>全部有道理，还是部分有道理？④<span class='em'>这本书跟你有什么关系？</span>资讯有何意义，给你什么启示。"},
+{cat:"自我要求", src:"第五章 如何做一个自我要求的读者",
+ q:"为什么说“要让一本书真正属于你”，必须做笔记？",
+ a:"买书只是拥有它的前奏。要让书成为你的一部分、你也成为书的一部分，最好的方法就是<span class='em'>写下来</span>——俗话说“读出言外之意”，还要“写出言外之意”，才能达到最有效的阅读。"},
+{cat:"自我要求", src:"第五章 如何做一个自我要求的读者",
+ q:"三种层次的读书笔记分别是什么？",
+ a:"①<span class='em'>结构笔记</span>：检视阅读时做，关于全书架构与内容大纲；②<span class='em'>概念笔记</span>：分析阅读时做，关于作者与自己的观点；③<span class='em'>辩证笔记</span>：主题阅读时做，针对多本书共同参与的讨论，通常单独用一页纸记载。"},
+{cat:"自我要求", src:"第五章 如何做一个自我要求的读者",
+ q:"在书上做笔记，有哪些具体方法（七种）？",
+ a:"①画底线（重点）；②栏外再加一道线强调；③空白处做星号等记号（慎用，标最重要的十来处）；④空白处编号（作者论点的顺序）；⑤空白处记其他页码（相关的论点）；⑥圈出关键字或句子；⑦书前空白页写下全书的问题与答案、大纲。"},
+{cat:"自我要求", src:"第五章 如何做一个自我要求的读者",
+ q:"如何培养阅读的习惯？",
+ a:"习惯是规则的二次天性：先<span class='em'>把每个规则分开来练习</span>，就像学滑雪的每个动作；练到不必思考就能运用自如，各个动作自然融为一体，连贯成一个整体的阅读习惯。一开始会笨拙，但熟能生巧。"},
+
+/* ============ 分析阅读 · 第一阶段 ============ */
+{cat:"分析阅读", src:"第六章 一本书的分类",
+ q:"分析阅读之前，先要做的关键判断是什么？",
+ a:"先用检视阅读给书<span class='em'>分类</span>：这是虚构作品还是论说性作品？论说性中是实用性还是理论性？理论性中是历史、科学还是哲学？——分类决定了你该用什么方式去读它，阅读规则因书而异。"},
+{cat:"分析阅读", src:"第九章 末尾（规则总结）",
+ q:"分析阅读第一阶段：“找出一本书在谈些什么”的四个规则？",
+ a:"①<span class='em'>依照书的种类与主题分类</span>；②<em>用最简短的句子说出整本书在谈什么</em>；③<span class='em'>按顺序与关系列出全书重要部分</span>，拟出全书与各部分的纲要；④<span class='em'>找出作者在问的问题</span>，或想要解决的问题。"},
+{cat:"分析阅读", src:"第七章 透视一本书",
+ q:"为什么“用最简短的句子说出全书大意”是检验理解的关键？",
+ a:"这是试金石：能用自己的话概括全书（整体性），说明你抓住了作者的意图，而不是重复书中的字句。<span class='em'>说得出，才是读懂；说不出来，就是还没读懂。</span>好的作者也应能用一句话概括自己的书。"},
+{cat:"分析阅读", src:"第七章 透视一本书",
+ q:"什么是“X光般的透视”？",
+ a:"规则三的比喻：不只看到书的表面（目录章节），还要像X光一样<span class='em'>看穿它的骨架</span>——全书如何分部分、各部分如何组织成整体。目录只是纲要的起点，好的读者必须自己拟出更细的纲要。"},
+{cat:"分析阅读", src:"第七章 透视一本书",
+ q:"规则四“找出作者的问题”指什么？",
+ a:"作者写书总是为了解决问题。读者要找出：作者想回答什么问题？这个问题是<span class='em'>理论问题</span>（某事是否真实存在）还是<span class='em'>实用问题</span>（该怎样做）？列出问题序列，看哪个是核心、哪些是次要的。"},
+
+/* ============ 分析阅读 · 第二阶段 ============ */
+{cat:"分析阅读", src:"第九章 末尾（规则总结）",
+ q:"分析阅读第二阶段：“诠释一本书”的四个规则？",
+ a:"⑤<span class='em'>诠释作者的关键字，与他达成共识</span>；⑥<span class='em'>由最重要的句子抓住作者的重要主旨</span>；⑦<span class='em'>知道作者的论述</span>，从相关句子中重新架构出来；⑧<span class='em'>确定作者解决了哪些问题、还有哪些没解决</span>（包括哪些是作者知道自己没解决的）。"},
+{cat:"分析阅读", src:"第八章 与作者找出共通的词义",
+ q:"“单字”与“词义”有何区别？",
+ a:"词义是可供沟通的知识的基本单位。一个单字可能对应多个词义，一个词义也可能由多个单字表达。<span class='em'>读者要找出关键字，确认作者使用它们的方式</span>——认字不等于认义；读商务谈判尚且要先“达成共识”，读书更是第一步。"},
+{cat:"分析阅读", src:"第九章 判断作者的主旨",
+ q:"怎样检验自己是否真的掌握了作者的主旨？",
+ a:"①<span class='em'>用完全自己的话重述主旨</span>，而不是背诵或重复原文；②<span class='em'>就主旨举出一个自己经历过的相关例子</span>；③能指出书中更深层的引申含义与建议。三者做不到，就还是没懂。"},
+{cat:"分析阅读", src:"第九章 判断作者的主旨",
+ q:"关于“论述”，读者要做的是什么？",
+ a:"从书中找出包含论述的句子，重新组织这些前后相继的主旨：理清<span class='em'>前提与结论、假设与证明</span>，看作者如何证明某事成立。发现论述时，要问它是否普遍有效、是否得到支撑。"},
+{cat:"分析阅读", src:"第八章·第九章",
+ q:"判断一本书的架构时，“共识、主旨、论述”分别对应什么要素？",
+ a:"共识（词义）是作者与读者对<span class='em'>字</span>的统一理解；主旨是作者对问题的<span class='em'>判断与主张</span>；论述则是把主旨<span class='em'>连接起来以推出结论</span>的逻辑序列。三者由浅入深，构成诠释一本书的核心工作。"},
+
+/* ============ 分析阅读 · 第三阶段 ============ */
+{cat:"分析阅读", src:"第十章 公正地评断一本书",
+ q:"分析阅读第三阶段（评论）的三条智慧礼节？",
+ a:"⑨除非你已完成大纲架构、也能诠释整本书，<span class='em'>否则不要轻易批评</span>——在说出“我懂了”之前，别说同意、不同意或暂缓评论；⑩<span class='em'>不要争强好胜</span>，非辩到底不可；⑪在评论之前，要能<span class='em'>区分真正的知识与个人观点</span>的不同。"},
+{cat:"分析阅读", src:"第十一章 赞同或反对作者",
+ q:"批评作者的四个特别标准是什么？",
+ a:"①证明作者的<span class='em'>知识不足</span>；②证明作者的<span class='em'>知识错误</span>；③证明作者<span class='em'>不合逻辑</span>；④证明作者的<span class='em'>分析不完整</span>。前三点是不同意的准则，提不出佐证就必须（至少部分）同意作者；只有第四点可以让你暂缓评论。"},
+{cat:"分析阅读", src:"第十章 公正地评断一本书",
+ q:"为什么说“毫无理解便同意只是愚蠢，还不清楚便不同意也是无礼”？",
+ a:"同意与不同意都同样需要先理解、都同样需要花心力做判断。评论的义务建立在“我了解了”之上；<span class='em'>暂缓评论也是一种评论立场</span>——表示你还没被说服，但这同样要在充分理解之后才成立。"},
+{cat:"分析阅读", src:"第十二章 辅助阅读",
+ q:"“内在阅读”与“外在阅读”是什么？何时求助辅助阅读？",
+ a:"内在阅读是只凭自己与书本来阅读；外在阅读是借助外力——①相关经验；②其他书籍（经典应先直读，再读相关著作）；③导论与摘要（<span class='em'>最后读</span>，免得被导读者先入为主）；④工具书。<span class='em'>内在阅读优先</span>，尽力而为之后才求助外力。"},
+
+/* ============ 阅读不同读物 ============ */
+{cat:"不同读物", src:"第十三章 实用型的书",
+ q:"如何阅读实用型的书？",
+ a:"实用书教你怎么做，最终评断标准是<span class='em'>行动</span>：先找出作者的目的与方法（他要你做什么、怎么达成），再问自己是否同意他的目标与手段。如果你接受他的结论却不行动，就没有真正完成对一本实用书的阅读。"},
+{cat:"不同读物", src:"第十三章 实用型的书",
+ q:"为什么说实用书的作者多少都是“雄辩家或宣传家”？",
+ a:"实用书必须<span class='em'>说服</span>读者采取特定的思想与行动，所以多少混杂雄辩或宣传，会诉诸情绪、打动意志。读者要清醒地把“被他打动”与“被他证明”区分开来，再决定是否接受。"},
+{cat:"不同读物", src:"第十四章 想象文学",
+ q:"阅读想象文学的三个“不要”是什么？",
+ a:"①不要<span class='em'>抗拒</span>想象文学带给你的影响力；②不要去找<span class='em'>共识、主旨或论述</span>（那是读论说性作品的方法）；③不要用适用于<span class='em'>真理</span>的标准来衡量小说——它谈的是经验之美与可能性，不是事实陈述。"},
+{cat:"不同读物", src:"第十四章 想象文学",
+ q:"阅读想象文学的对应规则是什么？",
+ a:"架构性：①将作品分类（小说、戏剧、抒情诗）；②抓住大意——能简要说明<span class='em'>情节</span>（大意在情节之中）；③发现各部分如何架构（开端、高潮、结局的组合）。诠释性：让角色进入心灵，追随情节展开。评论性：说出你喜欢与否及理由。"},
+{cat:"不同读物", src:"第十五章 故事、戏剧与诗",
+ q:"读故事、小说有什么实操建议？",
+ a:"故事要<span class='em'>快读、全神投入，理想上一口气读完</span>——拖太久会忘了情节、失去整体感。要让作品在你身上发生作用：让角色进入你的心灵，<span class='em'>在有疑惑时先不要怀疑</span>，努力“活在他的世界里”，读完之前不要急于批评。"},
+{cat:"不同读物", src:"第十六章 历史书",
+ q:"阅读历史书要注意什么？",
+ a:"①历史更接近<span class='em'>小说</span>而非科学——它是对往事的叙述，有其形式与结构；②任何历史写作都从<span class='em'>某个观点</span>出发，想了解真相要多读几本不同视角的论著；③读史要问“与我何干”：历史揭示人类的普遍性，帮助我们理解现在与未来。"},
+{cat:"不同读物", src:"第十七章 科学与数学",
+ q:"如何阅读科学与数学的书？",
+ a:"经典科学著作（牛顿、达尔文）可当作<span class='em'>历史</span>来读，体会发现问题与解决问题的思维过程。数学是一种<span class='em'>语言</span>，有自己的词汇与文法，可以学习；读数学书要在纸上写写画画、动手推导，用自己的速度读，不必恐惧。"},
+{cat:"不同读物", src:"第十八章 哲学书",
+ q:"如何阅读哲学书？",
+ a:"①找出哲学家要回答的<span class='em'>真正问题</span>（以及他可能被时代局限而问错的问题）；②分清哲学问题与科学问题——能用实验验证的交给科学；③哲学答案要靠<span class='em'>自己的思考与日常经验</span>来检验，不靠统计数据；④留意作者的用语与思想风格。"},
+{cat:"不同读物", src:"第十九章 社会科学",
+ q:"如何阅读社会科学？",
+ a:"社会科学的用语约定俗成却定义松散（如“社会”“文化”），读者要主动确认<span class='em'>作者如何使用术语</span>；其作品常混合历史、科学与哲学于一身，读一本书往往不够——因此社会科学是最常需要<span class='em'>主题阅读</span>的领域。"},
+
+/* ============ 主题阅读 ============ */
+{cat:"主题阅读", src:"第二十章 主题阅读",
+ q:"什么是主题阅读（Syntopical Reading）？",
+ a:"阅读的第四层次、最高层次：就同一主题阅读许多本书，让“书”服务于“<span class='em'>你关心的主题</span>”，就你的问题建立起跨越作者的分析。在主题阅读中，你是主角，书是配角——这是“别有用心”的阅读。"},
+{cat:"主题阅读", src:"第二十章 主题阅读",
+ q:"主题阅读之前，必须先做什么工作？",
+ a:"通过<span class='em'>检视阅读</span>收集并筛选书单，确定哪些书与主题相关。检视阅读还能帮你初步厘清主题本身的问题——除非检视过大部分书目，你甚至无法完全理解自己的问题是什么。"},
+{cat:"主题阅读", src:"第二十章 主题阅读",
+ q:"主题阅读的五个步骤是什么？",
+ a:"①<span class='em'>找到相关章节</span>——为你的主题而非为书本身而读；②<span class='em'>带引作者与你达成共识</span>——建立自己的中立词汇，“翻译”各作者的术语；③<span class='em'>厘清问题</span>——列出问题让作者们回答；④<span class='em'>界定议题</span>——整理不同答案之间的分歧与关联；⑤<span class='em'>分析讨论</span>——保持辩证的客观。"},
+{cat:"主题阅读", src:"第二十章 主题阅读",
+ q:"什么是主题阅读要求的“辩证的客观”？",
+ a:"<span class='em'>面面俱到，而不预设立场。</span>方法：引用时尽量用作者自己的字句并附上你的“翻译”，避免以总结的方式、强调与忽略的比重、语气与排列顺序等微妙方式夹带偏见，让每个议题的正反双方平衡呈现。"},
+{cat:"主题阅读", src:"第二十章 主题阅读",
+ q:"主题阅读中，回答问题的责任在谁身上？",
+ a:"在<span class='em'>读者自己</span>身上。作者们未必直接回答你的问题（有的甚至对问题保持沉默），问题与议题由读者建立；最终的“这是真实的吗？与我何干？”也必须由读者自己作答——作者们只是被邀请参与讨论的人。"},
+
+/* ============ 心智成长 ============ */
+{cat:"心智成长", src:"第二十一章 阅读与心智的成长",
+ q:"为什么说“心智就跟肌肉一样”？",
+ a:"不常运用就会萎缩。电视、广播等外界刺激带来的“动脑”是人为支撑，像药品一样越用越需要；只有<span class='em'>内在的心智活动</span>——尤其是主动的阅读与思考——能让智力、品德与心灵持续成长。停止成长，就是开始走下坡路。"},
+{cat:"心智成长", src:"第二十一章 阅读与心智的成长",
+ q:"读一本好书（伟大的书）能带来什么特别的回馈？",
+ a:"伟大的书<span class='em'>重读时不断有新的发现</span>——它陪你一起成长，不同人生阶段能读出不同深度。好书还会给你“回馈”：读完之后你被提升了，能读原本读不了的书，也更了解自己与世界。"},
+{cat:"心智成长", src:"第二十一章 阅读与心智的成长",
+ q:"如何挑选值得精读的书？",
+ a:"世上<span class='em'>绝大多数书只值得略读</span>（获取资讯或消遣），很少数值得分析阅读，而极少数伟大的书值得一生反复重读。先用检视阅读筛选，把最好的时间与最好的理解力，留给最好的书。"}
+];
+
+const CAT_COLORS = {
+  "总论":      "#4a6fa5",
+  "基础阅读":  "#7a8b5c",
+  "检视阅读":  "#a98b4f",
+  "自我要求":  "#5e8c61",
+  "分析阅读":  "#8c3b2e",
+  "不同读物":  "#6b5b95",
+  "主题阅读":  "#2f7f8f",
+  "心智成长":  "#b07846"
+};
+
+let activeCat = "全部";
+let searchText = "";
+
+function esc(s){ return s; } // 内容中已使用受控 span
+
+function render(){
+  const grid = document.getElementById('grid');
+  const list = CARDS.map((c,i)=>({...c, no:i+1})).filter(c =>
+    (activeCat === "全部" || c.cat === activeCat) &&
+    (searchText === "" || (c.q + c.a.replace(/<[^>]+>/g,'') + c.src).includes(searchText))
+  );
+  if(list.length === 0){
+    grid.innerHTML = '<div class="empty">没有匹配的卡片，试试其他关键词或分类。</div>';
+    return;
+  }
+  grid.innerHTML = list.map(c => `
+    <div class="card" data-no="${c.no}">
+      <div class="card-inner">
+        <div class="card-face face-front">
+          <div class="card-top">
+            <span class="tag" style="background:${CAT_COLORS[c.cat]}">${c.cat}</span>
+            <span class="card-no">No.${String(c.no).padStart(2,'0')}</span>
+          </div>
+          <div class="q-mark">Q</div>
+          <div class="q-text">${c.q}</div>
+          <div class="face-bottom">
+            <span class="src">${c.src}</span>
+            <span class="flip-cue">点卡翻面 ↻</span>
+          </div>
+        </div>
+        <div class="card-face face-back">
+          <div class="back-head">
+            <span class="tag-mini">${c.cat} · No.${String(c.no).padStart(2,'0')}</span>
+            <span class="q-mini">${c.q}</span>
+          </div>
+          <div class="a-text">A&nbsp;&nbsp;${c.a}</div>
+          <div class="face-bottom">
+            <span class="src">出处：${c.src}</span>
+            <span class="flip-cue">点击翻回 ↻</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => card.classList.toggle('flipped'));
+  });
+}
+
+function renderStats(){
+  const cats = ["全部", ...new Set(CARDS.map(c=>c.cat))];
+  document.getElementById('stats').innerHTML =
+    `<span class="stat-chip">共 <b>${CARDS.length}</b> 张精华卡片</span>` +
+    `<span class="stat-chip"><b>${cats.length-1}</b> 个主题板块</span>` +
+    `<span class="stat-chip">四个阅读层次 · <b>主动阅读</b></span>`;
+  document.getElementById('cat-chips').innerHTML =
+    cats.filter(c=>c!=="全部").map(c =>
+      `<button class="chip" data-cat="${c}">${c} · ${CARDS.filter(x=>x.cat===c).length}</button>`
+    ).join('');
+}
+
+document.getElementById('toolbar').addEventListener('click', e => {
+  const btn = e.target.closest('.chip');
+  if(!btn) return;
+  document.querySelectorAll('.chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  activeCat = btn.dataset.cat;
+  render();
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  searchText = e.target.value.trim();
+  render();
+});
+
+let allFlipped = false;
+document.getElementById('flip-all').addEventListener('click', () => {
+  allFlipped = !allFlipped;
+  document.querySelectorAll('.card').forEach(c => c.classList.toggle('flipped', allFlipped));
+  document.getElementById('flip-all').textContent = allFlipped ? '全部翻回' : '全部翻面';
+});
+
+renderStats();
+render();
+</script>
+</body>
+</html>

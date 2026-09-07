@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>刻意练习 · 知识脑图</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #F2F5F3;      /* 冷调雾面纸底 */
+    --surface: #FFFFFF;
+    --ink: #1D2B29;        /* 墨绿黑 */
+    --muted: #5F706C;
+    --line: #D8E0DC;
+    --jade: #17685A;       /* 青玉绿：练习与生长 */
+    --jade-deep: #0F4C41;
+    --jade-soft: #E4EFEB;
+    --gold: #A87720;       /* 数据高亮：黄金标准 */
+    --gold-soft: #F7EFDC;
+    --rail-w: 300px;
+    --sans: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    --kai: "Kaiti SC", "STKaiti", "KaiTi", "Noto Serif SC", serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  a { color: inherit; }
+
+  /* ============ 左侧目录（竖向，可折叠，默认折叠） ============ */
+  .rail {
+    position: fixed; inset: 0 auto 0 0;
+    width: var(--rail-w);
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+    display: flex; flex-direction: column;
+    z-index: 30;
+  }
+  .rail-head {
+    padding: 22px 20px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .rail-head .book {
+    font-family: var(--kai);
+    font-size: 22px; font-weight: 700; letter-spacing: 2px;
+  }
+  .rail-head .sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+
+  .rail-tools {
+    display: flex; gap: 8px; align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .search {
+    flex: 1; min-width: 0;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font: inherit; font-size: 13px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .search:focus { outline: 2px solid var(--jade); outline-offset: 1px; background: var(--surface); }
+  .tool-btn {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: 6px;
+    font-size: 12px;
+    padding: 6px 9px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .tool-btn:hover, .tool-btn:focus-visible { color: var(--jade); border-color: var(--jade); outline: none; }
+
+  .toc { flex: 1; overflow-y: auto; padding: 10px 10px 40px; }
+  .toc::-webkit-scrollbar { width: 8px; }
+  .toc::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+
+  .ch-item { margin: 2px 0; }
+  .ch-row {
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 8px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+  }
+  .ch-row:hover { background: var(--jade-soft); }
+  .ch-row:focus-visible { outline: 2px solid var(--jade); outline-offset: -2px; }
+  .ch-row .no {
+    flex: none;
+    font-family: var(--kai);
+    font-size: 12px;
+    color: var(--jade);
+    background: var(--jade-soft);
+    border-radius: 4px;
+    padding: 1px 6px;
+    min-width: 34px; text-align: center;
+  }
+  .ch-row .t { font-size: 14px; font-weight: 600; }
+  .ch-row .arrow {
+    margin-left: auto; flex: none;
+    width: 16px; text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    transition: transform .18s ease;
+  }
+  .ch-item.open > .ch-row .arrow { transform: rotate(90deg); }
+  .ch-item.active > .ch-row { background: var(--jade-soft); }
+  .ch-item.active > .ch-row .t { color: var(--jade-deep); }
+
+  /* 子节点：竖向分支线 */
+  .ch-kids {
+    display: none;
+    margin: 2px 0 6px;
+    padding-left: 26px;
+    position: relative;
+  }
+  .ch-item.open > .ch-kids { display: block; }
+  .ch-kids::before {
+    content: ""; position: absolute; left: 20px; top: 2px; bottom: 8px;
+    width: 1.5px; background: var(--line); border-radius: 2px;
+  }
+  .kid-row {
+    position: relative;
+    display: block;
+    padding: 4px 8px 4px 14px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .kid-row::before {
+    content: ""; position: absolute; left: -8px; top: 50%;
+    width: 9px; height: 1.5px; background: var(--line);
+  }
+  .kid-row:hover { color: var(--jade-deep); background: var(--jade-soft); }
+  .kid-row:focus-visible { outline: 2px solid var(--jade); outline-offset: -2px; }
+  .kid-row.active { color: var(--jade-deep); font-weight: 600; }
+  .kid-row.active::before { background: var(--jade); width: 11px; }
+  .kid-row.dim { opacity: .3; }
+
+  /* ============ 主内容 ============ */
+  .main { margin-left: var(--rail-w); }
+
+  .hero {
+    padding: 72px 48px 46px;
+    background: linear-gradient(180deg, #123F37 0%, #17685A 88%);
+    color: #F2F6F4;
+  }
+  .hero .book-title {
+    font-family: var(--kai);
+    font-size: 46px; font-weight: 700; letter-spacing: 6px;
+    margin: 0;
+  }
+  .hero .book-sub {
+    font-family: var(--kai);
+    font-size: 19px; letter-spacing: 3px;
+    color: #BCD6CE; margin-top: 8px;
+  }
+  .hero .thesis {
+    margin: 26px 0 0;
+    max-width: 640px;
+    font-family: var(--kai);
+    font-size: 17px; line-height: 1.9;
+    border-left: 3px solid #3E8A7B;
+    padding-left: 16px;
+    color: #E8F1EE;
+  }
+  .hero .meta { margin-top: 26px; font-size: 13px; color: #9DBFB6; }
+
+  .overview {
+    max-width: 900px;
+    margin: -22px auto 0;
+    padding: 0 48px;
+    display: flex; gap: 10px; flex-wrap: wrap;
+    position: relative; z-index: 2;
+  }
+  .ov-chip {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13.5px;
+    color: var(--ink);
+    box-shadow: 0 2px 6px rgba(23,60,52,.07);
+  }
+  .ov-chip b { color: var(--jade-deep); font-family: var(--kai); letter-spacing: 1px; }
+
+  .content { max-width: 900px; margin: 0 auto; padding: 24px 48px 120px; }
+
+  .chapter { margin-top: 54px; }
+  .ch-head { display: flex; align-items: baseline; gap: 16px; border-bottom: 2px solid var(--jade); padding-bottom: 10px; }
+  .ch-head .big-no {
+    font-family: var(--kai); font-size: 15px; font-weight: 700;
+    color: var(--jade);
+    background: var(--jade-soft);
+    border-radius: 6px; padding: 3px 12px;
+    white-space: nowrap;
+  }
+  .ch-head h2 {
+    margin: 0;
+    font-family: var(--kai);
+    font-size: 28px; font-weight: 700; letter-spacing: 3px;
+  }
+
+  /* 小节：知识节点，竖向分支线连接 */
+  .nodes { position: relative; padding-left: 22px; margin-top: 8px; }
+  .nodes::before {
+    content: ""; position: absolute; left: 0; top: 14px; bottom: 18px;
+    width: 2px; background: var(--line); border-radius: 2px;
+  }
+  .node { position: relative; margin-top: 26px; }
+  .node::before {
+    content: ""; position: absolute; left: -22px; top: 14px;
+    width: 22px; height: 2px; background: var(--line);
+  }
+  .node::after {
+    content: ""; position: absolute; left: -26px; top: 11px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--jade);
+    box-shadow: 0 0 0 3px var(--jade-soft);
+  }
+  .node.flash::after { background: var(--gold); box-shadow: 0 0 0 3px var(--gold-soft); }
+  .node h3 {
+    margin: 0 0 8px;
+    font-size: 17px; font-weight: 700; color: var(--jade-deep);
+    scroll-margin-top: 28px;
+  }
+  .node ul { margin: 0; padding-left: 20px; }
+  .node li { margin: 5px 0; color: #33423F; }
+  .node li b { color: var(--jade-deep); }
+  .node li .num { color: var(--gold); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .node li.key { color: var(--ink); font-weight: 500; }
+  .node li.key::marker { color: var(--gold); }
+
+  mark { background: var(--gold-soft); color: inherit; padding: 0 2px; border-radius: 2px; }
+  .no-result { color: var(--muted); font-size: 13px; padding: 10px 8px; display: none; }
+
+  .footer-note {
+    margin-top: 70px; padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 12.5px;
+  }
+
+  /* 移动端抽屉 */
+  .rail-toggle {
+    display: none;
+    position: fixed; left: 14px; bottom: 14px; z-index: 40;
+    border: none; border-radius: 50%;
+    width: 48px; height: 48px;
+    background: var(--jade); color: #fff;
+    font-size: 20px; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(15,76,65,.35);
+  }
+  .rail-mask { display: none; position: fixed; inset: 0; background: rgba(20,40,36,.4); z-index: 25; }
+
+  @media (max-width: 980px) {
+    :root { --rail-w: 280px; }
+    .main { margin-left: 0; }
+    .hero { padding: 48px 22px 40px; }
+    .overview, .content { padding-left: 22px; padding-right: 22px; }
+    .rail { transform: translateX(-100%); transition: transform .22s ease; }
+    body.rail-open .rail { transform: translateX(0); }
+    body.rail-open .rail-mask { display: block; }
+    .rail-toggle { display: block; }
+    .hero .book-title { font-size: 34px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ 目录导航（竖向 / 可折叠 / 默认折叠） ============ -->
+<aside class="rail" id="rail" aria-label="知识脑图目录">
+  <div class="rail-head">
+    <div class="book">刻意练习</div>
+    <div class="sub">如何从新手到大师 · 知识脑图</div>
+  </div>
+  <div class="rail-tools">
+    <input class="search" id="search" type="search" placeholder="搜索知识节点…" aria-label="搜索知识节点">
+    <button class="tool-btn" id="btnExpand" title="展开全部章节">展开</button>
+    <button class="tool-btn" id="btnCollapse" title="折叠全部章节">折叠</button>
+  </div>
+  <nav class="toc" id="toc">
+    <div class="no-result" id="noResult">没有匹配的节点，换个关键词试试。</div>
+  </nav>
+</aside>
+<div class="rail-mask" id="railMask"></div>
+<button class="rail-toggle" id="railToggle" aria-label="打开目录">☰</button>
+
+<main class="main">
+  <header class="hero">
+    <h1 class="book-title">刻意练习</h1>
+    <div class="book-sub">如何从新手到大师</div>
+    <p class="thesis">天才不是天生的，而是训练的产物。决定一个人卓越水平的，不是基因，也不是单纯的练习时长，而是"刻意练习"——走出舒适区、带着明确目标、依靠反馈与心理表征不断精进的练习。</p>
+    <div class="meta">[美] 安德斯·艾利克森（Anders Ericsson） / 罗伯特·普尔（Robert Pool） 著 · 本脑图依据原书全文整理</div>
+  </header>
+
+  <div class="overview" id="overview"></div>
+
+  <div class="content" id="content"></div>
+</main>
+
+<script>
+/* ================= 知识数据（全书结构，自顶向下） ================= */
+const DATA = [
+{ no:"推荐序", title:"超越1万小时定律（阳志平）", id:"c0", nodes:[
+  { t:"1万小时定律的真相", pts:[
+    "格拉德威尔《异类》把\"1万小时定律\"演绎得过火：它并非精确的魔法数字",
+    "源头是西蒙与蔡斯 1973 年的<b>\"十年定律\"</b>：国际象棋大师约需 10 年积累 5万~10万个棋局组块",
+    "艾利克森 1993 年柏林音乐学院研究：未来独奏家≈<span class='num'>1万</span>小时、优异者≈<span class='num'>8000</span>、音乐教师≈<span class='num'>4000</span>——优秀与卓越确有差别",
+    "用<b>沙堆悖论</b>说明：从量变到质变，没有简单的线性模型" ]},
+  { t:"刻意练习的本质：长时记忆", pts:[
+    "卓越者与普通人的关键区别在<b>长时记忆</b>——像\"SSD 硬盘\"，能在需要时高速调用大量知识资源",
+    "长时记忆可以刻意培养，要点有三：<b>赋予意义</b>（精细编码）、<b>提取结构或模式</b>、<b>加快速度增加连接</b>" ]},
+  { t:"隐性知识与情境学习", pts:[
+    "认知复杂性高的活动（如认知活动）存在大量<b>隐性知识</b>，无法靠书本直授",
+    "学习方式应是<b>情境学习</b>、成为\"认知学徒\"：找到学习共同体 → 隐性知识显性化 → 模仿榜样 → 培养多样性" ]},
+  { t:"小结", pts:[
+    "哈明：<b>\"没有简单的模型通向伟大。\"</b>",
+    "刻意练习无法承诺速成，但它给出了成为专家的可复制路径" ]} ]},
+
+{ no:"引言", title:"天才存在吗", id:"c1", nodes:[
+  { t:"莫扎特的完美音高", pts:[
+    "<b>完美音高</b>：听到声音立刻辨明具体音高，全球每万人仅约<span class='num'>1</span>人，曾被视为天赋",
+    "榊原彩子 2014 年实验：<span class='num'>24</span> 个 2~6 岁儿童经数月训练后<b>个个拥有完美音高</b>",
+    "莫扎特 4 岁显才华，其父列奥波尔得是小提琴家与作曲家——从他出生起就给予高强度专业训练" ]},
+  { t:"\"天才\"是训练的产物", pts:[
+    "大脑有极强的适应能力，能够<b>\"重新布线\"</b>以响应训练",
+    "即使 6 岁后\"适应潜力\"看似变小，也没有彻底消失",
+    "NBA 球星雷·阿伦被认为是天生射手，他自己却说：与队友的差别只是<b>反复练习</b>" ]},
+  { t:"本书将告诉我们什么", pts:[
+    "学习不是<b>挖掘</b>已有潜力，而是<b>创造</b>原本不存在的潜力",
+    "专业特长科学是近年最重要的发现；<b>刻意练习是迄今最有效的学习黄金标准</b>",
+    "本书如同登山向导：告诉你最佳路线，路仍需自己攀登" ]} ]},
+
+{ no:"第1章", title:"有目的的练习", id:"c2", nodes:[
+  { t:"史蒂夫·法隆的记忆实验", pts:[
+    "短时记忆存在局限：约<span class='num'>7</span>个事物（7±2 理论）",
+    "实验设计：每周一课，逐步加 1 个数字，每次只求<b>\"比上一次多记 1 个\"</b>",
+    "约 200 次练习后，史蒂夫能记住<span class='num'>82</span>个数字，而全世界没有几个人能做到",
+    "秘诀：他构建了一种<b>心理检索结构</b>（编码+线索），而非天赋改善" ]},
+  { t:"各领域杰出人物都靠大量练习", pts:[
+    "马拉松：1908 年世界纪录 <span class='num'>2:55:18</span> → 如今 <span class='num'>2:02:57</span>",
+    "跳水：从空翻两周 → 空翻四周半；圆周率背诵纪录突破<span class='num'>7万</span>位",
+    "各领域的\"人类极限\"持续被刷新：训练<b>时长与方法</b>都在与时俱进" ]},
+  { t:"从有目的的练习讲起", pts:[
+    "一般学习模式：达到\"可接受\"水平后动作<b>自动化</b>，此后再练数年也不会进步，甚至退化",
+    "<b>天真的练习</b>：只是埋头重复，不设目标、不加思考（\"你只是反复做某件事\"）",
+    "反例：富兰克林下了 30 年国际象棋，因从未专门练习，水平始终平庸" ]},
+  { t:"有目的的练习的四个特点", pts:[
+    "① <b>定义明确的特定目标</b>：整体目标分解、逐个击破，并制订计划",
+    "② <b>专注</b>：练习必须全神贯注",
+    "③ <b>包含反馈</b>：知道自己做得对不对、哪里错了",
+    "④ <b>走出舒适区</b>：停留在舒适区内的练习不会带来进步" ]},
+  { t:"遇到瓶颈怎么办", pts:[
+    "最常见的障碍不是\"达到极限\"，而是<b>动机不足</b>",
+    "换角度：试着<b>做不同的事情，而不是更难的事情</b>（多萝西·迪蕾用节拍器攻克过不去的乐句）",
+    "有意义的<b>正面反馈</b>是保持前进的动力之一" ]},
+  { t:"有目的的练习还不够", pts:[
+    "雷妮花 30 小时记数字失败，史蒂夫成功：差别在于史蒂夫的<b>心理表征/检索结构</b>",
+    "达里奥用同样方法也记住<span class='num'>100+</span>个数字 → 方法可以复制",
+    "结论：更彻底的答案叫<b>刻意练习</b>——见第4章" ]} ]},
+
+{ no:"第2章", title:"大脑的适应能力", id:"c3", nodes:[
+  { t:"伦敦出租车司机", pts:[
+    "\"知识\"测试：需记住伦敦约<span class='num'>25万</span>条街道，全球最难考试之一",
+    "马圭尔 MRI 研究：资深出租车司机<b>海马体后部显著更大</b>",
+    "追踪 79 名受训者 4 年：通过考试者海马体增大、未通过者不变 → <b>训练导致结构改变</b>，而非天生如此" ]},
+  { t:"大脑拥有无限适应能力", pts:[
+    "俯卧撑世界纪录：<span class='num'>46001</span> 个",
+    "盲人用<b>视觉皮层</b>阅读盲文——大脑重新布线、区域功能重组",
+    "用三个手指读盲文的人，触觉皮层对应部位异常扩大、重叠",
+    "老花眼训练 3 个月：能看清比原来小<span class='num'>60%</span>的文字——是<b>大脑\"去模糊\"</b>，而非眼睛改善" ]},
+  { t:"走出舒适区的重要性", pts:[
+    "身体偏爱稳定：<b>体内平衡（homeostasis）</b>",
+    "被迫走出舒适区 → 身体为重建平衡而改变，能力随之提升",
+    "<b>挑战越大、变化越大，但不要太过</b>：过了\"甜蜜点\"反而受伤",
+    "神经髓鞘化：髓磷脂使神经信号传导快约<span class='num'>10</span>倍" ]},
+  { t:"练习改变大脑结构", pts:[
+    "音乐家（陶布 1995）：控制左手手指的大脑区域明显增大",
+    "数学家：顶下小叶更发达",
+    "三个细节：① <b>折弯幼枝效应</b>——年纪越小，训练对大脑影响越大；② 超常发展有代价——出租车司机其他类型记忆下降；③ <b>停止训练，改变会消失</b>" ]},
+  { t:"潜能可以被构筑", pts:[
+    "传统学习法不挑战体内平衡，潜能看起来像天生固定的",
+    "刻意练习的目标：<b>通过训练构筑新潜能，而非发掘已有潜能</b>" ]} ]},
+
+{ no:"第3章", title:"心理表征", id:"c4", nodes:[
+  { t:"偶然的盲棋大师", pts:[
+    "阿廖欣 1924 年：26 盘同步盲棋，17 胜 5 平 4 负",
+    "盲棋不是天赋异禀，而是多年提升棋艺训练的<b>副产品</b>" ]},
+  { t:"大师比新手强在哪里", pts:[
+    "西蒙 & 蔡斯实验：真实棋局大师能记住约<span class='num'>2/3</span>；乱摆的棋子则大师与新手无异",
+    "国际象棋大师脑中约有<span class='num'>5万</span>个\"数据块\"，按<b>层级结构</b>组织",
+    "大师既见森林又见树木：把棋子组合成有意义的\"故事\"来记忆" ]},
+  { t:"心理表征是什么", pts:[
+    "定义：与思考对象相对应的<b>心理结构</b>，具体或抽象（蒙娜丽莎、狗的形象）",
+    "具有<b>行业或领域特定性</b>：棋手的表征无助于攀岩",
+    "两大基础作用：避开短时记忆的局限；铸就杰出的表现" ]},
+  { t:"有助于找出规律", pts:[
+    "足球：专家凭阵型预测球的走向；四分卫看一眼录像即读出防守",
+    "攀岩者对把手自动归类、无意识决策" ]},
+  { t:"有助于解释、组织信息", pts:[
+    "懂棒球的人记住的体育新闻远多于不懂的人",
+    "医学诊断谜题：耳痛+瞳孔缩小 → 专家先提出多种可能再聚焦 → 锁定<b>霍纳氏综合征</b>→颈总动脉撕裂",
+    "保险代理人使用\"如果…那么…\"的知识结构组织信息" ]},
+  { t:"有助于制订计划", pts:[
+    "写作者从\"知识陈述\"走向<b>\"知识转换\"</b>：写作即思考的重构（本书写作过程本身即例子）",
+    "外科医生术前按心理表征预演手术；攀岩者按表征规划路线" ]},
+  { t:"有助于高效学习", pts:[
+    "麦克赫森研究：优秀学生每分钟自我纠错<span class='num'>1.4</span>次、纠掉<span class='num'>80%</span>的错误；差生每分钟 11 次错误只纠 30%",
+    "钢琴家因瑞赫练巴赫《意大利协奏曲》：先建立\"艺术形象\"，再标记\"昂贵的标记\"逐一攻克",
+    "<b>良性循环</b>：技能越强→心理表征越精细→技能更强——\"边爬楼梯边搭楼梯\"" ]} ]},
+
+{ no:"第4章", title:"黄金标准", id:"c5", nodes:[
+  { t:"从音乐领域开始", pts:[
+    "适于研究特长的领域特征：绩效可客观测量、竞争性强、成规模、有成熟的导师与训练体系",
+    "1987 年柏林艺术大学小提琴学生研究：专业特长科学的经典样本" ]},
+  { t:"最杰出的人练习时间最长", pts:[
+    "所有学生都认为独奏练习最重要，但<b>没有人热爱练习</b>",
+    "18 岁前累计练习：未来音乐教师<span class='num'>3420</span>小时 / 优异<span class='num'>5301</span> / 最杰出<span class='num'>7401</span>",
+    "管弦乐团中年小提琴家约 7336 小时；芭蕾舞演员 20 岁前超<span class='num'>10万</span>小时",
+    "连天才博比·菲舍尔也需要约 9 年苦练才登顶" ]},
+  { t:"刻意练习是什么", pts:[
+    "与一般有目的练习的两大差别：① 存在合理发展的<b>行业/领域</b>（有客观标准）；② 需要能布置作业的<b>导师</b>",
+    "七个特点：成熟技能由导师设计并监管 / 在舒适区外近乎最大努力 / 良好定义的特定目标 / 有意而为的完全关注 / 包含反馈与调整（早期靠导师、后期自我监测）/ 既产生又依靠心理表征 / 针对性补足特定短板" ]},
+  { t:"如何运用刻意练习原则", pts:[
+    "王峰记 300 个数字：00~99 全部图像编码 + <b>记忆宫殿</b>（刻意练习原理的应用）",
+    "辨别杰出人物要警惕主观评价：葡萄酒评分实验、精神科医生、金融预测专家都不靠谱",
+    "找出杰出人物与其他人的差别：如帕沃·鲁米的<b>间歇训练</b>法",
+    "最佳途径：找一位<b>优秀导师</b>" ]},
+  { t:"1万小时法则的错与对", pts:[
+    "错在四点：① 1 万并非神奇数字；② 它是平均数，并非所有最杰出者都超 1 万；③ <b>表演 ≠ 练习</b>（披头士汉堡演出约 1100 小时，关键其实在写歌）；④ 没有证据表明人人练 1 万小时都能成专家",
+    "对在：要成为杰出人物，确实需要<b>多年艰苦的练习</b>",
+    "难点在于：我们尚无法准确界定哪些活动才算刻意练习" ]} ]},
+
+{ no:"第5章", title:"在工作中运用刻意练习原则", id:"c6", nodes:[
+  { t:"王牌训练计划（Top Gun）", pts:[
+    "1968 年越战：海军飞行员胜率跌至 50%",
+    "做法：\"红军\"vs\"蓝军\"模拟空战 + <b>战斗报告会</b>（即时反馈与复盘），飞行员不断被逼到失败边缘",
+    "1970~72 年：每损失 1 架击落<span class='num'>12.5</span>架——成为刻意练习的经典示范" ]},
+  { t:"让练习变成日常工作的一部分", pts:[
+    "拒绝三种错误思想：① \"我的能力受基因限制\"（阿特·图若克抛红旗实验）；② \"做得足够久就一定会更擅长\"；③ \"只需要更努力\"",
+    "<b>边干边学</b>：把工作环节设计成练习（蓝色兔子冰激凌公司的角色扮演演示）" ]},
+  { t:"用王牌训练方法训练医生", pts:[
+    "放射科医生缺乏反馈：每 1000 张 X 光片只有 4~8 例癌症确诊，错误长期无人纠正",
+    "解决：建立<b>\"已知答案\"的图片库</b>作为训练工具（摩根士丹利儿童医院脚踝病例库）",
+    "腹腔镜手术的\"视觉错觉\"曾致胆管损伤 → 用手术视频 + 关键决策点训练" ]},
+  { t:"致力于传授知识的传统方法", pts:[
+    "<b>知识与技能的区别</b>是核心问题：传统教育在传授知识，而工作需要技能",
+    "传统医学教育约 15 年都在学知识；\"看一场、做一场、教一场\"的信条被腹腔镜手术挑战",
+    "哈佛 2005 年研究：医生绩效随经验<b>不升反降</b>；戴维斯研究：说教式讲座最无效，互动式干预也效果甚微" ]},
+  { t:"致力于改进技能的新方法", pts:[
+    "正确的问题是<b>\"怎样改进技能\"</b>，而不是\"怎样传授知识\"",
+    "维克斯研究：前列腺手术 10 台→复发率<span class='num'>17.9%</span>，250 台→<span class='num'>10.7%</span>，1500~2000 台后趋平",
+    "即时反馈让外科医生持续精进；美军\"像司令官那样思考\"的自适应思维训练" ]} ]},
+
+{ no:"第6章", title:"在生活中运用刻意练习原则", id:"c7", nodes:[
+  { t:"首先找位好导师", pts:[
+    "佩尔·霍尔姆洛夫：69 岁学空手道，目标 80 岁黑带——任何时候开始都不晚",
+    "好导师标准：本领域有所成就 + 善于教学；询问其<b>以往学生的进步情况</b>",
+    "忽略\"有趣\"的评价，找关于\"进步\"的描述；导师最重要的作用是<b>帮你创建心理表征</b>",
+    "自己水平提升后要及时更换导师（丹尼斯\"丹计划\"先后三位导师）" ]},
+  { t:"专注和投入至关重要", pts:[
+    "走过场的团体课没有用；业余歌手课后愉悦 vs 专业歌手课上<b>高度专注</b>",
+    "游泳运动员考芙林：在训练中专注改进划水的心理表征",
+    "<b>更短但 100% 投入</b>的练习，胜过长时间 70% 投入；无法专注就停下来，并保证睡眠" ]},
+  { t:"没有导师怎么办", pts:[
+    "富兰克林学写作三步：复写《观察家》文章 → 改写成诗扩充词汇 → 打乱线索重排逻辑结构",
+    "自己设计练习、自我反馈：ESL 学生商场提问、遮字幕看电影、马戏团学生用秒表记录与陌生人的攀谈、喜剧演员俱乐部试演",
+    "三个 F：<b>Focus 专注 · Feedback 反馈 · Fix it 纠正</b>（复制大师作品 → 失败 → 思考 → 再复制）" ]},
+  { t:"跨越停滞阶段", pts:[
+    "记忆冠军约书亚·福尔：以新的方式挑战自己（放慢读数字速度、更长的数字串）",
+    "关键是<b>找出\"卡住\"的具体弱点</b>，再设计练习专门攻克（打字 15~20 分钟暴露弱点组合）" ]},
+  { t:"保持动机", pts:[
+    "拼字大赛研究：没人喜欢练习，最杰出者只是更善于<b>保持投入</b>；警惕\"新年决心效应\"",
+    "<b>意志力根本不存在</b>：没有科学证据表明存在一般意志力；它是与\"天生才华\"一样的事后归因，循环思维有害",
+    "动机 = 继续前行的理由 vs 停下脚步的理由的博弈",
+    "弱化停下理由：固定时间练习、安排在早晨、关手机放别处、保证睡眠、每次限制 1 小时",
+    "增强前行理由：技能本身成为动机、身份认同（\"我是钢琴师\"）、相信自己能成功（哈格父亲的 4分50秒 谎言）、<b>社会动机</b>（身边支持者、加入目标相近的团体如富兰克林\"小团体\"Junto）",
+    "精心设置目标：分解成可控目标、每次只关注一个、给自己奖励（丹计划：8.7差点 → 3~4）" ]} ]},
+
+{ no:"第7章", title:"成为杰出人物的路线图", id:"c8", nodes:[
+  { t:"波尔加三姐妹", pts:[
+    "父亲拉斯洛的\"实验\"：苏珊（首位女子特级大师）、索菲娅（\"罗马大洗劫\"2735 等级分）、朱迪特（15岁5个月最年轻特级大师、女子世界第一 25 年）",
+    "证明：正确的训练与家庭支持可以塑造\"天才\"" ]},
+  { t:"第一阶段 · 产生兴趣", pts:[
+    "孩子以<b>游戏方式</b>接触，因有趣而爱上它",
+    "父母给时间、关注与鼓励，并传递自律、刻苦等价值观；表扬增强动机",
+    "兄弟姐妹的激励作用：弟妹往往取得更大成就" ]},
+  { t:"第二阶段 · 变得认真", pts:[
+    "跟随教练/导师上课；第一位导师未必最优秀，但要<b>擅长激励孩子</b>",
+    "动机从外部转向内部，最终必须来自内心",
+    "2~5 年后以技能认同自己（\"钢琴师\"\"游泳选手\"）；时机成熟要寻找更好的导师" ]},
+  { t:"第三阶段 · 全力投入", pts:[
+    "通常在 12~13 岁或 15~16 岁，寻找全国最好的导师，期望升高、逼近人类极限",
+    "代价高昂：IMG 网球学院每年<span class='num'>71400</span>美元；家人甚至举家迁移支持训练" ]},
+  { t:"年龄与适应能力", pts:[
+    "体能约 20 岁达顶峰，但可练到 80 多岁：唐·佩尔曼 100 岁跑百米<span class='num'>27</span>秒",
+    "有些能力有关键期：芭蕾外开须 8~12 岁前、棒球投手的肩膀、网球握拍臂骨骼粗 20%",
+    "<b>心理适应能力比身体更强</b>：脑胼胝体须 7 岁前训练才更大，小脑几乎不受限",
+    "成年人靠\"修剪突触\"适应，儿童靠增加脑灰质——同声传译人员脑灰质反而更少",
+    "两条经验：成年人大脑仍能适应；机制与未成年人不同" ]},
+  { t:"成年人也可培养出完美音高", pts:[
+    "保罗·布拉迪 32 岁起、两个月训练后拥有完美音高",
+    "拉什实验：52 名本科生中部分人显著提高" ]},
+  { t:"第四阶段 · 开拓创新", pts:[
+    "奈杰尔·理查兹：不懂法语、9 周强记词典，夺得法国拼字冠军",
+    "创新者无一例外先在领域内<b>长期练习</b>，然后超越导师（毕加索也从古典风格起步）",
+    "创新是漫长、缓慢、反复的过程；\"飞跃\"只是局外人视角——荀子：不积跬步，无以至千里",
+    "\"奈杰尔效应\"：顶尖创新迫使同行整体提高" ]} ]},
+
+{ no:"第8章", title:"怎样解释天生才华", id:"c9", nodes:[
+  { t:"破解\"天才\"故事", pts:[
+    "帕格尼尼\"断弦奇迹\"：预谋的单弦曲《拿破仑》表演，是长期练习的结果",
+    "莫扎特早期\"作曲\"实为父亲整理、以他人奏鸣曲为基础；第一首可靠原创作品出现在训练十年之后",
+    "马里奥·拉缪的\"家庭滑冰场\"：环境与训练造就的少年天才" ]},
+  { t:"破解\"天才跳高运动员\"", pts:[
+    "唐纳德·托马斯：高中已跳过 1.89~1.95 米、专门练过背越式技术、扣篮训练弹跳力、身高 1.88 米",
+    "此后再未接近 2.35 米的个人最好成绩——<b>没有证据支持\"天赋说\"</b>" ]},
+  { t:"破解自闭症奇才", pts:[
+    "日历计算奇才唐尼：靠记住 14 种年度日历 + 计算方法，多年练习的结果",
+    "艾迪斯用 6 节课就把研究生训练到同等计算速度",
+    "哈佩 & 维塔尔：自闭症奇才更注重细节与重复行为 → <b>\"着魔式\"练习</b>" ]},
+  { t:"\"缺乏\"天生才华的人", pts:[
+    "音盲：约<span class='num'>1/6</span>美国人自认为不能唱歌，多半是被权威贴了\"音盲\"标签；真正失歌症极罕见；尼日利亚部落人人会唱",
+    "数学：\"跳跃数学\"课程 5 个月，学生进步高出对照组<span class='num'>2</span>倍多" ]},
+  { t:"训练 VS 天才（棋手研究）", pts:[
+    "比拉里克 2006 年研究 57 名 9~13 岁棋手：<b>练习是最大的预测因素</b>，智商作用较小",
+    "23 名精英棋手中，智商较低者反而棋艺更高——因为练得更多；成年棋手中智商与棋艺无关",
+    "围棋高手平均智商<span class='num'>93</span>，低于常人的 100",
+    "关键经验：从长远看，<b>占上风的是练习更勤奋的人</b>" ]},
+  { t:"换个角度看基因差异", pts:[
+    "各领域智商与表现的相关性随训练深入而消失（音乐、外科、出租车司机、科学家）",
+    "费曼智商 126、沃森 124、肖克利 125，均低于门萨门槛 132",
+    "\"最低门槛\"说：科学家智商 110~120 是入场券，之上不再相关",
+    "基因可能通过影响<b>练习意愿与专注力</b>间接起作用，而非直接决定技能" ]},
+  { t:"相信天生才华的危险性", pts:[
+    "<b>自我实现的预言</b>：贴标签 → 区别对待 → 预言成真",
+    "加拿大冰球运动员多为 1~3 月出生：教练把\"年龄大\"误认为\"有天赋\"",
+    "给孩子贴\"没有数学天赋\"的标签，等于关上工程学、物理学的大门",
+    "出路：相信每个人都有潜力" ]} ]},
+
+{ no:"第9章", title:"用刻意练习创造全新的世界", id:"c10", nodes:[
+  { t:"用刻意练习原则教物理", pts:[
+    "诺奖得主韦曼转行教育研究：以刻意练习原则重构大课",
+    "英属哥伦比亚大学 850 人的物理课对照实验：刻意练习课堂<span class='num'>74%</span> vs 传统课堂<span class='num'>41%</span>（同样测试）",
+    "效应值达<span class='num'>2.5</span>个标准差，远超其他一切教学干预（通常 <1.0）",
+    "方法：课前预习+在线测试 / 课堂小组讨论问题 / 主动学习任务 / 即时反馈" ]},
+  { t:"刻意练习的前景", pts:[
+    "改变运动训练：运动员很少能辨别自己的改进点，心理表征研究严重缺乏",
+    "改变教育：教学目标是<b>技能而非知识</b>；把技能分解为学习步骤，确保每一步都形成心理表征",
+    "帮助学生创建心理表征是最有价值的帮助；破除\"四季更替\"式的错误概念",
+    "给学生可复制的模型；某领域的体验让人理解所有领域的卓越需要何种付出" ]},
+  { t:"创造全新的世界", pts:[
+    "技术快速变迁的时代，每个人必须<b>终身学习</b>",
+    "成为\"练习人\"（practicing man）：用刻意练习塑造人生",
+    "录制专家视频、建立训练素材库；给孩子的礼物是<b>对自身能力的信心</b>",
+    "<b>\"你可以掌控自己的潜力。\"</b>；刻意练习中的深度沉浸即心流（flow）体验" ]} ]}
+];
+
+const OVERVIEW = [
+  ["大脑可塑","大脑像肌肉：走出舒适区，结构随之改变"],
+  ["心理表征","卓越的根基：既见森林，又见树木"],
+  ["黄金标准","刻意练习七特点：目标·专注·反馈·舒适区之外"],
+  ["动机管理","意志力不存在：弱化停下理由，强化前行理由"]
+];
+
+/* ================= 渲染 ================= */
+const toc = document.getElementById("toc");
+const content = document.getElementById("content");
+const noResult = document.getElementById("noResult");
+const esc = s => s.replace(/<(?!\/?b>|\/?span|\/?mark)/g, m => m.replace(/</,"&lt;"));
+
+function el(html){ const d=document.createElement("div"); d.innerHTML=html.trim(); return d.firstChild; }
+
+/* overview chips */
+const ov = document.getElementById("overview");
+OVERVIEW.forEach(([b,t])=> ov.appendChild(el(`<div class="ov-chip"><b>${b}</b> · ${t}</div>`)));
+
+/* content panels */
+DATA.forEach(ch => {
+  const sec = el(`<section class="chapter" id="${ch.id}"></section>`);
+  sec.appendChild(el(`<div class="ch-head"><span class="big-no">${ch.no}</span><h2>${ch.title}</h2></div>`));
+  const nodes = el(`<div class="nodes"></div>`);
+  ch.nodes.forEach((n,i) => {
+    const node = el(`<article class="node" id="${ch.id}-n${i}"></article>`);
+    node.appendChild(el(`<h3>${n.t}</h3>`));
+    const ul = document.createElement("ul");
+    n.pts.forEach(p => ul.appendChild(el(`<li>${p}</li>`)));
+    node.appendChild(ul);
+    nodes.appendChild(node);
+  });
+  sec.appendChild(nodes);
+  content.appendChild(sec);
+});
+content.appendChild(el(`<div class="footer-note">依据《刻意练习：如何从新手到大师》（安德斯·艾利克森 / 罗伯特·普尔）全书内容整理 · 目录可展开折叠，点击节点可定位正文</div>`));
+
+/* TOC tree —— 默认折叠（子节点隐藏） */
+const chItems = [];
+DATA.forEach(ch => {
+  const item = el(`<div class="ch-item" data-ch="${ch.id}">
+      <div class="ch-row" role="button" tabindex="0" aria-expanded="false">
+        <span class="no">${ch.no}</span><span class="t">${ch.title}</span><span class="arrow">▶</span>
+      </div>
+      <div class="ch-kids"></div>
+    </div>`);
+  const kids = item.querySelector(".ch-kids");
+  ch.nodes.forEach((n,i)=> kids.appendChild(el(`<a class="kid-row" role="button" tabindex="0" data-goto="${ch.id}-n${i}">${n.t}</a>`)));
+  toc.appendChild(item);
+  chItems.push({ item, id: ch.id, text: (ch.no+ch.title+ch.nodes.map(n=>n.t+n.pts.join("")).join("")).toLowerCase(), kids });
+});
+
+function setOpen(item, open){
+  item.classList.toggle("open", open);
+  item.querySelector(".ch-row").setAttribute("aria-expanded", open);
+}
+
+/* 交互 */
+toc.addEventListener("click", e => {
+  const row = e.target.closest(".ch-row");
+  if (row) { const it = row.parentElement; setOpen(it, !it.classList.contains("open")); return; }
+  const kid = e.target.closest(".kid-row");
+  if (kid) { goTo(kid.dataset.goto); if (innerWidth <= 980) document.body.classList.remove("rail-open"); }
+});
+toc.addEventListener("keydown", e => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const t = e.target;
+  if (t.classList.contains("ch-row")) { e.preventDefault(); const it=t.parentElement; setOpen(it, !it.classList.contains("open")); }
+  else if (t.classList.contains("kid-row")) { e.preventDefault(); goTo(t.dataset.goto); }
+});
+document.getElementById("btnExpand").onclick = () => chItems.forEach(({item}) => setOpen(item,true));
+document.getElementById("btnCollapse").onclick = () => { chItems.forEach(({item}) => setOpen(item,false)); clearFlash(); };
+
+/* 定位 + 高亮 */
+let flashTimer = null;
+function clearFlash(){ document.querySelectorAll(".node.flash").forEach(n=>n.classList.remove("flash")); }
+function goTo(id){
+  clearFlash();
+  const node = document.getElementById(id);
+  if (!node) return;
+  node.classList.add("flash");
+  node.scrollIntoView({ behavior:"smooth", block:"start" });
+  clearTimeout(flashTimer);
+  flashTimer = setTimeout(clearFlash, 2200);
+}
+
+/* 搜索：过滤目录 + 自动展开匹配章节 */
+const search = document.getElementById("search");
+search.addEventListener("input", () => {
+  const q = search.value.trim().toLowerCase();
+  let any = false;
+  chItems.forEach(({item, id, text, kids}) => {
+    if (!q) { item.style.display=""; setOpen(item,false); kids.querySelectorAll(".kid-row").forEach(k=>k.classList.remove("dim")); return; }
+    const hit = text.includes(q);
+    item.style.display = hit ? "" : "none";
+    if (hit) { any = true; setOpen(item,true);
+      kids.querySelectorAll(".kid-row").forEach(k => {
+        const n = document.getElementById(k.dataset.goto);
+        k.classList.toggle("dim", !(n.textContent.toLowerCase().includes(q)));
+      });
+    }
+  });
+  noResult.style.display = any ? "none" : "block";
+});
+
+/* 滚动监听：高亮当前章节 */
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    chItems.forEach(({item, id}) => {
+      item.classList.toggle("active", id === en.target.id);
+    });
+  });
+}, { rootMargin: "-10% 0px -75% 0px" });
+document.querySelectorAll(".chapter").forEach(s => spy.observe(s));
+
+/* 移动端抽屉 */
+document.getElementById("railToggle").onclick = () => document.body.classList.add("rail-open");
+document.getElementById("railMask").onclick = () => document.body.classList.remove("rail-open");
+</script>
+</body>
+</html>

@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>程序员的思维修炼 · 知识脑图</title>
+<style>
+  :root{
+    --paper:#F2F4F0;
+    --panel:#FFFFFF;
+    --ink:#22303A;
+    --ink-2:#5A6B76;
+    --line:#D9DFD6;
+    --sidebar:#1F2B33;
+    --sidebar-ink:#D8E2DD;
+    --sidebar-dim:#8FA0A8;
+    --gold:#B98A2E;
+    color-scheme: light;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC",sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.65;
+  }
+  .serif{font-family:"Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",Georgia,serif}
+
+  /* ===== 布局 ===== */
+  .layout{display:flex;min-height:100vh}
+  aside.sidebar{
+    width:300px;flex:0 0 300px;background:var(--sidebar);color:var(--sidebar-ink);
+    position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;
+  }
+  .brand{padding:26px 22px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .brand .bk{font-size:20px;line-height:1.4;color:#fff;font-weight:700}
+  .brand .sub{font-size:12px;color:var(--sidebar-dim);margin-top:6px}
+  .toc-controls{display:flex;gap:8px;padding:14px 22px 6px}
+  .toc-controls button{
+    flex:1;background:rgba(255,255,255,.06);color:var(--sidebar-ink);border:1px solid rgba(255,255,255,.14);
+    border-radius:7px;padding:6px 0;font-size:12px;cursor:pointer;font-family:inherit;
+  }
+  .toc-controls button:hover{background:rgba(255,255,255,.12)}
+  nav.toc{flex:1;padding:10px 12px 40px}
+  .toc-item{margin:2px 0;border-radius:8px}
+  .toc-head{
+    width:100%;display:flex;align-items:center;gap:8px;padding:9px 10px;border:none;background:transparent;
+    color:var(--sidebar-ink);font-size:14px;text-align:left;cursor:pointer;border-radius:8px;font-family:inherit;
+  }
+  .toc-head:hover{background:rgba(255,255,255,.07)}
+  .toc-head .dot{width:8px;height:8px;border-radius:50%;flex:0 0 8px}
+  .toc-head .tt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .caret{flex:0 0 14px;width:14px;height:14px;position:relative;opacity:.6;transition:transform .18s}
+  .caret::before,.caret::after{content:'';position:absolute;background:currentColor;border-radius:1px}
+  .caret::before{left:3px;top:6.5px;width:8px;height:1.6px}
+  .caret::after{left:6.2px;top:3px;width:1.6px;height:8px}
+  .toc-item.open>.toc-head .caret::after{display:none}
+  .toc-item.open>.toc-head .caret{transform:rotate(180deg)}
+  .toc-sub{display:none;padding:2px 0 6px 30px}
+  .toc-item.open>.toc-sub{display:block}
+  .toc-sub a{
+    display:block;color:var(--sidebar-dim);text-decoration:none;font-size:12.5px;padding:4px 8px;border-radius:6px;
+  }
+  .toc-sub a:hover{color:#fff;background:rgba(255,255,255,.06)}
+  .toc-sub a.active{color:#fff}
+  .sidebar .foot{padding:14px 22px 24px;font-size:11.5px;color:var(--sidebar-dim);border-top:1px solid rgba(255,255,255,.08)}
+  .menu-btn{display:none}
+
+  main{flex:1;min-width:0;padding:0 44px 90px}
+  .wrap{max-width:1160px;margin:0 auto}
+
+  /* ===== 页首 ===== */
+  header.hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+  .hero h1{font-size:40px;font-weight:700;letter-spacing:.02em}
+  .hero .subtitle{margin-top:10px;font-size:16px;color:var(--ink-2)}
+  .hero .meta{margin-top:18px;font-size:13px;color:var(--ink-2)}
+  .hero .meta b{color:var(--ink);font-weight:600}
+  .hero .duo{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap}
+  .duo .chip{
+    font-size:12.5px;padding:5px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink-2);
+  }
+  .duo .chip b{color:var(--ink)}
+
+  /* ===== 章节区块 ===== */
+  section.ch{padding-top:56px}
+  .ch-head{display:flex;align-items:baseline;gap:16px;border-bottom:2px solid var(--c);padding-bottom:14px}
+  .ch-num{font-size:15px;color:var(--c);font-weight:700;white-space:nowrap;letter-spacing:.05em}
+  .ch-head h2{font-size:27px;font-weight:700}
+  .quote{margin-top:16px;font-size:14px;color:var(--ink-2);border-left:3px solid var(--c);padding:3px 0 3px 14px;max-width:820px}
+  .quote .who{color:var(--c);font-size:12.5px;margin-left:8px;white-space:nowrap}
+
+  /* ===== 思维导图树 ===== */
+  .map{display:flex;align-items:stretch;margin-top:30px}
+  .mroot{flex:0 0 232px;display:flex;align-items:center}
+  .root-card{width:100%;background:var(--ink);color:#fff;border-radius:14px;padding:18px 20px}
+  .root-card .rn{font-size:11.5px;opacity:.65;letter-spacing:.08em}
+  .root-card .rt{font-size:19px;font-weight:700;margin-top:4px;line-height:1.4}
+  .root-card .re{font-size:12.5px;opacity:.82;margin-top:8px;line-height:1.6}
+  .mbranches{flex:1;list-style:none;display:flex;flex-direction:column;gap:20px;position:relative;padding-left:30px;min-width:0}
+  .mbranches::before{content:'';position:absolute;left:0;top:36px;bottom:36px;width:2px;background:var(--c);opacity:.32;border-radius:2px}
+  .branch{position:relative;display:flex;gap:18px;align-items:flex-start}
+  .branch::before{content:'';position:absolute;left:-30px;top:27px;width:30px;height:2px;background:var(--c);opacity:.45}
+  .bnode{
+    flex:0 0 196px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c);
+    border-radius:10px;padding:12px 14px;font-weight:600;font-size:14.5px;line-height:1.5;
+    box-shadow:0 1px 2px rgba(34,48,58,.05);
+  }
+  .bnode .bs{display:block;font-weight:400;font-size:12px;color:var(--ink-2);margin-top:4px}
+  .leaves{flex:1;list-style:none;display:flex;flex-direction:column;gap:8px;min-width:0;padding-top:2px}
+  .leaves li{position:relative;padding-left:15px;font-size:13.5px;color:var(--ink);max-width:640px}
+  .leaves li::before{content:'';position:absolute;left:0;top:8.5px;width:6px;height:6px;border-radius:50%;background:var(--c);opacity:.55}
+  .leaves li i{font-style:normal;color:var(--ink-2)}
+  .leaves li .hd{font-weight:600}
+  .tip{
+    display:inline-block;background:color-mix(in srgb,var(--c) 13%,#fff);border:1px solid color-mix(in srgb,var(--c) 35%,#fff);
+    color:var(--c);font-size:11px;font-weight:600;border-radius:999px;padding:0 8px;line-height:18px;
+    vertical-align:1px;margin-left:6px;white-space:nowrap;
+  }
+  .kv{font-weight:600}
+
+  /* 单列小节（列表型内容） */
+  .col-list{margin-top:30px}
+  .cl-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .cl-title::after{content:'';flex:1;height:1px;background:var(--line)}
+  .cl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+  .cl-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .cl-card .t{font-weight:600;font-size:13.5px;color:var(--c)}
+  .cl-card .d{font-size:12.5px;color:var(--ink-2);margin-top:4px;line-height:1.6}
+
+  /* 实践单元 */
+  details.practice{
+    margin-top:30px;background:color-mix(in srgb,var(--c) 6%,#fff);border:1px solid color-mix(in srgb,var(--c) 26%,#fff);
+    border-radius:12px;overflow:hidden;
+  }
+  details.practice>summary{
+    cursor:pointer;list-style:none;padding:13px 18px;font-weight:600;font-size:14px;color:var(--c);
+    display:flex;align-items:center;gap:8px;user-select:none;
+  }
+  details.practice>summary::-webkit-details-marker{display:none}
+  details.practice>summary .pc{
+    width:18px;height:18px;border:1.5px solid var(--c);border-radius:4px;position:relative;flex:0 0 18px;
+  }
+  details.practice[open]>summary .pc::after{content:'';position:absolute;left:4.5px;top:2.5px;width:5px;height:9px;
+    border-right:2px solid var(--c);border-bottom:2px solid var(--c);transform:rotate(40deg)}
+  details.practice .pbody{padding:2px 20px 16px}
+  details.practice li{margin:6px 0 6px 18px;font-size:13.5px}
+
+  /* 诀窍总览 */
+  .tip-grid{margin-top:30px;display:flex;flex-direction:column;gap:22px}
+  .tip-row h3{font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .tip-row h3 .dot{width:9px;height:9px;border-radius:50%}
+  .tip-row .pills{display:flex;flex-wrap:wrap;gap:8px}
+  .tip-row .pill{
+    background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:12.5px;color:var(--ink);
+  }
+  .tip-row .pill b{color:var(--c);font-weight:700;margin-right:5px}
+
+  footer{margin-top:70px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-2)}
+
+  /* ===== 响应式 ===== */
+  .overlay{display:none}
+  @media (max-width:1080px){
+    .map{flex-direction:column}
+    .mroot{flex:none;margin-bottom:4px}
+    .root-card{display:inline-block;width:auto;min-width:220px}
+    .branch{flex-direction:column;gap:8px}
+  }
+  @media (max-width:860px){
+    aside.sidebar{
+      position:fixed;z-index:50;left:0;top:0;transform:translateX(-100%);transition:transform .22s ease;
+      box-shadow:0 0 40px rgba(0,0,0,.35);
+    }
+    aside.sidebar.show{transform:none}
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40}
+    .overlay.show{display:block}
+    .menu-btn{
+      display:flex;position:fixed;z-index:60;left:16px;top:14px;width:40px;height:40px;border-radius:10px;
+      background:var(--sidebar);border:none;cursor:pointer;align-items:center;justify-content:center;
+    }
+    .menu-btn span{display:block;width:18px;height:2px;background:#fff;position:relative}
+    .menu-btn span::before,.menu-btn span::after{content:'';position:absolute;left:0;width:18px;height:2px;background:#fff}
+    .menu-btn span::before{top:-6px}.menu-btn span::after{top:6px}
+    main{padding:70px 20px 70px}
+    .hero h1{font-size:30px}
+  }
+  @media print{
+    aside.sidebar,.menu-btn{display:none}
+    main{padding:0}
+    details.practice{display:block}
+  }
+</style>
+</head>
+<body>
+<button class="menu-btn" id="menuBtn" aria-label="打开目录"><span></span></button>
+<div class="overlay" id="overlay"></div>
+<div class="layout">
+
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="bk serif">程序员的思维修炼<br><span style="font-size:13px;font-weight:400;color:var(--sidebar-dim)">开发认知潜能的九堂课 · 知识脑图</span></div>
+    <div class="sub">Pragmatic Thinking and Learning — Andy Hunt</div>
+  </div>
+  <div class="toc-controls">
+    <button id="expandAll">展开全部</button>
+    <button id="collapseAll">折叠全部</button>
+  </div>
+  <nav class="toc" id="toc">
+    <div class="toc-item" data-sec="sec-0">
+      <button class="toc-head"><span class="dot" style="background:#3E6B6B"></span><span class="tt">书籍总览</span><span class="caret"></span></button>
+      <div class="toc-sub">
+        <a href="#sec-0-1">核心主张</a>
+        <a href="#sec-0-2">关键概念</a>
+        <a href="#sec-0-3">全书结构</a>
+      </div>
+    </div>
+    <div class="toc-item" data-sec="sec-1">
+      <button class="toc-head"><span class="dot" style="background:#4A7BA6"></span><span class="tt">第1章 绪论</span><span class="caret"></span></button>
+      <div class="toc-sub">
+        <a href="#sec-1-1">再提"实用"</a>
+        <a href="#sec-1-2">关注情境</a>
+        <a href="#sec-1-3">人人都需要这些技能</a>
+        <a href="#sec-1-4">本书结构</a>
+      </div>
+    </div>
+    <div class="toc-item" data-sec="sec-2">
+      <button class="toc-head"><span class="dot" style="background:#7B5EA7"></span><span class="tt">第2章 从新手到专家</span><span class="caret"></span></button>
+      <div class="toc-sub">
+        <a href="#sec-2-1">新手与专家</a>
+        <a href="#sec-2-2">德雷福斯模型5阶段</a>
+        <a href="#sec-2-3">现实中的应用</a>
+        <a href="#sec-2-4">警惕工具陷阱</a>
+        <a href="#sec-2-5">情境与日常应用</a>
+      </div>
+    </div>
+    <div class="toc-item" data-sec="sec-3">
+      <button class="toc-head"><span class="dot" style="background:#C0504D"></span><span class="tt">第3章 认识你的大脑</span><span class="caret"></span></button>
+      <div class="toc-sub">
+        <a href="#sec-3-1">双CPU模式</a>
+        <a href="#sec-3-2">24×7记录想法</a>
+        <a href="#sec-3-3">L型与R型特征</a>
+        <a href="#sec-3-4">R型的崛起</a>
+        <a href="#sec-3-5">R型看森林 L型看树木</a>
+        <a href="#sec-3-6">神经可塑性</a>
+      </div>
+    </div>
+    <div class="toc-item" data-sec="sec-4">
+      <button class="toc-head"><span class="dot" style="background:#C8862F"></span><span class="tt">第4章 利用右脑</span><span class="caret"></span></button>
+      <div class="toc-sub">
+        <a href="#sec-4-1">启动感观输入</a>
+        <a href="#sec-4-2">用右脑画画</a>
+        <a href="#sec-4-3">R型到L型的转换</a>
+        <a href="#sec-4-4">收获R型线索</a>
+        <a href="#sec-4-5">收获模式</a>
+      </div>
+    </div>
+    <div class="toc-item" data-sec="sec-5">
+      <button class="toc-head"><span class="dot" style="background:#A63D57"></span><span class="tt">第5章 调试你的大脑</span><span class="caret"></span></button>
+      <div class="toc-sub">
+        <a href="#sec-5-1">认知偏见</a>
+        <a href="#sec-5-2">时代影响</a>
+        <a href="#sec-5-3">个性倾向</a>
+        <a href="#sec-5-4">硬件问题：蜥蜴逻辑</a>
+        <a href="#sec-5-5">测试你自己</a>
+      </div>
+    </div>
+    <div class="toc-item" data-sec="sec-6">
+      <button class="toc-head"><span class="dot" style="background:#3F7D4E"></span><span class="tt">第6章 主动学习</span><span class="caret"></span></button>
+      <div class="toc-sub">
+        <a href="#sec-6-1">学习是什么</a>
+        <a href="#sec-6-2">SMART目标</a>
+        <a href="#sec-6-3">务实投资计划</a>
+        <a href="#sec-6-4">原生学习模式</a>
+        <a href="#sec-6-5">学习小组</a>
+        <a href="#sec-6-6">SQ3R主动阅读</a>
+        <a href="#sec-6-7">思维导图</a>
+        <a href="#sec-6-8">文档·以教代学</a>
+      </div>
+    </div>
+    <div class="toc-item" data-sec="sec-7">
+      <button class="toc-head"><span class="dot" style="background:#2F7E7A"></span><span class="tt">第7章 积累经验</span><span class="caret"></span></button>
+      <div class="toc-sub">
+        <a href="#sec-7-1">为了学习而玩耍</a>
+        <a href="#sec-7-2">利用现有知识</a>
+        <a href="#sec-7-3">正确对待失败</a>
+        <a href="#sec-7-4">内在诀窍</a>
+        <a href="#sec-7-5">压力扼杀认知</a>
+        <a href="#sec-7-6">想象超越感观</a>
+      </div>
+    </div>
+    <div class="toc-item" data-sec="sec-8">
+      <button class="toc-head"><span class="dot" style="background:#4B5BA5"></span><span class="tt">第8章 控制注意力</span><span class="caret"></span></button>
+      <div class="toc-sub">
+        <a href="#sec-8-1">提高注意力</a>
+        <a href="#sec-8-2">思维浸泡</a>
+        <a href="#sec-8-3">管理知识</a>
+        <a href="#sec-8-4">优化当前情境</a>
+        <a href="#sec-8-5">管理干扰</a>
+        <a href="#sec-8-6">保持足够大的情境</a>
+      </div>
+    </div>
+    <div class="toc-item" data-sec="sec-9">
+      <button class="toc-head"><span class="dot" style="background:#9C7C2C"></span><span class="tt">第9章 超越专家</span><span class="caret"></span></button>
+      <div class="toc-sub">
+        <a href="#sec-9-1">有效的改变</a>
+        <a href="#sec-9-2">明天上午做什么</a>
+        <a href="#sec-9-3">超越专家</a>
+      </div>
+    </div>
+    <div class="toc-item" data-sec="sec-10">
+      <button class="toc-head"><span class="dot" style="background:#B98A2E"></span><span class="tt">全书48条诀窍</span><span class="caret"></span></button>
+      <div class="toc-sub">
+        <a href="#sec-10">诀窍速查清单</a>
+      </div>
+    </div>
+  </nav>
+  <div class="foot">基于原书全文整理 · 共9章 · 48条诀窍<br>点击章节可展开子目录</div>
+</aside>
+
+<main>
+<div class="wrap">
+
+<header class="hero" id="top">
+  <h1 class="serif">程序员的思维修炼</h1>
+  <div class="subtitle">开发认知潜能的九堂课 —— 一份完整、可学习、可折叠浏览的知识脑图</div>
+  <div class="meta"><b>Andy Hunt</b> 著 · 崔康 译 · 人民邮电出版社（图灵程序设计丛书）· 原书 <b>Pragmatic Thinking and Learning: Refactor Your "Wetware"</b></div>
+  <div class="duo">
+    <span class="chip"><b>主题</b>　重构你的"湿件"——对大脑重新设计与重新连线</span>
+    <span class="chip"><b>主线</b>　德雷福斯模型 → 认识大脑 → 调试大脑 → 主动学习 → 积累经验 → 控制注意力 → 超越专家</span>
+    <span class="chip"><b>目标</b>　培养直觉、理解情境、更善学习，从新手走向专家</span>
+  </div>
+</header>
+
+<!-- ============ 书籍总览 ============ -->
+<section class="ch" id="sec-0" style="--c:#3E6B6B">
+  <div class="ch-head"><span class="ch-num">序</span><h2 class="serif">书籍总览</h2></div>
+  <p class="quote">"这是一本教你如何对大脑'编程'的书。" —— 译者序　·　"软件是在头脑中创建的。" —— Andy Hunt</p>
+
+  <div class="map" id="sec-0-1">
+    <div class="mroot"><div class="root-card"><div class="rn">为什么读这本书</div><div class="rt serif">过去40年，软件缺陷率基本没变</div><div class="re">语言、工具、方法论一直在进步，唯一没变的是"我们自己"。软件在头脑中创造，所以最重要的工具是你的大脑。</div></div></div>
+    <ul class="mbranches">
+      <li class="branch" id="sec-0-1">
+        <div class="bnode">核心主张<span class="bs">为什么要研究认知</span></div>
+        <ul class="leaves">
+          <li><span class="hd">软件是在头脑中创建的</span>——程序设计本质是解决问题，需要发明、创造和灵感，而不是在 IDE 里完成的</li>
+          <li>当今最重要的两项技能：<span class="kv">沟通能力</span> 与 <span class="kv">学习和思考能力</span>（源自 Brooks《没有银弹》的情境复杂性）</li>
+          <li>缺陷数量40年不变 → 我们一直关注错误的事情；该研究"真正的难题"——人本身</li>
+          <li>学习完全取决于自己：学习能力、批判性思考与创造力没人能教，必须自学</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-0-2">
+        <div class="bnode">关键概念<span class="bs">贯穿全书的基础词汇</span></div>
+        <ul class="leaves">
+          <li><span class="hd">湿件（wetware）</span>：指人脑细胞与思维过程，用计算机模型类比人类思维——本书要做的是"重构湿件"</li>
+          <li><span class="hd">实用主义</span>：本质是"做对你有用的事情"；科学依据未知也没关系，有效即实用；切忌随波逐流，不要盲从任何建议</li>
+          <li><span class="hd">情境</span>：万物互联，一切都是系统与更大情境的一部分；小事可能有巨大的非线性影响</li>
+          <li><span class="hd">系统思维</span>（Peter Senge《第五项修炼》）：把事物看作多个系统的连接点，而非孤立个体；你也总是系统的一部分（观察者效应）</li>
+          <li><span class="hd">事件理论 vs 构建理论</span>：事件理论可测量验证；构建理论是无形抽象，靠"有用性"衡量——德雷福斯模型属于后者</li>
+          <li><span class="hd">敏捷方法</span>：2001年峰会提出，摆脱死板规则、注重实时反馈，许多敏捷思想与良好认知习惯相融合</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-0-3">
+        <div class="bnode">全书旅程<span class="bs">九堂课的地图</span></div>
+        <ul class="leaves">
+          <li><span class="hd">从新手到专家</span>：德雷福斯模型——实践、情境与直觉是成为专家的关键（第2章）</li>
+          <li><span class="hd">认识你的大脑</span>：双CPU类比、L型/R型两种认知模式（第3章）</li>
+          <li><span class="hd">正确使用大脑</span>：提高创造力与问题解决能力，给直觉更大空间（第4章）</li>
+          <li><span class="hd">调试你的大脑</span>：认知偏见、时代影响、个性倾向、硬件缺陷——了解缺陷是消除影响的第一步（第5章）</li>
+          <li><span class="hd">积极学习</span>：SMART目标、思维导图、SQ3R阅读、以教代学（第6章）</li>
+          <li><span class="hd">积累经验</span>：利用反馈、乐趣和失败创造更有效的学习环境（第7章）</li>
+          <li><span class="hd">控制注意力</span>：优化情境、管理打扰、积极管理知识（第8章）</li>
+          <li><span class="hd">超越专家</span>：为什么改变比想象难，专家之上是"新手思维"（第9章）</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 第1章 ============ -->
+<section class="ch" id="sec-1" style="--c:#4A7BA6">
+  <div class="ch-head"><span class="ch-num">第1章</span><h2 class="serif">绪论</h2></div>
+  <p class="quote">"当我们试图将某个事物单独挑出来时，我们发现它与宇宙中的其他事物是息息相关的。"<span class="who">—— 约翰·缪尔</span></p>
+
+  <div class="map">
+    <div class="mroot"><div class="root-card"><div class="rn">CHAPTER 1</div><div class="rt serif">绪论</div><div class="re">一段关于认知科学、神经学、学习和行为理论的旅程：克服大脑系统的局限，提高学习和思考技能。</div></div></div>
+    <ul class="mbranches">
+      <li class="branch" id="sec-1-1">
+        <div class="bnode">再提"实用"<span class="bs">1.1</span></div>
+        <ul class="leaves">
+          <li><span class="hd">实用主义</span>的本质：做对你有用的事情；从《程序员修炼之道》到 Pragmatic 系列一脉相承</li>
+          <li><span class="hd">每个人都是不同的</span>：书中既有 fMRI 证实的科学事实，也有概念理论和日常例子，均供你思考和检验</li>
+          <li>讨论大脑时根本科学依据常未知或不可知——不必担心，<i>有效即实用</i></li>
+          <li>切忌随波逐流："Only dead fish go with the flow." 用开放思维阅读，尝试后判断哪些对你有用</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-1-2">
+        <div class="bnode">关注情境<span class="bs">1.2</span></div>
+        <ul class="leaves">
+          <li>万事万物相互联系：自然界、社会系统、内心想法、计算机逻辑——一切都是系统和更大情境的一部分</li>
+          <li>现实世界是<span class="kv">非线性</span>的：小的事物可能有意想不到的巨大影响</li>
+          <li>冥想与自言自语、手写与打字，抽象上看等价，实际使用<span class="kv">完全不同的思维路径</span></li>
+          <li>树的例子：一棵树至少是"树叶—空气"与"根—泥土"两个系统的连接点，不是孤立静止的</li>
+          <li><span class="tip">诀窍1</span> 始终关注情境——贴在墙上、书桌上、白板上</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-1-3">
+        <div class="bnode">人人都需要这些技能<span class="bs">1.3</span></div>
+        <ul class="leaves">
+          <li>许多不同领域都在谈论同一批话题：<i>MBA/高管培训、认知科学、学习理论、护理与航空、瑜伽冥想、编程与问题解决、人工智能</i></li>
+          <li>不同领域呈现相通之处——这是存在根本性、重要东西的信号</li>
+          <li>MBA 与高管课程中的思考性、创造性、直觉性技能，尚未普及到一线知识工作者——本书要把这些成果带给大家</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-1-4">
+        <div class="bnode">本书结构与实践单元<span class="bs">1.4–1.5</span></div>
+        <ul class="leaves">
+          <li>章节按顺序排列但相互关联——一切事物都是相互联系的</li>
+          <li>全书设置<span class="kv">"实践单元"</span>：练习、实验、习惯培养，用多选框标记完成情况</li>
+          <li>手绘插图是有意为之：手绘具有独特作用（小纸片设计文档的传统）</li>
+          <li>本章实践：分析项目问题涉及的不同系统及交互点；找出导致问题的三个情境因素；贴上"关注情境"标签</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 第2章 ============ -->
+<section class="ch" id="sec-2" style="--c:#7B5EA7">
+  <div class="ch-head"><span class="ch-num">第2章</span><h2 class="serif">从新手到专家的历程</h2></div>
+  <p class="quote">"制造问题的思维方式无法用来解决问题。"<span class="who">—— 阿尔伯特·爱因斯坦</span></p>
+
+  <div class="map" id="sec-2-1">
+    <div class="mroot"><div class="root-card"><div class="rn">CHAPTER 2</div><div class="rt serif">德雷福斯技能获取模型</div><div class="re">德雷福斯兄弟研究人类如何获取技能，概括出从新手到专家的5个阶段。它是情境模型，针对每项具体技能，而非个性或能力模型。</div></div></div>
+    <ul class="mbranches">
+      <li class="branch" id="sec-2-1">
+        <div class="bnode">新手与专家<span class="bs">2.1 两种世界观</span></div>
+        <ul class="leaves">
+          <li><span class="hd">专家使工作看起来很轻松</span>：风琴面试中，真正的专家边演奏边微笑交谈</li>
+          <li><span class="hd">清晰表述专业技能十分困难</span>：专家的大量经验存储在大脑非语言、无意识区域，难以观察也难以表述（大厨的"烹饪直到完成"）</li>
+          <li>新手需要明确的、<span class="kv">与情境无关</span>的指令便于参照执行；强制专家遵从规则会使他们效率低下</li>
+          <li>这不是魔法：专家认识世界的方式、解决问题的方法、思维模型与普通人根本不同</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-2-2">
+        <div class="bnode">德雷福斯模型 5 阶段<span class="bs">2.2 · 针对每项技能</span></div>
+        <ul class="leaves">
+          <li><span class="hd">① 新手</span>：经验很少，在乎能否成功，想要立竿见影的目标，出错易慌乱；需要"当X发生时执行Y"的指令清单；未知情境会不知所措 <i>· 新手需要指令清单</i></li>
+          <li><span class="hd">② 高级新手</span>：开始摆脱固定规则，能独自尝试任务；想快速获取信息，能根据过去经验采纳建议；<span class="kv">不想要全局思维</span>，会忽略大情境</li>
+          <li><span class="hd">③ 胜任者</span>：能建立问题域的概念模型，独立解决问题并探寻新问题；基于谨慎计划和过去经验工作；被视为"有主动性、足智多谋"，常发挥领导作用 <i>· 胜任者能够解决问题</i></li>
+          <li><span class="hd">④ 精通者</span>：需要全局思维，寻找更大的概念框架；<span class="kv">重大突破：能纠正以往不好的工作表现</span>（自我改进由此开始）；能从他人的案例故事中学习，能理解和运用经验之谈（maxim）</li>
+          <li><span class="hd">⑤ 专家</span>：各领域知识和信息的主要来源，不断寻找更好的方法；<span class="kv">根据直觉工作，而不需要理由</span>；占人群约1%–5%；擅长有针对性的特征匹配，知道哪些细节可忽略</li>
+          <li>敏捷方法（反馈驱动的自我纠正）需要<span class="kv">精通级以上</span>才能有效应用——误用设计模式（一段代码塞17个模式）是低阶者的典型灾难</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-2-3">
+        <div class="bnode">现实中的模型<span class="bs">2.3–2.4 赛马与赛羊</span></div>
+        <ul class="leaves">
+          <li><span class="hd">二阶不胜任</span>：不擅长时更可能自认为是专家（Kruger & Dunning："不知道自己不知道"）；低技能者会<span class="kv">高估自己能力约50%</span>，专家反而更多自我怀疑</li>
+          <li><span class="tip">诀窍3</span> 知道你不知道什么；<span class="tip">诀窍2</span> 新手使用规则，专家使用直觉</li>
+          <li><span class="hd">规则断送专家</span>：实验中专家遵循自己制定的规则后，表现明显下降；把专家当"赛马"来训练会拖垮其业绩</li>
+          <li><span class="hd">技能分布的糟糕事实</span>：大多数人的大多数技能终生停留在<span class="kv">高级新手</span>阶段，不是钟形曲线</li>
+          <li><span class="hd">专家≠老师</span>：教学是另一门技能；让新手结对时，选技能水平相近（胜任级）的指导者往往更合适</li>
+          <li><span class="hd">成为专家需要十年</span>：Ericsson 积极实践四条件——明确定义的任务、适当难度（有挑战但可行）、大量反馈、重复犯错和纠错的机会</li>
+          <li><span class="hd">护理行业的借鉴</span>：20世纪80年代 Benner 将模型引入护理并取得成果；程序员同样要勇于承担责任——"我只是执行命令"在护理和软件开发中都行不通（95%护士服从虚假医嘱的实验）</li>
+          <li><span class="tip">诀窍4</span> 通过观察和模仿来学习（模仿→吸收→创新，对应武术 Shu-Ha-Ri）；<span class="tip">诀窍5</span> 保持实践以维持专家水平；优胜者不会帮扶失败者——组织需为顶尖程序员设置相称的薪酬与职业阶梯</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-2-4">
+        <div class="bnode">警惕工具陷阱<span class="bs">2.5 形式方法的危害</span></div>
+        <ul class="leaves">
+          <li><span class="hd">模型是工具，而非镜子</span>：UML/MDA/RUP/CMM 各有用途，但没有银弹，滥用得不偿失</li>
+          <li>形式模型的典型危害：<i>混淆模型与现实；低估不能形式化的特性（无法给创造力限时）；鼓励羊群行为；偏袒新手而疏远资深员工；阐明太多细节引发无限倒退；把复杂局势过于简单化；追求过度一致；忽视情境的细微差别；在遵从规则和自行判断间犹豫；口号化而故弄玄虚</i></li>
+          <li><span class="tip">诀窍6</span> 如果你需要创造力、直觉或独创能力，避免使用形式方法；规则只是"自行车的辅助轮"</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-2-5">
+        <div class="bnode">情境与日常应用<span class="bs">2.6–2.7</span></div>
+        <ul class="leaves">
+          <li>警惕<span class="kv">非情境化的客观性</span>：实验室福尔马林里的鱼 ≠ 活在栖息地里的鱼；"打开锁着的门"——救人还是撬锁，情境完全不同</li>
+          <li>一种规格并非处处适用：新手需要快速成功和情境无关规则；专家需要全貌，不要用官僚规则妨碍他们的判断</li>
+          <li>理想团队应<span class="kv">混合各层次技能水平</span>——都看森林时，也需要有人关注一棵棵大树</li>
+          <li><span class="tip">诀窍7</span> 学习如何学习的技能；为获取专业技能：培养更多直觉、认识情境与模式的重要性、更好地利用自己的经验</li>
+          <li>本章实践：自我评价所处阶段；辨别各技能的层次要求（警惕二阶不胜任）；判断如何提升一级；回想团队问题若懂德雷福斯模型能否避免</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 第3章 ============ -->
+<section class="ch" id="sec-3" style="--c:#C0504D">
+  <div class="ch-head"><span class="ch-num">第3章</span><h2 class="serif">认识你的大脑</h2></div>
+  <p class="quote">"计算机一无是处，它们只能给你答案。"<span class="who">—— 毕加索</span></p>
+
+  <div class="map">
+    <div class="mroot"><div class="root-card"><div class="rn">CHAPTER 3</div><div class="rt serif">大脑 = 双CPU + 单主机总线</div><div class="re">用计算机系统设计的类比来理解大脑：1号CPU线性逻辑，2号CPU异步模式匹配，两者共享总线、互相干扰——这既是问题，也是机会。</div></div></div>
+    <ul class="mbranches">
+      <li class="branch" id="sec-3-1">
+        <div class="bnode">双CPU模式<span class="bs">3.1 L型与R型</span></div>
+        <ul class="leaves">
+          <li><span class="hd">1号CPU（L型）</span>：线性、逻辑思维和语言处理，按步就班；相对缓慢，占用资源少；空闲时运行"空闲循环"——生成脑中的语言内心独白</li>
+          <li><span class="hd">2号CPU（R型）</span>：像数字信号处理器、大脑中的Google——超级正则搜索引擎，负责搜索和模式匹配；异步返回结果（可能数天后），不做语言处理，结果难以言表</li>
+          <li><span class="hd">共享总线冲突</span>：每次只有一个CPU访问内存；L型占用总线时R型无法搜索（刚睡醒的梦一想描述就消失，即此原理）</li>
+          <li><span class="hd">记忆是全息的</span>：记忆分散存储，切除一半大脑的老鼠仍能走迷宫；<span class="kv">记忆必须刷新</span>——大脑像动态RAM，不用就丢失，"如果大脑停止运行，它就忘记了一切"</li>
+          <li>R型是意识的"边缘视觉"：<span class="kv">不能直接控制</span>，只能异步运行；每一次经历都会被存储，但不一定被索引</li>
+          <li>裂脑研究（Sperry，1981诺贝尔奖）：切断胼胝体后发现两个半球处理信息方式截然不同——作者称之为 L型（线性/Linear）与 R型（富/Rich），而非简单的"左右脑"</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-3-2">
+        <div class="bnode">24×7 随时记录想法<span class="bs">3.2</span></div>
+        <ul class="leaves">
+          <li>R型至多是不可预测的——答案常在你不在电脑旁时出现，必须随时准备好记录</li>
+          <li>工具：<i>钢笔+小记事本、索引卡片、PDA、语音备忘录、Pocket Mod 一次性小册子、Moleskine 记事本</i>——关键是"总是随身携带"</li>
+          <li><span class="tip">诀窍8</span> 捕获所有的想法以从中获益更多——不记录就不会意识到拥有过它们；一旦开始记录，大脑会给你更多</li>
+          <li><span class="hd">每个人都有好点子</span>：只有少数人跟踪它们，更少人付诸行动——捕获是金字塔的最底层、最基本的要求</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-3-3">
+        <div class="bnode">L型与R型的特征<span class="bs">3.3</span></div>
+        <ul class="leaves">
+          <li><span class="hd">L型9种能力</span>：语言、分析、符号、抽象、时间（遵时循序）、推理、数字、逻辑、线性思维——上学考的是这些，工作中用的也是这些</li>
+          <li><span class="hd">R型特点</span>：非语言（可获取语言但不能创建）、喜欢综合学习、具体实在、使用类比、不守时、不受理性约束、整体性、空间性、<span class="kv">直觉性跳跃思维</span></li>
+          <li>"非理性"没有什么不对：思维过程非理性、不可重复 ≠ 不科学、不负责（结婚的决定就不是理性分析的产物）</li>
+          <li><span class="tip">诀窍9</span> 综合学习与分析学习并重——"想了解青蛙，别解剖它，构造它"（尼葛洛庞蒂）；原型和单元测试给我们综合学习的机会</li>
+          <li>L型是必要的，但仅有它是不够的</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-3-4">
+        <div class="bnode">R型的崛起<span class="bs">3.4 美学与设计</span></div>
+        <ul class="leaves">
+          <li>通用汽车卢兹："它更多是右脑思维……我们在做艺术行业，巧合的是也提供运输服务"——主流业务绝对需要R型属性</li>
+          <li><span class="hd">商品化意味着美学品味的竞争</span>：洁厕刷靠设计师 Michael Graves 的设计卖出新意；iPod 说的是"能装多少首歌"，而不是多少G字节</li>
+          <li><span class="hd">吸引力更有效</span>：美观的ATM界面比丑陋的更易用（即使功能流程相同）；积极情绪扩展思维过程、激活更多大脑物质；接触苹果商标会使人更具创造力（杜克大学研究）</li>
+          <li>反之所以然成立：消极情绪让大脑收缩资源——<span class="kv">破窗理论</span>，已知问题不修会产生病毒式影响</li>
+          <li><span class="hd">神经形成</span>：成年大脑会再生新脑细胞——但只在丰富环境中；"困在斗室里的程序员永远都不会产生新的脑细胞"</li>
+          <li><span class="tip">诀窍10</span> 争取好的设计，它真的很有效；"设计并不是创造美，美来自于选择、共鸣、同化和爱"（路易·康）——创造来自选择和组装，选择来自模式匹配</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-3-5">
+        <div class="bnode">R型看森林，L型看树木<span class="bs">3.5</span></div>
+        <ul class="leaves">
+          <li>层次字符实验（H由字母I组成）：一个半球擅长识别全局（大字符），另一个擅长局部（小字符）</li>
+          <li>发现全局、整体的模式需要 <span class="kv">R型</span>；分析部分和细节需要 <span class="kv">L型</span>——两者最终你都需要</li>
+          <li>数学天才的大脑更加协作，两侧半球均衡参与——普通人则需要方法促进L/R协作（下一章）</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-3-6">
+        <div class="bnode">神经可塑性<span class="bs">3.6 DIY脑部手术</span></div>
+        <ul class="leaves">
+          <li>大脑功能并非出生固定：研究员教会盲人通过舌头"看"东西（16×16像素输入也能在停车场驾驶）</li>
+          <li><span class="tip">诀窍11</span> 重新连线大脑，坚信这一点并不断实践——你如何认识大脑的能力，直接影响大脑内部的组织（德韦克 Mindset）</li>
+          <li><span class="hd">脑皮层竞争</span>：持续使用的技能占据更多皮层资源，少用的失去阵地——"不使用就会失去"</li>
+          <li>想做更好的程序员就多编码、深思熟虑、专注实践；学外语就投入进去不停地说</li>
+          <li>本章实践：列清单分析美学在你软件选择中的作用；平衡L/R使用；桌上放便笺本、随身记录工具；尝试综合式学习、离开键盘做设计</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 第4章 ============ -->
+<section class="ch" id="sec-4" style="--c:#C8862F">
+  <div class="ch-head"><span class="ch-num">第4章</span><h2 class="serif">利用右脑</h2></div>
+  <p class="quote">"人应该努力学习洞察和培养自己内心深处的灵光一现，这远远胜于外面流光溢彩的整个世界。"<span class="who">—— 爱默生</span></p>
+
+  <div class="map">
+    <div class="mroot"><div class="root-card"><div class="rn">CHAPTER 4</div><div class="rt serif">启用被忽略的R型</div><div class="re">R型无法强制利用，只能邀请。本章是一整套技术：激活感观、进入R型、促成R型→L型转换、收获R型的答案与模式。</div></div></div>
+    <ul class="mbranches">
+      <li class="branch" id="sec-4-1">
+        <div class="bnode">启动感观输入<span class="bs">4.1</span></div>
+        <ul class="leaves">
+          <li>投入更多脑物质的最简方式：激活更多神经通路——<span class="kv">扩大感观参与范围</span>；多感观技术可让学习效果提高5倍</li>
+          <li>开发团队实践：用<span class="kv">乐高积木</span>做面向对象设计——人人可参与、富有活力、形象化；CRC卡片同样有触觉效果</li>
+          <li><span class="hd">利用多感观反馈</span>：写表单、画图画、语言描述、公开讨论、<span class="kv">角色扮演</span>（排队系统设计：哨子、队列、秒表，"30–60分钟胜过设计复审会议"）</li>
+          <li><span class="tip">诀窍12</span> 增加感观体验以促进大脑的使用；大脑渴望新奇刺激——定期改变环境，刺激你的大脑</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-4-2">
+        <div class="bnode">用右脑画画<span class="bs">4.2 认知转变</span></div>
+        <ul class="leaves">
+          <li><span class="hd">"绘画"其实是观察</span>：困难不在做标记，而在R型的可视洞察力；100人听众中绝大多数自认"鬼画符"</li>
+          <li>5秒画你的房子 → 你画的是L型的<span class="kv">符号</span>（盒子加三角），不是真实的房子</li>
+          <li>艾德华《用右脑绘画》实验：倒置复制画像——给L型分配一个它不想要的（拒绝说出识别结论的）任务，L型让路，R型接管</li>
+          <li>激活R型的休闲活动：听音乐、绘画、静思、慢跑、针线活、攀岩；<span class="kv">限制认知干扰</span></li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-4-3">
+        <div class="bnode">促成R型→L型转换<span class="bs">4.3 同步两种模式</span></div>
+        <ul class="leaves">
+          <li>R型不是银弹——不能处理语言；需要的是让<span class="kv">整个大脑</span>同步工作</li>
+          <li><span class="hd">攀岩教练的启示</span>：先亲身多感观体验，再针对性授课——先R型获取，再L型加工</li>
+          <li><span class="hd">罗扎诺夫暗示学习法</span>：黑暗房间+巴洛克音乐+瑜伽呼吸，连珠炮式展示外语——密集教学法效果远超传统课程</li>
+          <li><span class="tip">诀窍13</span> R型开路，L型紧跟；"酒醉写作，酒醒修改"——创造时坦然面对荒谬，先适应它，不要太着急</li>
+          <li><span class="hd">较差的草稿初案</span>（安妮·拉莫特）："完美主义是压迫者的声音"——完成差草稿胜过永远完不成的完美初稿</li>
+          <li><span class="hd">结对编程</span>：驾驶员锁定L型细节，领航员自由运用模式匹配；齿轮实验——58%的结对者发现抽象规则，独立解题者只有14%</li>
+          <li><span class="tip">诀窍14</span> 使用隐喻作为L型和R型相融之所——"隐喻是左右脑半球之间、潜意识和意识之间来回游弋的途径"；我们一直在用隐喻（窗口、鼠标、线程、僵尸进程）</li>
+          <li><span class="hd">异类联想与Po技术</span>：库斯勒——两个不相容参照系的突然切换是强大隐喻的基础，联系越不可能、创造性越大；随机并列练习（香烟+交通灯）；系统隐喻（薪酬系统=邮局）——"隐喻思维是编程的基础"（Kent Beck），但衍生式隐喻很难，需在实践中尝试</li>
+          <li><span class="tip">诀窍15</span> 培养幽默感以建立更强大的隐喻——幽默建立于识别关系并扭曲关系（"Take my wife. Please."）</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-4-4">
+        <div class="bnode">收获R型线索<span class="bs">4.4</span></div>
+        <ul class="leaves">
+          <li><span class="hd">一切输入都被存储</span>：大脑存储一切，但不一定索引；解决问题时所有记忆（含未索引的）都会被全表扫描</li>
+          <li><span class="hd">伊莱亚斯·豪的噩梦</span>：食人族长矛尖端的洞 → 缝纫机针孔方向——答案早已在R型中，只是无法用语言表达</li>
+          <li><span class="hd">图像流</span>：闭眼默想10分钟，观察图像→大声描述→动用五感→用现在时；看不到图像可凝视光源制造光幻视</li>
+          <li><span class="hd">晨写技术</span>：早晨第一件事、至少三页、手写、不审查删减、天天写——让毫无防备的大脑倾倒想法（潜意识仍占主角）；爱迪生手握滚珠打盹记灵感</li>
+          <li><span class="hd">自由写</span>：温伯格 Fieldstone 方法——平时收集"思维大卵石"，写作时随取随用；先纸上捕捉再入博客，别被工具拖累</li>
+          <li><span class="hd">散步与迷径</span>：迷宫是智力题，迷径是沉思工具；庞加莱——把问题全写下来，挑一个子问题出去走走，答案会"成堆地出现"</li>
+          <li><span class="tip">诀窍16</span> 离开键盘去解决难题——<span class="kv">R型只能邀请，不能强制命令</span>；培养非目标驱动的思维方式</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-4-5">
+        <div class="bnode">收获模式<span class="bs">4.5–4.6</span></div>
+        <ul class="leaves">
+          <li>R型只依据最少的模式片段就能匹配（首末字母正确的乱序单词你依然读得懂）；大脑不靠逐字阅读，而是把单词作为整体理解</li>
+          <li><span class="hd">代码中的模式</span>：代码一次编写多次阅读——排版、对齐、缩进、方法大小都是视觉模式；但缩进也会骗人（if/else 的 launchNukes 陷阱）；<span class="kv">适应不同技能层次</span>：格式不是修饰，是重要的交流工具</li>
+          <li><span class="hd">换换脑子</span>：车辙和坟墓的唯一区别在于尺寸；Dave Thomas——"倒过来看"（调试时故意找引起bug的方式、UI先做最差设计）；<span class="tip">诀窍17</span> 改变解决问题的角度</li>
+          <li><span class="hd">思维枷锁</span>（von Oech）：假定唯一正确答案、认为方案必须合逻辑、否定角色扮演——都是错误的假定</li>
+          <li><span class="hd">神谕冲击</span>：禅宗心印（"一个巴掌拍出的声音？"）、伊诺《间接策略》100条（"这像别的什么东西吗？""错误是一种潜在的提示"）；想象自己是数据包或查询，会做什么</li>
+          <li><span class="hd">莎士比亚的谜语</span>：功能转移（名词用作动词 he godded me）令大脑活动骤起高峰；打破日常习惯——换手刷牙、改变路线，防止神经惯例</li>
+          <li>正确理解：不能单独使用R型或L型，要组织学习过程支持R型→L型转换；随时准备记录R型的精辟领悟</li>
+          <li>本章实践：坚持晨写两周；引入更多感观；逆向思维；用乐高做设计；为项目寻找系统隐喻；观察专家的"奇怪"习惯</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 第5章 ============ -->
+<section class="ch" id="sec-5" style="--c:#A63D57">
+  <div class="ch-head"><span class="ch-num">第5章</span><h2 class="serif">调试你的大脑</h2></div>
+  <p class="quote">"直觉是伟大的，除了当它不伟大的时候。" · "我们是基于不完善的记忆和当时的情感状态来做出决策的。"<span class="who">—— 我们不是理智的生物</span></p>
+
+  <div class="map">
+    <div class="mroot"><div class="root-card"><div class="rn">CHAPTER 5</div><div class="rt serif">四大类思维 Bug</div><div class="re">人类大脑不是开源软件，无法查看源码纠错。四类已知缺陷：认知偏见、时代影响、个性倾向、硬件故障——了解是消除影响的第一步。</div></div></div>
+    <ul class="mbranches">
+      <li class="branch" id="sec-5-1">
+        <div class="bnode">认知偏见<span class="bs">5.1 思维如何被误导</span></div>
+        <ul class="leaves">
+          <li>Wikipedia 列举约90种；作者精选：<span class="hd">思维定势</span>（一个数字影响后续判断）、<span class="hd">基本归因错误</span>（把别人的行为归因于个性而非情境）、<span class="hd">自私的偏见</span>（成功是我的功劳，失败与我无关）、<span class="hd">需要定论</span>（竭力消除不确定性，如 BDUF 强行早定论）、<span class="hd">认可上的偏见</span>（按成见选择事实）、<span class="hd">曝光效应</span>（因熟悉而偏爱失效的工具）、<span class="hd">霍桑效应</span>（被关注时行为改变，新鲜感退去即回潮）</li>
+          <li><span class="hd">虚假记忆</span>：想象与真实混淆；记忆是主动过程——<span class="kv">每一次读取都是一次写入</span>，按当前情境不断重写</li>
+          <li><span class="hd">符号约简谬论</span>与<span class="hd">名词谬论</span>：L型用符号代替复杂系统（"五条线加一个棍"）；贴上标签≠理解（"他是ADHD"不增加任何理解）</li>
+          <li><span class="hd">预言的失败</span>：柏拉图圈——现实简化为理想积木留下的洞；黑天鹅（Taleb）——从未见过黑天鹅≠不存在；"意想不到的事件改变历史"（OpenLook vs Motif、RMI vs CORBA 都是错误的问题，Web 才是黑天鹅）</li>
+          <li><span class="hd">相关≠因果</span>：高压线与白血病？也许是房价低→贫困→营养与医疗差异；现实常是"X和Y"互相强化，而非"X导致Y"</li>
+          <li><span class="tip">诀窍18</span> "很少"不意味着"没有"——检查疯狂的异常值，绝不说"绝不"；每月你都可能经历一次百万分之一的奇迹</li>
+          <li><span class="tip">诀窍19</span> 适应不确定性：<span class="kv">推迟下结论</span>——项目结束时你才最博学，尽早定论只会消灭选择；报告目标日期时注明信心概率（10月1日，37%）；<span class="tip">诀窍20</span> 信任记录而不是记忆——好记性不如烂笔头，每一次思维的输出都是一次输入</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-5-2">
+        <div class="bnode">时代影响<span class="bs">5.2 同代人如何影响你</span></div>
+        <ul class="leaves">
+          <li>道格拉斯·亚当斯：出生时已有的一切都理所当然；15–35岁间的创造是革命性；35岁后的一切都违背自然</li>
+          <li>美国世代速览：<span class="kv">大兵的一代</span>（1901–24，务实建设者，命令与控制式管理之源）、<span class="kv">沉默的一代</span>（1925–42，墨守成规、重程序）、<span class="kv">婴儿潮一代</span>（1943–60，道德仲裁人，重方法甚于结果）、<span class="kv">X一代</span>（1961–81，"被狼养大的"，最大创业一代、天生不信任组织）、<span class="kv">新千年一代</span>（1982–2005，忠诚不冒险、重集体）</li>
+          <li>豪/斯特劳斯四种时代原型循环：<span class="kv">先知</span>（价值观）、<span class="kv">游牧</span>（自由生存荣誉）、<span class="kv">英雄</span>（利益共同体）、<span class="kv">艺术家</span>（多元化与专业）——一种原型创建其反面原型</li>
+          <li>世代的价值观冲突真实存在（"终生忠诚"的导师在作者离职后再未与他说话）</li>
+          <li><span class="tip">诀窍21</span> 从多个角度看待问题——避免时代偏见的最好方法是<span class="kv">保持多样性</span>；激烈赞成某观点时自问：这是逻辑、情感还是熟悉感？</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-5-3">
+        <div class="bnode">个性倾向<span class="bs">5.3 MBTI 四轴线</span></div>
+        <ul class="leaves">
+          <li>MBTI 基于荣格研究，是偏好指示而非行为判决——四种组合如不同操作系统（Windows/Mac/Linux）</li>
+          <li><span class="hd">外向E–内向I</span>：75%偏外向；内向者有领地意识，从独立活动中获得力量</li>
+          <li><span class="hd">感觉S–直觉N</span>：75%是感觉型（重事实细节）；直觉型富想象力、看到可能性——最易误传的一轴</li>
+          <li><span class="hd">思考T–情感F</span>：各占一半，性别略有倾向——T型觉得F型感情用事，F型觉得T型冷血</li>
+          <li><span class="hd">判断J–知觉P</span>：J型早下定论才舒服，P型做决定后反而不安——两者不应一起敲定时间表</li>
+          <li><span class="hd">并非所有奖励都受欢迎</span>：当众表扬对内向者可能是折磨；奖励应随性格与技能水平而异</li>
+          <li><span class="tip">诀窍22</span> 尊重不同人的不同性格——<span class="kv">你无法改变别人</span>；试图改造他人性格必然导致灾难</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-5-4">
+        <div class="bnode">硬件问题：蜥蜴逻辑<span class="bs">5.4 老脑区压制聪明脑区</span></div>
+        <ul class="leaves">
+          <li>新皮层之下是更古老、粗糙的区域：战斗或逃跑、领地行为、抢上风（路怒症研究表明：车贴数量比内容更能预测攻击性——我们在划定领地）</li>
+          <li>伯恩斯坦"蜥蜴逻辑"六表现：<span class="kv">战斗逃跑或吓呆</span>、<span class="kv">立刻行动</span>（关注最兴奋而非最重要的——刷邮件上网）、<span class="kv">领头意识</span>（阿尔法狗）、<span class="kv">守卫领土</span>（绝不共享信息）、<span class="kv">受到伤害愤愤不平</span>（责怪别人）、<span class="kv">像我这样==好</span>（非善即恶）</li>
+          <li><span class="hd">情绪可传染</span>：近朱者赤近墨者黑——态度、信念、行为都是"传染病"；聚众施暴由此产生</li>
+          <li><span class="hd">消极思维的"电影"</span>：重复播放的内心电影会越来越真实（"你总是……""你永远不……"）——记住它只是一部电影，你可以改变频道</li>
+          <li><span class="hd">互联网绕过新皮层</span>：手写信件的延迟让冷静的新皮层有机会干预，即时消息暴露原始本能；情绪涌上时深呼吸、数到十</li>
+          <li><span class="tip">诀窍23</span> 像高级动物一样行动——请做深呼吸，而不要张口嘶鸣（微笑与抗抑郁药一样有效）</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-5-5">
+        <div class="bnode">测试你自己<span class="bs">5.5 相信直觉，但要验证</span></div>
+        <ul class="leaves">
+          <li>直觉是专家的标志，但你的直觉可能完全错误——<span class="tip">诀窍24</span> 相信直觉，但是要验证：建立原型、跑单元测试、设基准，"你需要单元测试"</li>
+          <li><span class="hd">批判性自问清单</span>：你怎么知道的？谁说的？有什么特别的？与什么或谁比较？这总是发生吗？能想到特例吗？什么阻止了你？（源自 NLP 元模型）</li>
+          <li>试着解释自己立场的<span class="kv">反面</span>——只有标签作为证据时无法解释反面</li>
+          <li><span class="hd">预期创造现实</span>：对他人、技术、团队寄予最差期望，你就会真看到那种结果</li>
+          <li><span class="hd">一切都是折中的结果</span>：没有免费的午餐，凡事权衡积极与消极两面</li>
+          <li>"我们通过逻辑来证明，通过直觉去发现" —— 庞加莱</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 第6章 ============ -->
+<section class="ch" id="sec-6" style="--c:#3F7D4E">
+  <div class="ch-head"><span class="ch-num">第6章</span><h2 class="serif">主动学习</h2></div>
+  <p class="quote">"大脑不是一个用于填充的容器，而是一束需要点燃的火焰。"<span class="who">—— 普卢塔赫</span></p>
+
+  <div class="map">
+    <div class="mroot"><div class="root-card"><div class="rn">CHAPTER 6</div><div class="rt serif">学习如何学习</div><div class="re">在信息爆炸时代，学习能力是成功的最重要因素。技术本身并不重要，持续学习才重要——但绝大多数人没学过"如何学习"。</div></div></div>
+    <ul class="mbranches">
+      <li class="branch" id="sec-6-1">
+        <div class="bnode">学习是什么…不是什么<span class="bs">6.1</span></div>
+        <ul class="leaves">
+          <li>某些科学领域信息量<span class="kv">三年翻一番</span>；最后一位无所不知的圣人是1873年去世的穆勒</li>
+          <li>Education 源自拉丁文 educare——"被引出"，而非灌输</li>
+          <li><span class="hd">羊浸式培训无效</span>：像给羊浸药浴——3–5天密集脱产培训就宣布你成了Java开发人员；药性会退，第二年再来一次。失败原因：<span class="kv">学习必须主动做；只学不练没有用；无目标无反馈的随机方法导致随机结果</span></li>
+          <li>掌握"知识体"的提纲并不会提高专业水平——大脑构建的模型、提出的问题和日常实践才提高竞争力</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-6-2">
+        <div class="bnode">瞄准 SMART 目标<span class="bs">6.2</span></div>
+        <ul class="leaves">
+          <li><span class="hd">S 具体</span>："学Erlang"不行——"用Erlang编写一个可动态生成内容的Web服务器"</li>
+          <li><span class="hd">M 可度量</span>：无法度量说明不够具体；增量进步——"写小说像黑夜里开车，只需看清面前一两米"</li>
+          <li><span class="hd">A 可实现</span>：无法达到的目标不是目标，是疯狂、吸食灵魂的自我挫败</li>
+          <li><span class="hd">R 相关</span>：对你重要吗？有热情吗？在你掌控之下吗？</li>
+          <li><span class="hd">T 时间可控</span>：最重要的特性——没有期限的目标会被每天更紧急的事排挤</li>
+          <li><span class="tip">诀窍25</span> 建立 SMART 任务实现你的目标：目标（goal）是理想状态，任务（objective）帮你接近目标；没有目标是一座孤岛——置于家庭、事业、财务、社区的大背景中检验；用微小的（甚至5分钟）任务组成行动计划</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-6-3">
+        <div class="bnode">务实的投资计划<span class="bs">6.3 PIP</span></div>
+        <ul class="leaves">
+          <li>核心理念：像管理金融投资一样<span class="kv">小心管理你的知识投资</span></li>
+          <li><span class="hd">时间无法创造，只能分配</span>：把学习流放到"空闲时间"就等同于失败</li>
+          <li><span class="hd">制定具体计划</span>：现在（下一步行动）/ 明年 / 五年后三层目标；"作计划比计划本身重要得多"（艾森豪威尔）</li>
+          <li><span class="hd">多样化</span>：不把鸡蛋放同一个篮子——语言、环境、技术、行业与非技术领域；低风险低回报（.NET）与高风险高回报（当年学Java、今天的Erlang/Haskell）</li>
+          <li><span class="hd">所有知识投资都有价值</span>：即使不用，也会改变你思考和解决问题的方式——但注意"时间≠价值"（看球赛不增值）</li>
+          <li><span class="hd">主动投资</span>：按天客观评估，重新审视关键技术与重要人物的变化；<span class="hd">定期投资</span>：成本平均法——养成习惯、定期投入最低限度时间，坐下来之前先计划好学什么</li>
+          <li><span class="tip">诀窍26</span> 对主动学习的投资做好计划</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-6-4">
+        <div class="bnode">原生学习模式<span class="bs">6.4</span></div>
+        <ul class="leaves">
+          <li>三大类学习者：<span class="kv">视觉型</span>（需要看到资料与老师）、<span class="kv">听觉型</span>（讲座、播客有效）、<span class="kv">动觉型</span>（活动与触摸中学习）——留意自己的用词："一片漆黑"还是"找不到突破口"</li>
+          <li><span class="hd">加德纳多元智力</span>：身体-动觉、语言、逻辑-数学、视觉-空间、音乐、人际、自我认知——每个人组合方式不同，不构成"我不擅长数学"的借口</li>
+          <li>斯滕伯格三元智力：元成分（管理思维）、表现成分（执行）、知识获取成分——IQ测试未必衡量智力总分</li>
+          <li><span class="hd">性格影响学习</span>：内向者对即兴发言不适，外向者靠讨论学习；<span class="kv">性格不是命中注定</span>——MBTI 只是默认设置</li>
+          <li><span class="tip">诀窍27</span> 发现你的最佳学习方式——尝试不同模式，别只用惯用的一种</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-6-5">
+        <div class="bnode">一起工作，一起学习<span class="bs">6.5</span></div>
+        <ul class="leaves">
+          <li>学习/阅读小组是羊浸式培训的解药：主题自选、与工作直接相关、灵活方便、无需昂贵差旅</li>
+          <li><span class="hd">成人学习的关键</span>（诺尔斯）：满足兴趣需求才主动学；内容与生活相关；用经验分析法；需要自我引导；允许风格、时间、节奏差异</li>
+          <li>正式组织步骤：寻求建议（每人有拥护者）→ 选提议和负责人（不需擅长但须有热情）→ 公司买书（有团购折扣）→ 90分钟午餐会（半小时吃饭社交，然后轮流总结、提问讨论）；小组不超过8–10人</li>
+          <li><span class="tip">诀窍28</span> 组织学习小组学习和辅导——还增强团队凝聚力</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-6-6">
+        <div class="bnode">SQ3R 主动阅读<span class="bs">6.6–6.7</span></div>
+        <ul class="leaves">
+          <li>书面指令通常被认为是最无效的输入方式——大脑大部分不懂语言；我们最善于观察和模仿</li>
+          <li><span class="hd">五步法</span>：<span class="kv">调查</span>（扫描目录与章末总结获总体印象）→ <span class="kv">问题</span>（把章节标题改写成问题）→ <span class="kv">阅读</span>（全部内容，难点放慢）→ <span class="kv">复述</span>（用自己的话改写、做笔记）→ <span class="kv">回顾</span>（重读、扩展笔记、与同事讨论）</li>
+          <li><span class="hd">测试驱动学习</span>：重复阅读无助于记忆，<span class="kv">主动回顾测试</span>才有效；利用间隔效用——2小时/2天/2周/6个月的"2-2-2-6"复习节奏；SuperMemo/Mnemosyne 算法跟踪记忆衰减曲线</li>
+          <li><span class="tip">诀窍29</span> 主动阅读——先全盘浅显地调查（R型），再转入传统L型加工，多感观参与</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-6-7">
+        <div class="bnode">使用思维导图<span class="bs">6.8</span></div>
+        <ul class="leaves">
+          <li>托尼·布赞首创：二维的、有机的整体大纲；步骤——大白纸、中心标题画圈、引出发散的子标题，节点全部相连、只有一个根</li>
+          <li>传统线性大纲会<span class="kv">阻碍创造冲动</span>：分层结构会舍弃"不适合放"的伟大想法</li>
+          <li>微妙优势：空间线索、颜色和符号增加表达丰富性；添加新信息时必须评估<span class="kv">想法之间的关系</span>——极具启迪作用</li>
+          <li><span class="hd">手绘是关键</span>：软件工具利于协作和文档，但手工绘制才利于头脑风暴与探索；听讲先草记再整理——整理过程本身最有价值，即使从不重看 <span class="tip">诀窍30</span> 同时用R型和L型做笔记</li>
+          <li><span class="hd">非目标导向的"玩"</span>：图形的提升开始有意义；不确定会发现什么时思维导图最有效——读书、设计、调试、买新车皆可</li>
+          <li><span class="hd">协作思维导图</span>：白板+即时贴头脑风暴→同主题归类→画圈连线→拍照分发</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-6-8">
+        <div class="bnode">文档的力量 · 以教代学<span class="bs">6.9–6.11</span></div>
+        <ul class="leaves">
+          <li>敏捷不是"不写文档"，而是务实过滤：必须有价值才写</li>
+          <li><span class="hd">写文档的过程比文档本身更重要</span>：<span class="tip">诀窍31</span> 内源性聚焦的心理准备促进灵感闪现——"机会只青睐有准备的人"（巴斯德）；Dierk 手绘飞行卡片的故事</li>
+          <li>动态信息可制作视频（screencast）——比一周的冗长文档更划算更迷人</li>
+          <li><span class="hd">以教代学</span>：和橡皮鸭聊天（解释中灵光一现）；向孩子或外行解释（练习创建隐喻）；在用户组发言、投稿——"没有什么比一大堆聪明人挑毛病更有效"</li>
+          <li><span class="tip">诀窍32</span> 观察，实践，教学（医学院口头禅）；准备教授时被迫"回顾"，增强神经关联</li>
+          <li>本章实践：写下现在/短期/长期目标；增加两个学习领域；为下一本书做思维导图；参加用户组并申请发言；教一个同事新主题</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 第7章 ============ -->
+<section class="ch" id="sec-7" style="--c:#2F7E7A">
+  <div class="ch-head"><span class="ch-num">第7章</span><h2 class="serif">积累经验</h2></div>
+  <p class="quote">"我们应该小心翼翼地从实践中获得智慧并适可而止，否则我们就会像那只坐在热炉子上的猫——它再也不会坐在热炉子上，但也不会坐在冷炉子上。"<span class="who">—— 马克·吐温</span></p>
+
+  <div class="map">
+    <div class="mroot"><div class="root-card"><div class="rn">CHAPTER 7</div><div class="rt serif">实践出真知，但需要环境</div><div class="re">仅靠"实践"并不能保证成功。通过构造来学习、让失败变得有意义、让大脑提前为成功构建神经网络——并建立一个允许安全探索的环境。</div></div></div>
+    <ul class="mbranches">
+      <li class="branch" id="sec-7-1">
+        <div class="bnode">为了学习而玩耍<span class="bs">7.1 构造主义</span></div>
+        <ul class="leaves">
+          <li>大脑不是被动存储知识的容器——在研究事实之前，应先<span class="kv">探索和"玩耍"</span>这些资料（先跳舞，再考"舞蹈技能"）</li>
+          <li><span class="hd">构造主义</span>（派珀特 & 皮亚杰）：<span class="kv">我们通过构造而学习，而不是学习来构造</span>；Logo语言让孩子在玩耍中学会几何与递归（把自己想象成海龟）</li>
+          <li>玩耍的两层含义：<span class="kv">非目的性的探索</span> + <span class="kv">乐趣</span>——趣味性很重要（苏斯博士韵律版安全广播让人真的侧耳倾听）</li>
+          <li>"聪明人和蠢人"是荒唐的简化：德雷福斯是基于技能而非人的模型；我们都是惊人的学习机器（看两三岁孩子学语言）</li>
+          <li>在现实生活中，没有课程——错误和混乱恰恰给了你所需的反馈</li>
+          <li><span class="tip">诀窍33</span> 为了更好地学习，请更好地玩：创建闪存卡、棋盘游戏，用玩具或乐高演示场景</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-7-2">
+        <div class="bnode">利用现有知识<span class="bs">7.2</span></div>
+        <ul class="leaves">
+          <li><span class="hd">把事物分成大脑足以容纳的几部分</span>：功能分解；或回想之前解决过的类似问题</li>
+          <li><span class="hd">波利亚解题法</span>：先问未知量/已知量/条件 → 制定计划执行 → 回顾；技巧：画图、解更简单的问题、重新叙述、从未知量推到已知量、寻找类似问题</li>
+          <li><span class="hd">危险：未完成的过渡</span>：C++写得像C、Java写得像C++、Ruby写得像Java——"你需要学多少就得忘多少"</li>
+          <li><span class="tip">诀窍34</span> 从相似点中学习，从差异中忘却；对以前"相似"问题的理解也可能是错的（学函数式语言时旧知识反而阻碍）</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-7-3">
+        <div class="bnode">正确对待失败<span class="bs">7.3</span></div>
+        <ul class="leaves">
+          <li>"错误是发现的大门"（乔伊斯）：价值在于从错误中学习——"错误让我们思索到底发生了什么"（派珀特）；"我不知道"是一个良好开端</li>
+          <li>高效的学习环境应允许你安全地做三件事：<span class="kv">探索、创造、应用</span> <span class="tip">诀窍35</span></li>
+          <li><span class="hd">探索环境四条件</span>：自由实验（都做原型，算作设计阶段）、能原路返回稳定状态、重现任意时刻的工作产品、能够证实细粒度的进展</li>
+          <li><span class="hd">Starter Kit</span>：<span class="kv">版本控制</span>（巨大的Undo按钮，Git/Mercurial）+ <span class="kv">单元测试</span>（客观反馈、比较方案）+ <span class="kv">自动化</span>（可靠可重复）</li>
+          <li>"当你种菜时，如果长得不好，你不会责怪菜"——环境往往比个人因素更重要（一行禅师）</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-7-4">
+        <div class="bnode">了解内在诀窍<span class="bs">7.4 Inner Game</span></div>
+        <ul class="leaves">
+          <li>葛维《网球的内在诀窍》：20分钟教会20年没运动的女士——不靠说教，靠<span class="kv">"弹起""击球"</span>的节奏和倾听击球的声音</li>
+          <li><span class="hd">通过探索可以学得更好，而不是指令</span>：滑雪教练连珠炮式指令让大脑死机——好的老师只教一种"意识"，让学习者用意识纠正自己</li>
+          <li><span class="hd">培养非判断性的意识</span>：接受事实是第一步——不判断、不急于拿出方案、不指责 <span class="tip">诀窍36</span> 观察，不做判断，然后行动</li>
+          <li><span class="hd">调试的应用</span>："不要动手做，而是要袖手旁观"——测试失败时深呼吸、离开键盘、闭眼想象错误代码的位置，再睁眼验证；想象可通过的测试再写出来</li>
+          <li>收集需求同理：客户五分钟内就会告诉你最严重的问题和方案——先充分了解，再展开头脑风暴</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-7-5">
+        <div class="bnode">压力扼杀认知<span class="bs">7.5</span></div>
+        <ul class="leaves">
+          <li>内在诀窍中心思想：<span class="kv">"尝试会失败，认知会弥补。"</span></li>
+          <li><span class="hd">善良的撒玛利亚人实验</span>：被催促赶重要会议的神学院学生，几乎从挡路的乞讨者身上跑过去——最后期限会使大脑恐慌</li>
+          <li><span class="hd">时间压力"宿醉"</span>（阿马贝尔十年研究）：面对时间压力时人最没有创造力，且压制持续到之后<span class="kv">两天</span>——要安排恢复时间</li>
+          <li>压力下大脑停止思考、眼界缩小、<span class="kv">R型被完全拒之门外</span></li>
+          <li><span class="tip">诀窍37</span> 允许失败，你会走向成功：贝司老师的诡计——"评委没准备好，只是热身"，学生在无压力下演奏出色</li>
+          <li><span class="hd">建立"允许失败"的地带</span>：让失败代价接近零——白板上的想法、单元测试的失败、原型；失败有代价就不会有实验，没有风险就没有收获</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-7-6">
+        <div class="bnode">想象超越感观<span class="bs">7.6–7.7</span></div>
+        <ul class="leaves">
+          <li><span class="hd">所有输入都是等价的</span>：实时感知、记忆、纯粹想象引起相同的生理反应——娱乐业靠此为生；因此想象实践如真实体验一样有效</li>
+          <li><span class="hd">感知基于预测</span>：彩色泛光灯下学生把泡沫塑料画成桃红色，却坚持把鸡蛋画成白色——记忆覆盖了真实输入</li>
+          <li><span class="hd">让大脑为成功形成惯例</span> <span class="tip">诀窍38</span>：想象自己已成功（奥运选手的离线实践）；我们是天生的模仿者（镜像神经元）——"让自己始终成为乐队里最差的乐手"（Pat Metheny）</li>
+          <li><span class="hd">脚手架</span>：绑绳拖游的游泳者体验冠军速度后表现显著提高；也可以用负重做"负面脚手架"——绑沙袋跑完，轻松跑就快了；Ruby程序员写几天C++再回来，动态语言显得极易</li>
+          <li><span class="hd">像专家一样学习</span>：记忆的每次读取都是写入——经验增长会重新诠释过去，直觉就是这样增长的：越来越多可借鉴的模型和只可意会的知识</li>
+          <li>本章实践：记住"认知会弥补"；为失败做计划；真正扮演专家角色；安排自己的脚手架</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 第8章 ============ -->
+<section class="ch" id="sec-8" style="--c:#4B5BA5">
+  <div class="ch-head"><span class="ch-num">第8章</span><h2 class="serif">控制注意力</h2></div>
+  <p class="quote">"好问题是没有答案的。它不是一颗需要拧紧的螺栓，而是一颗种下的种子，由它可以收获一片思想的绿洲。"<span class="who">—— 约翰·查尔迪</span></p>
+
+  <div class="map">
+    <div class="mroot"><div class="root-card"><div class="rn">CHAPTER 8</div><div class="rt serif">信息丰富，注意力匮乏</div><div class="re">信息是特定情境下的原始数据，知识才揭示意义。三个主题：增强注意力、管理知识、优化当前情境——你缺的不是时间，是带宽。</div></div></div>
+    <ul class="mbranches">
+      <li class="branch" id="sec-8-1">
+        <div class="bnode">提高注意力<span class="bs">8.1 冥想</span></div>
+        <ul class="leaves">
+          <li>牛排餐刀故事：人在分心时可以忽视脖子上的刀——想想还有什么正从你的注意力中逃脱</li>
+          <li><span class="hd">注意力短缺</span>：L型的"空闲循环"会在低级困扰上喋喋不休（午饭吃什么），干扰R型——注意大脑的空闲循环</li>
+          <li><span class="hd">不是没时间，是没带宽</span>：时间只能分配；带宽过载时你无法学习、无法工作</li>
+          <li><span class="hd">内观冥想</span>：安静处坐下、挺直背、闭眼，把注意力集中在呼吸上；不描述、不自言自语，走神了就轻轻拉回；也可练分段呼吸（腹部→胸部→锁骨）</li>
+          <li>研究显示：密集冥想训练可<span class="kv">持久改善</span>注意力分配——即使测试时并没有在冥想（全天候受益）；中学生练一年后情商与成绩都提高</li>
+          <li><span class="tip">诀窍39</span> 学习集中注意力——就像体育锻炼带来更长久的健康</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-8-2">
+        <div class="bnode">通过分散注意力来集中<span class="bs">8.2 思维浸泡</span></div>
+        <ul class="leaves">
+          <li>创造力不按考勤钟运转：<span class="kv">必须有意识地忘掉问题，让它在思维中浸泡一会</span>——腌制12小时当然算烹饪，坐着思考当然算工作</li>
+          <li><span class="hd">多草稿模型</span>（丹尼特《意识的解释》）：意识是某一刻占有最多脑细胞活动的草稿；没有"笛卡儿剧场"式的单一意识中心</li>
+          <li><span class="hd">浸泡 vs 拖延</span>：如果任务你真不想做，分心就是浪费时间；如果仍有兴趣只是"困难"，那是思想在继续发酵</li>
+          <li><span class="hd">三法则</span>（温伯格）：想不出三种出错方式或三种解法，说明思考还不充分——让至少三个想法发酵成熟</li>
+          <li><span class="tip">诀窍40</span> 挤出思维的时间——把脚翘在桌子上，允许自己"无所事事"</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-8-3">
+        <div class="bnode">管理知识<span class="bs">8.3 外部信息处理系统</span></div>
+        <ul class="leaves">
+          <li>信息 vs 知识：信息是原始数据，知识揭示意义——需要处理、组织、发展、合并你的材料</li>
+          <li><span class="hd">大脑之外的思维支持工具会成为你思维头脑的一部分</span>（分布式认知）：杰斐逊的藏书、爱因斯坦"不在头脑中填满能轻易找到的东西"</li>
+          <li><span class="hd">个人 wiki</span>：WikiWord 双词链接自动建页、超文本组织；可装进PDA/编辑器，与版本控制同步——"把wiki作为基于文本的思维导图来使用"</li>
+          <li><span class="hd">感官调整</span>：一旦有了存放某类想法的地方，你就会得到更多这类想法——像在派对上寻找红色，红色突然无处不在</li>
+          <li>把笔记抄写进wiki的过程提供第二次深入接触材料的机会，让你更积极地寻找模式 <span class="tip">诀窍41</span> 使用wiki来管理信息和知识</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-8-4">
+        <div class="bnode">优化当前情境<span class="bs">8.4 情境切换的代价</span></div>
+        <ul class="leaves">
+          <li>情境 = 加载到短期记忆中的当前工作信息集合——大脑没有"保存栈"，无法像电脑一样轻松换页</li>
+          <li><span class="hd">多任务损失20%–40%生产力</span>（把8小时工作日削成5小时）；<span class="kv">被中断后平均需要20分钟</span>才能恢复原工作状态</li>
+          <li>持续被打断查邮件：有效智商<span class="kv">下降10分</span>——吸大麻只降4分；请不要同时都做</li>
+          <li><span class="hd">避免分心</span>：极简环境帮你保持注意力（只有vi的Zaurus）；<span class="kv">主动切换</span>——不是忽略，而是关掉当前工作、深呼吸、对新活动提起兴趣</li>
+          <li><span class="hd">单任务界面</span>：QuickSilver 几个按键发一句话邮件/加待办——不进入邮箱应用，情境不被破坏</li>
+          <li><span class="hd">GTD 三要点</span>：① 仅扫描输入队列一次（2分钟能搞定就做，或委托）② 顺序处理每组工作，避免切换 ③ 不要在头脑中保留清单——放到外部信息系统</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-8-5">
+        <div class="bnode">积极地管理干扰<span class="bs">8.5</span></div>
+        <ul class="leaves">
+          <li><span class="tip">诀窍42</span> 制定交流规则来管理干扰：项目开始前约定免打扰时段、站立会议时间；"无邮件下午"是一周里最有效率、最快乐的时光</li>
+          <li><span class="hd">放缓电子邮件</span>：关闭提示音与图标；加大检查间隔；<span class="tip">诀窍43</span> 少发送邮件，你就会少收到邮件；<span class="tip">诀窍44</span> 为邮件通信选择你自己的进度——你的回复速度设定了对方的期望；不用时退出邮件客户端</li>
+          <li><span class="hd">电子邮件暂停呼吸（email apnea）</span>：处理邮件时呼吸短暂中止——发现时立即深呼吸</li>
+          <li><span class="hd">提高进出情境的物理成本</span>：开灯、选音乐、插电源线——投入越多越不会为突发奇想跳起来离开</li>
+          <li><span class="tip">诀窍45</span> 屏蔽中断来保持注意力：手机语音信箱与免打扰、贴标签、关门——模仿CPU的"可屏蔽中断"</li>
+          <li><span class="hd">保存情境堆栈</span>：预感要被打断时，立刻留下"面包屑"线索（几个词，不是完整句子）——为打断做好准备</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-8-6">
+        <div class="bnode">保持足够大的情境<span class="bs">8.6–8.7</span></div>
+        <ul class="leaves">
+          <li>"眼不见"通常意味着"发狂"——工作相关的东西要触手可得</li>
+          <li><span class="hd">双显示器可提升生产力20%–30%</span>：拥挤的飞机座位隐喻——空间太小迫使你不停切换文档 <span class="tip">诀窍46</span> 使用多台显示器来避免情境切换</li>
+          <li>Alt-Tab 就是情境切换——即使小动作也消耗时间、短期记忆和精力</li>
+          <li><span class="hd">虚拟桌面按任务组织</span>：<span class="kv">通信</span>（邮件/待办/聊天/日历）、<span class="kv">写作</span>（编辑器/词典/图编辑器）、<span class="kv">编程</span>（多比例终端/IDE/测试）、<span class="kv">上网</span>、<span class="kv">音乐</span>——按应用分反而造成更多切换</li>
+          <li><span class="tip">诀窍47</span> 优化你的个人工作流以最大化情境</li>
+          <li><span class="hd">保持注意力的三件事</span>：① 学会安抚喋喋不休的L型思维 ② 主动在前进中思考和增强思想（即使不成熟）③ 明确情境切换的昂贵代价，尽可能避免</li>
+          <li>本章实践：整理日常分心事；找出自己编码最有效率的时间段；区分"拖延"与"思考"；观察团队专家如何避免分心</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 第9章 ============ -->
+<section class="ch" id="sec-9" style="--c:#9C7C2C">
+  <div class="ch-head"><span class="ch-num">第9章</span><h2 class="serif">超越专家</h2></div>
+  <p class="quote">"真正的发现之旅不在于追求新大陆，而在于拥有新的视野。"<span class="who">—— 普鲁斯特</span></p>
+
+  <div class="map">
+    <div class="mroot"><div class="root-card"><div class="rn">CHAPTER 9</div><div class="rt serif">专家之上：新手思维</div><div class="re">改变总是比看起来难——老习惯的神经高速公路不会消失。而成为专家后最该追求的，恰恰是初学者的好奇心。</div></div></div>
+    <ul class="mbranches">
+      <li class="branch" id="sec-9-1">
+        <div class="bnode">有效的改变<span class="bs">9.1</span></div>
+        <ul class="leaves">
+          <li>大脑像过度积极的管家：认为改变无关存亡就轻视它——你必须说服大脑<span class="kv">这件事很重要</span></li>
+          <li><span class="hd">实践保持长久（Practice makes permanent）</span>：老习惯的神经高速公路始终存在，随时等你回来——复发时别自责，承认失误，回到正轨</li>
+          <li><span class="hd">五条建议</span>：① 制定计划并跟踪进展（日记/wiki/web应用）② "不作为"是敌人，而"错误"不是 ③ 新习惯需要至少三周适应期 ④ 信念是真实的——你的想法的确改变大脑 ⑤ 步步为营的小步骤，只关注下一步</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-9-2">
+        <div class="bnode">明天上午做什么<span class="bs">9.2 行动清单</span></div>
+        <ul class="leaves">
+          <li>"不管你能做什么，现在就开始做。勇敢可以给人智慧、力量和神奇。"——歌德；选什么开始并不特别重要，重要的是主动尝试</li>
+          <li>开始承担责任：大方地问"为什么""你怎么知道的"，也大方地说"我目前还不知道"</li>
+          <li>挑两件维持情境、免受干扰的事立即实施；创建实用投资计划，设定SMART目标</li>
+          <li>诚实评估自己的德雷福斯位置与期望位置——需要更多诀窍还是更多情境？更多规则还是更多直觉？</li>
+          <li>实践：同一段代码用五种方式编写；允许犯更多错误并从中学习</li>
+          <li>携带不带横线的笔记本涂鸦；打开心扉接收美感与感官输入；开始私人wiki与博客（用SQ3R和思维导图）；让散步成为日常；启动读书小组；再拿一个显示器，用虚拟桌面；回顾各章"实践单元"</li>
+        </ul>
+      </li>
+      <li class="branch" id="sec-9-3">
+        <div class="bnode">超越专家<span class="bs">9.3 新手的头脑</span></div>
+        <ul class="leaves">
+          <li>"新手的大脑有很多可能性，但是专家心里只有很少。"——铃木俊隆禅师</li>
+          <li><span class="hd">专家最致命的弱点是像专家一样行动</span>：一旦自信专业，就对其他可能性视而不见，停止好奇心，抵制领域变化——判断和看法不再支持你，而是囚禁你</li>
+          <li>反面案例：投入多年的Java/C++程序员拒绝新语言，"花更多精力讽刺新语言而不是严肃评估它们"</li>
+          <li>保持新手头脑：像孩子一样充满问题和惊讶——"哇，这很酷，我想知道它到底是怎么工作的？"</li>
+          <li><span class="hd">自我意识是成为专家的关键</span>：认识你自己、认识当前时刻、认识你所处的情境 <span class="tip">诀窍48</span> 抓住方向盘，你不能自动驾驶</li>
+          <li><span class="hd">看却没有看见</span>：达芬奇600年前就抱怨过；《戴珍珠耳环的少女》——从"黄色"到"绿色和褐色的斑点、边缘的银色"——完全看清世界、不断看清世界和我们自己</li>
+          <li>"自由的代价是永远提高警惕。"——启动自动驾驶，你就不会转向了；你拥有和爱因斯坦、莎士比亚一样的大脑</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 48条诀窍 ============ -->
+<section class="ch" id="sec-10" style="--c:#B98A2E">
+  <div class="ch-head"><span class="ch-num">附录</span><h2 class="serif">全书 48 条诀窍速查</h2></div>
+  <p class="quote">每章的"诀窍"（Pragmatic Tip）是全书的行动纲领——打印这一页，贴在墙上。</p>
+  <div class="tip-grid">
+    <div class="tip-row"><h3><span class="dot" style="background:#4A7BA6"></span>绪论</h3><div class="pills"><span class="pill" style="--c:#4A7BA6"><b>1</b>始终关注情境</span></div></div>
+    <div class="tip-row"><h3><span class="dot" style="background:#7B5EA7"></span>从新手到专家</h3><div class="pills"><span class="pill" style="--c:#7B5EA7"><b>2</b>新手使用规则，专家使用直觉</span><span class="pill" style="--c:#7B5EA7"><b>3</b>知道你不知道什么</span><span class="pill" style="--c:#7B5EA7"><b>4</b>通过观察和模仿来学习</span><span class="pill" style="--c:#7B5EA7"><b>5</b>保持实践以维持专家水平</span><span class="pill" style="--c:#7B5EA7"><b>6</b>需要创造力、直觉或独创能力时，避免使用形式方法</span><span class="pill" style="--c:#7B5EA7"><b>7</b>学习如何学习的技能</span></div></div>
+    <div class="tip-row"><h3><span class="dot" style="background:#C0504D"></span>认识你的大脑</h3><div class="pills"><span class="pill" style="--c:#C0504D"><b>8</b>捕获所有的想法以从中获益更多</span><span class="pill" style="--c:#C0504D"><b>9</b>综合学习与分析学习并重</span><span class="pill" style="--c:#C0504D"><b>10</b>争取好的设计，它真的很有效</span><span class="pill" style="--c:#C0504D"><b>11</b>重新连线大脑，坚信这一点并不断实践</span></div></div>
+    <div class="tip-row"><h3><span class="dot" style="background:#C8862F"></span>利用右脑</h3><div class="pills"><span class="pill" style="--c:#C8862F"><b>12</b>增加感观体验以促进大脑的使用</span><span class="pill" style="--c:#C8862F"><b>13</b>R型开路，L型紧跟</span><span class="pill" style="--c:#C8862F"><b>14</b>使用隐喻作为L型和R型相融之所</span><span class="pill" style="--c:#C8862F"><b>15</b>培养幽默感以建立更强大的隐喻</span><span class="pill" style="--c:#C8862F"><b>16</b>离开键盘去解决难题</span><span class="pill" style="--c:#C8862F"><b>17</b>改变解决问题的角度</span></div></div>
+    <div class="tip-row"><h3><span class="dot" style="background:#A63D57"></span>调试你的大脑</h3><div class="pills"><span class="pill" style="--c:#A63D57"><b>18</b>记住："很少"不意味着"没有"</span><span class="pill" style="--c:#A63D57"><b>19</b>适应不确定性</span><span class="pill" style="--c:#A63D57"><b>20</b>信任记录而不是记忆，每一次思维的输出都是一次输入</span><span class="pill" style="--c:#A63D57"><b>21</b>从多个角度看待问题</span><span class="pill" style="--c:#A63D57"><b>22</b>尊重不同人的不同性格</span><span class="pill" style="--c:#A63D57"><b>23</b>像高级动物一样行动：做深呼吸，而不要张口嘶鸣</span><span class="pill" style="--c:#A63D57"><b>24</b>相信直觉，但是要验证</span></div></div>
+    <div class="tip-row"><h3><span class="dot" style="background:#3F7D4E"></span>主动学习</h3><div class="pills"><span class="pill" style="--c:#3F7D4E"><b>25</b>建立SMART任务实现你的目标</span><span class="pill" style="--c:#3F7D4E"><b>26</b>对主动学习的投资做好计划</span><span class="pill" style="--c:#3F7D4E"><b>27</b>发现你的最佳学习方式</span><span class="pill" style="--c:#3F7D4E"><b>28</b>组织学习小组学习和辅导</span><span class="pill" style="--c:#3F7D4E"><b>29</b>主动阅读</span><span class="pill" style="--c:#3F7D4E"><b>30</b>同时用R型和L型做笔记</span><span class="pill" style="--c:#3F7D4E"><b>31</b>写文档的过程比文档本身更重要</span><span class="pill" style="--c:#3F7D4E"><b>32</b>观察，实践，教学</span></div></div>
+    <div class="tip-row"><h3><span class="dot" style="background:#2F7E7A"></span>积累经验</h3><div class="pills"><span class="pill" style="--c:#2F7E7A"><b>33</b>为了更好地学习，请更好地玩</span><span class="pill" style="--c:#2F7E7A"><b>34</b>从相似点中学习，从差异中忘却</span><span class="pill" style="--c:#2F7E7A"><b>35</b>在你的环境中安全地探索、创造和应用</span><span class="pill" style="--c:#2F7E7A"><b>36</b>观察，不做判断，然后行动</span><span class="pill" style="--c:#2F7E7A"><b>37</b>允许失败，你会走向成功</span><span class="pill" style="--c:#2F7E7A"><b>38</b>让大脑为成功形成惯例</span></div></div>
+    <div class="tip-row"><h3><span class="dot" style="background:#4B5BA5"></span>控制注意力</h3><div class="pills"><span class="pill" style="--c:#4B5BA5"><b>39</b>学习集中注意力</span><span class="pill" style="--c:#4B5BA5"><b>40</b>挤出思维的时间</span><span class="pill" style="--c:#4B5BA5"><b>41</b>使用wiki来管理信息和知识</span><span class="pill" style="--c:#4B5BA5"><b>42</b>制定交流规则来管理干扰</span><span class="pill" style="--c:#4B5BA5"><b>43</b>少发送邮件，你就会少收到邮件</span><span class="pill" style="--c:#4B5BA5"><b>44</b>为邮件通信选择你自己的进度</span><span class="pill" style="--c:#4B5BA5"><b>45</b>屏蔽中断来保持注意力</span><span class="pill" style="--c:#4B5BA5"><b>46</b>使用多台显示器来避免情境切换</span><span class="pill" style="--c:#4B5BA5"><b>47</b>优化你的个人工作流以最大化情境</span></div></div>
+    <div class="tip-row"><h3><span class="dot" style="background:#9C7C2C"></span>超越专家</h3><div class="pills"><span class="pill" style="--c:#9C7C2C"><b>48</b>抓住方向盘，你不能自动驾驶</span></div></div>
+  </div>
+</section>
+
+<footer>
+  《程序员的思维修炼：开发认知潜能的九堂课》知识脑图 · 依据原书内容整理，供个人学习使用 · 原书 2008 年英文版 © Andy Hunt，中文版 © 人民邮电出版社
+</footer>
+
+</div>
+</main>
+</div>
+
+<script>
+  // ---- 侧栏目录：默认全部折叠，点击展开/收起 ----
+  document.querySelectorAll('.toc-item>.toc-head').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      var item=btn.parentElement;
+      // 点击章节文字（非箭头）时：展开并跳转
+      if(e.target.classList.contains('tt')){
+        item.classList.add('open');
+        var sec=document.getElementById(item.dataset.sec);
+        if(sec)sec.scrollIntoView({behavior:'smooth'});
+      }else{
+        item.classList.toggle('open');
+      }
+    });
+  });
+  document.getElementById('expandAll').onclick=function(){
+    document.querySelectorAll('.toc-item').forEach(function(i){i.classList.add('open')});
+  };
+  var collapseGuard=0;
+  document.getElementById('collapseAll').onclick=function(){
+    collapseGuard=Date.now()+1200;
+    document.querySelectorAll('.toc-item').forEach(function(i){i.classList.remove('open')});
+  };
+  // ---- 子目录链接：高亮 + 移动端收起侧栏 ----
+  document.querySelectorAll('.toc-sub a').forEach(function(a){
+    a.addEventListener('click',function(){
+      document.querySelectorAll('.toc-sub a').forEach(function(x){x.classList.remove('active')});
+      a.classList.add('active');
+      if(window.innerWidth<=860){sidebar.classList.remove('show');overlay.classList.remove('show');}
+    });
+  });
+  // ---- 滚动监听：自动展开并高亮当前章节 ----
+  var sections=document.querySelectorAll('section.ch');
+  var io=new IntersectionObserver(function(entries){
+    if(Date.now()<collapseGuard)return;
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        var item=document.querySelector('.toc-item[data-sec="'+en.target.id+'"]');
+        if(item){item.classList.add('open');
+          document.querySelectorAll('.toc-item').forEach(function(i){if(i!==item)i.classList.remove('open')});}
+      }
+    });
+  },{rootMargin:'-25% 0px -65% 0px'});
+  sections.forEach(function(s){io.observe(s)});
+  // ---- 移动端菜单 ----
+  var sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+  document.getElementById('menuBtn').onclick=function(){sidebar.classList.add('show');overlay.classList.add('show');};
+  overlay.onclick=function(){sidebar.classList.remove('show');overlay.classList.remove('show');};
+  // 打印时展开全部"实践单元"
+  window.addEventListener('beforeprint',function(){
+    document.querySelectorAll('details.practice').forEach(function(d){d.open=true;});
+  });
+</script>
+</body>
+</html>

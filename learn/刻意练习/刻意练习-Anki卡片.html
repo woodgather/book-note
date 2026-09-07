@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>刻意练习 · Anki 精华卡片</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #F2F5F3;
+    --surface: #FFFFFF;
+    --ink: #1D2B29;
+    --muted: #5F706C;
+    --line: #D8E0DC;
+    --jade: #17685A;
+    --jade-deep: #0F4C41;
+    --jade-soft: #E4EFEB;
+    --gold: #A87720;
+    --gold-soft: #F7EFDC;
+    --sans: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    --kai: "Kaiti SC", "STKaiti", "KaiTi", "Noto Serif SC", serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px; line-height: 1.75;
+  }
+
+  /* ============ 页头 ============ */
+  header.hero {
+    background: linear-gradient(180deg, #123F37 0%, #17685A 90%);
+    color: #F2F6F4;
+    padding: 52px 40px 68px;
+  }
+  .hero-inner { max-width: 1060px; margin: 0 auto; }
+  .hero h1 {
+    margin: 0;
+    font-family: var(--kai);
+    font-size: 34px; font-weight: 700; letter-spacing: 4px;
+  }
+  .hero .sub { font-family: var(--kai); font-size: 15px; letter-spacing: 2px; color: #BCD6CE; margin-top: 6px; }
+  .hero .thesis {
+    margin: 20px 0 0; max-width: 660px;
+    font-size: 14px; color: #DCEAE6;
+    border-left: 3px solid #3E8A7B; padding-left: 14px;
+  }
+  .hero .tip { margin-top: 16px; font-size: 13px; color: #9DBFB6; }
+
+  /* ============ 工具栏 ============ */
+  .toolbar {
+    max-width: 1060px; margin: -30px auto 0; padding: 0 24px;
+    position: relative; z-index: 2;
+  }
+  .toolbar-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 18px;
+    box-shadow: 0 3px 10px rgba(23,60,52,.08);
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip {
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--muted);
+    font-size: 12.5px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .chip:hover, .chip:focus-visible { color: var(--jade-deep); border-color: var(--jade); outline: none; }
+  .chip.on { background: var(--jade); border-color: var(--jade); color: #fff; }
+  .toolbar-row2 {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 12px; flex-wrap: wrap;
+  }
+  .count { font-size: 13px; color: var(--muted); }
+  .count b { color: var(--jade-deep); }
+  .spacer { flex: 1; }
+  .act {
+    border: 1px solid var(--jade);
+    background: var(--surface);
+    color: var(--jade-deep);
+    border-radius: 7px;
+    font-size: 13px; font-family: inherit;
+    padding: 6px 14px; cursor: pointer;
+  }
+  .act:hover, .act:focus-visible { background: var(--jade-soft); outline: none; }
+  .act.primary { background: var(--jade); color: #fff; }
+  .act.primary:hover, .act.primary:focus-visible { background: var(--jade-deep); }
+
+  /* ============ 卡片墙（2 列） ============ */
+  .grid {
+    max-width: 1060px;
+    margin: 22px auto 80px;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } header.hero { padding: 40px 22px 60px; } }
+
+  .card { perspective: 1400px; }
+  .card-inner {
+    position: relative;
+    height: 252px;
+    transform-style: preserve-3d;
+    transition: transform .45s cubic-bezier(.4,.1,.2,1);
+    cursor: pointer;
+    outline: none;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  .card-inner:focus-visible { box-shadow: 0 0 0 3px var(--jade); border-radius: 12px; }
+
+  .face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 22px 16px;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(23,60,52,.06);
+  }
+  .face.back { transform: rotateY(180deg); background: #F7FAF8; border-color: #C9DCD5; }
+
+  .face-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .tag {
+    font-family: var(--kai);
+    font-size: 12px;
+    color: var(--jade);
+    background: var(--jade-soft);
+    border-radius: 4px;
+    padding: 1px 8px;
+    white-space: nowrap;
+  }
+  .idx { font-size: 12px; color: #A8B6B2; margin-left: auto; font-variant-numeric: tabular-nums; }
+
+  .q, .a { flex: 1; overflow-y: auto; padding-right: 4px; }
+  .q {
+    font-size: 16.5px; font-weight: 600; line-height: 1.6;
+    color: var(--ink);
+  }
+  .q::before { content: "问　"; font-family: var(--kai); color: var(--jade); font-size: 14px; }
+  .a { font-size: 14px; line-height: 1.85; color: #33423F; }
+  .a::before { content: "答　"; font-family: var(--kai); color: var(--gold); font-size: 14px; }
+  .a b { color: var(--jade-deep); }
+  .a .num { color: var(--gold); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .a::-webkit-scrollbar, .q::-webkit-scrollbar { width: 6px; }
+  .a::-webkit-scrollbar-thumb, .q::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+
+  .flip-hint {
+    flex: none;
+    margin-top: 10px;
+    font-size: 11.5px; color: #9FB0AB;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .flip-hint svg { width: 13px; height: 13px; }
+
+  footer.note {
+    max-width: 1060px; margin: 0 auto 60px; padding: 0 24px;
+    color: var(--muted); font-size: 12.5px;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .card-inner { transition: none; }
+    .card.flipped .card-inner { transform: none; }
+    .card.flipped .face.front { visibility: hidden; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <h1>刻意练习 · Anki 精华卡片</h1>
+    <div class="sub">如何从新手到大师 · 全书 11 个篇章 · 69 张核心问答卡</div>
+    <p class="thesis">每张卡片正面是问题，点击即可翻面查看答案。先自己回忆，再翻面对照——这正是书中所说的"检索练习"。</p>
+    <div class="tip">点击卡片翻面 · 再次点击翻回 · 顶部可按章节筛选</div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-box">
+    <div class="chips" id="chips"></div>
+    <div class="toolbar-row2">
+      <span class="count" id="count"></span>
+      <span class="spacer"></span>
+      <button class="act" id="btnShuffle" type="button">随机打乱</button>
+      <button class="act" id="btnFlipAll" type="button">全部翻开</button>
+      <button class="act" id="btnReset" type="button">全部还原</button>
+    </div>
+  </div>
+</div>
+
+<main class="grid" id="grid"></main>
+
+<footer class="note">依据《刻意练习：如何从新手到大师》（安德斯·艾利克森 / 罗伯特·普尔）全书内容整理 · 建议用法：遮住答案自测 → 翻面对照 → 答错的卡片重点复习</footer>
+
+<script>
+const CARDS = [
+/* ---- 推荐序 ---- */
+{ch:"推荐序", q:"\"1万小时定律\"的源头是什么？它为何不严谨？", a:"源头是西蒙与蔡斯 1973 年的<b>\"十年定律\"</b>：国际象棋大师约需 10 年积累 5万~10万棋局组块。格拉德威尔《异类》把它演绎成精确的\"1万小时\"并不严谨——柏林音乐学院研究其实是 <span class='num'>1万</span>/<span class='num'>8000</span>/<span class='num'>4000</span> 小时的梯度，并非统一门槛。"},
+{ch:"推荐序", q:"卓越者与普通人的关键区别在哪里？", a:"<b>长时记忆</b>。它像\"SSD 硬盘\"：能在需要时高速调用海量知识与模式。长时记忆可以刻意培养——这正是刻意练习的本质。"},
+{ch:"推荐序", q:"培养长时记忆的三个要点是什么？", a:"① <b>赋予意义</b>（精细编码）；② <b>提取结构或模式</b>；③ <b>加快速度、增加连接</b>。"},
+{ch:"推荐序", q:"为什么很多领域\"看会了\"仍做不好？", a:"因为认知复杂性高的活动中存在大量<b>隐性知识</b>，无法从书本直授。要用情境学习、做\"认知学徒\"：加入学习共同体 → 隐性知识显性化 → 模仿榜样 → 培养多样性。"},
+/* ---- 引言 ---- */
+{ch:"引言", q:"完美音高有多稀有？榊原彩子的实验证明了什么？", a:"全球每万人仅约 <span class='num'>1</span> 人拥有完美音高，一直被视为天赋。但榊原彩子让 <span class='num'>24</span> 个 2~6 岁儿童经数月训练后<b>个个拥有完美音高</b>——它是训练的产物，不是天生。"},
+{ch:"引言", q:"如何解释莫扎特的\"天才\"？", a:"他的父亲列奥波尔得是小提琴家兼作曲家，从莫扎特出生起就给予<b>高强度专业训练</b>。4 岁显才华是因为训练开始得极早，而非天生。"},
+{ch:"引言", q:"本书对\"潜力\"的核心主张是什么？", a:"学习不是<b>挖掘</b>已有的潜力，而是<b>创造</b>原本不存在的潜力——大脑可以\"重新布线\"来适应训练。"},
+{ch:"引言", q:"雷·阿伦的例子说明了什么？", a:"他被称为天生射手，但他自述与队友的差别只是<b>反复练习</b>。\"天生\"的标签往往掩盖了背后看不见的练习史。"},
+/* ---- 第1章 ---- */
+{ch:"第1章", q:"短时记忆的局限是多少？史蒂夫最终记住了多少个数字？", a:"约 <span class='num'>7</span> 个事物（7±2 理论）。史蒂夫·法隆经约 <span class='num'>200</span> 次练习后，从 9 个提高到记住 <span class='num'>82</span> 个数字。"},
+{ch:"第1章", q:"史蒂夫记数字的秘诀是什么？", a:"他构建了一种<b>心理检索结构</b>（把数字编码成意义+线索），并且每次只追求一个明确的小目标：\"比上一次多记 1 个\"。"},
+{ch:"第1章", q:"马拉松纪录的变化说明了什么？", a:"1908 年世界纪录 <span class='num'>2:55:18</span> → 如今 <span class='num'>2:02:57</span>。各领域\"人类极限\"持续被刷新，靠的是<b>训练时长与方法</b>与时俱进，不是基因变好。"},
+{ch:"第1章", q:"什么是\"天真的练习\"？", a:"只是<b>埋头重复</b>，不设目标、不加思考。一般学习模式达到\"可接受\"水平后动作自动化，此后再练多年也不会进步，甚至退化。"},
+{ch:"第1章", q:"富兰克林下棋 30 年的教训是什么？", a:"他从没针对下棋本身进行专门练习，水平始终平庸。<b>做了很久 ≠ 在进步</b>——没有走出舒适区的重复不算练习。"},
+{ch:"第1章", q:"有目的的练习的四个特点？", a:"① <b>定义明确的特定目标</b>（分解目标、制订计划）；② <b>专注</b>投入；③ <b>包含反馈</b>；④ <b>走出舒适区</b>。"},
+{ch:"第1章", q:"遇到瓶颈时，最常见的原因是什么？怎么办？", a:"通常不是达到极限，而是<b>动机不足</b>。办法是\"试着做<b>不同</b>的事情，而不是更难的事情\"（多萝西·迪蕾用节拍器攻克过不去的乐句），并依靠有意义的正面反馈。"},
+{ch:"第1章", q:"雷妮与史蒂夫的对比说明了什么？", a:"同样花 30 小时记数字，雷妮失败、史蒂夫成功——差别在于<b>心理表征/检索结构</b>。仅有目的的练习还不够，需要更系统的刻意练习。"},
+/* ---- 第2章 ---- */
+{ch:"第2章", q:"伦敦出租车司机的研究得出了什么结论？", a:"资深司机<b>海马体后部显著更大</b>；马圭尔追踪 79 名受训者 4 年证实：通过考试者海马体增大、未通过者不变——是<b>训练导致结构改变</b>，而非天生如此。"},
+{ch:"第2章", q:"老花眼训练实验说明了什么？", a:"训练 3 个月后能看清比原来小 <span class='num'>60%</span> 的文字——是<b>大脑\"去模糊\"</b>，而非眼睛改善。大脑的适应能力远超想象。"},
+{ch:"第2章", q:"体内平衡与能力增长的关系？", a:"身体偏爱稳定（体内平衡）。被迫走出舒适区 → 身体补偿性重建平衡 → 能力提升。<b>挑战越大、变化越大，但不要太过</b>，要把握\"甜蜜点\"。"},
+{ch:"第2章", q:"什么是\"折弯幼枝效应\"？", a:"年纪越小，训练对大脑的影响越大（如脑白质差异）。这正是早期训练重要的原因——但也并非成年后就不能改变。"},
+{ch:"第2章", q:"超常发展有哪两个\"代价\"？", a:"① 超常发展有代价：如出租车司机其他类型记忆下降；② <b>停止训练，改变会消失</b>——用进废退。"},
+{ch:"第2章", q:"髓磷脂（髓鞘）起什么作用？", a:"它包裹神经纤维，使神经信号传导快约 <span class='num'>10</span> 倍。持续练习会让相关神经通路髓鞘化。"},
+{ch:"第2章", q:"刻意练习如何看\"潜能\"？", a:"传统方法不挑战体内平衡，潜能看似天生固定；刻意练习的目标是<b>通过训练构筑新潜能</b>，而非发掘已有潜能。"},
+/* ---- 第3章 ---- */
+{ch:"第3章", q:"阿廖欣的盲棋表演说明了什么？", a:"1924 年他同时下 26 盘盲棋（17 胜 5 平 4 负）。盲棋不是天赋异禀，而是多年<b>提升棋艺训练的副产品</b>。"},
+{ch:"第3章", q:"西蒙 & 蔡斯的乱摆棋子实验说明了什么？", a:"真实棋局大师能记住约 <span class='num'>2/3</span>，乱摆的棋子则与新手无异——大师的优势在于约 <span class='num'>5万</span> 个按层级组织的<b>\"数据块\"</b>，能看出意义。"},
+{ch:"第3章", q:"什么是心理表征？", a:"与思考对象相对应的<b>心理结构</b>，或具体或抽象。它具有<b>行业或领域特定性</b>：棋手的表征无助于攀岩。"},
+{ch:"第3章", q:"心理表征如何突破短时记忆的局限？", a:"它把零散信息<b>组块化</b>为有意义的整体，从而绕开 7±2 的短时记忆限制，这正是杰出表现的根基。"},
+{ch:"第3章", q:"心理表征的五大作用？", a:"① 找出规律；② 解释信息；③ 组织信息（如医生诊断霍纳氏综合征）；④ 制订计划（写作者的\"知识转换\"、外科医生术前预演）；⑤ 高效学习。"},
+{ch:"第3章", q:"优秀学生与差学生在纠错上差多少？", a:"优秀学生每分钟自我纠错 <span class='num'>1.4</span> 次、纠掉 <span class='num'>80%</span> 的错误；差生每分钟 11 次错误只纠 30%。心理表征越精细，越能及时发现问题。"},
+{ch:"第3章", q:"\"边爬楼梯边搭楼梯\"比喻什么？", a:"<b>技能与心理表征的良性循环</b>：技能越强 → 心理表征越精细 → 技能变得更强，螺旋上升。"},
+{ch:"第3章", q:"写作者的\"知识陈述\"与\"知识转换\"有何区别？", a:"\"知识陈述\"只是罗列已知内容；\"知识转换\"则围绕心理表征<b>重构思考</b>——写作的过程本身就是思考和创建表征的过程。"},
+/* ---- 第4章 ---- */
+{ch:"第4章", q:"适于研究专业特长的领域有哪四个特征？", a:"① 绩效可<b>客观测量</b>；② 竞争性强；③ 成规模（从业者够多）；④ 有成熟的<b>导师与训练体系</b>。音乐是最理想的研究对象。"},
+{ch:"第4章", q:"柏林小提琴学生的关键练习数据？", a:"18 岁前累计：未来音乐教师 <span class='num'>3420</span> 小时、优异者 <span class='num'>5301</span>、最杰出 <span class='num'>7401</span>。<b>最杰出的人练习时间最长</b>；芭蕾舞演员 20 岁前甚至超过 10 万小时。"},
+{ch:"第4章", q:"学生们热爱独奏练习吗？", a:"<b>没有人热爱</b>——尽管所有人都承认它最重要。卓越不依赖对练习的喜好，而依赖持续投入。"},
+{ch:"第4章", q:"刻意练习与一般有目的练习的两大差别？", a:"① 需要<b>合理发展的行业/领域</b>（存在客观绩效标准与成熟训练体系）；② 需要<b>能布置作业的导师</b>。"},
+{ch:"第4章", q:"刻意练习的七个特点（简记）？", a:"导师设计并监管 / 舒适区外近乎最大努力 / 明确的特定目标 / 有意而为的完全关注 / 包含反馈与调整 / 既产生又依靠心理表征 / 针对性补足特定短板。"},
+{ch:"第4章", q:"王峰记 300 个数字用了什么方法？", a:"把 00~99 全部<b>图像编码</b>，再用<b>记忆宫殿</b>存储——刻意练习原理的典型应用：为技能建立精细的心理表征。"},
+{ch:"第4章", q:"1万小时法则错在哪四点？", a:"① 1 万并非神奇数字；② 它是平均数，不是门槛；③ <b>表演 ≠ 练习</b>（披头士汉堡时期演出约 1100 小时，关键其实在写歌）；④ 没有证据表明人人练 1 万小时都能成专家。"},
+{ch:"第4章", q:"1万小时法则\"对\"在哪里？", a:"成为杰出人物确实需要<b>多年艰苦练习</b>。但要辨别真正的刻意练习并不容易——还要警惕主观评判（葡萄酒评分、金融预测专家都不靠谱）。"},
+/* ---- 第5章 ---- */
+{ch:"第5章", q:"Top Gun 王牌计划的两个关键设计？", a:"① <b>模拟空战</b>：红军 vs 蓝军，把飞行员不断逼到失败边缘；② <b>战斗报告会</b>：战后立即复盘、即时反馈。结果 1970~72 年每损失 1 架击落 <span class='num'>12.5</span> 架。"},
+{ch:"第5章", q:"职场中最应拒绝的三种错误思想？", a:"① \"我的能力受基因限制\"；② \"做得足够久就一定会更擅长\"；③ \"只要更努力就够了\"——三者都不成立。"},
+{ch:"第5章", q:"放射科医生的问题与解法？", a:"问题：每 1000 张 X 光片仅 4~8 例确诊，<b>缺乏反馈</b>，错误长期无人纠正。解法：建立<b>\"已知答案\"的图片库</b>作为训练工具（如摩根士丹利儿童医院脚踝病例库）。"},
+{ch:"第5章", q:"为什么说\"知识与技能的区别\"是核心问题？", a:"传统教育在<b>传授知识</b>，而工作需要<b>技能</b>。\"看一场、做一场、教一场\"的信条已被腹腔镜手术的高风险挑战——不能靠旁观和试错来学。"},
+{ch:"第5章", q:"关于医生绩效，研究发现了什么？", a:"哈佛 2005 年研究：医生绩效随经验<b>不升反降</b>；戴维斯研究：说教式讲座最无效，互动式干预略有效但效果甚微——经验不等于精进。"},
+{ch:"第5章", q:"维克斯的前列腺手术研究说明了什么？", a:"10 台手术→复发率 <span class='num'>17.9%</span>，250 台→<span class='num'>10.7%</span>，1500~2000 台后趋于平稳。手术结果与<b>练习量</b>强相关，即时反馈是外科医生持续精进的原因。"},
+/* ---- 第6章 ---- */
+{ch:"第6章", q:"怎样挑选一位好导师？", a:"看两条：本领域<b>有所成就</b> + <b>善于教学</b>；询问其以往学生的进步情况。忽略\"有趣\"的评价，找关于\"进步\"的描述；自己水平提升后要及时更换导师。"},
+{ch:"第6章", q:"导师最重要的作用是什么？", a:"帮你<b>创建心理表征</b>——好的教学不是灌输知识，而是塑造你看待本领域的表征系统。"},
+{ch:"第6章", q:"业余歌手与专业歌手上课的差别？", a:"业余歌手上完课感到<b>愉悦</b>，如同娱乐；专业歌手课上<b>高度专注</b>甚至毫无乐趣——决定练习质量的是专注与投入，不是时长。"},
+{ch:"第6章", q:"练习时长与专注如何权衡？", a:"<b>更短但 100% 投入</b>的练习，胜过长时间 70% 投入。无法专注时就停下来休息，并保证充足睡眠。"},
+{ch:"第6章", q:"没有导师时，富兰克林如何自学写作？", a:"三步：复写《观察家》文章对照差距 → 改写成诗<b>扩充词汇</b> → 打乱线索重排逻辑结构。核心是<b>自己设计练习、自己提供反馈</b>。"},
+{ch:"第6章", q:"\"三个 F\"指什么？", a:"<b>Focus 专注 · Feedback 反馈 · Fix it 纠正</b>：复制大师作品 → 失败 → 思考差异 → 再复制，在没有导师时形成自我改进闭环。"},
+{ch:"第6章", q:"如何跨越停滞阶段？", a:"以<b>新的方式挑战自己</b>（如福尔放慢读数字速度、加长数字串）；先搞清楚<b>\"卡住\"的具体弱点在哪</b>，再设计练习专门攻克它。"},
+{ch:"第6章", q:"为什么说\"意志力\"根本不存在？如何保持动机？", a:"没有科学证据表明存在一般意志力；它与\"天生才华\"一样是<b>事后归因</b>的循环思维。动机 = 前行理由 vs 停下理由的博弈：弱化停下理由（固定时间、早晨练习、关手机、限 1 小时、睡眠充足），增强前行理由（技能成为动机、身份认同、社会动机、加入目标相近的团体），并把目标<b>分解</b>、一次只关注一个、给自己奖励。"},
+/* ---- 第7章 ---- */
+{ch:"第7章", q:"波尔加三姐妹证明了什么？", a:"苏珊（首位女子特级大师）、索菲娅（\"罗马大洗劫\"2735 分）、朱迪特（15 岁成最年轻特级大师、女子世界第一 25 年）——父亲的\"实验\"证明<b>正确的训练与家庭支持可以塑造\"天才\"</b>。"},
+{ch:"第7章", q:"成为杰出人物的四个阶段？", a:"① <b>产生兴趣</b>（以游戏方式接触）；② <b>变得认真</b>（跟导师学、动机内化）；③ <b>全力投入</b>（找最好导师、逼近人类极限）；④ <b>开拓创新</b>（超越导师、推动领域前进）。"},
+{ch:"第7章", q:"第一位导师最重要的品质是什么？", a:"未必是最优秀的，但要<b>擅长激励孩子</b>；动机要从外部激励转向内部，最终必须来自内心。"},
+{ch:"第7章", q:"关于年龄与适应能力的两条经验？", a:"① <b>成年人的大脑仍然能适应</b>（机制不同：靠\"修剪突触\"而非增加脑灰质）；② 心理适应能力比身体更强——脑胼胝体须 7 岁前训练才更大，小脑几乎不受限。"},
+{ch:"第7章", q:"成年人还能练出完美音高吗？", a:"能。保罗·布拉迪 32 岁起两个月训练即获得完美音高；拉什实验中 52 名本科生部分人显著提高——\"关键期\"并非不可逾越。"},
+{ch:"第7章", q:"第四阶段\"开拓创新\"的真相是什么？", a:"创新者无一例外先在领域内<b>长期练习</b>，然后超越导师（毕加索也从古典风格起步）。创新是漫长、缓慢、反复的过程，\"飞跃\"只是局外人视角——不积跬步，无以至千里。"},
+/* ---- 第8章 ---- */
+{ch:"第8章", q:"帕格尼尼\"断弦奇迹\"的真相？", a:"那是<b>预谋</b>的单弦曲《拿破仑》表演，加上长期练习——不是临场意外，更不是神迹。"},
+{ch:"第8章", q:"莫扎特早期\"作曲\"的真相？", a:"实为父亲<b>整理</b>、或以他人奏鸣曲为基础；他第一首可靠的原创作品出现在<b>训练十年之后</b>（15~16 岁）。"},
+{ch:"第8章", q:"如何反驳\"天才跳高运动员\"托马斯？", a:"他高中已跳过 1.89~1.95 米、专门练过背越式技术、靠扣篮练弹跳力、身高 1.88 米占优；此后再未接近 2.35 米的个人最好成绩——<b>没有证据支持天赋说</b>。"},
+{ch:"第8章", q:"\"音盲\"的真相是什么？", a:"约 <span class='num'>1/6</span> 美国人自认为不能唱歌，多半是被权威贴了\"音盲\"标签后放弃；真正的先天性失歌症<b>极罕见</b>——尼日利亚部落人人会唱。"},
+{ch:"第8章", q:"棋手研究：训练与智商谁更重要？", a:"比拉里克 2006 年研究 57 名棋手：<b>练习是最大的预测因素</b>，智商作用较小；23 名精英棋手中智商较低者反而棋艺更高（因练得更多）；成年棋手中智商与棋艺无关；围棋高手平均智商仅 <span class='num'>93</span>。"},
+{ch:"第8章", q:"相信天生才华最大的危险性是什么？", a:"<b>自我实现的预言</b>：贴标签 → 区别对待 → 预言成真。如加拿大冰球教练把\"1~3 月出生（年龄大）\"误认为有天赋；给孩子贴\"没有数学天赋\"的标签等于关上工程学的大门。"},
+/* ---- 第9章 ---- */
+{ch:"第9章", q:"韦曼的物理课实验结果如何？", a:"英属哥伦比亚大学 850 人大课对照：刻意练习课堂测试正确率 <span class='num'>74%</span> vs 传统课堂 <span class='num'>41%</span>；效应值达 <span class='num'>2.5</span> 个标准差，远超其他一切教学干预（通常 &lt;1.0）。"},
+{ch:"第9章", q:"刻意练习式课堂的四个要素？", a:"① 课前预习 + 在线测试；② 课堂上以<b>小组讨论</b>解决问题；③ 主动学习任务；④ <b>即时反馈</b>——教师现场巡视纠错。"},
+{ch:"第9章", q:"用刻意练习原则看，教育应当教什么？", a:"<b>技能而非知识</b>：把技能分解为学习步骤，确保每一步都形成心理表征；帮助学生创建心理表征是最有价值的帮助。"},
+{ch:"第9章", q:"全书最后送给读者的话是什么？", a:"<b>\"你可以掌控自己的潜力。\"</b>在技术快速变迁的时代要终身学习，成为\"练习人\"——用刻意练习塑造自己的人生。"}
+];
+
+/* ================= 渲染 ================= */
+const grid = document.getElementById("grid");
+const chipsBox = document.getElementById("chips");
+const countEl = document.getElementById("count");
+const flipSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>';
+
+const chapters = ["全部", ...new Set(CARDS.map(c => c.ch))];
+let curCh = "全部";
+let flippedAll = false;
+
+function cardNode(c, i){
+  const d = document.createElement("div");
+  d.className = "card";
+  d.dataset.ch = c.ch;
+  d.innerHTML = `
+    <div class="card-inner" role="button" tabindex="0" aria-label="知识卡片，按回车翻面">
+      <div class="face front">
+        <div class="face-top"><span class="tag">${c.ch}</span><span class="idx">No.${String(i+1).padStart(2,"0")}</span></div>
+        <div class="q">${c.q}</div>
+        <div class="flip-hint">${flipSVG}点击翻面看答案</div>
+      </div>
+      <div class="face back">
+        <div class="face-top"><span class="tag">${c.ch}</span><span class="idx">答案</span></div>
+        <div class="a">${c.a}</div>
+        <div class="flip-hint">${flipSVG}再次点击翻回</div>
+      </div>
+    </div>`;
+  const inner = d.querySelector(".card-inner");
+  const flip = () => d.classList.toggle("flipped");
+  inner.addEventListener("click", flip);
+  inner.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
+  });
+  return d;
+}
+
+let order = CARDS.map((_, i) => i);
+function render(){
+  grid.innerHTML = "";
+  let shown = 0;
+  order.forEach(i => {
+    const c = CARDS[i];
+    if (curCh !== "全部" && c.ch !== curCh) return;
+    const n = cardNode(c, i);
+    if (flippedAll) n.classList.add("flipped");
+    grid.appendChild(n);
+    shown++;
+  });
+  countEl.innerHTML = `共 <b>${CARDS.length}</b> 张卡片 · 当前显示 <b>${shown}</b> 张`;
+}
+render();
+
+/* 章节筛选 */
+chapters.forEach(ch => {
+  const b = document.createElement("button");
+  b.className = "chip" + (ch === "全部" ? " on" : "");
+  b.type = "button";
+  b.textContent = ch;
+  b.onclick = () => {
+    curCh = ch;
+    chipsBox.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === b));
+    render();
+  };
+  chipsBox.appendChild(b);
+});
+
+/* 工具按钮 */
+document.getElementById("btnFlipAll").onclick = () => {
+  flippedAll = true;
+  grid.querySelectorAll(".card").forEach(c => c.classList.add("flipped"));
+};
+document.getElementById("btnReset").onclick = () => {
+  flippedAll = false;
+  grid.querySelectorAll(".card").forEach(c => c.classList.remove("flipped"));
+};
+document.getElementById("btnShuffle").onclick = () => {
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  flippedAll = false;
+  render();
+};
+</script>
+</body>
+</html>
