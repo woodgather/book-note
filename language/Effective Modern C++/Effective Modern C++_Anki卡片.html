@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Effective Modern C++ — Anki 精华卡片（42条）</title>
+<style>
+  :root {
+    --bg: #f5f3ef;
+    --card-front: #ffffff;
+    --card-back: #fafbf7;
+    --accent: #2d5a4e;
+    --accent-light: #3d7a6a;
+    --accent-bg: #e8f0ed;
+    --text: #2c2c2c;
+    --text-light: #5a5a5a;
+    --border: #d8d4cc;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-hover: 0 8px 24px rgba(0,0,0,0.12);
+    --item-badge: #d4a437;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    color: white;
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .header .subtitle {
+    font-size: 15px;
+    opacity: 0.85;
+    font-weight: 300;
+  }
+  .header .stats {
+    margin-top: 16px;
+    font-size: 13px;
+    opacity: 0.8;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    max-width: 1200px;
+    margin: -20px auto 0;
+    padding: 0 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+  .toolbar button {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.2s;
+    font-family: inherit;
+    box-shadow: var(--shadow);
+  }
+  .toolbar button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .toolbar button.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .search-box {
+    flex: 1;
+    min-width: 200px;
+    max-width: 320px;
+    margin-left: auto;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 8px 16px 8px 36px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: inherit;
+    background: white;
+    box-shadow: var(--shadow);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-box input:focus {
+    border-color: var(--accent);
+  }
+  .search-box::before {
+    content: "🔍";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    opacity: 0.5;
+  }
+
+  /* Chapter sections */
+  .chapter {
+    max-width: 1200px;
+    margin: 36px auto 0;
+    padding: 0 24px;
+  }
+  .chapter-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid var(--accent-bg);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .chapter-title .num {
+    background: var(--accent);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+  .chapter-title .count {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-light);
+    margin-left: auto;
+  }
+
+  /* Cards grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* Card */
+  .card-wrapper {
+    perspective: 1000px;
+    height: 320px;
+  }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    cursor: pointer;
+  }
+  .card.flipped {
+    transform: rotateY(180deg);
+  }
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+  .card-face::-webkit-scrollbar { width: 4px; }
+  .card-face::-webkit-scrollbar-track { background: transparent; }
+  .card-face::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 2px;
+  }
+
+  .card-front {
+    background: var(--card-front);
+  }
+  .card-back {
+    background: var(--card-back);
+    transform: rotateY(180deg);
+  }
+
+  .item-badge {
+    display: inline-block;
+    background: var(--item-badge);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    align-self: flex-start;
+  }
+  .card-front .item-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+  .card-front .question {
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: var(--text);
+    flex: 1;
+  }
+  .card-front .flip-hint {
+    font-size: 12px;
+    color: var(--text-light);
+    text-align: right;
+    margin-top: 10px;
+    opacity: 0.6;
+  }
+
+  .card-back .answer-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--accent-bg);
+  }
+  .card-back .answer-content {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--text);
+    flex: 1;
+  }
+  .card-back .answer-content p {
+    margin-bottom: 6px;
+  }
+  .card-back .answer-content .block-title {
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 8px;
+    margin-bottom: 4px;
+    font-size: 13.5px;
+  }
+  .card-back .answer-content ul,
+  .card-back .answer-content ol {
+    padding-left: 20px;
+    margin-bottom: 6px;
+  }
+  .card-back .answer-content li {
+    margin-bottom: 3px;
+  }
+  .card-back .answer-content code {
+    background: #eef1ef;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12.5px;
+    font-family: "SF Mono", "Consolas", "Monaco", monospace;
+    color: #2d5a4e;
+  }
+  .card-back .flip-back-hint {
+    font-size: 12px;
+    color: var(--text-light);
+    text-align: right;
+    margin-top: 10px;
+    opacity: 0.6;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-light);
+    font-size: 13px;
+  }
+
+  /* Responsive */
+  @media (max-width: 800px) {
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
+    .card-wrapper {
+      height: 340px;
+    }
+    .header h1 {
+      font-size: 22px;
+    }
+    .toolbar {
+      padding: 0 16px;
+    }
+    .chapter {
+      padding: 0 16px;
+    }
+  }
+
+  /* Hidden card for search filter */
+  .card-wrapper.hidden {
+    display: none;
+  }
+  .chapter.hidden {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Effective Modern C++ · Anki 精华卡片</h1>
+  <div class="subtitle">42 Specific Ways to Improve Your Use of C++11 and C++14</div>
+  <div class="stats">共 42 张卡片 · 点击卡片翻转查看答案</div>
+</div>
+
+<div class="toolbar">
+  <button id="flipAllBtn">🔄 全部翻转</button>
+  <button id="resetBtn">↺ 全部正面</button>
+  <button id="shuffleBtn">🎲 随机打乱</button>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜索条款标题或内容...">
+  </div>
+</div>
+
+<div id="chapters-container"></div>
+
+<div class="footer">
+  资料来源：Effective Modern C++ (Scott Meyers) · 点击卡片翻转 · 支持键盘方向键浏览
+</div>
+
+<script>
+const cards = [{"item": 1, "title": "理解模板类型推导", "front": "模板类型推导中，ParamType有哪三种情况？每种情况下T和ParamType如何从expr推导？", "back": "模板类型推导分为三种情况：\n\n【情况1：ParamType是指针或引用，但不是通用引用】\n- 规则：① 如果expr的类型是引用，忽略引用部分 ② 然后对expr的类型和ParamType进行模式匹配得到T\n- 例：template<typename T> void f(T& param); int x=0; f(x); → T=int, ParamType=int&\n\n【情况2：ParamType是通用引用（T&&）】\n- 规则：① 如果expr是左值，T和ParamType都被推导为左值引用（引用折叠）② 如果expr是右值，应用正常规则\n- 例：int x=0; f(x); → T=int&, ParamType=int&（左值）\n- 例：f(27); → T=int, ParamType=int&&（右值）\n\n【情况3：ParamType既不是指针也不是引用（按值传递）】\n- 规则：① 忽略引用 ② 忽略顶层const和volatile ③ 得到T（也就是ParamType）\n- 例：const int x=0; f(x); → T=int, ParamType=int\n\n【数组和函数参数】\n- 按值传递：数组退化为指针，函数退化为函数指针\n- 按引用传递：保留数组大小，推导为数组引用/函数引用"}, {"item": 2, "title": "理解auto类型推导", "front": "auto类型推导与模板类型推导有什么异同？有哪些特殊情况？", "back": "【相同点】\n- auto类型推导规则与模板类型推导几乎完全一致，对应三种ParamType情况\n- 把auto看作T，变量声明的完整类型看作ParamType\n\n【唯一不同点：花括号初始化】\n- 模板类型推导不能推导花括号初始化（编译错误）\n- auto可以推导花括号初始化，推导为std::initializer_list<T>\n- 例：auto x = {27}; → std::initializer_list<int>\n- 例：auto x{27}; → C++17之前是initializer_list<int>，C++17是int\n\n【auto在函数返回值和lambda中的特殊情况】\n- C++14的函数返回值auto使用模板类型推导规则（不能推导花括号）\n- C++14的lambda形参auto同样使用模板类型推导规则\n\n【记忆要点】\n- 99%的情况auto推导 = 模板类型推导\n- 唯一例外：花括号初始化时auto推导为initializer_list"}, {"item": 3, "title": "理解decltype", "front": "decltype的作用是什么？推导规则有哪些？decltype(auto)有什么用？", "back": "【decltype的作用】\n- decltype返回给定名字或表达式的声明类型，不做任何修改\n- 常用于尾置返回类型、decltype(auto)、类型萃取等\n\n【推导规则】\n1. 如果expr是单个标识符（变量名），decltype(expr)就是该变量的声明类型\n2. 如果expr是比标识符更复杂的左值表达式（如返回左值引用的函数调用、*p解引用），decltype(expr)是左值引用类型\n3. 如果expr是右值，decltype(expr)就是值类型\n4. 特例：decltype((x))中x被当作表达式，若x是左值则返回左值引用\n\n【decltype(auto)的用途】\n- C++14引入，用于需要保留值类别和const属性的转发场景\n- auto会丢失引用和const，decltype(auto)完整保留\n- 典型应用：函数返回类型转发\n  template<typename T>\n  decltype(auto) f(T&& x) { return std::forward<T>(x); }\n\n【常见用例】\n- 尾置返回类型：auto f() -> decltype(expr)\n- 泛型编程中保持类型精确性"}, {"item": 4, "title": "学会查看类型推导结果", "front": "有哪些方法可以查看C++类型推导的结果？各有什么优缺点？", "back": "【方法1：IDE编辑器提示】\n- 优点：最快捷\n- 缺点：有时不准确，复杂类型可能不完整\n\n【方法2：编译器错误信息】\n- 故意声明未定义模板类：template<typename T> class TD; TD<decltype(x)> xType;\n- 优点：结果准确，是编译器真实推导\n- 缺点：不能运行，只能看到编译错误\n\n【方法3：运行时输出 typeid(T).name()】\n- 优点：可以运行时查看\n- 缺点：① 输出格式不标准（如GCC输出\"i\"表示int）② 丢失const、引用等修饰符\n\n【方法4：Boost.TypeIndex库】\n- boost::typeindex::type_id_with_cvr<T>().pretty_name()\n- 优点：保留const、volatile、引用（cvr），人类可读\n- 缺点：需要引入Boost库\n\n【推荐策略】\n- 日常：IDE提示\n- 确认准确性：编译期错误方法\n- 需要精确完整信息：Boost.TypeIndex"}, {"item": 5, "title": "优先考虑auto而非显式类型声明", "front": "为什么应该优先使用auto而非显式类型声明？auto有哪些优势？", "back": "【优势1：必须初始化，避免未初始化变量】\n- int x; // 可能未初始化\n- auto x; // 编译错误，必须初始化\n\n【优势2：可以表示只有编译器才知道的类型】\n- 如lambda闭包类型，无法显式写出\n\n【优势3：避免类型不匹配的错误】\n- 例：auto sz = v.size(); // sz一定是size_t类型\n- 显式写unsigned在32/64位平台可能有问题\n\n【优势4：避免冗长的类型名】\n- 迭代器、模板类型等长名称用auto更简洁\n\n【优势5：重构时自动适应类型变化】\n- 函数返回类型改变，使用auto的代码自动适配\n\n【注意事项】\n- auto不是万能的，Item 6会讲推导不符合预期的情况\n- 可读性考虑：有时显式类型更清晰"}, {"item": 6, "title": "auto推导若非己愿，使用显式类型初始化惯用法", "front": "什么情况下auto推导出的类型不符合预期？如何解决？", "back": "【auto推导不符合预期的典型场景】\n\n1. std::vector<bool>::operator[] 返回代理类\n   - 例：std::vector<bool> v; auto flag = v[5];\n   - flag类型不是bool，而是std::vector<bool>::reference（代理类）\n   - 原因：vector<bool>是特化版本，operator[]返回位引用的代理对象\n\n2. 表达式模板（Expression Templates）\n   - 如Eigen矩阵运算返回表达式模板对象而非计算结果\n   - 可能导致悬空引用或计算延迟问题\n\n3. 其他返回代理类的\"隐形\"类型\n\n【解决方案：显式类型初始化惯用法】\n- 用目标类型进行static_cast显式转换\n- 例：auto flag = static_cast<bool>(v[5]);\n- 保留auto的优点（必须初始化、简洁），同时确保类型正确\n\n【判断方法】\n- 了解使用的库是否有代理类\n- 用IDE或编译期检查确认auto推导的实际类型"}, {"item": 7, "title": "区别使用()和{}创建对象", "front": "C++中()和{}初始化对象有什么区别？各有什么优缺点？", "back": "【{}初始化（统一初始化/列表初始化）的优点】\n1. 可以在任何地方使用（变量、成员、容器）\n2. 禁止隐式窄化转换（narrowing conversion）\n   - int x{3.5}; // 编译错误\n3. 最令人头疼的解析（Most Vexing Parse）免疫\n   - Widget w(); // 被解析为函数声明！\n   - Widget w{}; // 正确调用默认构造\n\n【{}初始化的缺点】\n1. 与std::initializer_list的优先级冲突\n   - 有initializer_list构造函数时，{}优先匹配它\n   - 例：vector<int> v(10, 1); // 10个元素都是1\n   - vector<int> v{10, 1}; // 两个元素：10和1\n2. auto+{}推导为std::initializer_list\n\n【选择原则】\n- 一般推荐使用{}初始化（更统一、更安全）\n- 但要注意initializer_list构造函数的陷阱\n- 容器初始化时特别小心v(n, val) vs v{n, val}"}, {"item": 8, "title": "优先考虑nullptr而非0和NULL", "front": "为什么应该用nullptr代替0和NULL？nullptr有什么优势？", "back": "【0和NULL的问题】\n1. 类型问题\n   - 0是int，不是指针\n   - NULL类型不明确（可能是0L）\n   - 两者都不是真正的指针类型\n2. 重载歧义\n   - f(0) → 调用f(int)，而不是f(void*)\n   - 违反直觉，程序员本意可能是空指针\n3. 模板推导问题\n   - 模板中传入0或NULL，推导为int/long，不是指针类型\n\n【nullptr的优势】\n1. 类型是std::nullptr_t，不是整数类型\n2. 可以隐式转换为所有指针类型\n3. 不会产生重载歧义：f(nullptr) → 调用f(void*)\n4. 模板推导正确\n5. 更清晰表达空指针的意图\n\n【使用建议】\n- 空指针一律用nullptr\n- 0只用于表示整数零\n- 避免使用NULL宏"}, {"item": 9, "title": "优先考虑别名声明而非typedefs", "front": "为什么using别名声明比typedef更好？别名声明有哪些优势？", "back": "【优势1：语法更直观】\n- typedef void (*FuncPtr)(int);\n- using FuncPtr = void(*)(int);\n- \"左边是别名，右边是原类型\"更清晰\n\n【优势2：支持模板别名（alias templates）—— typedef做不到】\n- template<typename T> using MyList = std::list<T, MyAlloc<T>>;\n- 使用：MyList<int> x; 直接使用\n- typedef必须嵌套在模板struct中，使用还要加typename\n\n【优势3：类型萃取更自然】\n- C++14提供_t后缀版本：std::remove_const_t<T>\n- 代替typename std::remove_const<T>::type\n\n【优势4：一致性】\n- 与命名空间别名风格一致\n\n【使用建议】\n- 新代码一律用using别名声明\n- 不再使用typedef"}, {"item": 10, "title": "优先考虑限域枚举而非未限域枚举", "front": "限域枚举（scoped enum）相比未限域枚举有哪些优势？", "back": "【未限域枚举的问题】\n1. 命名空间污染：枚举量直接进入外层作用域\n2. 隐式转换为整数：可能导致意外比较和运算\n3. 前置声明不明确底层类型（C++11前）\n\n【限域枚举的优势】\n1. 不污染命名空间：必须加作用域访问（Color::red）\n2. 不会隐式转换为其他类型：需要显式static_cast\n3. 可以指定底层类型：enum class Color : char { ... };\n4. 可以前置声明\n\n【未限域枚举的适用场景】\n- 需要利用隐式转换为整数时（如数组索引）\n- 使用std::tuple的字段命名索引\n\n【建议】\n- 默认使用限域枚举（enum class）\n- 只有确实需要隐式转换等特性时才用未限域枚举"}, {"item": 11, "title": "优先考虑使用deleted函数而非使用未定义的私有声明", "front": "为什么应该用=delete禁止函数，而不是声明为私有且不定义？", "back": "【旧方法的问题】\n- 声明为private且不定义：成员函数和友元仍可调用（链接期才报错）\n- 错误发生晚，信息不友好\n- 意图不明确\n\n【=delete的优势】\n1. 编译期就报错，更早发现问题\n2. 错误信息更清晰\n3. 可以用于任何函数，不只是成员函数\n4. 可以用于非成员函数和模板特化\n\n【=delete的其他用途】\n1. 禁止特定模板实例化\n   template<> void f<int>(int) = delete;\n2. 禁止不需要的隐式转换\n   void f(int) = delete; // 阻止传int（即使能隐式转double）\n\n【最佳实践】\n- 所有要禁止的函数都使用=delete\n- 包括拷贝构造、拷贝赋值、特定重载、模板特化等"}, {"item": 12, "title": "使用override声明重载函数", "front": "为什么要在重写函数上加override关键字？有什么好处？", "back": "【override的作用】\n- 显式标记成员函数是重写基类的虚函数\n- 编译器检查是否真的重写了基类函数\n\n【没有override可能出现的错误】\n1. 函数签名不匹配（const、参数类型差异）\n2. 基类函数不是virtual\n3. 参数类型细微差别\n4. 基类函数被删除或改名，重写函数悄无声息变成普通函数\n\n【override的好处】\n1. 编译期检查：签名不对就编译错误\n2. 代码自文档化：一看就知道是重写的虚函数\n3. 重构安全：基类修改时派生类会编译失败提醒\n\n【关于final】\n- 也可以同时使用final：void f() override final;\n- 阻止类被继承或函数被进一步重写\n\n【最佳实践】\n- 所有重写虚函数的地方都加上override\n- 零成本的安全保障"}, {"item": 13, "title": "优先考虑const_iterator而非iterator", "front": "为什么应该优先使用const_iterator？如何方便地获取和使用它？", "back": "【为什么优先用const_iterator】\n1. 更通用：可以指向const和非const容器\n2. 表达意图更清晰：不修改指向的元素\n3. 符合const正确性原则\n\n【C++98的问题】\n- 获取const_iterator很麻烦\n- 算法对const_iterator支持不好\n- 实际中很少用\n\n【C++11的改进】\n1. 容器提供cbegin()、cend()方法，返回const_iterator\n2. 算法和成员函数普遍支持const_iterator（insert、erase等）\n3. 非成员函数std::cbegin()、std::cend()（C++14）\n\n【使用建议】\n- 默认使用const_iterator，就像默认用const变量一样\n- 只有需要修改元素时才用iterator\n- 使用cbegin()/cend()获取const迭代器\n- 泛型代码中优先使用非成员std::cbegin等"}, {"item": 14, "title": "如果函数不抛出异常请使用noexcept", "front": "noexcept有什么作用？为什么应该给不抛异常的函数加上noexcept？", "back": "【noexcept的含义】\n- 保证函数不会抛出异常\n- 如果函数内抛出异常，直接调用std::terminate\n- 是函数类型的一部分（但不参与重载决议）\n\n【使用noexcept的好处】\n1. 编译器优化\n   - 不需要生成栈展开代码\n   - 函数可以更激进地优化\n2. 移动语义的启用（最实际的收益）\n   - 容器重新分配内存时，只有元素移动构造是noexcept的才用移动\n   - 否则使用拷贝（保证强异常安全）\n   - 影响vector等容器的性能\n3. 表达设计意图\n\n【使用场景】\n- 确定不抛异常的函数都应该加\n- swap函数（非常重要）\n- move构造和move赋值\n- 内存释放函数、析构函数（默认noexcept）\n\n【注意事项】\n- 加上noexcept后绝对不能抛异常，否则直接terminate\n- 不要随便加，确保函数真的不抛异常才行"}, {"item": 15, "title": "尽可能的使用constexpr", "front": "constexpr的作用是什么？constexpr变量和函数各有什么特点？", "back": "【constexpr的含义】\n- constexpr = const + 编译期已知\n- 所有constexpr对象都是const，但不是所有const对象都是constexpr\n\n【constexpr变量】\n1. 必须用编译期常量初始化\n2. 值在编译期确定\n3. 可用于数组大小、模板参数、case标签等\n\n【constexpr函数】\n1. C++11：只能一条return语句（递归可以），参数和返回值为字面值类型\n2. C++14：限制放宽，可有多条语句、循环、局部变量\n3. 传入编译期常量→编译期计算；传入运行期参数→运行期计算\n4. 不需要写两个版本的函数\n\n【constexpr的好处】\n1. 把计算从运行期移到编译期，提高性能\n2. 数据放在只读内存段（ROMable）\n3. 可用于模板元编程和编译期计算\n4. 表达\"常量\"的意图更强\n\n【使用建议】\n- 能声明为constexpr的变量都声明为constexpr\n- 能写成constexpr的函数都写成constexpr\n\n【const vs constexpr】\n- const：运行时常量（也可能编译期，但不保证）\n- constexpr：编译期常量（保证）"}, {"item": 16, "title": "让const成员函数线程安全", "front": "为什么const成员函数需要线程安全？如何实现？", "back": "【问题来源】\n- const成员函数概念上是\"只读\"的，应可被多线程同时调用\n- 但如果类中有mutable成员变量，const函数也会修改它\n- 多线程下同时调用const函数可能产生数据竞争\n- 例：缓存计算结果的mutable成员，多线程同时计算并写缓存\n\n【为什么const成员函数必须线程安全】\n- const意味着\"只读\"，调用者期望它是线程安全的\n- 标准库的const成员函数都是线程安全的\n- 用户期望你的类也是如此\n\n【实现方法】\n\n1. std::mutex保护mutable数据\n   - mutable std::mutex m_mutex;\n   - const函数中加锁\n   - 优点：通用、正确\n   - 缺点：有锁开销\n\n2. std::atomic（适用于单个变量）\n   - mutable std::atomic<int> m_cache;\n   - 无锁，高性能\n   - 缺点：只适用于单个或少量变量\n\n3. 组合使用：atomic检查 + mutex计算（双重检查锁定）\n\n【注意事项】\n- 只有可能被并发调用且有可变状态的类才需要\n- 单线程使用的类不需要\n- 拷贝构造函数也应考虑线程安全（传入const引用对象）"}, {"item": 17, "title": "理解特殊成员函数的生成", "front": "C++编译器会自动生成哪些特殊成员函数？生成条件和规则是什么？", "back": "【6个特殊成员函数】\n1. 默认构造函数\n2. 析构函数\n3. 拷贝构造函数\n4. 拷贝赋值运算符\n5. 移动构造函数\n6. 移动赋值运算符\n\n【生成规则】\n\n1. 默认构造函数：仅当类没有用户声明的任何构造函数时生成\n2. 析构函数：默认生成，默认noexcept\n3. 拷贝构造/拷贝赋值\n   - 默认：逐个成员拷贝\n   - 用户声明了移动操作 → 拷贝操作被删除（=delete）\n   - 用户声明了析构 → 拷贝仍生成（但已废弃）\n4. 移动构造/移动赋值\n   - 默认：逐个成员移动（没有移动就用拷贝）\n   - 生成条件：类没有用户声明的拷贝操作、移动操作、析构函数\n   - 只要声明了其中之一，移动操作就不会隐式生成\n\n【核心规则：Rule of Five】\n- 声明了五个（拷构、拷赋、移构、移赋、析构）中任何一个，通常需要显式处理全部五个\n- 原因：声明析构函数意味着有资源管理，默认拷贝/移动可能不正确\n\n【注意】\n- =default显式要求编译器生成默认版本\n- 移动操作不存在时退化为拷贝操作（右值可绑定到const T&）"}, {"item": 18, "title": "对于独占资源使用std::unique_ptr", "front": "std::unique_ptr的特点和使用场景是什么？有哪些重要性质？", "back": "【unique_ptr的核心特点】\n1. 独占所有权：同一时间只有一个unique_ptr指向对象\n2. 轻量高效：大小等于原始指针（无额外开销）\n3. 不可拷贝：只能移动（std::move）\n4. 析构时自动delete所指对象（默认deleter）\n\n【适用场景】\n1. 工厂函数的返回类型（可方便转为shared_ptr）\n2. 类的成员变量（Pimpl惯用法等）\n3. 管理动态分配的数组（unique_ptr<int[]>调用delete[]）\n4. 容器中保存指针（多态，避免切片）\n\n【自定义deleter】\n- 第二个模板参数是deleter类型\n- deleter有状态时会增加unique_ptr大小\n- deleter无状态时大小不变\n\n【unique_ptr和shared_ptr的关系】\n- unique_ptr可以隐式转换为shared_ptr（右值时）\n- 反过来不行\n- 工厂函数返回unique_ptr的原因：灵活，调用者可选择所有权方式\n\n【使用建议】\n- 默认资源管理首选unique_ptr\n- 需要共享所有权时才用shared_ptr\n- 优先用std::make_unique创建"}, {"item": 19, "title": "对于共享资源使用std::shared_ptr", "front": "std::shared_ptr的工作原理、特点和性能开销是什么？", "back": "【工作原理】\n- 通过引用计数管理共享所有权\n- 所有指向同一对象的shared_ptr共享一个控制块\n- 控制块包含：引用计数、弱计数、deleter、分配器等\n- 引用计数为0时销毁对象；弱计数也为0时销毁控制块\n\n【性能开销】\n1. 大小是原始指针的两倍\n2. 控制块需要动态分配（make_shared可以避免）\n3. 引用计数增减是原子操作，有开销\n\n【注意事项】\n1. 不要用同一个裸指针创建多个shared_ptr（多个控制块→多次释放）\n2. this指针问题：继承std::enable_shared_from_this<T>，用shared_from_this()\n3. 循环引用问题：用weak_ptr打破循环\n4. 自定义deleter不是模板参数的一部分（类型擦除）\n5. 别名构造（aliasing constructor）：指向对象成员，共享整个对象的控制块\n\n【适用场景】\n- 真正需要共享所有权的情况\n- 多个所有者独立管理生命周期\n- 观察者模式、缓存等\n\n【建议】\n- 不要过早使用shared_ptr\n- 先考虑unique_ptr，需要共享时再升级"}, {"item": 20, "title": "当std::shared_ptr可能悬空时使用std::weak_ptr", "front": "std::weak_ptr的作用是什么？如何使用？有哪些典型应用场景？", "back": "【weak_ptr的作用】\n- 引用但不增加shared_ptr的引用计数\n- 可以检测对象是否已被销毁\n- 不参与所有权管理，像\"观察者\"\n\n【基本用法】\n1. 从shared_ptr构造：std::weak_ptr<Widget> wp(sp);\n2. 检查过期：if (wp.expired()) { ... }\n3. 获取shared_ptr（lock）：auto sp = wp.lock(); // 原子操作\n   - 对象已销毁则返回空shared_ptr\n   - 比expired+构造更安全（原子性）\n\n【典型应用场景】\n1. 打破循环引用：子节点持有父节点的weak_ptr\n2. 观察者模式：被观察者保存观察者的weak_ptr列表\n3. 缓存：缓存保存weak_ptr，不阻止对象释放\n4. 对象池\n\n【性能特点】\n- 大小和shared_ptr一样（两个指针）\n- 弱计数操作也是原子的\n\n【注意】\n- weak_ptr不能直接解引用\n- 必须通过lock()获得shared_ptr才能访问对象"}, {"item": 21, "title": "优先考虑使用std::make_unique和std::make_shared而非new", "front": "为什么应该用make_unique和make_shared而不是直接new？有什么例外情况？", "back": "【优势】\n\n1. 异常安全\n   - 例：processWidget(shared_ptr<Widget>(new Widget), priority());\n   - 执行顺序可能导致priority()抛异常时Widget泄漏\n   - make_shared把分配和构造放在一起，不会泄漏\n\n2. 代码更简洁\n   - auto p = make_shared<Widget>();\n   - 不需要写两次类型名\n\n3. make_shared的额外优势：性能更好\n   - 一次内存分配：对象和控制块在同一块内存\n   - 减少分配开销和碎片\n\n【例外情况】\n\n1. 需要自定义deleter时\n   - make系列不支持自定义deleter\n\n2. 需要花括号初始化时\n   - make用()初始化，不能直接传{}\n   - 变通方法：先创建initializer_list再传入\n\n3. make_shared的特殊问题：大对象 + weak_ptr\n   - 对象和控制块在同一块内存\n   - 引用计数为0但还有weak_ptr时，整块内存不能释放\n   - 大对象+大量长期weak_ptr时可能有问题\n\n4. 数组（make_unique支持数组，make_shared C++20前不支持）\n\n【总结】\n- 默认使用make_unique和make_shared\n- 需要自定义deleter或花括号初始化时直接用new\n- 大对象+weak_ptr场景谨慎使用make_shared"}, {"item": 22, "title": "当使用Pimpl惯用法，请在实现文件中定义特殊成员函数", "front": "Pimpl惯用法中为什么要在.cpp文件中定义特殊成员函数？不这样做会有什么问题？", "back": "【Pimpl惯用法】\n- 指针指向实现类（Pointer to Implementation）\n- 头文件只声明指针，具体实现在.cpp中\n- 目的：隐藏实现细节，减少编译依赖\n\n【问题：默认生成的析构函数】\n- 头文件中用unique_ptr<Impl> pImpl;\n- 编译器自动生成析构函数时，需要看到Impl的完整定义\n- （unique_ptr默认deleter调用delete，需要完整类型）\n- 如果Impl只有前向声明，编译失败或UB\n\n【解决方案】\n1. 头文件中声明析构函数：~Widget();\n2. .cpp文件中（在Impl定义之后）定义：Widget::~Widget() = default;\n\n【同样适用于移动操作】\n- 移动构造和移动赋值也需要Impl完整定义\n- 也应在.cpp中=default\n\n【拷贝操作】\n- unique_ptr不可拷贝，默认拷贝操作被删除\n- 如需要深拷贝，自己实现，也在.cpp中\n\n【注意】\n- 只有unique_ptr有这个问题\n- shared_ptr没有（deleter在控制块中，类型擦除）\n- 但Pimpl通常用unique_ptr（独占所有权，性能好）"}, {"item": 23, "title": "理解std::move和std::forward", "front": "std::move和std::forward分别做了什么？有什么区别？", "back": "【std::move】\n- 作用：无条件将实参强制转换为右值引用类型\n- 本质：类型转换（cast），不做任何运行时操作\n- 等价于：static_cast<remove_reference_t<T>&&>(t)\n- 目的：告诉编译器\"这个对象可以被移动\"\n- 名字叫move但实际不移动，移动由移动构造/赋值执行\n\n【std::forward】\n- 作用：有条件地转换为右值\n- 当实参是用右值初始化时才转换为右值\n- 本质：也是类型转换，但条件性的\n- 用于完美转发：保持参数的值类别\n\n【两者的区别】\n- std::move：总是转右值，无条件\n- std::forward：只有原来就是右值时才转右值，有条件\n- move是\"我要把这个东西移走\"\n- forward是\"如果原来的东西是右值，就作为右值传下去\"\n\n【使用场景】\n- std::move：函数最后一次使用右值引用参数时\n- std::forward：转发通用引用参数时\n\n【重要细节】\n- 移动后对象处于\"有效但未指定\"的状态\n- 可以赋新值，但不要读它的值"}, {"item": 24, "title": "区别通用引用和右值引用", "front": "什么是通用引用（转发引用）？它和右值引用有什么区别？如何判断？", "back": "【右值引用】\n- 形式：T&&，T是确定的类型\n- 只能绑定到右值\n- 用途：表明对象可以被移动\n\n【通用引用（转发引用）】\n- 形式：T&& 或 auto&&，但T需要被推导\n- 可以绑定左值和右值\n- 绑定左值→T推导为左值引用（引用折叠）\n- 绑定右值→T推导为值类型\n- 用途：完美转发\n\n【判断通用引用的两个条件】\n1. 类型必须要被推导（不是确定的类型）\n2. 形式必须恰好是\"type&&\"（没有const等修饰符）\n\n【是通用引用】\n- template<typename T> void f(T&& t);\n- auto&& var = expr;\n- 泛型lambda：auto&& x\n\n【是右值引用（不是通用引用）】\n- void f(Widget&& w); // 确定类型\n- template<typename T> void f(vector<T>&& v); // 不是正好T&&\n- template<typename T> void f(const T&& t); // 有const\n- 类模板的成员函数（T在类实例化时就确定了）\n\n【重要特征】\n- 右值引用和通用引用参数本身都是左值（有名字的都是左值）\n- 右值引用需要std::move转为右值\n- 通用引用需要std::forward恢复值类别"}, {"item": 25, "title": "对于右值引用使用std::move，对于通用引用使用std::forward", "front": "为什么右值引用要用std::move，通用引用要用std::forward？混用会有什么问题？", "back": "【核心原则】\n- 右值引用：总是右值 → 总是用std::move\n- 通用引用：可能左值可能右值 → 用std::forward有条件转换\n\n【为什么右值引用用std::move】\n- 右值引用参数绑定的是右值，本来就可以移动\n- 但参数本身是左值（有名字的都是左值）\n- 传下去或返回时需要std::move转成右值才能触发移动\n\n【为什么通用引用要用std::forward】\n- 通用引用可能绑定左值也可能绑定右值\n- 如果用了std::move，左值也会被移动（可能导致意外）\n- std::forward只在绑定右值时才转右值，保持原始值类别\n\n【混用的问题】\n1. 对右值引用用forward：技术上可行，但语义不对，表达不清晰\n2. 对通用引用用move：危险！左值传入也会被移动，可能破坏调用者对象\n\n【返回值优化（RVO）的特殊情况】\n- 返回局部变量时不要用move或forward\n- 编译器会做RVO，直接在返回值地址构造\n- 用了move反而阻止RVO\n- 但右值引用参数返回时还是要move\n\n【记住】\n- 函数参数：右值引用→move，通用引用→forward\n- 局部变量返回：直接返回，不要move（让RVO工作）"}, {"item": 26, "title": "避免重载通用引用", "front": "为什么要避免重载通用引用函数？会有什么问题？", "back": "【问题：通用引用重载会产生意外匹配】\n\n1. 完美匹配导致比预期重载更优先\n   - 例：void logAndAdd(const string& name);\n   -     template<typename T> void logAndAdd(T&& name);\n   - 传入非const string左值：模板完美匹配（比加const的版本更优先）\n   - 结果调用了通用引用版本，不是const&版本！\n\n2. 构造函数的问题更严重\n   - template<typename T> Person(T&& name);\n   - Person p2(p); // 传入非const Person左值\n   - 模板完美匹配Person&，比拷贝构造（const Person&）更优先！\n   - 结果调用模板构造函数，大错特错！\n\n3. 继承类的问题\n   - 派生类拷贝/移动构造调用基类时\n   - 基类完美转发构造函数可能截胡\n\n【为什么会这样】\n- 模板函数对精确匹配类型比需要转换的非模板函数更优先\n- 对于非const左值，T&&推导为左值引用，是完美匹配\n\n【后果】\n- 重载决议结果与直觉不符\n- 编译错误或运行时错误\n- 很难调试\n\n【解决方向】\n- Item 27详细讲：标签分发、SFINAE约束模板、concepts\n- 简单情况：直接不用重载，用不同函数名"}, {"item": 27, "title": "熟悉重载通用引用的替代品", "front": "有哪些方法可以替代「重载通用引用」，避免意外匹配的问题？", "back": "【方法1：不用重载，改函数名】\n- 最简单直接\n- 如logAndAddName vs logAndAddIdx\n- 构造函数不能改名\n\n【方法2：标签分发（Tag Dispatch）】\n- 用true_type/false_type作为标签参数\n- 把类型判断移到函数内部，再调用不同实现\n- 例：f(T&& x) → f_impl(x, is_integral<decay_t<T>>())\n- 适用于可用类型特征区分的情况\n\n【方法3：SFINAE + enable_if约束模板】\n- 给模板加限制条件，不符合条件的类型直接排除\n- C++11/14做法：\n  template<typename T, typename = enable_if_t<条件>>\n  void f(T&& t);\n- 可排除传入自身类型、特定类型等\n- 结合类型特征：is_same, is_integral, is_base_of等\n\n【方法4：C++20 Concepts】\n- 更优雅地约束模板\n- template<typename T> requires 条件 void f(T&& t);\n- 错误信息更友好\n\n【构造函数的特殊情况】\n- 不能改函数名\n- 推荐用enable_if/concepts约束\n- 排除应调用拷贝/移动构造的情况\n\n【选择建议】\n- 能改名就改名（最简单）\n- 构造函数用enable_if/concepts\n- 多种类型分类用标签分发"}, {"item": 28, "title": "理解引用折叠", "front": "什么是引用折叠（reference collapsing）？规则是什么？与通用引用和完美转发有什么关系？", "back": "【什么是引用折叠】\n- 在模板推导、typedef、别名等场景中，可能出现\"引用的引用\"\n- C++不允许直接声明引用的引用\n- 但模板推导等上下文中会产生，编译器通过引用折叠规则处理\n\n【折叠规则】\n- 只要有一个左值引用（&），结果就是左值引用\n- 只有两个都是右值引用（&&），结果才是右值引用\n- 总结：左值引用具有\"传染性\"\n\n具体：\n- T&  &  → T&\n- T&  && → T&\n- T&& &  → T&\n- T&& && → T&&\n\n【通用引用的原理】\n- template<typename T> void f(T&& t);\n- 传入左值int x：T推导为int& → T&& = int& && → 折叠为int&\n- 传入右值27：T推导为int → T&& = int&&\n- 这就是为什么T&&既能绑定左值又能绑定右值\n\n【引用折叠出现的四个场景】\n1. 模板类型推导（最常见）\n2. auto类型推导\n3. typedef和别名声明\n4. decltype\n\n【和std::forward的关系】\n- forward内部依赖引用折叠\n- 左值传入时T是左值引用，T&&折叠为左值引用\n- 右值传入时T是值类型，T&&是右值引用"}, {"item": 29, "title": "认识移动操作的缺点", "front": "移动操作有哪些缺点和限制？什么情况下移动并不比拷贝快甚至不存在？", "back": "【移动操作可能不存在】\n1. 有些类型没有移动操作（C++98旧类）\n   - 但右值仍可绑定到const T&，退化为拷贝\n   - std::move只是类型转换，有没有移动取决于类型\n\n2. 移动比拷贝慢或没有优势\n   - 小对象、栈上对象：如std::array<int, 5>\n   - std::string的SSO（小字符串优化）：短字符串存在栈上\n   - 没有堆分配内存的类型\n\n3. 移动不总是noexcept\n   - STL容器重新分配时，为强异常安全用拷贝而非移动\n   - 除非移动构造是noexcept的\n\n4. 源对象是const的\n   - const Widget w; auto w2 = move(w); // 调用拷贝构造！\n   - 移动需要修改源对象，const对象不能移动\n\n【常见的移动不便宜的类型】\n- std::array：元素都在栈上，移动=拷贝所有元素\n- std::string（小字符串时）：SSO栈上存储\n- 很多小的POD类型\n\n【正确认识】\n- 移动不是万能的性能优化\n- 不要假设所有移动都更快\n- 了解使用的类型是否有高效移动\n- 给移动操作加上noexcept（如果确实不抛异常）\n- 不要在返回局部变量时用std::move（RVO更好）\n\n【经验法则】\n- 假设移动操作不存在、不廉价、不使用\n- 确知类型支持高效移动时再利用"}, {"item": 30, "title": "熟悉完美转发失败的情况", "front": "完美转发（std::forward）在哪些情况下会失败？原因是什么？", "back": "【完美转发失败的含义】\n- 目标函数收到的参数与转发函数收到的参数不一致\n- 或推导失败、编译错误\n\n【失败情况1：花括号初始化器】\n- 模板无法推导initializer_list<T>（模板推导不考虑花括号）\n- 解决：先命名一个initializer_list再传入\n\n【失败情况2：0和NULL作为空指针】\n- 模板推导为int（或long），不是指针类型\n- 解决：用nullptr\n\n【失败情况3：只有声明没有定义的static const成员变量】\n- 完美转发通常通过引用传递，需要该变量有地址\n- 取地址或绑定时需要定义，否则链接错误\n- 解决：在类外定义（C++17前）；或C++17后用inline变量\n\n【失败情况4：重载函数名和模板函数名】\n- 编译器不知道该选哪个重载，无法推导\n- 解决：显式指定类型（转型为函数指针），或用lambda包装\n\n【失败情况5：位域（bit-field）】\n- 非const引用不能绑定到位域\n- 位域不能取地址\n- 解决：先拷贝到普通变量再传入\n\n【总结】\n- 完美转发大部分情况工作良好\n- 但有边界情况需要注意\n- 花括号初始化器、重载函数名是最常见的坑\n- 遇到转发失败时检查这5种情况"}, {"item": 31, "title": "避免使用默认捕获模式", "front": "为什么要避免默认捕获模式（按值=和按引用&）？有哪些问题？", "back": "【默认捕获的两种形式】\n- [=]：默认按值捕获所有用到的变量\n- [&]：默认按引用捕获所有用到的变量\n- 两者都有问题，应该避免\n\n【按引用默认捕获[&]的问题】\n1. 悬空引用：引用指向的变量已销毁\n   - 尤其lambda返回后，局部变量已销毁\n2. 闭包生命周期超过被捕获变量（异步、回调）\n3. 隐式依赖，不清晰\n\n【按值默认捕获[=]的问题】\n1. 指针被按值捕获的陷阱\n   - 捕获的是指针的值（地址），不是指向的内容\n   - 指针指向的对象销毁后，解引用UB\n2. this指针的隐式捕获\n   - [=]在成员函数中捕获this指针（不是按值捕获对象）\n   - 看起来像按值捕获，实际类似按引用捕获整个对象\n   - C++20引入[*this]按值捕获对象\n3. 静态变量不会被捕获但lambda里可以用，容易误解\n\n【显式捕获的优势】\n1. 清楚知道捕获了哪些变量\n2. 清楚知道是按值还是按引用\n3. 避免隐式悬垂问题\n4. 代码更易维护\n\n【建议】\n- 优先使用显式捕获\n- 长生命周期lambda（异步、回调、存入容器）必须显式捕获\n- 尤其注意this指针的捕获"}, {"item": 32, "title": "使用初始化捕获来移动对象到闭包中", "front": "什么是lambda的初始化捕获（init capture / generalized capture）？有什么用途？", "back": "【什么是初始化捕获】\n- C++14引入，也叫广义捕获\n- 语法：[var = expr] 或 [var = std::move(var)]\n- 在闭包中创建新变量，用右边的表达式初始化\n- 不同于C++11的简单捕获（只能捕获已有变量）\n\n【主要用途1：移动捕获】\n- 把只能移动的类型（如unique_ptr）捕获到闭包中\n- C++11无法按值捕获move-only类型\n- 例：auto lambda = [p = std::move(p)]() { p->doSomething(); };\n\n【主要用途2：创建闭包私有的变量】\n- 不需要在外部作用域先创建变量\n- 例：auto lambda = [x = 0]() mutable { return ++x; };\n\n【主要用途3：捕获表达式结果】\n- 捕获复杂表达式的计算结果\n- 不需要额外的临时变量\n\n【C++11的替代方案】\n- 用std::bind模拟移动捕获\n- 但代码复杂，不直观\n\n【常见应用】\n- 移动智能指针进入lambda\n- 大对象移动进入lambda（避免拷贝）\n- 闭包内部状态变量\n- 工厂函数中捕获参数"}, {"item": 33, "title": "对于std::forward的auto&&形参使用decltype", "front": "C++14泛型lambda中，auto&&参数为什么要配合decltype使用std::forward？正确写法是什么？", "back": "【问题背景】\n- C++14泛型lambda：auto参数类型由编译器推导\n- auto&&是通用引用，可以绑定左值和右值\n- 完美转发需要std::forward，但forward需要模板参数T，lambda中没有T\n\n【为什么要用decltype】\n- decltype(x)可以反映值类别：\n  - 绑定到左值→decltype(x)是左值引用类型\n  - 绑定到右值→decltype(x)是右值引用类型\n- 正好可以作为std::forward的模板参数\n\n【正确写法】\n```cpp\nauto f = [](auto&& x) {\n    return someFunc(std::forward<decltype(x)>(x));\n};\n```\n\n【原理】\n- 绑定左值：decltype(x)=int& → forward<int&>(x)返回int&\n- 绑定右值：decltype(x)=int&& → forward<int&&>(x)返回int&&\n\n【多参数的情况】\n```cpp\nauto f = [](auto&&... args) {\n    return someFunc(std::forward<decltype(args)>(args)...);\n};\n```\n\n【返回类型转发】\n- 保持返回值的类型和值类别：\n```cpp\nauto f = [](auto&& x) -> decltype(auto) {\n    return std::forward<decltype(x)>(x);\n};\n```\n\n【总结】\n- 泛型lambda的auto&&参数 = 通用引用\n- 完美转发用 std::forward<decltype(x)>(x)\n- 返回值转发用 decltype(auto)"}, {"item": 34, "title": "优先考虑lambda表达式而非std::bind", "front": "为什么应该优先使用lambda而非std::bind？lambda有哪些优势？", "back": "【lambda相比std::bind的优势】\n\n1. 代码更简洁易读\n   - lambda直接写函数体，直观\n   - bind需要嵌套的bind调用、占位符(_1, _2...)，可读性差\n\n2. 可以使用auto参数（C++14泛型lambda）\n   - 可以创建泛型函数对象\n   - bind在这方面很笨拙\n\n3. 捕获语义更清晰\n   - lambda有明确的[]捕获列表\n   - bind的参数是绑定值还是转发不够直观\n\n4. 效率可能更高\n   - lambda的operator()可以内联\n   - bind返回的函数对象通常通过函数指针调用\n   - 编译器对lambda优化更好\n\n5. 没有参数顺序的坑\n   - bind的占位符顺序容易搞错\n\n6. 重载决议更清晰\n   - lambda可以直接调用重载函数（编译器解决）\n   - bind绑定重载函数名时需要显式转型\n\n【std::bind唯一可能有优势的场景（C++11）】\n- C++11中没有初始化捕获\n- 需要移动捕获时用bind + std::move更方便\n- 但C++14以后lambda也有初始化捕获了\n\n【建议】\n- C++14及以后：完全不用std::bind，一律用lambda\n- C++11：除了移动捕获用bind，其他情况优先lambda\n- 新代码没有任何理由用std::bind"}, {"item": 35, "title": "优先考虑基于任务的编程而非基于线程的编程", "front": "基于任务（task-based）和基于线程（thread-based）的编程有什么区别？为什么优先用任务？", "back": "【基于线程的编程】\n- 使用std::thread直接创建线程\n- 手动管理线程生命周期\n\n【基于任务的编程】\n- 使用std::async + std::future / std::packaged_task\n- 把工作封装为任务，由运行时调度\n\n【基于任务的优势】\n\n1. 自动线程管理\n   - 线程池调度，复用线程\n   - 避免线程过多导致资源耗尽\n\n2. 返回值和异常更易处理\n   - 通过future.get()获取返回值\n   - 子线程异常通过get()重新抛出\n   - 用thread的话异常会直接terminate\n\n3. 更高级的抽象\n   - 关注\"做什么\"而不是\"怎么管理线程\"\n\n4. 调度策略可选\n   - launch::async：异步执行（新线程）\n   - launch::deferred：延迟执行（get时才运行）\n   - 默认策略是两者的OR\n\n【基于线程的适用场景】\n- 需要访问底层线程API（优先级、亲和性）\n- 需要在创建线程的函数之外join/detach\n- 线程池等特殊需求\n\n【注意事项】\n- 默认launch策略可能不创建新线程（Item 36）\n- 如果必须异步执行，显式指定launch::async\n\n【总结】\n- 默认用std::async做并发\n- 只有确实需要线程级控制时才用std::thread"}, {"item": 36, "title": "如果有异步的必要请指定std::launch::async", "front": "std::async的默认启动策略有什么问题？为什么需要显式指定std::launch::async？", "back": "【std::async的默认策略】\n- 默认是 std::launch::async | std::launch::deferred\n- 任务可能异步执行，也可能延迟到get/wait时同步执行\n- 由运行时系统决定\n\n【默认策略的问题】\n\n1. 无法确定任务是否在另一个线程运行\n   - 可能和调用者在同一线程\n   - 多线程编程的基本假设被打破\n\n2. wait_for/wait_until行为反直觉\n   - 对deferred状态的future调用wait_for(0s)\n   - 返回future_status::deferred，不是ready\n   - 如果任务是deferred的，wait_for永远不会返回ready\n   - 可能导致无限等待！\n\n3. thread_local变量不确定\n   - 任务可能在调用者线程运行，也可能在新线程\n   - thread_local的值不确定\n\n【安全使用默认策略的方式】\n- 使用wait_for前先检查是否deferred：\n  auto fut = std::async(f);\n  if (fut.wait_for(0s) == future_status::deferred)\n    fut.get(); // 同步调用\n  else\n    // 正常等待循环\n\n【什么时候需要显式指定launch::async】\n- 确定任务必须异步执行时\n- 需要真正的并发时\n- 使用wait_for/wait_until前如果没检查deferred状态\n\n【建议】\n- 只要真的需要异步执行，就显式写std::launch::async\n- 不要依赖默认策略\n- 用默认策略时要处理deferred情况"}, {"item": 37, "title": "从各个方面使得std::thread对象unjoinable", "front": "为什么必须确保std::thread对象析构时是unjoinable的？joinable的thread析构会怎样？", "back": "【joinable和unjoinable】\n- joinable：线程关联了一个可执行的线程（已启动但未join/detach）\n- unjoinable：没有关联实际线程（默认构造、已移动、已join、已detach）\n\n【为什么重要】\n- std::thread的析构函数：如果对象是joinable的，调用std::terminate()\n- 程序直接终止！\n- 原因：join和detach哪个更合适？两者都有问题，所以直接终止\n\n【导致joinable thread析构的场景】\n1. 正常路径中忘记join/detach\n2. 异常导致的提前返回（栈展开时thread析构）\n3. 容器中存thread对象，清空时还有joinable的\n\n【确保unjoinable的方法】\n1. 调用join()：等待线程完成（最常用，安全）\n2. 调用detach()：线程独立运行，确保不依赖即将销毁的资源\n3. 使用RAII包装：自定义ThreadRAII类，析构时join或detach\n\n【最佳实践】\n- 永远不要让joinable的thread对象被析构\n- 创建thread后尽快安排好join/detach\n- 异常安全的代码用RAII包装\n- 考虑用std::async代替（future不会terminate）"}, {"item": 38, "title": "关注不同线程句柄析构行为", "front": "std::thread和std::future的析构行为有什么不同？future的析构有什么特殊之处？", "back": "【std::thread的析构】\n- joinable → 调用std::terminate()，程序终止\n- unjoinable → 什么都不做\n\n【std::future的析构】\n- 正常情况下只是销毁future对象\n- 但有一个特殊情况：\n  \"由std::async启动的、对应共享状态的最后一个引用那个future\"\n  的析构函数会阻塞等待任务完成\n\n【future析构阻塞的条件（同时满足）】\n1. future是由std::async创建的（不是packaged_task或promise）\n2. 这是指向该共享状态的最后一个future\n3. 任务是用launch::async启动的（或默认策略且选了async）\n\n【为什么会这样】\n- 否则后台线程可能继续运行，但future已销毁\n- 可能访问已销毁的数据\n- 很多人认为这是一个设计缺陷\n\n【实际影响】\n- 看起来有并发，但实际上可能没有\n- 例：std::async(launch::async, doWork); // 返回值被忽略→立即析构→阻塞\n- 等于同步执行！\n- 如果不保存async的返回值，等于同步调用\n\n【对比总结】\n- thread：joinable析构→terminate（更差）\n- future：async创建的最后一个future析构→阻塞等待（也不好）\n\n【建议】\n- 明确管理future的生命周期\n- 不要让future在不期望的地方析构阻塞\n- 保存future变量到合适的作用域\n- 真正的\"启动后不管\"要用std::thread + detach"}, {"item": 39, "title": "考虑对于单次事件通信使用void的future和promise", "front": "如何用std::promise和std::future实现单次事件通信？有哪些方式？各有什么优缺点？", "back": "【问题场景】\n- 一个线程通知另一个线程某个事件发生了\n- 只发生一次的事件\n- 等待线程需要阻塞直到事件发生\n\n【方法1：条件变量 + 标志位 + mutex】\n缺点：需要三样东西；有虚假唤醒；有丢失唤醒问题\n\n【方法2：用std::promise<void>和std::future<void>】\n```cpp\npromise<void> p;\nauto fut = p.get_future();\n// 通知方：p.set_value();\n// 等待方：fut.wait();\n```\n\n【future/promise方式的优势】\n1. 没有虚假唤醒\n2. 没有丢失唤醒（set_value在wait之前也OK）\n3. 不需要mutex\n4. 代码更简洁\n5. 语义清晰：一次性通信\n\n【缺点】\n1. 只能用一次（一次性通信）\n2. 需要动态分配共享状态（一点开销）\n3. 不能多次通知\n\n【其他变体】\n- std::async + future\n- std::packaged_task\n\n【选择建议】\n- 单次事件通知：用promise/future（简单可靠）\n- 多次事件：用条件变量\n- 需要传递数据：用promise<T>/future<T>，T是数据类型\n- void类型用于纯通知，不带数据\n- 多等待者：用shared_future\n\n【注意事项】\n- promise只能set一次，第二次会异常\n- future只能get一次（get后就无效了）"}, {"item": 40, "title": "对于并发使用std::atomic，volatile用于特殊内存区", "front": "std::atomic和volatile有什么区别？各适用于什么场景？", "back": "【std::atomic】\n- 用于多线程并发访问的变量\n- 保证原子性：操作不可分割\n- 保证可见性：一个线程的修改对其他线程立即可见\n- 可以指定内存序\n- 例子：原子计数器、自旋锁、无锁数据结构\n\n【volatile】\n- 告诉编译器不要优化对该变量的读写\n- 不保证原子性\n- 不保证多线程可见性（C++中，区别于Java）\n- 主要用途：访问内存映射的硬件寄存器、特殊内存区域\n\n【核心区别对比】\n\n| 特性 | std::atomic | volatile |\n|------|------------|----------|\n| 原子操作 | 保证 | 不保证 |\n| 多线程可见性 | 保证 | 不保证（C++中） |\n| 阻止编译器优化 | 部分 | 完全阻止 |\n| 内存序控制 | 支持 | 不支持 |\n| 适用场景 | 并发编程 | 内存映射硬件 |\n\n【为什么会混淆】\n- Java和C#中volatile有内存语义\n- 但C++中volatile没有这些并发语义\n- C++的volatile只是针对编译器的优化提示\n\n【正确用法】\n- 多线程并发：使用std::atomic<T>\n- 内存映射I/O、硬件寄存器：使用volatile\n- 不要用volatile做多线程同步\n- 不要用std::atomic访问特殊内存\n\n【常见误解】\n- ❌ \"volatile变量的写入对其他线程立即可见\" → C++中不保证\n- ❌ \"volatile可以做原子操作\" → 不行，可能撕裂\n- ✅ std::atomic才是并发编程的正确选择"}, {"item": 41, "title": "对于那些可移动总是被拷贝的形参使用传值方式", "front": "什么时候函数参数应该用传值方式代替const引用+拷贝的方式？为什么？", "back": "【传统做法 vs 传值做法】\n\n传统（重载两个版本）：\n```cpp\nvoid setName(const string& name) { m_name = name; }\nvoid setName(string&& name) { m_name = move(name); }\n```\n- 左值一次拷贝，右值一次移动\n- 缺点：代码重复，两个函数要维护\n\n传值方式：\n```cpp\nvoid setName(string name) { m_name = move(name); }\n```\n- 左值：一次拷贝构造 + 一次移动赋值\n- 右值：一次移动构造 + 一次移动赋值\n- 优点：只写一个函数\n- 缺点：多一次移动（移动通常很便宜）\n\n【适用条件（同时满足）】\n1. 参数类型是可移动的（有高效移动操作）\n2. 参数总是被拷贝/移动到成员变量（函数内一定会存起来）\n3. 移动操作很便宜\n4. 不关心强异常安全之类的问题\n\n【不适用的情况】\n1. 参数不总是被拷贝（函数可能只使用但不存储）\n2. 移动操作不便宜（如std::array）\n3. 需要强异常安全保证\n4. 基类参数（会导致对象切片）\n\n【性能对比】\n- 左值：传值比const&版多一次移动（移动通常很便宜）\n- 右值：传值比&&版多一次移动\n- 对于移动便宜的类型，差异很小\n\n【建议】\n- 满足四个条件时用传值方式\n- 代码简洁性 vs 微小的性能开销\n- 先写清晰的代码，性能有问题再优化"}, {"item": 42, "title": "考虑就地创建而非插入", "front": "什么是就地创建（emplacement）？为什么优先用emplace_back等而非push_back等插入函数？", "back": "【什么是就地创建】\n- 在容器的内存中直接构造对象\n- 不需要创建临时对象然后拷贝/移动\n- 相关函数：emplace_back, emplace_front, emplace, try_emplace等\n\n【push_back vs emplace_back】\npush_back(\"hello\"):\n1. 构造临时string(\"hello\")\n2. 移动/拷贝到vector中\n3. 销毁临时对象\n\nemplace_back(\"hello\"):\n1. 直接在vector内存中构造string(\"hello\")\n2. 没有临时对象，没有移动/拷贝\n\n【emplace的优势】\n1. 性能更高：避免临时对象的构造和析构\n2. 可以直接传构造参数，不需要先构造对象\n3. 对于不可移动的类型（mutex、atomic），emplace是唯一方式\n\n【常见emplace函数】\n- vector/deque: emplace_back, emplace_front, emplace\n- list: emplace_back, emplace_front, emplace\n- map/set: emplace, try_emplace (C++17), emplace_hint\n\n【注意事项】\n1. explicit构造函数\n   - emplace直接构造，explicit的构造函数不会隐式转换\n   - 其实更安全\n\n2. C++17的try_emplace\n   - map的emplace如果键已存在，仍会构造value_type对象然后销毁\n   - try_emplace更智能：键不存在才构造值\n   - 性能更好\n\n【建议】\n- 默认优先使用emplace系列函数\n- 代码更简洁，性能可能更好\n- 对于大对象或不可移动对象，必须用emplace"}];
+
+const chapters = [
+  { num: 1, title: "类型推导 (Type Deduction)", range: [1, 4] },
+  { num: 2, title: "auto", range: [5, 6] },
+  { num: 3, title: "移步现代C++ (Moving to Modern C++)", range: [7, 17] },
+  { num: 4, title: "智能指针 (Smart Pointers)", range: [18, 22] },
+  { num: 5, title: "右值引用 · 移动语义 · 完美转发", range: [23, 30] },
+  { num: 6, title: "Lambda 表达式 (Lambda Expressions)", range: [31, 34] },
+  { num: 7, title: "并发 API (The Concurrency API)", range: [35, 40] },
+  { num: 8, title: "微调 (Tweaks)", range: [41, 42] }
+];
+
+function formatAnswer(text) {
+  // Convert structured text to HTML
+  let html = text
+    .replace(/\n\n/g, '</p><p class="para-gap"></p><p>')
+    .replace(/\n/g, '<br>');
+
+  // Bold block titles like 【...】
+  html = html.replace(/【([^】]+)】/g, '<div class="block-title">【$1】</div>');
+
+  // Convert lines starting with bullet/number
+  html = html.replace(/^(\d+)\.\s+/gm, '<li>');
+  html = html.replace(/^[-·•]\s+/gm, '<li>');
+
+  // Wrap consecutive <li> in <ul>
+  // Simpler approach: mark code inline
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  return '<p>' + html + '</p>';
+}
+
+function buildCardHTML(card) {
+  return `
+    <div class="card-wrapper" data-item="${card.item}" data-title="${card.title}" data-content="${(card.front + card.back).replace(/"/g, '&quot;')}">
+      <div class="card" onclick="this.classList.toggle('flipped')">
+        <div class="card-face card-front">
+          <span class="item-badge">Item ${card.item}</span>
+          <div class="item-title">${card.title}</div>
+          <div class="question">${card.front}</div>
+          <div class="flip-hint">点击查看答案 →</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="item-badge">Item ${card.item} · 答案</span>
+          <div class="answer-title">${card.title}</div>
+          <div class="answer-content">${formatAnswer(card.back)}</div>
+          <div class="flip-back-hint">← 点击返回正面</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function buildPage() {
+  const container = document.getElementById('chapters-container');
+  let html = '';
+
+  chapters.forEach(ch => {
+    const chapterCards = cards.filter(c => c.item >= ch.range[0] && c.item <= ch.range[1]);
+    html += `
+      <div class="chapter" data-chapter="${ch.num}">
+        <div class="chapter-title">
+          <span class="num">${ch.num}</span>
+          <span>${ch.title}</span>
+          <span class="count">${chapterCards.length} 张卡片</span>
+        </div>
+        <div class="cards-grid">
+          ${chapterCards.map(c => buildCardHTML(c)).join('')}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+// Flip all
+let allFlipped = false;
+document.getElementById('flipAllBtn').addEventListener('click', function() {
+  allFlipped = !allFlipped;
+  document.querySelectorAll('.card').forEach(card => {
+    if (allFlipped) card.classList.add('flipped');
+    else card.classList.remove('flipped');
+  });
+  this.textContent = allFlipped ? '↺ 全部正面' : '🔄 全部翻转';
+});
+
+// Reset
+document.getElementById('resetBtn').addEventListener('click', function() {
+  document.querySelectorAll('.card').forEach(card => card.classList.remove('flipped'));
+  allFlipped = false;
+  document.getElementById('flipAllBtn').textContent = '🔄 全部翻转';
+});
+
+// Shuffle
+document.getElementById('shuffleBtn').addEventListener('click', function() {
+  // Remove chapter grouping, show all in one shuffled grid
+  const container = document.getElementById('chapters-container');
+  const allCards = [...cards];
+  for (let i = allCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allCards[i], allCards[j]] = [allCards[j], allCards[i]];
+  }
+  container.innerHTML = `
+    <div class="chapter">
+      <div class="chapter-title">
+        <span class="num">🎲</span>
+        <span>随机排序</span>
+        <span class="count">${allCards.length} 张卡片</span>
+      </div>
+      <div class="cards-grid">
+        ${allCards.map(c => buildCardHTML(c)).join('')}
+      </div>
+    </div>
+  `;
+});
+
+// Search
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  const query = e.target.value.toLowerCase().trim();
+  const wrappers = document.querySelectorAll('.card-wrapper');
+  const chaptersEl = document.querySelectorAll('.chapter');
+
+  if (!query) {
+    wrappers.forEach(w => w.classList.remove('hidden'));
+    chaptersEl.forEach(c => c.classList.remove('hidden'));
+    return;
+  }
+
+  wrappers.forEach(w => {
+    const title = w.dataset.title.toLowerCase();
+    const content = w.dataset.content.toLowerCase();
+    const item = w.dataset.item;
+    const match = title.includes(query) || content.includes(query) || item.includes(query);
+    w.classList.toggle('hidden', !match);
+  });
+
+  // Hide chapters with no visible cards
+  chaptersEl.forEach(ch => {
+    const visible = ch.querySelectorAll('.card-wrapper:not(.hidden)').length;
+    ch.classList.toggle('hidden', visible === 0);
+  });
+});
+
+// Keyboard navigation
+let currentIndex = -1;
+document.addEventListener('keydown', function(e) {
+  const visibleCards = Array.from(document.querySelectorAll('.card-wrapper:not(.hidden) .card'));
+  if (visibleCards.length === 0) return;
+
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    currentIndex = (currentIndex + 1) % visibleCards.length;
+    visibleCards[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    visibleCards[currentIndex].style.outline = '2px solid var(--accent)';
+    setTimeout(() => { visibleCards[currentIndex].style.outline = ''; }, 500);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    currentIndex = (currentIndex - 1 + visibleCards.length) % visibleCards.length;
+    visibleCards[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    visibleCards[currentIndex].style.outline = '2px solid var(--accent)';
+    setTimeout(() => { visibleCards[currentIndex].style.outline = ''; }, 500);
+  } else if (e.key === ' ') {
+    e.preventDefault();
+    if (currentIndex >= 0 && currentIndex < visibleCards.length) {
+      visibleCards[currentIndex].classList.toggle('flipped');
+    }
+  }
+});
+
+buildPage();
+</script>
+
+</body>
+</html>

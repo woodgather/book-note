@@ -3,359 +3,299 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>学习之道 · Anki 精华卡片</title>
+<title>学习之道 · 精华闪卡（Anki）</title>
 <style>
-  :root { color-scheme: light; }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    color-scheme: light;
+    --paper: #F5F6F4;
+    --ink: #1C2530;
+    --ink-soft: #4A5563;
+    --line: #D9DDD6;
+    --card-face: #FFFFFF;
+    --card-back: #22304A;
+    --card-back-ink: #E8EDF5;
+    --accent: #2B4C7E;
+    --accent-soft: #E4EAF3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
-    background: #f4f1ea;
-    background-image: radial-gradient(#e5e0d3 0.8px, transparent 0.8px);
-    background-size: 22px 22px;
-    color: #2d2a24;
-    padding: 40px 28px 80px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+    line-height: 1.75;
+    padding: 40px 24px 64px;
   }
-  .container { max-width: 1180px; margin: 0 auto; }
+  .wrap { max-width: 1080px; margin: 0 auto; }
 
-  /* ---------- Header ---------- */
-  header { text-align: center; margin-bottom: 34px; }
-  .book-badge {
-    display: inline-block; background: #2d2a24; color: #f4f1ea;
-    font-size: 12px; letter-spacing: 3px; padding: 6px 16px;
-    border-radius: 999px; margin-bottom: 16px;
+  /* ---------- 页头 ---------- */
+  header { margin-bottom: 32px; }
+  .kicker {
+    font-size: 13px; letter-spacing: 0.12em; color: var(--accent);
+    margin-bottom: 10px;
   }
-  h1 { font-size: 34px; font-weight: 800; letter-spacing: 2px; }
-  h1 span { color: #b5541c; }
-  .subtitle { margin-top: 10px; color: #6f6a5e; font-size: 15px; line-height: 1.7; }
-  .stats { margin-top: 14px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-  .stat {
-    background: #fff; border: 1px solid #e2dccd; border-radius: 10px;
-    padding: 8px 18px; font-size: 13px; color: #55503f;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  h1 {
+    font-family: Georgia, "Songti SC", "SimSun", serif;
+    font-size: 34px; font-weight: 700; letter-spacing: 0.02em;
   }
-  .stat b { color: #b5541c; font-size: 16px; }
+  .intro {
+    margin-top: 12px; max-width: 46em; color: var(--ink-soft); font-size: 15px;
+  }
+  .intro b { color: var(--ink); font-weight: 600; }
 
-  /* ---------- Toolbar ---------- */
+  /* ---------- 工具条 ---------- */
   .toolbar {
-    display: flex; justify-content: center; align-items: center;
-    gap: 10px; flex-wrap: wrap; margin-bottom: 30px;
+    margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: 10px 8px; align-items: center;
   }
-  .toolbar button {
-    border: 1.5px solid #cfc8b6; background: #fff; color: #4a463c;
-    padding: 8px 18px; border-radius: 999px; font-size: 13.5px;
-    cursor: pointer; transition: all .18s ease; font-family: inherit;
+  .chip {
+    border: 1px solid var(--line); background: #fff; color: var(--ink-soft);
+    border-radius: 999px; padding: 6px 14px; font-size: 13.5px; cursor: pointer;
+    font-family: inherit; transition: all .18s ease;
   }
-  .toolbar button:hover { border-color: #b5541c; color: #b5541c; }
-  .toolbar button.active { background: #2d2a24; color: #f4f1ea; border-color: #2d2a24; }
-  .toolbar .flip-all { background: #b5541c; border-color: #b5541c; color: #fff; }
-  .toolbar .flip-all:hover { background: #9a4616; color: #fff; }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .toolbar .spacer { flex: 1; }
+  .btn {
+    border: 1px solid var(--ink); background: transparent; color: var(--ink);
+    border-radius: 6px; padding: 7px 15px; font-size: 13.5px; cursor: pointer;
+    font-family: inherit; transition: all .18s ease;
+  }
+  .btn:hover { background: var(--ink); color: #fff; }
+  .stats {
+    width: 100%; margin-top: 6px; font-size: 13px; color: var(--ink-soft);
+  }
 
-  /* ---------- Grid ---------- */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+  /* ---------- 卡片组 ---------- */
+  .deck {
+    margin-top: 30px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px;
   }
-  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } body { padding: 24px 14px 60px; } }
+  @media (max-width: 880px) { .deck { grid-template-columns: 1fr; } }
 
-  /* ---------- Flip Card ---------- */
-  .card-wrap { perspective: 1400px; }
-  .card {
-    position: relative; width: 100%; min-height: 280px;
-    cursor: pointer; transform-style: preserve-3d;
-    transition: transform .6s cubic-bezier(.4,.1,.2,1);
+  .card { perspective: 1400px; cursor: pointer; }
+  .card-inner {
+    display: grid; position: relative;
+    transform-style: preserve-3d;
+    transition: transform .55s cubic-bezier(.35,.15,.25,1);
   }
-  .card.flipped { transform: rotateY(180deg); }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
   .face {
-    position: absolute; inset: 0;
+    grid-area: 1 / 1;
     backface-visibility: hidden; -webkit-backface-visibility: hidden;
-    border-radius: 16px; padding: 26px 28px;
-    display: flex; flex-direction: column;
-    box-shadow: 0 2px 10px rgba(60,50,30,.09), 0 12px 28px rgba(60,50,30,.06);
-    overflow: hidden;
+    border-radius: 12px; padding: 26px 28px 22px;
+    display: flex; flex-direction: column; min-height: 250px;
   }
-  .face::before {
-    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+  .face-front {
+    background: var(--card-face);
+    border: 1px solid var(--line);
+    box-shadow: 0 1px 2px rgba(28,37,48,.05);
   }
-  .front { background: #fff; }
-  .back {
-    background: #fdfbf6; transform: rotateY(180deg);
-    border: 1.5px solid #e6dfcd;
+  .face-back {
+    background: var(--card-back); color: var(--card-back-ink);
+    transform: rotateY(180deg);
+    box-shadow: 0 6px 18px rgba(34,48,74,.25);
   }
-  .cat-chip {
-    align-self: flex-start; font-size: 11.5px; font-weight: 700;
-    letter-spacing: 1.5px; padding: 4px 12px; border-radius: 999px; margin-bottom: 14px;
-    background: #f1ece0; color: #6f6a5e;
-  }
-  .q-label, .a-label {
-    font-size: 11px; letter-spacing: 2.5px; color: #b3ac9a;
-    font-weight: 700; margin-bottom: 10px;
-  }
-  .front h3 {
-    font-size: 21px; line-height: 1.55; font-weight: 800; color: #26231d;
-    flex: 0 0 auto;
-  }
-  .front .hint {
-    margin-top: auto; font-size: 12px; color: #b9b29e;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .front .hint .dot {
-    width: 7px; height: 7px; border-radius: 50%; background: #d8d1bd;
-    animation: pulse 1.8s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+  .face-back a { color: #AFC6E8; }
 
-  .back .answer { font-size: 15px; line-height: 1.95; color: #3b382f; }
-  .back .answer b { color: #b5541c; }
-  .back .answer ul { margin: 6px 0 0 0; padding-left: 1.2em; }
-  .back .answer li { margin: 3px 0; line-height: 1.75; }
-  .back .tip {
-    margin-top: auto; padding-top: 12px; border-top: 1px dashed #ddd5c0;
-    font-size: 12.5px; color: #8d8776; line-height: 1.7;
+  .meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .chap {
+    font-size: 12px; color: var(--accent); background: var(--accent-soft);
+    padding: 3px 10px; border-radius: 4px; white-space: nowrap;
   }
-  .back .tip b { color: #6f6a5e; }
+  .face-back .chap { color: #F0D48A; background: rgba(240,212,138,.14); }
+  .theme { font-size: 12px; color: var(--ink-soft); }
+  .face-back .theme { color: #8FA3C2; }
 
-  /* category accent colors */
-  .c-mode .face::before { background: linear-gradient(90deg,#e8843c,#f2b56b); }
-  .c-chunk .face::before { background: linear-gradient(90deg,#3f8f7b,#7cc4ae); }
-  .c-illusion .face::before { background: linear-gradient(90deg,#b5541c,#d98e4a); }
-  .c-procrast .face::before { background: linear-gradient(90deg,#8a5aa8,#c1a0dc); }
-  .c-memory .face::before { background: linear-gradient(90deg,#3a7bbf,#83b6e8); }
-  .c-exam .face::before { background: linear-gradient(90deg,#c04a4a,#e79a9a); }
-  .c-rules .face::before { background: linear-gradient(90deg,#5d7a3a,#a3c47c); }
-  .c-mode .cat-chip { color:#e8843c; } .c-chunk .cat-chip { color:#3f8f7b; }
-  .c-illusion .cat-chip { color:#b5541c; } .c-procrast .cat-chip { color:#8a5aa8; }
-  .c-memory .cat-chip { color:#3a7bbf; } .c-exam .cat-chip { color:#c04a4a; }
-  .c-rules .cat-chip { color:#5d7a3a; }
+  .q, .a { flex: 1; }
+  .q {
+    font-size: 17.5px; font-weight: 600; line-height: 1.65;
+    font-family: Georgia, "Songti SC", "SimSun", serif;
+  }
+  .a { font-size: 14.5px; line-height: 1.85; }
+  .a em { font-style: normal; color: #F0D48A; font-weight: 600; }
 
-  .hidden { display: none; }
+  .hint {
+    margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--line);
+    font-size: 12px; color: #9AA3AD; display: flex; justify-content: space-between;
+  }
+  .face-back .hint { border-top-color: rgba(232,237,245,.18); color: #7C8FA9; }
 
-  footer { text-align: center; margin-top: 46px; color: #9a937e; font-size: 12.5px; line-height: 1.8; }
+  footer {
+    margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line);
+    font-size: 12.5px; color: var(--ink-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-inner { transition: none; }
+  }
 </style>
 </head>
 <body>
-<div class="container">
+<div class="wrap">
   <header>
-    <div class="book-badge">ANKI 精华卡片集</div>
-    <h1>学习之道 <span>·</span> 精华 30 卡</h1>
-    <div class="subtitle">A Mind for Numbers — 芭芭拉·奥克利<br>基于全书 18 章提炼的核心知识点,点击卡片翻面查看答案</div>
-    <div class="stats">
-      <div class="stat">共 <b id="total"></b> 张卡片</div>
-      <div class="stat">7 大主题分类</div>
-      <div class="stat" id="progressStat">已翻看 <b>0</b> 张</div>
+    <div class="kicker">A MIND FOR NUMBERS · 芭芭拉·奥克利</div>
+    <h1>学习之道 · 精华闪卡</h1>
+    <p class="intro">基于全书 18 章提炼的 <b>47 张 Anki 精华卡片</b>，按六大主题编排。<b>点击任意卡片即可翻面</b>查看答案；可用主题筛选，或一键全部翻开通读。</p>
+    <div class="toolbar" id="toolbar">
+      <button class="chip on" data-theme="all">全部主题</button>
+      <button class="chip" data-theme="mode">思维模式</button>
+      <button class="chip" data-theme="chunk">组块构建</button>
+      <button class="chip" data-theme="delay">对抗拖延</button>
+      <button class="chip" data-theme="memory">记忆与创造力</button>
+      <button class="chip" data-theme="coop">自学与协作</button>
+      <button class="chip" data-theme="exam">考试与总结</button>
+      <span class="spacer"></span>
+      <button class="btn" id="flipAll">全部翻开</button>
+      <button class="btn" id="shuffle">打乱顺序</button>
+      <div class="stats" id="stats"></div>
     </div>
   </header>
 
-  <div class="toolbar" id="filters">
-    <button data-cat="all" class="active">全部</button>
-    <button data-cat="c-mode">思维模式</button>
-    <button data-cat="c-chunk">组块</button>
-    <button data-cat="c-illusion">能力错觉</button>
-    <button data-cat="c-procrast">拖延习惯</button>
-    <button data-cat="c-memory">记忆</button>
-    <button data-cat="c-exam">考试</button>
-    <button data-cat="c-rules">法则清单</button>
-    <button class="flip-all" id="flipAll">全部翻面</button>
-  </div>
+  <main class="deck" id="deck"></main>
 
-  <div class="grid" id="grid"></div>
-
-  <footer>
-    内容提炼自《学习之道》(A Mind for Numbers)全书正文 · 适用于 Anki 间隔重复复习<br>
-    提示:先回忆,再翻面 —— 这正是本书推荐的"回想"学习法
-  </footer>
+  <footer>内容整理自《学习之道》（A Mind for Numbers）芭芭拉·奥克利 著，教育无边界字幕组 译，机械工业出版社 2016。卡片仅摘取核心观点，建议配合原书章节回顾。</footer>
 </div>
 
 <script>
-const cards = [
-  // ---------- 思维模式 ----------
-  { cat: "c-mode", chip: "思维模式",
-    front: "大脑的两种思维模式是什么?它们可以同时开启吗?",
-    back: "<b>专注模式</b>与<b>发散模式</b>,两者不可同时开启,只能切换交替使用。<ul><li>专注模式:理性、连贯、分解式地直接解决问题,与前额叶皮层相关,像手电筒的紧密光柱。</li><li>发散模式:思维漫游、连接相距甚远的想法,提供灵感与新视角。</li></ul>",
-    tip: "学习高手都会在两种模式间有节奏地切换:先专注攻克,再放松酝酿。" },
-  { cat: "c-mode", chip: "思维模式",
-    front: "专注模式的工作原理是什么?适合什么任务?",
-    back: "作者用<b>弹柱紧密的弹球机</b>类比:专注时思维小球在紧凑排布的弹柱间弹跳,沿你熟悉的老路子前进。适合解决<b>已掌握的、熟悉的概念</b>(如已学会的乘法、动词变位)。<br>风险:容易循规蹈矩,被困在错误的旧思路上。",
-    tip: "专注模式依赖已有神经通路——所以学新东西时它帮不上大忙。" },
-  { cat: "c-mode", chip: "思维模式",
-    front: "发散模式是什么?为什么苦思不得其解时'歇一会儿'反而有用?",
-    back: "发散模式像<b>弹柱松散的弹球机</b>:视野开阔,想法长途跋涉,把相距甚远的节点连接起来。它无法进行精确思考,却能提供解决新问题所需的灵感。<br>当你放松注意力、散步、洗澡、小睡时,发散模式在<b>后台悄悄处理</b>之前的难题,新顿悟会冷不防冒出来。",
-    tip: "越迫不及待想得到答案,越事与愿违——先让专注模式打好第一轮,再交棒给发散模式。" },
-  { cat: "c-mode", chip: "思维模式",
-    front: "什么是'定式效应'(Einstellung)?如何破除?",
-    back: "脑海中已有的、最初的念头会<b>阻碍你找到更好的想法或答案</b>(一叶障目)。Einstellung 是德语,意为'装置'——先入为主的概念会变成未来思维路上'装置'好的路障。<br>破法:察觉卡壳后<b>停下来,切换到发散模式</b>,让思维跳出旧路径,甚至推翻并'改过自新'你的直觉。",
-    tip: "在科学与数学中,直觉经常误导人;错误的旧观点必须接受再训练。" },
-  { cat: "c-mode", chip: "思维模式",
-    front: "开始阅读新章节前,应该先做什么?",
-    back: "先花一两分钟<b>快速浏览</b>:看小节标题、总结、图表和章尾思考题,而不是从第一行逐字读起。<br>这看似反直觉,但它能为思维'加力'——你正在创造小小的<b>神经挂钩</b>,让后续概念有处挂靠,理解会更轻松。",
-    tip: "这就是'思维转换':在透彻了解前先大致瞄一眼全局。" },
+const THEMES = {
+  mode:   "思维模式",
+  chunk:  "组块构建",
+  delay:  "对抗拖延",
+  memory: "记忆与创造力",
+  coop:   "自学与协作",
+  exam:   "考试与总结"
+};
 
-  // ---------- 组块 ----------
-  { cat: "c-chunk", chip: "组块",
-    front: "什么是'组块'(Chunk)?",
-    back: "通过<b>意义</b>把零散信息组合成的、经反复练习后可随时整体提取的<b>紧凑知识单元</b>。<br>就像把散落的文件压缩打包成 zip:不必逐条记住每个细节,只需一条逻辑主线,就能瞬间调出全部内容。解题高手脑中储存着大量这样的组块。",
-    tip: "组块让大脑腾出工作记忆空间去处理新问题。" },
-  { cat: "c-chunk", chip: "组块",
-    front: "搭建组块的三个步骤是什么?",
-    back: "<b>① 专注</b>:把注意力集中在新信息上,开启学习。<br><b>② 理解</b>:找出关键要义——理解力像强力胶,把基础记忆痕迹黏合在一起。<br><b>③ 练习</b>:反复演练,并获取背景信息,即知道何时、何地使用这个组块。",
-    tip: "背景信息让你不只'会做',还知道'什么时候用'。" },
-  { cat: "c-chunk", chip: "组块",
-    front: "课堂上听懂了、看懂了解法,就算学会了?",
-    back: "不够。仅'看懂'和'理解'不等于<b>能随时回想并独立完成</b>。灵光一现的小突破不是扎实的真本事——课堂上懂了、考前才发现又忘了的经历人人都有。<br>检验标准:合上书本<b>重做一遍</b>,在许久未接触后仍能完整解出每个步骤,组块才算真正形成。",
-    tip: "把一道题当成一首歌,在心里一遍遍'唱',直到它合成流畅的组块。" },
-  { cat: "c-chunk", chip: "组块",
-    front: "解决一道难题之后,最值得做的一件事是什么?",
-    back: "<b>重新排演一遍</b>(replay):把它当一首歌在心里再'唱'一遍,关注关键的转折步骤,而不是把时间立刻花在下一道题上。<br>一道题的深度消化,胜过十道题的浅尝辄止——这是快速增进专业知识的关键。",
-    tip: "确保许久没碰这道题后,你还能解答出每个步骤。" },
+const CARDS = [
+// ---------- 思维模式（第1–3章） ----------
+{ t:"mode", c:"第1章", q:"作者芭芭拉·奥克利从“数理挂科少女”到工程学教授，这段经历说明了什么？", a:"学习能力并非天生固定——她高中数理不及格，26岁才补三角学，最终拿到系统工程学博士。掌握方法、给自己充裕的练习时间，人人都能重塑自己的大脑和学习能力。" },
+{ t:"mode", c:"第1章", q:"为什么说每个人都具备学好数学的天生基础？", a:"每次接球、随节拍舞动、开车绕开路面的坑，我们都在无意识地做复杂心算。人天生拥有数理直觉，缺的只是数理学科独有的“语言”和知识背景。" },
+{ t:"mode", c:"第2章", q:"什么是专注模式（focused mode）？", a:"利用理性、连贯、分解的路径直接解决问题的思维模式，与额头正后方的前额叶皮层相关。像手电筒的紧密光柱——穿透力强，但只照亮熟悉的区域，思维容易沿着练习过的老路走。" },
+{ t:"mode", c:"第2章", q:"什么是发散模式（diffuse mode）？", a:"放松注意力、任思维漫游时启动的模式。它“弥散”于整个大脑、视野开阔，能把相距甚远的想法连接起来，为新概念和难题提供灵感——但无法进行精确复杂的思考。" },
+{ t:"mode", c:"第2章", q:"什么是定式效应（Einstellung）？如何破除？", a:"脑中已有的或最初的想法会阻碍你找到更好的解法——思维小球总在熟悉路径里打转，而真正的答案在“大脑另一边”。破法：放下问题，切换到发散模式，换个视角再回来。" },
+{ t:"mode", c:"第2章", q:"学习新章节前，为什么先花一两分钟快速浏览？", a:"先看小节标题、图表、小结和章末问题，能为思维“加力”——预先创造出小小的神经挂钩，之后深度阅读时概念更容易挂靠上去，把握概念更轻松。" },
+{ t:"mode", c:"第3章", q:"爱迪生和达利用什么技巧捕捉发散模式的灵感？", a:"手握小球打盹：入睡瞬间球落进盘子把他们惊醒，正好抓住似睡非睡时发散模式留下的思维碎片，乘势寻找新的解决方案。" },
+{ t:"mode", c:"第3章", q:"激发发散模式的“3B方法”是什么？", a:"睡觉（bed）、洗澡（bath）、坐公交（bus），三者任一即可。只要放下工作、转移注意力，发散模式就会乘虚而入，高屋建瓴地搜寻方案——独自散步也是许多名作家的万能灵药。" },
+{ t:"mode", c:"第3章", q:"工作记忆和长期记忆有什么区别？", a:"工作记忆像同时抛4个球的杂耍演员——容量仅约4个组块，需持续供能维持；长期记忆像幽深广阔的仓库，可容纳数十亿条信息，但包裹埋得太深难寻踪迹，需要定期回访。" },
+{ t:"mode", c:"第3章", q:"什么是间隔重复（spaced repetition）？", a:"把重复分散到多天：连续重复几天为一个阶段，阶段间休息一天，多来几轮。一晚重复20次，不如每天重复几次、坚持几周——就像砌砖墙要给泥浆留出干燥时间。" },
+{ t:"mode", c:"第3章", q:"睡眠如何促进学习？", a:"睡眠中脑细胞收缩、间隙变大，脑脊液冲走清醒时积攒的毒素；大脑还会排演知识难点、加固神经模型，清除琐碎记忆、增强重要部分。考前通宵会让一切准备付之东流。" },
 
-  // ---------- 能力错觉 ----------
-  { cat: "c-illusion", chip: "能力错觉",
-    front: "什么是'能力错觉'(Illusions of Competence)?常见来源有哪些?",
-    back: "大脑让你<b>误以为已经掌握了</b>学习内容,实际上并没有。常见来源:<ul><li>被动重复阅读笔记和课本</li><li>满眼尽是重点标记(划线让大脑'以为'记住了)</li><li>瞟一眼解题方法就觉得胸有成竹——这是学生最糟糕的错误</li></ul>",
-    tip: "大脑的某些部分无论你做得对错,都会让你自我感觉良好。" },
-  { cat: "c-illusion", chip: "能力错觉",
-    front: "为什么'回想'(Recall)比重读笔记有效得多?怎么做?",
-    back: "回想是主动重建知识,比重读更能暴露你到底记住了什么——<b>回想能力是学好知识的关键标志之一</b>。<br>做法:读完一页书,<b>看向别处</b>并回想主要观点;在去教室的路上、不同于原来学习空间的地方也试着回忆要点。没记住之前不要画重点,先回忆。",
-    tip: "闭卷能回忆出要点,才证明材料真正进入了大脑。" },
-  { cat: "c-illusion", chip: "能力错觉",
-    front: "自我测试为什么重要?抽认卡片(如 Anki)为什么是良师益友?",
-    back: "任何内容、任何时候都可以测试。<b>考试本身就是效果非凡的学习经历</b>——相同内容下,一小时的自测比一小时的重读学得更多、记得更牢。<br>抽认卡片迫使你主动回想而非被动辨认,直接击穿能力错觉。",
-    tip: "本书就是用 Anki 方式复习的绝佳对象:先回忆,再翻面。" },
-  { cat: "c-illusion", chip: "能力错觉",
-    front: "手写卡片为什么比打字更好?",
-    back: "手写时大脑构建的<b>神经结构更坚实</b>,能把知识'编译'(转换到神经记忆结构)到更深的记忆中;打字则容易沦为机械抄录。<br>在卡片一面手写问题、另一面手写答案,再用不同题型随机测试自己,效果最佳。",
-    tip: "别只用键盘——动笔的功夫就是记忆的功夫。" },
+// ---------- 组块构建（第4、7章） ----------
+{ t:"chunk", c:"第4章", q:"什么是组块（chunk）？", a:"根据意义把信息碎片组成的集合——如 p、o、p 组成单词 pop。像把一堆文件压缩成 .zip：一旦形成组块，它只占用工作记忆的一个位置，思路如丝带般流畅，腾出的空间可处理新信息。" },
+{ t:"chunk", c:"第4章", q:"构建组块的三个基本步骤是什么？", a:"① 专注——把注意力集中在信息上，一走神“注意力章鱼”的触手就抓不紧；② 理解——领会基本概念，理解力像强力胶把记忆痕迹黏合；③ 练习获取背景——知道何时该用、何时派不上用场，把组块放进宏观图景。" },
+{ t:"chunk", c:"第4章", q:"什么是能力错觉？有哪些典型表现？", a:"误以为自己已经学会。典型表现：反复被动重读、满书划重点、瞟一眼答案就说“我懂了”。看着书和答案产生的“理解”并不属于你——概念根本没有被编织进神经回路。" },
+{ t:"chunk", c:"第4章", q:"为什么“回想”比重读有效得多？", a:"提取练习（合上书回忆要点）本身会强化神经模型、加深学习并促进组块形成。《科学》期刊的研究显示：相同时间内，练习＋回想的效果远超重复阅读或画概念图。" },
+{ t:"chunk", c:"第4章", q:"划重点的正确姿势是什么？", a:"先训练自己找到主要观点，再把标记降到最少——一句话，最多一个自然段；更好的做法是在页边空白写下关键概念。手在动，不等于脑在记。" },
+{ t:"chunk", c:"第4章", q:"穿插学习法为什么优于过度学习？", a:"已经掌握还反复练同类题是“过度学习”，浪费时间，还会让人像只会用锤子的学徒——看什么都是钉子。把不同解题技巧的题目混着练，才能学会“何时用哪种方法”，这正是考试真正考的能力。" },
+{ t:"chunk", c:"第7章", q:"搭建强大组块的七步法是什么？", a:"① 在纸上全程解一道重难题（不看答案）；② 重做一次，格外注意关键步骤；③ 休息，让发散模式消化；④ 睡前再过一遍；⑤ 第二天再做，刻意练习最难的部分；⑥ 再添一道新题，重复1–5步；⑦ 走路锻炼时在脑中“主动重复”关键步骤。" },
+{ t:"chunk", c:"第7章", q:"什么是“测试效应”？", a:"测试本身就是强效的学习经历：它能改造已有知识体系、显著提升记忆，即使成绩不理想或没有反馈也同样有效——因为测试巩固了大脑中相关的神经模型。所以要时常给自己来场小测验。" },
+{ t:"chunk", c:"第7章", q:"什么是“知识坍塌”？遇到了该怎么办？", a:"学习中理解突然“倒退”，之前明白的东西变得扑朔迷离。这其实是大脑在重组知识、为构建更坚固的基础推敲材料，是自然的必经阶段——挺过困扰期，知识基础就会迈上一大步。" },
 
-  // ---------- 拖延习惯 ----------
-  { cat: "c-procrast", chip: "拖延习惯",
-    front: "拖延的本质是什么?为什么它特别伤数学和科学学习?",
-    back: "对任务进行<b>预判</b>时,大脑痛觉中枢被激活,产生真实的不适,于是我们逃去做让自己开心的事。<br>但关键是:<b>痛苦只是预感,一旦真正开始动手,不适很快消失</b>。<br>对数学尤其致命:抽象概念需要反复练习才能'硬化'神经模式,拖拉让组块根本无法固化——正如赛前最后一刻练不出肌肉。",
-    tip: "番茄工作法的关键作用之一,就是改变你对'信号'的习惯性反应。" },
-  { cat: "c-procrast", chip: "拖延习惯",
-    front: "习惯的运行回路是什么?如何利用它对抗拖延?",
-    back: "回路 = <b>信号 → 反应 → 奖励 → 信念</b>(书中称惯性的'小恶魔')。改造办法:<ul><li><b>识别信号</b>:地点、时间、感受、他人反应——手机提示音就是典型信号</li><li><b>改变反应</b>:如先定时工作10分钟再奖励自己上网</li><li><b>设置新奖励</b>:拿铁、电影、无愧疚的放松</li><li><b>强化信念</b>:相信自己能养成新习惯,与志同道合者同行</li></ul>",
-    tip: "只有当大脑开始期待新奖励,旧习惯才会被替换。" },
-  { cat: "c-procrast", chip: "拖延习惯",
-    front: "'关注过程,而非结果'是什么意思?为什么能治拖延?",
-    back: "<b>结果</b>是产出(要完成的20页报告),会引发痛苦感、触发拖延;<b>过程</b>是时间进程与习惯(如'我要工作20分钟')。<br>脑中的习惯部分('小恶魔')喜欢过程——因为它可以不动脑子跟着走。把注意力放在短时间的全力行动上,而非'还有多少没完成',就能顺利启动。",
-    tip: "不要在意某段时间里是否完成了作业,在意你是否真的投入了那段时光。" },
-  { cat: "c-procrast", chip: "拖延习惯",
-    front: "用番茄工作法专注的具体步骤?",
-    back: "<b>①</b> 关掉手机和电脑上所有提示音、闹铃<br><b>②</b> 设定 25 分钟计时器,期间尽可能勤奋工作<br><b>③</b> 时间一到,<b>给自己一个小小的、有趣的奖励</b><br><b>④</b> 一天安排几个这样的时段;固定学习的时间与地点,让学习变得自然而然",
-    tip: "25分钟内的辛苦专注 + 紧随其后的放松,是可持续的高效节奏。" },
-  { cat: "c-procrast", chip: "拖延习惯",
-    front: "一天中最应该先做哪件事?",
-    back: "<b>困难的事情最先做</b>——在最清醒的时候,去完成一天中最困难的任务。<br>先填饱肚子再启动高难度任务也很有用:确保开始瞬间就有足够意志力,并避免'找点吃的'之类的干扰。",
-    tip: "好钢用在刀刃上:早晨的意志力留给最难的硬骨头。" },
+// ---------- 对抗拖延（第5、6、8、9章） ----------
+{ t:"delay", c:"第5章", q:"为什么说拖延像“服用微量砒霜”？", a:"一次拖延看似无害，临阵磨枪的小成功甚至让人心存侥幸；但日积月累会打不牢神经基础、蚕食自信，最终泥足深陷。拖延是一点一点服下的毒，等察觉时悔之晚矣。" },
+{ t:"delay", c:"第5章", q:"拖延的痛苦到底来自哪里？", a:"来自“预感”本身：想到不喜欢的事就会激活大脑的痛觉中枢，于是逃向更愉快的事。而一旦真正开始做，痛苦就消失了——对任务的恐惧比任务本身消耗更多的时间和能量。" },
+{ t:"delay", c:"第6章", q:"习惯的四个组成部分是什么？", a:"① 信号——触发出窍状态的导火索（地点、时间、感受、他人反应、刚发生的事）；② 反应程序——接到信号后的惯性反应；③ 奖励机制——习惯因迅速带来愉悦而延续；④ 信念——“我改不掉”的自我认定反过来支撑着习惯。" },
+{ t:"delay", c:"第6章", q:"改掉拖延，哪个环节才真正需要意志力？", a:"只有“改变对信号的反应”这一个压力点需要意志力。其余都可借力：移除诱惑（手机交给家人保管）、制订新计划、给自己新奖励、与抱有“我能行”信念的同伴相处——不要把意志力浪费在硬扛上。" },
+{ t:"delay", c:"第6章", q:"番茄工作法怎么用？为什么有效？", a:"25分钟计时、期间屏蔽一切干扰、到点就停下来奖励自己。它有效是因为把关注点从令人痛苦的“结果”（做完作业）转移到轻松跟随的“过程”（专注25分钟）；轻度时间压力还能训练考试时的抗压能力。" },
+{ t:"delay", c:"第6章", q:"什么是“心理对照”？", a:"把现在的状态（甚至不堪回首的过去）与期望达成的理想状态做对比，并在工作空间贴上梦想图景提醒自己。这种对比能为发散模式蓄力——你能从眼前的现实出发，改变现实。" },
+{ t:"delay", c:"第8章", q:"行动日志怎么用？为什么睡前写第二天的清单？", a:"每周写一次关键任务清单，每晚基于它写出次日5–10项合理任务，完成一项划掉一项。睡前写计划能让潜意识提前“加工”任务；写下来的待办也会从工作记忆的4个入口里释放出来。" },
+{ t:"delay", c:"第8章", q:"为什么“最困难的事要最先做”？", a:"清晨是脑力和意志力最充沛的时刻。先啃下最困难、最厌烦的任务，效率最高，也避免它被拖到深夜变成压力源——睁开眼的第一件事就做完它。" },
+{ t:"delay", c:"第9章", q:"专家和解题新手最大的差别是什么？", a:"研究显示：数学专家解题前平均先用45秒判断问题背后的基本物理原理，而新手30秒就凭表面表象匆匆动笔，结果常常出错。“驻足与回顾”给了大脑检索组块资料库、把问题与宏观层面联系起来的时间。" },
 
-  // ---------- 记忆 ----------
-  { cat: "c-memory", chip: "记忆",
-    front: "工作记忆和长期记忆有什么区别?",
-    back: "<b>工作记忆</b> = 只能一次扔四个球的杂耍演员(如 RAM):容量有限(约4个组块),信息极易散失,注意力一转移就丢。<br><b>长期记忆</b> = 大仓库(如硬盘):可储存大量知识,但需要<b>定期回访</b>才能保鲜。",
-    tip: "把信息从工作记忆转存到长期记忆,需要时间和技巧——间隔重复正是为此而生。" },
-  { cat: "c-memory", chip: "记忆",
-    front: "间隔重复(Spaced Repetition)为什么有效?怎样安排?",
-    back: "把要记的内容<b>重复几天为一阶段,两阶段间休息一天,多来几轮</b>,延长整个练习过程。<br>研究证明:想牢牢钉进记忆,一晚上重复 20 次,远不如<b>每天重复几次、坚持数天甚至数周</b>。<br>原理如砌墙:泥浆(神经连接)需要时间干燥固化,记忆才能成型。",
-    tip: "这正是 Anki 背后的核心原理。" },
-  { cat: "c-memory", chip: "记忆",
-    front: "睡眠对学习为什么至关重要?",
-    back: "睡眠中,大脑会<b>把解题技巧拼凑在一起</b>,并对你睡前习得的内容反复演练;同时清除清醒时堆积的毒素。<br>缺觉的大脑无法正常进行思维联结,考前通宵会让所有准备大打折扣。疲劳时,最好的办法就是<b>直接去睡觉</b>,第二天用饱满的大脑继续。",
-    tip: "备考检查清单最后一条:'考前是否保证合理睡眠?'——答'否',则前 11 条都可能作废。" },
-  { cat: "c-memory", chip: "记忆",
-    front: "什么是记忆宫殿法?怎么用?",
-    back: "回想一个你<b>熟悉的空间</b>(家里布局、上学路线、常去的餐馆),把它当成视觉记事本来存放要记的概念形象。<br>例:记购物单——门前立着一大瓶牛奶,面包掉在沙发上,破鸡蛋的蛋清从咖啡桌边滴下来。然后想象自己走过这个空间,沿途'看见'它们。",
-    tip: "对记忆互不关联的条目(购物单、矿物硬度表)特别管用。" },
-  { cat: "c-memory", chip: "记忆",
-    front: "让记忆更牢固的图像化技巧是什么?",
-    back: "把抽象概念转成<b>生动、滑稽、调动多感官的形象</b>或比喻:<ul><li>电流就像水流</li><li>想象骡子飞翔时,还能'闻到'它、'感受'风、'听到'风声</li></ul>激发的感官联结越多,越容易回想;画面越滑稽,效果越好。",
-    tip: "形象比喻不只是记忆术,更是理解新概念的桥梁。" },
-  { cat: "c-memory", chip: "记忆",
-    front: "遇到难懂的概念,费曼式的检验方法是什么?",
-    back: "问自己:<b>怎样解释才能让 10 岁小孩都明白?</b>用最简单的语言重述复杂概念(费曼对晦涩的数学家正是这么做的)。<br>不要只想,<b>要大声说出来或写下来</b>——嘴上说、手上写,能把知识编译到更深的记忆中。类比是理解的最强工具之一。",
-    tip: "简化,是世界上最擅长思考的人长久以来在用的窍门。" },
+// ---------- 记忆与创造力（第10–14章） ----------
+{ t:"memory", c:"第10章", q:"什么是记忆宫殿法？", a:"回想一个熟悉的空间（自己家、上学的路），把要记的概念变成夸张的形象“存放”在其中的各个位置。它调用大脑天生的视觉空间记忆系统——熟练后能记住四五十项清单中95%以上的内容。" },
+{ t:"memory", c:"第10章", q:"为什么视觉图像和助记形象特别有效？", a:"图像与右脑视觉中枢直接相连，画面越滑稽夸张越好记。学习时调动视觉、听觉、触觉等多个脑区，能织出更密的记忆之网，即使在考试压力下也不易遗忘。" },
+{ t:"memory", c:"第11章", q:"怎样用比喻或类比理解难懂的概念？", a:"为概念量身打造形象类比：电流像水流、电压像压力、极限像永远差一步撞线的运动员。类比把新概念挂到已有神经结构上——哪怕不完美，也能当脚手架，随理解加深再修改甚至抛弃。" },
+{ t:"memory", c:"第11章", q:"记忆卡片（如 Anki）的正确用法是什么？", a:"手写写下问题与答案（手写比打字构建的神经结构更坚实），看着正面回忆背面，想得起就放到一边；隔天再来，记忆加深后逐步拉长间隔——从几天到几个月。忘记的内容会被“代谢吸血鬼”吸走。" },
+{ t:"memory", c:"第11章", q:"体育锻炼对学习有什么额外好处？", a:"规律锻炼能实质性提升记忆力和学习能力——促进与记忆相关脑区中新生神经元的形成，并生成新的信号通路。有氧运动和力量训练都有效。" },
+{ t:"memory", c:"第12章", q:"为什么工作记忆小反而可能有利于创造力？", a:"工作记忆小的人更难把原有思路“锁死”，大脑其他部分（感觉皮层、梦与创意的源头）更容易向它输入信息，新旧知识更易创意结合。不少象棋精英玩家智商平平，靠多练超越了更高智商的对手。" },
+{ t:"memory", c:"第13章", q:"诺奖得主卡哈尔的成长经历说明了什么？", a:"这位曾被锁进牢房的“问题少年”并非天才：记不住、反应慢、措辞不清。他成功的关键是毅力、灵活应变和谦虚认错——“努力可以弥补欠缺的天赋，甚至创造天才”。大脑可以通过改变思维方式被后天塑造。" },
+{ t:"memory", c:"第14章", q:"什么是费曼技巧？", a:"用10岁小孩能听懂的语言和简单类比去解释复杂概念，并大声说出来或写下来。有趣的是：理解常常是解释的产物，而非前提——这也是老师“第一次真正理解教材，是在教学生的时候”的原因。" },
+{ t:"memory", c:"第14章", q:"什么是迁移（transfer）？", a:"把所学从一个知识背景应用到别处的能力——像学会一门外语后，第二门外语更轻松。围绕抽象概念的组块精髓学数学（而非绑定单一应用场景），才更容易把知识迁移到新领域。" },
+{ t:"memory", c:"第14章", q:"爱因斯坦、麦克林托克共同使用的“秘技”是什么？", a:"拟人化与自导自演：爱因斯坦想象自己是光子，并追问第二个光子会看到什么；麦克林托克把染色体当成朋友。给抽象概念赋予生命，能让仅靠公式无法获得的直觉浮现出来。" },
 
-  // ---------- 考试 ----------
-  { cat: "c-exam", chip: "考试",
-    front: "考试中的'由难入简法'怎么做?",
-    back: "<b>①</b> 试卷发下先快速浏览,找到看起来最难的题<br><b>②</b> <b>先做这道难题</b>,但一旦一两分钟毫无进展或感觉想偏,立刻抽身<br><b>③</b> 跳去做简单题,能做多少做多少<br><b>④</b> 再回头攻难题——此时发散模式已在后台为难题工作,思路常会变得清晰",
-    tip: "像高效厨师:等牛排煎熟的同时切番茄、给汤调味——让大脑同时处理多个想法。" },
-  { cat: "c-exam", chip: "考试",
-    front: "'由难入简法'为什么有效?它还能防止什么?",
-    back: "难题迫切需要发散模式提供创造力,而启动发散模式的前提是<b>把难题装进大脑后转移注意力</b>。先做难题再跳走,恰好完成了这个'装填-启动'过程。<br>它还能有效防止<b>思维定式</b>:让你有机会多次、多角度审视问题,不至于在错误思路上一条路走到黑。",
-    tip: "很多人出考场才想起答案,就是因为放弃做题那一刻才启动了发散模式——为时已晚。" },
-  { cat: "c-exam", chip: "考试",
-    front: "备考检查清单中,最容易被忽视却最重要的一项?",
-    back: "<b>考前保证合理睡眠</b>。菲尔德教授的备考检查清单共 12 问(是否读懂课本、是否与同学核对、是否请教助教、是否通读指导手册……),而最后一问是睡眠——如果答'否',前面 1~11 的答案可能都不重要了。",
-    tip: "考前没睡好,之前做怎样的努力也无济于事。" },
+// ---------- 自学与协作（第15、16章） ----------
+{ t:"coop", c:"第15章", q:"为什么说自学是一种最深入的学习方式？", a:"研究显示，只有学生主动参与课题、亲手剖析材料，学习效果才最好；以老师为中心会让学习者产生“无助感”，把失败归咎于老师。而且在学习中，毅力往往比智力更重要。" },
+{ t:"coop", c:"第16章", q:"中风病人“弗雷德”的案例揭示了什么？", a:"右脑负责质疑现状、从全局“代入现实情境”检查错误；左脑则坚持事物原本的样子、解释并维护自己的结论。一口气做完试卷从不回头检查，等于放弃了使用一部分大脑——“万分肯定没问题”可能正是左脑的过度自信。" },
+{ t:"coop", c:"第16章", q:"为什么波尔总在会面前单独找费曼讨论？", a:"因为在几百名杰出物理学家中，只有费曼不被波尔的权威吓倒，敢指出他想法的愚蠢之处。好学习小组需要批判性的伙伴——对事不对人的坦诚批评，比一团和气的“安全环境”更能激发创造力。" },
 
-  // ---------- 法则清单 ----------
-  { cat: "c-rules", chip: "法则清单",
-    front: "书中总结的 10 个好学习法则是什么?",
-    back: "<ul><li>1 运用回想 · 2 自我测试 · 3 对问题进行组块</li><li>4 间隔开重复动作 · 5 交替使用不同解题技巧</li><li>6 注意休息 · 7 解释性提问与简单类比</li><li>8 专注(番茄25分钟) · 9 困难的事情最先做</li><li>10 心理对照:想象通过学习能成就的那个自己</li></ul>",
-    tip: "这 10 条是全书核心观点的'组块精华',值得定期回想。" },
-  { cat: "c-rules", chip: "法则清单",
-    front: "书中警示的 10 个坏学习法则是什么?",
-    back: "<ul><li>1 被动重复阅读 · 2 满眼尽是重点标记</li><li>3 瞟一眼解法就觉得胸有成竹 · 4 火烧眉毛才开始学</li><li>5 已会解法仍反复做同一题型 · 6 与朋友把学习变闲聊</li><li>7 做题前忽视读课本 · 8 有疑问却不求助</li><li>9 时常分心还以为能学深入 · 10 睡眠不足</li></ul>",
-    tip: "这些做法浪费时间,还会让你'以为'自己真的在学习。" },
-  { cat: "c-rules", chip: "法则清单",
-    front: "为什么'交替学习'(Interleaving)优于反复做同一题型?",
-    back: "练习期间只用一种解题技巧,一段时间后你只是在<b>模仿自己之前的老路子</b>。<br>应把不同解题方法<b>混合使用在不同题型</b>上,才能同时知道'如何做'和'何时用'。课本一般不会这样编排,需要你主动去做;做错题后要回顾犯错原因并重新解答。",
-    tip: "只练控球,是打不好篮球赛的。" },
-  { cat: "c-rules", chip: "法则清单",
-    front: "'心理对照'是什么?如何用它维持学习动力?",
-    back: "想象<b>过去的你</b>,对比<b>通过学习能够成就的那个自己</b>。<br>做法:在工作区域贴一张图或几句话来提醒自己的梦想,缺乏动力时看看它们。<br>配合'坚持不懈但用对地方':不在同一道题上无限兜圈子,却要纵览全局、旷日持久地坚持下去。",
-    tip: "幸运女神只眷顾努力的人——但努力要配合聪明的方法。" },
+// ---------- 考试与总结（第17、18章） ----------
+{ t:"exam", c:"第17章", q:"什么是“由难入简”考试法？", a:"发卷后先浏览全卷，从看起来最难的题入手；一旦一两分钟没有进展，立刻抽身转做简单题。难题已被装进大脑，发散模式在后台运转——回头再攻难题时思路常已豁然开朗，还能有效防止思维定式。" },
+{ t:"exam", c:"第17章", q:"考试焦虑发作时怎么办？", a:"① 换一种解读：把“我好怕这次考试”改成“这次考试让我很兴奋，我要做到最好”；② 腹式深呼吸——手放腹部慢慢吸气让手被顶起，提前几周每天练一两分钟；③ 考前写下焦虑的想法，能释放负面思绪、减少干扰。" },
+{ t:"exam", c:"第17章", q:"备考检查清单里如果只能保住一项，是什么？", a:"考前一晚的合理睡眠。睡眠不足时毒素在脑中堆积、破坏神经连接，大脑无法完成正常的思维联结——之前的一切准备都可能因此付之东流。" },
+{ t:"exam", c:"第18章", q:"10个好学习法则是什么？", a:"运用回想；自我测试；对问题进行组块；间隔开重复；交替使用不同解题技巧并回顾错题；注意休息；用解释性提问和简单类比；25分钟专注；困难的事最先做；心理对照。" },
+{ t:"exam", c:"第18章", q:"10个坏学习法则是什么？", a:"被动重复阅读；满眼重点标记；瞟一眼解法就觉得会了；火烧眉毛才开始学；已会仍反复做同一题型；小组学习变闲聊；做题前不读课本；有疑问却不去求助；时常分心；睡眠不足。" }
 ];
 
-let flippedCount = 0;
-const grid = document.getElementById("grid");
-document.getElementById("total").textContent = cards.length;
+const deck = document.getElementById("deck");
+const stats = document.getElementById("stats");
+let currentTheme = "all";
+let deckCards = CARDS.slice();
+let flipAllOn = false;
 
-cards.forEach((c, i) => {
-  const wrap = document.createElement("div");
-  wrap.className = "card-wrap " + c.cat;
-  wrap.dataset.cat = c.cat;
-  wrap.innerHTML = `
-    <div class="card">
-      <div class="face front">
-        <span class="cat-chip">${c.chip}</span>
-        <div class="q-label">QUESTION · ${String(i+1).padStart(2,"0")}</div>
-        <h3>${c.front}</h3>
-        <div class="hint"><span class="dot"></span>点击卡片翻面查看答案</div>
-      </div>
-      <div class="face back">
-        <span class="cat-chip">${c.chip}</span>
-        <div class="a-label">ANSWER · ${String(i+1).padStart(2,"0")}</div>
-        <div class="answer">${c.back}</div>
-        <div class="tip"><b>💡 要点</b> — ${c.tip}</div>
-      </div>
-    </div>`;
-  wrap.querySelector(".card").addEventListener("click", function(){
-    this.classList.toggle("flipped");
-    if (this.classList.contains("flipped")) { flippedCount++; document.getElementById("progressStat").innerHTML = `已翻看 <b>${flippedCount}</b> 张`; }
+function render() {
+  deck.innerHTML = "";
+  let shown = 0;
+  deckCards.forEach((card, i) => {
+    if (currentTheme !== "all" && card.t !== currentTheme) return;
+    shown++;
+    const el = document.createElement("div");
+    el.className = "card";
+    el.innerHTML = `
+      <div class="card-inner">
+        <div class="face face-front">
+          <div class="meta"><span class="chap">${card.c}</span><span class="theme">${THEMES[card.t]}</span></div>
+          <div class="q">${card.q}</div>
+          <div class="hint"><span>点击翻面查看答案</span><span>${shown}</span></div>
+        </div>
+        <div class="face face-back">
+          <div class="meta"><span class="chap">答案</span><span class="theme">${card.c} · ${THEMES[card.t]}</span></div>
+          <div class="a">${card.a}</div>
+          <div class="hint"><span>点击返回问题</span></div>
+        </div>
+      </div>`;
+    if (flipAllOn) el.classList.add("flipped");
+    el.addEventListener("click", () => {
+      el.classList.toggle("flipped");
+      updateStats();
+    });
+    deck.appendChild(el);
   });
-  grid.appendChild(wrap);
+  updateStats();
+}
+
+function updateStats() {
+  const total = deck.children.length;
+  const flipped = deck.querySelectorAll(".card.flipped").length;
+  stats.textContent = `共 ${total} 张卡片 · 已翻 ${flipped} 张`;
+}
+
+document.getElementById("toolbar").addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+  chip.classList.add("on");
+  currentTheme = chip.dataset.theme;
+  render();
 });
 
-// filters
-document.getElementById("filters").addEventListener("click", e => {
-  if (e.target.tagName !== "BUTTON" || e.target.id === "flipAll") return;
-  document.querySelectorAll("#filters button[data-cat]").forEach(b => b.classList.remove("active"));
-  e.target.classList.add("active");
-  const cat = e.target.dataset.cat;
-  document.querySelectorAll(".card-wrap").forEach(w => {
-    w.classList.toggle("hidden", cat !== "all" && w.dataset.cat !== cat);
-  });
+document.getElementById("flipAll").addEventListener("click", e => {
+  flipAllOn = !flipAllOn;
+  e.target.textContent = flipAllOn ? "全部收起" : "全部翻开";
+  document.querySelectorAll(".card").forEach(c =>
+    c.classList.toggle("flipped", flipAllOn));
+  updateStats();
 });
 
-// flip all / unflip all
-const flipAllBtn = document.getElementById("flipAll");
-flipAllBtn.addEventListener("click", () => {
-  const visible = [...document.querySelectorAll(".card-wrap:not(.hidden)")].map(w => w.querySelector(".card"));
-  const shouldFlip = visible.some(c => !c.classList.contains("flipped"));
-  visible.forEach(c => c.classList.toggle("flipped", shouldFlip));
-  flipAllBtn.textContent = shouldFlip ? "全部翻回" : "全部翻面";
+document.getElementById("shuffle").addEventListener("click", () => {
+  for (let i = deckCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deckCards[i], deckCards[j]] = [deckCards[j], deckCards[i]];
+  }
+  render();
 });
+
+render();
 </script>
 </body>
 </html>

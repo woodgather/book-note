@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C和指针 · Anki精华卡片</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", Arial, sans-serif;
+  background: #f5f2eb;
+  color: #333;
+  line-height: 1.7;
+  padding-bottom: 40px;
+}
+
+/* 顶部 */
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid #e0dbd0;
+  padding: 18px 24px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.topbar h1 {
+  font-size: 22px;
+  color: #2c2a26;
+  display: inline-block;
+}
+.topbar .sub {
+  font-size: 13px;
+  color: #999;
+  margin-left: 10px;
+  font-weight: normal;
+}
+.toolbar {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.toolbar input {
+  padding: 7px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 13px;
+  width: 220px;
+  outline: none;
+}
+.toolbar input:focus { border-color: #c17817; }
+.btn {
+  padding: 7px 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  color: #666;
+}
+.btn:hover { border-color: #c17817; color: #8b5a10; }
+.btn.primary { background: #c17817; border-color: #c17817; color: #fff; }
+.btn.primary:hover { background: #a8680f; color: #fff; }
+#countInfo { font-size: 12px; color: #888; margin-left: 8px; }
+
+/* 章节筛选 */
+.chapters {
+  margin: 12px 0 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-height: 72px;
+  overflow-y: auto;
+}
+.chapters span {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #faf8f3;
+  border: 1px solid #e5e0d0;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #888;
+  cursor: pointer;
+}
+.chapters span:hover { border-color: #c17817; color: #8b5a10; }
+.chapters span.active { background: #c17817; border-color: #c17817; color: #fff; }
+
+/* 卡片容器 - 2列 */
+.card-grid {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 800px) {
+  .card-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== 翻转卡片核心样式 ===== */
+.flip-card {
+  background-color: transparent;
+  min-height: 280px;
+  perspective: 1200px;
+  cursor: pointer;
+}
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  border-radius: 10px;
+}
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 10px;
+  padding: 18px 20px 20px;
+  border: 1px solid #e0dbd0;
+  display: flex;
+  flex-direction: column;
+}
+.flip-card-front {
+  background: #fff;
+}
+.flip-card-back {
+  background: #fdfaf3;
+  transform: rotateY(180deg);
+  border-color: #e5dcc8;
+}
+
+/* 卡片正面内容 */
+.card-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #c17817;
+  background: #f5e6cc;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  align-self: flex-start;
+}
+.card-num {
+  font-size: 12px;
+  color: #bbb;
+  font-family: Consolas, Monaco, monospace;
+  float: right;
+}
+.card-question {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #2c2a26;
+  margin-top: 6px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #e5e0d0;
+  font-size: 12px;
+  color: #999;
+}
+.diff { color: #ccc; }
+.diff .on { color: #c17817; }
+
+/* 卡片背面内容 */
+.alabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #8b5a10;
+  margin-bottom: 8px;
+}
+.answer {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #333;
+  overflow-y: auto;
+  max-height: 330px;
+  flex: 1;
+  padding-right: 4px;
+}
+.answer p { margin-bottom: 8px; }
+.answer p:last-child { margin-bottom: 0; }
+.answer ul, .answer ol { padding-left: 22px; margin: 6px 0; }
+.answer li { margin-bottom: 5px; }
+.answer ul ul, .answer ol ul { padding-left: 18px; margin: 4px 0; }
+
+.answer code {
+  font-family: Consolas, Monaco, "Courier New", monospace;
+  font-size: 13px;
+  background: #f0ead8;
+  border: 1px solid #e5dcc0;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #8b5a10;
+}
+.answer pre {
+  font-family: Consolas, Monaco, "Courier New", monospace;
+  font-size: 12.5px;
+  background: #f7f4e8;
+  border: 1px solid #e5dcc0;
+  padding: 10px 12px;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 8px 0;
+  line-height: 1.6;
+  color: #444;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.answer pre code { background: none; border: none; padding: 0; color: inherit; }
+.answer .kw { background: #f5e6cc; padding: 1px 4px; border-radius: 3px; font-weight: 600; color: #8b5a10; }
+.answer b, .answer strong { color: #2c2a26; font-weight: 600; }
+
+.answer table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 12.5px;
+}
+.answer table th, .answer table td {
+  border: 1px solid #e5dcc0;
+  padding: 5px 8px;
+  text-align: left;
+}
+.answer table th { background: #f5e6cc; color: #8b5a10; font-weight: 600; }
+
+.answer::-webkit-scrollbar { width: 5px; }
+.answer::-webkit-scrollbar-track { background: transparent; }
+.answer::-webkit-scrollbar-thumb { background: #d9d3c4; border-radius: 3px; }
+
+.flip-card:hover .flip-card-inner {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+/* 底部 */
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 12px;
+  color: #aaa;
+  border-top: 1px solid #e0dbd0;
+  margin-top: 20px;
+}
+
+mark { background: #ffe082; padding: 0 2px; border-radius: 2px; }
+
+.no-result {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 50px;
+  color: #aaa;
+  display: none;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>C和指针 <span class="sub">· Anki精华卡片集 · 55张</span></h1>
+  <div style="font-size:12px;color:#888;margin-top:4px;">Kenneth A. Reek · 人民邮电出版社 · 点击卡片翻转答案 · 按 F 键全部翻转</div>
+  <div class="toolbar">
+    <input type="text" id="searchBox" placeholder="搜索问题或答案...">
+    <button class="btn primary" onclick="flipAll()">↻ 全部翻转</button>
+    <span id="countInfo">共 55 张</span>
+  </div>
+  <div class="chapters" id="chapBar">
+    <span class="active" data-ch="all">全部</span>
+    <span data-ch="第1章">第1章 快速上手</span>
+    <span data-ch="第2章">第2章 基本概念</span>
+    <span data-ch="第3章">第3章 数据</span>
+    <span data-ch="第4章">第4章 语句</span>
+    <span data-ch="第5章">第5章 操作符和表达式</span>
+    <span data-ch="第6章">第6章 指针</span>
+    <span data-ch="第7章">第7章 函数</span>
+    <span data-ch="第8章">第8章 数组</span>
+    <span data-ch="第9章">第9章 字符串、字符和字节</span>
+    <span data-ch="第10章">第10章 结构和联合</span>
+    <span data-ch="第11章">第11章 动态内存分配</span>
+    <span data-ch="第12章">第12章 使用结构和指针</span>
+    <span data-ch="第13章">第13章 高级指针话题</span>
+    <span data-ch="第14章">第14章 预处理器</span>
+    <span data-ch="第15章">第15章 输入/输出函数</span>
+    <span data-ch="第16章">第16章 标准函数库</span>
+    <span data-ch="第17章">第17章 经典抽象数据类型</span>
+    <span data-ch="第18章">第18章 运行时环境</span>
+    <span data-ch="综合篇">综合篇</span>
+  </div>
+</div>
+
+<div class="card-grid" id="cardGrid">
+
+<!-- ========== 卡片 001 ========== -->
+<div class="flip-card" data-ch="第1章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第1章 · 快速上手</span>
+      <span class="card-num">#001 <span class="diff"><span class="on">★</span>★★★★</span></span>
+      <div class="card-question">C程序编译的基本流程是什么？从源代码到可执行文件经历哪些步骤？</div>
+      <div class="card-foot"><span>入门基础</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>C程序从源代码到可执行文件主要经历4个步骤：</p>
+        <ol>
+          <li><b>预处理（Preprocessing）</b>：处理 #define、#include 等指令，执行文本替换和删除注释</li>
+          <li><b>编译（Compilation）</b>：将源代码翻译成汇编语言代码</li>
+          <li><b>汇编（Assembly）</b>：将汇编代码转换成机器指令（目标代码 .o/.obj）</li>
+          <li><b>链接（Linking）</b>：将多个目标文件和库函数捆绑在一起，形成完整的可执行程序</li>
+        </ol>
+        <p>链接器同时引入标准C函数库中被程序用到的函数，也可以链接程序员的个人程序库。</p>
+      </div>
+      <div class="card-foot"><span>第1章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 002 ========== -->
+<div class="flip-card" data-ch="第1章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第1章 · 快速上手</span>
+      <span class="card-num">#002 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">gets() 函数存在什么安全隐患？为什么应该使用 fgets() 替代？</div>
+      <div class="card-foot"><span>安全问题</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><span class="kw">gets()</span> 函数的根本问题在于它不检查缓冲区大小：</p>
+        <p>当数组作为函数参数传递时，函数无法知道数组的长度。因此 <code>gets()</code> 没有办法防止过长的输入行导致数组溢出。</p>
+        <p>而 <code>fgets()</code> 函数要求数组的长度作为参数传递给它，因此不存在缓冲区溢出问题——它最多读取指定长度-1个字符。</p>
+        <p>这是C语言中一个经典的安全问题，缓冲区溢出可能导致程序崩溃甚至被攻击利用。</p>
+      </div>
+      <div class="card-foot"><span>第1章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 003 ========== -->
+<div class="flip-card" data-ch="第2章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第2章 · 基本概念</span>
+      <span class="card-num">#003 <span class="diff"><span class="on">★</span>★★★★</span></span>
+      <div class="card-question">翻译环境和执行环境有什么区别？它们必须位于同一台机器上吗？</div>
+      <div class="card-foot"><span>基础概念</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>在ANSI C中存在两种不同的环境：</p>
+        <ol>
+          <li><b>翻译环境（translation environment）</b>：源代码被转换为可执行机器指令的环境</li>
+          <li><b>执行环境（execution environment）</b>：实际执行代码的环境</li>
+        </ol>
+        <p>标准明确说明，这两种环境<span class="kw">不必位于同一台机器上</span>。例如：</p>
+        <ul>
+          <li><b>交叉编译器（cross compiler）</b>：在一台机器上运行，但产生的可执行代码运行于不同类型的机器</li>
+          <li><b>独立环境（freestanding environment）</b>：不存在操作系统的环境，如嵌入式系统</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>第2章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 004 ========== -->
+<div class="flip-card" data-ch="第2章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第2章 · 基本概念</span>
+      <span class="card-num">#004 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">程序执行的完整过程包括哪几个阶段？</div>
+      <div class="card-foot"><span>执行流程</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>程序执行经历以下阶段：</p>
+        <ol>
+          <li><b>载入内存</b>：程序必须载入到内存中。宿主环境中由操作系统完成</li>
+          <li><b>启动程序</b>：宿主环境中通常有一个小型启动程序与程序链接</li>
+          <li><b>调用main函数</b>：开始执行程序代码</li>
+          <li><b>程序终止</b>：正常终止（main函数返回）或异常终止</li>
+        </ol>
+        <p>程序使用<b>运行时堆栈（stack）</b>存储函数局部变量和返回地址，使用<b>静态内存</b>存储在整个执行过程中保留值的变量。</p>
+      </div>
+      <div class="card-foot"><span>第2章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 005 ========== -->
+<div class="flip-card" data-ch="第2章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第2章 · 基本概念</span>
+      <span class="card-num">#005 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">C语言的翻译（编译）阶段有哪几个主要步骤？</div>
+      <div class="card-foot"><span>编译原理</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>C程序翻译过程分为以下主要阶段：</p>
+        <ol>
+          <li><b>预处理阶段</b>：预处理器执行文本操作，如替换#define符号、读入#include文件、删除注释</li>
+          <li><b>解析阶段</b>：源代码经过解析，判断语句的意思——产生绝大多数错误和警告的阶段</li>
+          <li><b>产生目标代码</b>：生成目标代码（object code），即机器指令的初步形式</li>
+          <li><b>优化阶段（可选）</b>：优化器对目标代码进一步处理，使效率更高</li>
+        </ol>
+        <p>最后由<b>链接器（linker）</b>将各目标文件捆绑在一起，形成完整的可执行程序。</p>
+      </div>
+      <div class="card-foot"><span>第2章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 006 ========== -->
+<div class="flip-card" data-ch="第3章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第3章 · 数据</span>
+      <span class="card-num">#006 <span class="diff"><span class="on">★</span>★★★★</span></span>
+      <div class="card-question">C语言有哪4种基本数据类型？</div>
+      <div class="card-foot"><span>数据类型</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>C语言仅有4种基本数据类型：</p>
+        <ol>
+          <li><b>整型（integer）</b>：char、short、int、long 等，分有符号/无符号版本</li>
+          <li><b>浮点型（floating point）</b>：float、double、long double</li>
+          <li><b>指针（pointer）</b>：指向某种类型的地址</li>
+          <li><b>聚合类型（aggregate）</b>：如数组和结构等</li>
+        </ol>
+        <p>所有其他类型都是从这4种基本类型的某种组合派生而来。</p>
+      </div>
+      <div class="card-foot"><span>第3章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 007 ========== -->
+<div class="flip-card" data-ch="第3章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第3章 · 数据</span>
+      <span class="card-num">#007 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">变量的三个属性是什么？分别决定了什么？</div>
+      <div class="card-foot"><span>变量属性</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>变量有三个核心属性：</p>
+        <ol>
+          <li><b>作用域（scope）</b>：决定变量在什么地方可以被使用（可视性）。分为代码块作用域、文件作用域、原型作用域、函数作用域</li>
+          <li><b>链接属性（linkage）</b>：决定变量在不同文件中如何关联。external、internal、none</li>
+          <li><b>存储类型（storage class）</b>：决定变量的值保持多久（生命期）。自动变量、静态变量、寄存器变量</li>
+        </ol>
+      </div>
+      <div class="card-foot"><span>第3章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 008 ========== -->
+<div class="flip-card" data-ch="第3章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第3章 · 数据</span>
+      <span class="card-num">#008 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">static 关键字的双重含义是什么？</div>
+      <div class="card-foot"><span>关键字辨析</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><span class="kw">static</span> 是C语言中最容易混淆的关键字之一，它有两个不同的含义：</p>
+        <ol>
+          <li><b>修饰文件作用域的声明时</b>：修改变量或函数的链接属性，从 external 改为 internal。即只能在声明它的源文件内部访问。</li>
+          <li><b>修饰代码块作用域的变量时</b>：修改变量的存储类型，从自动变量改为静态变量。变量在程序执行期间一直存在，但作用域仍限于代码块内部。</li>
+        </ol>
+        <p>记忆口诀：<b>文件作用域 → 改链接；代码块作用域 → 改存储</b>。</p>
+      </div>
+      <div class="card-foot"><span>第3章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 009 ========== -->
+<div class="flip-card" data-ch="第5章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第5章 · 操作符</span>
+      <span class="card-num">#009 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">左值和右值的区别是什么？哪些表达式的结果是左值？</div>
+      <div class="card-foot"><span>核心概念</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>左值（lvalue）</b>：可以出现在赋值符左边的表达式，表示一个特定的内存位置。</p>
+        <p><b>右值（rvalue）</b>：只能出现在赋值符右边的表达式，表示一个值。</p>
+        <p>核心区别：左值标识<span class="kw">位置</span>，右值标识<span class="kw">值</span>。</p>
+        <p>结果为左值的常见表达式：</p>
+        <ul>
+          <li>变量名（数组名除外）</li>
+          <li>间接访问表达式 <code>*ptr</code></li>
+          <li>下标引用表达式 <code>arr[i]</code></li>
+          <li>结构体成员访问 <code>s.member</code></li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>第5章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 010 ========== -->
+<div class="flip-card" data-ch="第5章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第5章 · 操作符</span>
+      <span class="card-num">#010 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">++i 和 i++ 的区别是什么？在指针中使用时有什么注意事项？</div>
+      <div class="card-foot"><span>自增操作符</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>两者都是将变量的值加1，但<span class="kw">返回的值不同</span>：</p>
+        <ul>
+          <li><b>前缀++（<code>++i</code>）</b>：先增值，再返回增值后的值</li>
+          <li><b>后缀++（<code>i++</code>）</b>：先返回原值的拷贝，再增值</li>
+        </ul>
+        <p>在指针中使用时：</p>
+        <ul>
+          <li><code>*p++</code>：等价于 <code>*(p++)</code>，取当前值后指针前移</li>
+          <li><code>*++p</code>：等价于 <code>*(++p)</code>，指针先前移再取值</li>
+          <li><code>++*p</code>：等价于 <code>++(*p)</code>，将指针指向的值加1</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>第5章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 011 ========== -->
+<div class="flip-card" data-ch="第6章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第6章 · 指针</span>
+      <span class="card-num">#011 <span class="diff"><span class="on">★</span>★★★★</span></span>
+      <div class="card-question">内存中的地址和值是什么关系？变量名和地址的关联是谁实现的？</div>
+      <div class="card-foot"><span>指针基础</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>关于内存，需要记住两点：</p>
+        <ol>
+          <li>内存中的每个位置由一个<span class="kw">独一无二的地址</span>标识</li>
+          <li>内存中的每个位置都包含一个<span class="kw">值</span></li>
+        </ol>
+        <p><b>关键理解：</b>名字与内存位置之间的关联<span class="kw">不是硬件提供的</span>，而是由<b>编译器</b>为我们实现的。变量给了我们一种更方便的方法记住地址——<b>硬件仍然通过地址访问内存位置</b>。</p>
+      </div>
+      <div class="card-foot"><span>第6章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 012 ========== -->
+<div class="flip-card" data-ch="第6章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第6章 · 指针</span>
+      <span class="card-num">#012 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">如何理解「值的类型不是值本身固有的特性」？</div>
+      <div class="card-foot"><span>深度理解</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>变量的内存中存储的只是一系列0和1的位，它们本身没有类型。</p>
+        <p>例如同一个32位二进制值，可以被解释为：</p>
+        <ul>
+          <li>1个32位整数：1735159650</li>
+          <li>4个字符："glob"</li>
+          <li>浮点数：约 1.116533×10²⁴</li>
+          <li>机器指令</li>
+        </ul>
+        <p>因此，<span class="kw">不能简单地通过检查一个值的位来判断它的类型</span>。类型取决于程序中这个值的<b>使用方式</b>。</p>
+      </div>
+      <div class="card-foot"><span>第6章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 013 ========== -->
+<div class="flip-card" data-ch="第6章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第6章 · 指针</span>
+      <span class="card-num">#013 <span class="diff"><span class="on">★</span>★★★★</span></span>
+      <div class="card-question">指针变量的值是什么？声明一个指针会自动创建存储空间吗？</div>
+      <div class="card-foot"><span>新手误区</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>指针变量的值是一个内存地址。</b></p>
+        <p>指针变量和其他变量一样，它本身也是一个内存位置，存储的值是一个地址。</p>
+        <p><b>重要警告：</b>声明一个指向整型的指针<span class="kw">并不会创建</span>用于存储整型值的内存空间！</p>
+        <p>这是初学者最常犯的错误之一。在对指针进行间接访问之前，必须确保它已经指向了合法的内存位置。</p>
+      </div>
+      <div class="card-foot"><span>第6章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 014 ========== -->
+<div class="flip-card" data-ch="第6章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第6章 · 指针</span>
+      <span class="card-num">#014 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">什么是间接访问操作符？*d 和 d 有什么区别？</div>
+      <div class="card-foot"><span>解引用</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>通过一个指针访问它所指向的地址的过程称为<span class="kw">间接访问</span>或<span class="kw">解引用指针</span>。</p>
+        <p>执行间接访问的操作符是单目 <code>*</code>。</p>
+        <p>给定声明 <code>int a = 112; int *d = &a;</code>：</p>
+        <ul>
+          <li><code>d</code> —— 值是a的地址，类型是 <code>int *</code></li>
+          <li><code>*d</code> —— 值是112（a的值），类型是 <code>int</code></li>
+        </ul>
+        <p><b>关键：</b>指针变量的值就是一个数字（地址）。<span class="kw">除非存在间接引用操作符，否则不要认为它会自动指向什么内容。</span></p>
+      </div>
+      <div class="card-foot"><span>第6章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 015 ========== -->
+<div class="flip-card" data-ch="第6章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第6章 · 指针</span>
+      <span class="card-num">#015 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">未初始化的指针会导致什么问题？</div>
+      <div class="card-foot"><span>常见错误</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>未初始化的指针是C程序中最常见也是最危险的错误之一：</p>
+        <p>静态变量会被自动初始化为0（NULL指针），自动变量则根本不会被初始化。</p>
+        <p>对未初始化指针进行间接访问的后果：</p>
+        <ol>
+          <li><b>幸运情况</b>：初始值是非法地址，程序立即崩溃
+            <ul><li>UNIX：段违例或内存错误</li><li>Windows：一般保护性异常</li></ul>
+          </li>
+          <li><b>严重情况</b>：指针偶尔包含合法地址，意外修改了那个位置的值
+            <ul><li>这种错误非常难以捕捉</li></ul>
+          </li>
+        </ol>
+        <p><b>铁律：在对指针进行间接访问之前，必须确保它已被初始化！</b></p>
+      </div>
+      <div class="card-foot"><span>第6章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 016 ========== -->
+<div class="flip-card" data-ch="第6章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第6章 · 指针</span>
+      <span class="card-num">#016 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">NULL指针是什么？对NULL指针进行解引用会发生什么？</div>
+      <div class="card-foot"><span>NULL指针</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><span class="kw">NULL指针</span>是一个特殊的指针值，表示<span class="kw">不指向任何东西</span>。</p>
+        <p>在源代码中，给指针赋零值表示NULL指针。但机器内部NULL指针的实际值可能不是零。</p>
+        <p>NULL指针的常见用途：</p>
+        <ul>
+          <li>查找函数返回NULL表示"未找到"</li>
+          <li>链表末尾用NULL标记</li>
+          <li>表示指针目前未指向任何有效对象</li>
+        </ul>
+        <p>对NULL指针解引用的后果因编译器和机器而异：有些机器访问内存位置零（隐匿错误），有些机器引发错误终止程序（暴露错误）。</p>
+      </div>
+      <div class="card-foot"><span>第6章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 017 ========== -->
+<div class="flip-card" data-ch="第6章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第6章 · 指针</span>
+      <span class="card-num">#017 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">解释表达式 *&a = 25 的含义，它和 a = 25 有区别吗？</div>
+      <div class="card-foot"><span>概念辨析</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><code>*&a = 25</code> 的效果是把值25赋值给变量a。</p>
+        <p><b>分析过程：</b></p>
+        <ol>
+          <li><code>&a</code>：取地址操作符产生变量a的地址，是一个指针常量</li>
+          <li><code>*(&a)</code>：间接访问操作符访问这个地址所表示的内存位置，即a本身</li>
+          <li>所以 <code>*&a = 25</code> 等价于 <code>a = 25</code></li>
+        </ol>
+        <p><b>区别：</b>功能上完全相同，但 <code>*&a</code> 涉及更多操作，目标代码更大更慢，可读性更差。没人会故意这样写。</p>
+      </div>
+      <div class="card-foot"><span>第6章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 018 ========== -->
+<div class="flip-card" data-ch="第6章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第6章 · 指针</span>
+      <span class="card-num">#018 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">表达式 *100 = 25 合法吗？如何通过地址直接访问内存？</div>
+      <div class="card-foot"><span>强制类型转换</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><code>*100 = 25</code> 是<span class="kw">非法的</span>！因为字面值100的类型是整型，而间接访问操作符只能作用于指针类型的表达式。</p>
+        <p>如果确实想通过地址100访问内存，必须使用<span class="kw">强制类型转换</span>：</p>
+        <pre><code>*(int *)100 = 25;</code></pre>
+        <p>强制类型转换把值100从"整型"转换为"指向整型的指针"。</p>
+        <p><b>什么时候需要这么做？</b></p>
+        <ul>
+          <li>极其罕见！通常无法预知变量的内存位置</li>
+          <li>唯一实际用途：访问硬件设备控制器的特定内存地址</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>第6章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 019 ========== -->
+<div class="flip-card" data-ch="第6章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第6章 · 指针</span>
+      <span class="card-num">#019 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">什么是指针的指针？如何声明和使用？</div>
+      <div class="card-foot"><span>多级指针</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><span class="kw">指针的指针</span>：一个指针变量的值是另一个指针变量的地址。</p>
+        <p>声明方式：<code>int **c;</code> 表示 <code>**c</code> 的类型是 int。</p>
+        <p>给定声明：</p>
+        <pre><code>int a = 12;
+int *b = &a;
+int **c = &b;</code></pre>
+        <ul>
+          <li><code>a</code> → 12（int）</li>
+          <li><code>b</code> → &a（int *）</li>
+          <li><code>*b</code> → a, 12（int）</li>
+          <li><code>c</code> → &b（int **）</li>
+          <li><code>*c</code> → b, &a（int *）</li>
+          <li><code>**c</code> → *b, a, 12（int）</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>第6章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 020 ========== -->
+<div class="flip-card" data-ch="第6章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第6章 · 指针</span>
+      <span class="card-num">#020 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">指针运算的规则是什么？指针加整数时如何调整？</div>
+      <div class="card-foot"><span>指针算术</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>指针运算遵循<span class="kw">类型调整</span>规则：当一个指针和一个整数量执行算术运算时，整数会根据指针所指向类型的大小进行调整（相乘）。</p>
+        <p>例如：<code>float *p; p + 3;</code> 在float占4字节的机器上，实际加到指针上的值是 3×4 = 12 字节。</p>
+        <p>这样，<code>p+1</code> 始终指向下一个元素：</p>
+        <ul>
+          <li><code>char *p</code>：p+1 增加 1 字节</li>
+          <li><code>short *p</code>：p+1 增加 2 字节</li>
+          <li><code>int *p</code>：p+1 增加 4 字节</li>
+          <li><code>double *p</code>：p+1 增加 8 字节</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>第6章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 021 ========== -->
+<div class="flip-card" data-ch="第6章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第6章 · 指针</span>
+      <span class="card-num">#021 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">*(cp + 1) 和 *cp + 1 有什么区别？哪个可以作为左值？</div>
+      <div class="card-foot"><span>优先级</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>两者完全不同，区别在于优先级和运算顺序：</p>
+        <p><b><code>*cp + 1</code></b>：<code>*</code> 优先级高于 <code>+</code>，先间接访问取得值，再加1。结果不能作为左值。</p>
+        <p><b><code>*(cp + 1)</code></b>：括号使加法先执行，指针+1得到新地址，再间接访问。<span class="kw">可以作为左值</span>。</p>
+        <p><b>重要结论：</b></p>
+        <ul>
+          <li>指针加法的结果是右值</li>
+          <li>加上间接访问后，<code>*(cp+1)</code> 可以作为左值</li>
+          <li>间接访问操作符是少数几个其结果为左值的操作符之一</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>第6章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 022 ========== -->
+<div class="flip-card" data-ch="第7章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第7章 · 函数</span>
+      <span class="card-num">#022 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">C语言的函数参数传递方式是什么？传值调用和传址调用的关系？</div>
+      <div class="card-foot"><span>参数传递</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>C语言<span class="kw">所有参数都是通过传值方式传递的</span>——传递给函数的是参数的一份拷贝。</p>
+        <p>数组名参数的行为看起来像传址调用，原因是：</p>
+        <ul>
+          <li>数组名的值是一个<span class="kw">指向数组首元素的指针</span></li>
+          <li>传递给函数的是这个指针的<span class="kw">拷贝</span>（传值）</li>
+          <li>函数中对指针执行间接访问，就可以修改原数组的元素</li>
+          <li>函数可以自由操作它的指针形参，但不会修改调用者的实参指针</li>
+        </ul>
+        <p>所以C的"传址调用"本质上是通过"传递指针+间接访问"来模拟的，底层仍然是传值。</p>
+      </div>
+      <div class="card-foot"><span>第7章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 023 ========== -->
+<div class="flip-card" data-ch="第7章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第7章 · 函数</span>
+      <span class="card-num">#023 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">函数声明和函数定义有什么区别？为什么需要函数原型？</div>
+      <div class="card-foot"><span>函数原型</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>函数定义</b>：函数体的实现，即包含函数实际代码的代码块。</p>
+        <p><b>函数声明（函数原型）</b>：出现在函数被调用的地方，向编译器提供函数的相关信息。</p>
+        <p>函数原型的作用：</p>
+        <ol>
+          <li><b>参数类型检查</b>：编译器检查实参类型是否与形参匹配</li>
+          <li><b>参数个数检查</b>：确保调用时参数数量正确</li>
+          <li><b>返回值类型</b>：告诉编译器函数返回什么类型</li>
+        </ol>
+      </div>
+      <div class="card-foot"><span>第7章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 024 ========== -->
+<div class="flip-card" data-ch="第8章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第8章 · 数组</span>
+      <span class="card-num">#024 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">数组名是什么？数组名和指针有什么区别？</div>
+      <div class="card-foot"><span>数组vs指针</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>数组名的值是一个指针常量</b>，指向数组第1个元素的地址。</p>
+        <p>但数组和指针<span class="kw">不是相等的</span>：</p>
+        <pre><code>int a[5];
+int *b;</code></pre>
+        <ul>
+          <li><b>内存分配</b>：数组分配5个int空间；指针只分配一个指针变量的空间</li>
+          <li><b>左值性</b>：数组名是指针常量，不能作为左值；指针变量可以</li>
+          <li><b>sizeof</b>：sizeof(a) 返回整个数组大小；sizeof(b) 返回指针大小</li>
+        </ul>
+        <p>数组名在大多数表达式中被转换为指向首元素的指针，但有两个例外：<code>sizeof(数组名)</code> 和 <code>&数组名</code>。</p>
+      </div>
+      <div class="card-foot"><span>第8章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 025 ========== -->
+<div class="flip-card" data-ch="第8章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第8章 · 数组</span>
+      <span class="card-num">#025 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">为什么说 a[b] 和 *(a + b) 是等价的？</div>
+      <div class="card-foot"><span>下标本质</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>在C语言中，下标引用和指针+间接访问是<span class="kw">完全等价</span>的。</p>
+        <p><code>a[b]</code> 的本质就是 <code>*(a + b)</code>：</p>
+        <ol>
+          <li>数组名a被转换为指向首元素的指针</li>
+          <li>b根据a指向的类型大小进行调整</li>
+          <li>加法结果是一个指向目标元素的指针</li>
+          <li>间接访问取得该元素的值</li>
+        </ol>
+        <p>重要结论：<b>下标绝不会比指针更有效率，但指针有时会比下标更有效率。</b></p>
+      </div>
+      <div class="card-foot"><span>第8章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 026 ========== -->
+<div class="flip-card" data-ch="第8章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第8章 · 数组</span>
+      <span class="card-num">#026 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">作为函数参数的数组名会发生什么？</div>
+      <div class="card-foot"><span>数组参数</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>当数组名作为函数参数传递时，传递给函数的是<span class="kw">指向数组首元素指针的一份拷贝</span>。</p>
+        <p>所以本质上，函数形参是一个指针。编译器也接受数组形式的函数形参（为了方便新手）。</p>
+        <p>因此以下两个函数原型<span class="kw">完全等价</span>：</p>
+        <pre><code>int strlen( char *string );
+int strlen( char string[] );</code></pre>
+        <p><b>注意：</b>这种等价性<span class="kw">只在函数形参中成立</span>。在其他地方，数组和指针是不同的。</p>
+      </div>
+      <div class="card-foot"><span>第8章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 027 ========== -->
+<div class="flip-card" data-ch="第8章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第8章 · 数组</span>
+      <span class="card-num">#027 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">多维数组在内存中如何存储？多维数组名的类型是什么？</div>
+      <div class="card-foot"><span>多维数组</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>多维数组在内存中以<span class="kw">行主序</span>存储，即最右边的下标先变化。</p>
+        <p>例如 <code>int matrix[3][10];</code> 可以看作：一个一维数组，包含3个元素，每个元素是包含10个int的数组。</p>
+        <p><b>多维数组名的类型：</b></p>
+        <ul>
+          <li><code>matrix</code>：指向"包含10个int的数组"的指针 → <code>int (*)[10]</code></li>
+          <li><code>matrix[0]</code>：第0行的数组名 → 指向int的指针 → <code>int *</code></li>
+          <li><code>matrix + 1</code>：跳过一整行（10个int）</li>
+        </ul>
+        <p>理解多维数组的关键：<b>多维数组就是数组的数组</b>。</p>
+      </div>
+      <div class="card-foot"><span>第8章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 028 ========== -->
+<div class="flip-card" data-ch="第8章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第8章 · 数组</span>
+      <span class="card-num">#028 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">数组初始化有哪些规则？</div>
+      <div class="card-foot"><span>初始化</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>数组初始化使用花括号列表，值逐个赋值给数组元素。</p>
+        <p><b>不完整初始化：</b></p>
+        <ul>
+          <li>初始化值数目多于元素数 → <span class="kw">错误</span></li>
+          <li>初始化值数目少于元素数 → <span class="kw">合法</span>，剩余元素初始化为0</li>
+        </ul>
+        <pre><code>int vector[5] = { 1, 2, 3, 4 }; // 第5个元素 = 0</code></pre>
+        <p><b>自动计算数组长度：</b></p>
+        <pre><code>int vector[] = { 1, 2, 3, 4, 5 }; // 长度自动为5</code></pre>
+        <p><b>字符数组快捷初始化：</b> <code>char message[] = "Hello";</code> 自动包含结尾NUL。</p>
+      </div>
+      <div class="card-foot"><span>第8章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 029 ========== -->
+<div class="flip-card" data-ch="第9章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第9章 · 字符串</span>
+      <span class="card-num">#029 <span class="diff"><span class="on">★</span>★★★★</span></span>
+      <div class="card-question">C语言字符串的本质是什么？NUL字节的作用？</div>
+      <div class="card-foot"><span>字符串基础</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>C语言<span class="kw">没有显式的字符串数据类型</span>。字符串以两种形式存在：</p>
+        <ol>
+          <li><b>字符串常量</b>：如 <code>"Hello"</code>，适用于程序不会修改的字符串</li>
+          <li><b>字符数组</b>：存储需要修改的字符串</li>
+        </ol>
+        <p><b>字符串定义：</b>一串零个或多个字符，以一个位模式全0的 <span class="kw">NUL字节</span> 结尾。</p>
+        <p>NUL字节的作用：作为字符串的终止标志。字符串长度就是开头到NUL字节之间的字符数（不包含NUL）。</p>
+      </div>
+      <div class="card-foot"><span>第9章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 030 ========== -->
+<div class="flip-card" data-ch="第9章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第9章 · 字符串</span>
+      <span class="card-num">#030 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">strcpy 会检查目标缓冲区大小吗？使用字符串函数有哪些安全注意事项？</div>
+      <div class="card-foot"><span>安全问题</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><span class="kw">不会！</span> 这是C字符串函数最常见的安全陷阱之一。</p>
+        <p><code>strcpy</code> 从src逐字符复制到dst，直到遇到NUL字节为止。它不检查dst是否有足够空间。</p>
+        <p><b>安全注意事项：</b></p>
+        <ul>
+          <li><code>strcpy</code>：可能导致缓冲区溢出</li>
+          <li><code>strncpy</code>：指定最大复制长度。但注意：如果源字符串太长，<span class="kw">结果不会以NUL结尾</span>！</li>
+          <li><code>strcat</code>：同样不检查目标缓冲区剩余空间</li>
+          <li><code>strncat</code>：指定最多追加多少字符，记得留空间给结尾的NUL</li>
+        </ul>
+        <p><b>铁律：</b>始终确保缓冲区足够大，优先使用带长度限制的n系列函数。</p>
+      </div>
+      <div class="card-foot"><span>第9章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 031 ========== -->
+<div class="flip-card" data-ch="第10章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第10章 · 结构</span>
+      <span class="card-num">#031 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">结构和数组有什么区别？结构成员如何访问？</div>
+      <div class="card-foot"><span>结构基础</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>都是聚合数据类型，但有本质区别：</p>
+        <p><b>数组</b>：相同类型元素的集合，通过下标或指针访问。</p>
+        <p><b>结构</b>：成员可能具有不同的类型，每个成员有自己的名字。</p>
+        <p><b>访问方式：</b></p>
+        <ul>
+          <li><code>.</code> 操作符：直接访问结构变量的成员</li>
+          <li><code>-></code> 操作符：通过指针访问结构成员</li>
+        </ul>
+        <p><code>p->member</code> 等价于 <code>(*p).member</code>。<code>.</code> 的优先级高于 <code>*</code>，所以括号是必须的。</p>
+      </div>
+      <div class="card-foot"><span>第10章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 032 ========== -->
+<div class="flip-card" data-ch="第10章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第10章 · 结构</span>
+      <span class="card-num">#032 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">结构的内存布局是什么样的？什么是结构对齐和填充？</div>
+      <div class="card-foot"><span>内存布局</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>结构成员在内存中按声明顺序存储，但<span class="kw">可能存在间隙（填充字节）</span>。</p>
+        <p><b>原因：边界对齐要求。</b>许多机器要求特定类型的数据存储在特定边界的地址上，以提高访问效率。</p>
+        <pre><code>struct {
+    char a;   // 1字节
+    int b;    // 4字节（需要对齐）
+    char c;   // 1字节
+};</code></pre>
+        <p>实际布局可能是：a(1) + 填充(3) + b(4) + c(1) + 填充(3) = 12字节。</p>
+        <p>可以通过重新排列成员顺序减少填充。<code>sizeof(struct)</code> 返回包括填充在内的总大小。</p>
+      </div>
+      <div class="card-foot"><span>第10章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 033 ========== -->
+<div class="flip-card" data-ch="第10章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第10章 · 结构</span>
+      <span class="card-num">#033 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">联合（union）是什么？它和结构有什么区别？</div>
+      <div class="card-foot"><span>联合</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><span class="kw">联合（union）</span>的所有成员<span class="kw">共享同一块内存空间</span>。同一时刻只能存储其中一个成员的值。</p>
+        <p><b>与结构的区别：</b></p>
+        <ul>
+          <li>结构：每个成员有独立的存储空间，同时存在</li>
+          <li>联合：所有成员共享同一块内存，同时只能有一个成员有效</li>
+        </ul>
+        <p><b>联合的大小：</b>等于其最大成员的大小。</p>
+        <p><b>常见用途：</b></p>
+        <ol>
+          <li><b>节省内存</b>：当几个字段不同时使用时</li>
+          <li><b>类型双关</b>：以不同方式解释同一段内存的位（如检查字节序）</li>
+        </ol>
+      </div>
+      <div class="card-foot"><span>第10章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 034 ========== -->
+<div class="flip-card" data-ch="第11章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第11章 · 动态内存</span>
+      <span class="card-num">#034 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">为什么需要动态内存分配？malloc和free的基本用法？</div>
+      <div class="card-foot"><span>动态分配</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>为什么需要：</b>声明数组时必须用编译时常量指定长度。但很多时候数组长度在运行时才知道。</p>
+        <p><b>malloc：</b>从内存池中分配指定字节数的内存，返回指向分配内存起始位置的指针。</p>
+        <pre><code>void *malloc(size_t size);</code></pre>
+        <p><b>free：</b>释放之前分配的内存。</p>
+        <pre><code>void free(void *pointer);</code></pre>
+        <p><b>重要注意事项：</b></p>
+        <ul>
+          <li>malloc返回void *，可以自动转换为任何指针类型（C中）</li>
+          <li>malloc分配的内存<span class="kw">未初始化</span></li>
+          <li>分配失败时返回NULL，必须检查返回值！</li>
+          <li>free(NULL)是安全的</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>第11章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 035 ========== -->
+<div class="flip-card" data-ch="第11章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第11章 · 动态内存</span>
+      <span class="card-num">#035 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">calloc、realloc 和 malloc 有什么区别？</div>
+      <div class="card-foot"><span>分配函数对比</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>三种动态内存分配函数的区别：</p>
+        <ol>
+          <li><b>malloc(size)</b>：分配原始内存，未初始化</li>
+          <li><b>calloc(num, size)</b>：分配num个size字节，<span class="kw">全部初始化为0</span></li>
+          <li><b>realloc(ptr, new_size)</b>：调整之前分配的内存大小
+            <ul>
+              <li>ptr为NULL等价于malloc；new_size为0等价于free</li>
+              <li>可能返回新的地址（复制到新位置）</li>
+            </ul>
+          </li>
+        </ol>
+        <p><b>常见错误：</b>使用realloc后忘记更新指针——如果返回新地址，原指针就失效了。</p>
+      </div>
+      <div class="card-foot"><span>第11章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 036 ========== -->
+<div class="flip-card" data-ch="第11章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第11章 · 动态内存</span>
+      <span class="card-num">#036 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">动态内存分配有哪些常见错误和陷阱？</div>
+      <div class="card-foot"><span>常见错误</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>动态内存分配是C程序bug的重灾区：</p>
+        <ol>
+          <li><b>不检查分配是否成功</b>：忘记检查malloc是否返回NULL</li>
+          <li><b>内存泄漏</b>：分配了内存但用完不释放</li>
+          <li><b>野指针/悬空指针</b>：内存已释放，但仍通过指针访问</li>
+          <li><b>重复释放</b>：对同一块内存调用free两次</li>
+          <li><b>越界访问</b>：写入时超出分配的内存大小</li>
+          <li><b>释放非堆内存</b>：free一个不是从malloc获得的指针</li>
+        </ol>
+        <p><b>良好实践：</b>谁分配谁释放、free后立即将指针置为NULL。</p>
+      </div>
+      <div class="card-foot"><span>第11章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 037 ========== -->
+<div class="flip-card" data-ch="第12章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第12章 · 链表</span>
+      <span class="card-num">#037 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">单链表的基本结构是什么？根指针有什么作用？</div>
+      <div class="card-foot"><span>单链表</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>单链表</b>：每个节点包含数据和一个指向下一节点的指针。最后一个节点的指针为NULL。</p>
+        <pre><code>typedef struct Node {
+    int value;
+    struct Node *next;
+} Node;</code></pre>
+        <p><b>根指针（head pointer）</b>：指向链表第1个节点的指针。</p>
+        <ul>
+          <li>根指针只是一个指针，<span class="kw">不包含任何数据</span></li>
+          <li>找到第1个节点后，就可以通过指针遍历所有节点</li>
+          <li>链表为空时，根指针为NULL</li>
+        </ul>
+        <p>单链表只能从一个方向遍历（从头到尾）。</p>
+      </div>
+      <div class="card-foot"><span>第12章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 038 ========== -->
+<div class="flip-card" data-ch="第12章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第12章 · 链表</span>
+      <span class="card-num">#038 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">向单链表插入新节点时，如何优雅地处理"插入到开头"的特殊情况？</div>
+      <div class="card-foot"><span>经典技巧</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>经典问题：</b>插入到链表开头时，前一个节点不存在，需要修改根指针本身——这是一个特殊情况。</p>
+        <p><b>C语言的优雅解决方案：</b></p>
+        <p>使用<span class="kw">指向指针的指针</span>（<code>Node **linkp</code>），保存"指向需要修改的那个link字段的指针"。</p>
+        <ul>
+          <li>插入到开头时，linkp = &root（指向根指针）</li>
+          <li>插入到中间时，linkp = &prev->next（指向前一节点的next字段）</li>
+          <li>两种情况统一处理：
+<pre><code>new_node->next = *linkp;
+*linkp = new_node;</code></pre>
+          </li>
+        </ul>
+        <p>这样就<span class="kw">消除了特殊情况</span>，代码更简洁。</p>
+      </div>
+      <div class="card-foot"><span>第12章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 039 ========== -->
+<div class="flip-card" data-ch="第12章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第12章 · 链表</span>
+      <span class="card-num">#039 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">双链表和单链表有什么区别？双链表插入需要修改几个指针？</div>
+      <div class="card-foot"><span>双链表</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>双链表</b>：每个节点有两个指针——指向前一个节点和指向后一个节点。</p>
+        <pre><code>typedef struct Node {
+    struct Node *fwd;  // 前向指针
+    struct Node *bwd;  // 后向指针
+    int value;
+} Node;</code></pre>
+        <p><b>优势：</b>可以从任意方向遍历；删除节点时不需要保存前一节点的指针。</p>
+        <p><b>插入时需要修改4个指针：</b></p>
+        <ol>
+          <li>新节点的 fwd → 指向后续节点</li>
+          <li>新节点的 bwd → 指向前一节点</li>
+          <li>前一节点的 fwd → 指向新节点</li>
+          <li>后续节点的 bwd → 指向新节点</li>
+        </ol>
+      </div>
+      <div class="card-foot"><span>第12章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 040 ========== -->
+<div class="flip-card" data-ch="第13章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第13章 · 高级指针</span>
+      <span class="card-num">#040 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">什么是回调函数？为什么需要函数指针？</div>
+      <div class="card-foot"><span>函数指针</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>回调函数</b>：一个作为参数传递给另一个函数的函数指针。被调用的函数"回调"调用者提供的函数。</p>
+        <p><b>为什么需要：</b>实现通用算法，将算法逻辑与具体操作解耦。</p>
+        <p><b>经典例子：qsort函数</b></p>
+        <p>qsort可以对任意类型的数组排序，但它不知道如何比较两个元素。调用者需要提供一个比较函数作为回调。</p>
+        <pre><code>int compare_ints(void const *a, void const *b) {
+    return *(int*)a - *(int*)b;
+}
+qsort(array, n, sizeof(int), compare_ints);</code></pre>
+      </div>
+      <div class="card-foot"><span>第13章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 041 ========== -->
+<div class="flip-card" data-ch="第13章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第13章 · 高级指针</span>
+      <span class="card-num">#041 <span class="diff"><span class="on">★★★★</span>★</span></span>
+      <div class="card-question">什么是转移表（jump table）？有什么优势？</div>
+      <div class="card-foot"><span>进阶技巧</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>转移表</b>：一个由函数指针组成的数组，根据操作码直接索引到对应的处理函数。</p>
+        <p>替代很长的switch语句或if-else链。</p>
+        <p><b>实现：</b></p>
+        <pre><code>double (*oper_func[])(double, double) = {
+    add, sub, mul, div
+};
+// 一行代码替代整个switch
+result = oper_func[oper](op1, op2);</code></pre>
+        <p><b>优势：</b></p>
+        <ul>
+          <li>代码更简洁，新增操作只需添加数组元素</li>
+          <li>运行效率更高：直接索引跳转</li>
+          <li>数据和逻辑分离，更易维护</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>第13章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 042 ========== -->
+<div class="flip-card" data-ch="第13章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第13章 · 高级指针</span>
+      <span class="card-num">#042 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">命令行参数如何传递给程序？argc和argv的含义是什么？</div>
+      <div class="card-foot"><span>命令行参数</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>C程序的 main 函数有两个形参：</p>
+        <pre><code>int main(int argc, char **argv)</code></pre>
+        <ul>
+          <li><b>argc</b>：命令行参数的<span class="kw">个数</span></li>
+          <li><b>argv</b>：指向参数值数组的指针，本质是<span class="kw">字符指针的数组</span></li>
+        </ul>
+        <p><b>argv 的结构：</b></p>
+        <ul>
+          <li><code>argv[0]</code>：程序名本身</li>
+          <li><code>argv[1]</code> 到 <code>argv[argc-1]</code>：实际的命令行参数</li>
+          <li><code>argv[argc]</code>：值为 NULL，表示数组结束</li>
+        </ul>
+        <p>例如命令 <code>prog -a -b file1 file2</code> 的argc=5。</p>
+      </div>
+      <div class="card-foot"><span>第13章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 043 ========== -->
+<div class="flip-card" data-ch="第13章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第13章 · 高级指针</span>
+      <span class="card-num">#043 <span class="diff"><span class="on">★★★★</span>★</span></span>
+      <div class="card-question">如何阅读和理解复杂的C语言声明？</div>
+      <div class="card-foot"><span>声明解析</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>C语言的声明遵循<span class="kw">推论式声明</span>原则：声明的形式与表达式的形式相似。</p>
+        <p><b>优先级规则：</b></p>
+        <ol>
+          <li>括号内的优先</li>
+          <li><code>[]</code> 和 <code>()</code> 优先级高于 <code>*</code></li>
+          <li><code>[]</code> 和 <code>()</code> 从左到右结合</li>
+          <li><code>*</code> 从右到左结合</li>
+        </ol>
+        <p><b>阅读方法（从内向外）：</b></p>
+        <pre><code>int (*f[])();
+//  f       f是
+//  f[]     一个数组
+// *f[]     指针的数组
+// (*f[])() 每个指针指向一个函数
+// int (*f[])() 函数返回int</code></pre>
+        <p>经验法则：如果声明太复杂，考虑用typedef简化。</p>
+      </div>
+      <div class="card-foot"><span>第13章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 044 ========== -->
+<div class="flip-card" data-ch="第13章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第13章 · 高级指针</span>
+      <span class="card-num">#044 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">字符串常量 "xyz" + 1 合法吗？表达式的值是什么？</div>
+      <div class="card-foot"><span>字符串常量</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><span class="kw">合法！</span></p>
+        <p>当字符串常量出现在表达式中时，它的值是一个<span class="kw">指针常量</span>——指向第1个字符的指针。</p>
+        <p>所以 <code>"xyz" + 1</code> 是指针加法运算，结果指向第2个字符。</p>
+        <p>因此：</p>
+        <ul>
+          <li><code>"xyz" + 1</code> → 指向第2个字符的指针，输出为 "yz"</li>
+          <li><code>*"xyz"</code> → 第一个字符 'x'</li>
+          <li><code>"xyz"[2]</code> → 第3个字符 'z'</li>
+        </ul>
+        <p><b>注意：</b>不要尝试修改字符串常量的内容——是未定义行为。</p>
+      </div>
+      <div class="card-foot"><span>第13章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 045 ========== -->
+<div class="flip-card" data-ch="第14章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第14章 · 预处理器</span>
+      <span class="card-num">#045 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">#define 宏和函数有什么区别？什么时候应该用宏？</div>
+      <div class="card-foot"><span>宏vs函数</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>宏</b>：预处理器进行<span class="kw">文本替换</span>，没有类型检查。</p>
+        <p><b>函数</b>：编译器编译，有类型检查，有函数调用开销。</p>
+        <p><b>宏的优势：</b></p>
+        <ul>
+          <li>没有函数调用开销（短小代码更明显）</li>
+          <li>与类型无关</li>
+          <li>可以接受类型作为参数</li>
+        </ul>
+        <p><b>宏的缺点：</b></p>
+        <ul>
+          <li>参数可能被多次求值（有副作用时危险）</li>
+          <li>没有类型检查</li>
+          <li>宏展开后代码体积变大</li>
+        </ul>
+        <p>现代C推荐用 <code>static inline</code> 函数替代大部分宏。</p>
+      </div>
+      <div class="card-foot"><span>第14章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 046 ========== -->
+<div class="flip-card" data-ch="第14章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第14章 · 预处理器</span>
+      <span class="card-num">#046 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">写宏时有哪些常见陷阱？为什么需要加这么多括号？</div>
+      <div class="card-foot"><span>宏的陷阱</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>宏是纯文本替换，有很多陷阱：</p>
+        <p><b>陷阱1：运算符优先级问题</b></p>
+        <pre><code>// 错误
+#define SQUARE(x) x * x
+SQUARE(a + b)  // → a + b * a + b 错误！
+// 正确
+#define SQUARE(x) ((x) * (x))</code></pre>
+        <p><b>陷阱2：参数多次求值</b></p>
+        <pre><code>#define MAX(a,b) ((a) > (b) ? (a) : (b))
+MAX(a++, b)  // a可能增加2次！</code></pre>
+        <p><b>陷阱3：多行宏</b>应用 <code>do { ... } while(0)</code> 包裹。</p>
+        <p><b>黄金法则：</b>宏参数永远加括号，整个宏表达式也加括号。</p>
+      </div>
+      <div class="card-foot"><span>第14章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 047 ========== -->
+<div class="flip-card" data-ch="第14章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第14章 · 预处理器</span>
+      <span class="card-num">#047 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">条件编译有什么用？常见应用场景？</div>
+      <div class="card-foot"><span>条件编译</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><span class="kw">条件编译</span>：在编译时根据条件选择是否编译某段代码。</p>
+        <p><b>常见应用场景：</b></p>
+        <ol>
+          <li><b>调试代码</b>：调试版本打印额外信息</li>
+          <li><b>平台兼容性</b>：不同操作系统编译不同的代码</li>
+          <li><b>头文件保护</b>：防止头文件被重复包含
+<pre><code>#ifndef _HEADER_H
+#define _HEADER_H
+// 头文件内容
+#endif</code></pre>
+          </li>
+          <li><b>功能开关</b>：编译时选择是否包含某些功能</li>
+        </ol>
+      </div>
+      <div class="card-foot"><span>第14章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 048 ========== -->
+<div class="flip-card" data-ch="第15章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第15章 · I/O函数</span>
+      <span class="card-num">#048 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">C语言的I/O是基于什么模型的？流（stream）的概念是什么？</div>
+      <div class="card-foot"><span>流的概念</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>C语言的I/O函数都是围绕<span class="kw">流（stream）</span>这个概念构建的。</p>
+        <p><b>流的概念：</b>所有I/O操作都被抽象为从流中读写字节，而不关心数据的来源或去向。</p>
+        <p><b>文本流 vs 二进制流：</b></p>
+        <ul>
+          <li><b>文本流</b>：内容被看作行的序列，每行以换行符结尾</li>
+          <li><b>二进制流</b>：字节完全按原样写入和读取</li>
+        </ul>
+        <p>程序启动时默认打开3个流：<code>stdin</code>（标准输入）、<code>stdout</code>（标准输出）、<code>stderr</code>（标准错误）。</p>
+      </div>
+      <div class="card-foot"><span>第15章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 049 ========== -->
+<div class="flip-card" data-ch="第15章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第15章 · I/O函数</span>
+      <span class="card-num">#049 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">fopen 的各种模式（r/w/a/r+/w+/a+）有什么区别？</div>
+      <div class="card-foot"><span>打开模式</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <table>
+          <tr><th>模式</th><th>读?</th><th>写?</th><th>文件不存在</th><th>原有内容</th></tr>
+          <tr><td>"r"</td><td>是</td><td>否</td><td>打开失败</td><td>保留</td></tr>
+          <tr><td>"w"</td><td>否</td><td>是</td><td>创建</td><td>清空</td></tr>
+          <tr><td>"a"</td><td>否</td><td>是</td><td>创建</td><td>追加到末尾</td></tr>
+          <tr><td>"r+"</td><td>是</td><td>是</td><td>打开失败</td><td>保留</td></tr>
+          <tr><td>"w+"</td><td>是</td><td>是</td><td>创建</td><td>清空</td></tr>
+          <tr><td>"a+"</td><td>是</td><td>是</td><td>创建</td><td>保留，只追加</td></tr>
+        </table>
+        <p>模式后加 <code>b</code> 表示二进制模式。</p>
+        <p><b>注意：</b>"w"模式打开已存在的文件会立即清空内容！</p>
+      </div>
+      <div class="card-foot"><span>第15章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 050 ========== -->
+<div class="flip-card" data-ch="第16章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第16章 · 标准库</span>
+      <span class="card-num">#050 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">qsort 函数的使用方法？为什么需要比较函数参数？</div>
+      <div class="card-foot"><span>标准库</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><code>qsort</code> 是C标准库提供的快速排序函数，可以对任意类型的数组排序。</p>
+        <pre><code>void qsort(void *base, size_t n_elements,
+    size_t el_size,
+    int (*compare)(void const *, void const *));</code></pre>
+        <p><b>参数：</b></p>
+        <ul>
+          <li><code>base</code>：待排序数组</li>
+          <li><code>n_elements</code>：元素个数</li>
+          <li><code>el_size</code>：每个元素大小</li>
+          <li><code>compare</code>：比较函数指针</li>
+        </ul>
+        <p><b>为什么需要比较函数？</b>因为qsort不知道数组中元素的类型。"两个元素谁大谁小"的判断需要调用者提供。</p>
+      </div>
+      <div class="card-foot"><span>第16章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 051 ========== -->
+<div class="flip-card" data-ch="第17章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第17章 · ADT</span>
+      <span class="card-num">#051 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">实现抽象数据类型（ADT）有哪三种内存分配策略？</div>
+      <div class="card-foot"><span>ADT实现</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>所有ADT都需要决定如何获取内存存储值，有三种方案：</p>
+        <ol>
+          <li><b>静态数组</b>
+            <ul><li>优点：最简单，最不容易出错</li>
+            <li>缺点：长度固定，必须在编译时确定</li></ul>
+          </li>
+          <li><b>动态分配数组</b>
+            <ul><li>优点：运行时确定大小，按需分配</li>
+            <li>缺点：分配/释放开销</li></ul>
+          </li>
+          <li><b>链式结构</b>
+            <ul><li>优点：元素数量无限制，插入删除高效</li>
+            <li>缺点：每个元素额外开销（指针），不能随机访问</li></ul>
+          </li>
+        </ol>
+      </div>
+      <div class="card-foot"><span>第17章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 052 ========== -->
+<div class="flip-card" data-ch="第17章" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">第17章 · ADT</span>
+      <span class="card-num">#052 <span class="diff"><span class="on">★★</span>★★★</span></span>
+      <div class="card-question">栈（Stack）和队列（Queue）的特点和区别是什么？</div>
+      <div class="card-foot"><span>栈vs队列</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p><b>栈（Stack）— LIFO（后进先出）</b></p>
+        <ul>
+          <li>只能在一端（栈顶）插入和删除</li>
+          <li>基本操作：push、pop</li>
+          <li>典型应用：函数调用栈、表达式求值、递归模拟</li>
+        </ul>
+        <p><b>队列（Queue）— FIFO（先进先出）</b></p>
+        <ul>
+          <li>一端插入（队尾），另一端删除（队头）</li>
+          <li>基本操作：enqueue、dequeue</li>
+          <li>典型应用：任务调度、缓冲队列、BFS</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>第17章</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 053 ========== -->
+<div class="flip-card" data-ch="综合篇" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">综合 · 指针篇</span>
+      <span class="card-num">#053 <span class="diff"><span class="on">★★★★</span>★</span></span>
+      <div class="card-question">指针最常见的6个错误是什么？请按重要性排序。</div>
+      <div class="card-foot"><span>必读总结</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>指针是C语言最强大也最危险的特性：</p>
+        <ol>
+          <li><b>未初始化就解引用</b> — 最常见</li>
+          <li><b>NULL指针解引用</b> — 返回NULL未检查</li>
+          <li><b>悬空指针（野指针）</b> — 内存已释放仍使用</li>
+          <li><b>越界访问</b> — 超出分配范围</li>
+          <li><b>内存泄漏</b> — 分配后忘记释放</li>
+          <li><b>类型不匹配</b> — 错误解释数据类型</li>
+        </ol>
+        <p><b>核心原则：</b>指针本身没有安全网，程序员必须自己承担责任。</p>
+      </div>
+      <div class="card-foot"><span>综合篇</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 054 ========== -->
+<div class="flip-card" data-ch="综合篇" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">综合 · 指针篇</span>
+      <span class="card-num">#054 <span class="diff"><span class="on">★★★</span>★★</span></span>
+      <div class="card-question">指针的主要用途有哪些？为什么说指针是C语言的灵魂？</div>
+      <div class="card-foot"><span>指针总览</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>指针的主要用途包括：</p>
+        <ol>
+          <li><b>高效传参</b>：传递大型数据结构的指针而非拷贝</li>
+          <li><b>函数修改调用者数据</b></li>
+          <li><b>动态内存分配</b></li>
+          <li><b>动态数据结构</b>：链表、树、图</li>
+          <li><b>数组与指针的统一</b></li>
+          <li><b>字符串操作</b></li>
+          <li><b>函数指针</b>：回调、转移表</li>
+          <li><b>直接访问硬件</b>：嵌入式/OS开发</li>
+        </ol>
+        <p>说指针是C的灵魂，是因为<span class="kw">指针赋予了C直接操作内存的能力</span>。这既是C高效灵活的源泉，也是C容易出错的根源。</p>
+      </div>
+      <div class="card-foot"><span>综合篇</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 卡片 055 ========== -->
+<div class="flip-card" data-ch="综合篇" onclick="this.classList.toggle('flipped')">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <span class="card-tag">综合 · 指针篇</span>
+      <span class="card-num">#055 <span class="diff"><span class="on">★★★★</span>★</span></span>
+      <div class="card-question">为什么作者强调不要被内存图中的箭头误导？</div>
+      <div class="card-foot"><span>思维误区</span><span>点击翻转 →</span></div>
+    </div>
+    <div class="flip-card-back">
+      <div class="alabel">答案 ANSWER</div>
+      <div class="answer">
+        <p>内存图的箭头画法容易产生误解。</p>
+        <p><b>错误的认识：</b>从指针变量画实线箭头指向目标变量，暗示你"应该跟随它"</p>
+        <p><b>问题：</b>看到箭头就容易误以为指针会自动间接访问——但实际上指针的值只是一个数字，除非表达式中有 <code>*</code> 操作符。</p>
+        <p><b>正确的思维方式：</b></p>
+        <ul>
+          <li>指针变量的值就是一个数字（地址）</li>
+          <li>只有在执行间接访问操作（出现*操作符）时，才"跟随箭头"</li>
+        </ul>
+        <p><b>思维训练：</b>看到指针变量时，先想"它的值是一个数字"，而不是"它指向某个东西"。</p>
+        <p>这是初学者最常见的思维误区，也是深入理解指针的关键转折点。</p>
+      </div>
+      <div class="card-foot"><span>综合篇</span><span>← 点击翻回</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="no-result" id="noResult">没有找到匹配的卡片</div>
+
+</div><!-- /card-grid -->
+
+<div class="footer">
+  基于《C和指针》(Kenneth A. Reek) 精华内容整理 · 共55张卡片 · 涵盖全书核心知识点
+</div>
+
+<script>
+// 全部翻转
+var allFlipped = false;
+function flipAll() {
+  allFlipped = !allFlipped;
+  var cards = document.querySelectorAll('.flip-card');
+  for (var i = 0; i < cards.length; i++) {
+    if (cards[i].style.display === 'none') continue;
+    if (allFlipped) {
+      cards[i].classList.add('flipped');
+    } else {
+      cards[i].classList.remove('flipped');
+    }
+  }
+}
+
+// 章节筛选
+var chapBar = document.getElementById('chapBar');
+var currentChap = 'all';
+chapBar.addEventListener('click', function(e) {
+  if (e.target.tagName !== 'SPAN') return;
+  var spans = chapBar.querySelectorAll('span');
+  for (var i = 0; i < spans.length; i++) {
+    spans[i].className = '';
+  }
+  e.target.className = 'active';
+  currentChap = e.target.getAttribute('data-ch');
+  filterCards();
+});
+
+// 搜索
+var searchBox = document.getElementById('searchBox');
+searchBox.addEventListener('input', function() {
+  filterCards();
+});
+
+function filterCards() {
+  var keyword = searchBox.value.trim().toLowerCase();
+  var cards = document.querySelectorAll('.flip-card');
+  var visible = 0;
+  for (var i = 0; i < cards.length; i++) {
+    var ch = cards[i].getAttribute('data-ch');
+    var text = cards[i].innerText.toLowerCase();
+    var show = true;
+    if (currentChap !== 'all' && ch.indexOf(currentChap) < 0) show = false;
+    if (keyword && text.indexOf(keyword) < 0) show = false;
+    cards[i].style.display = show ? '' : 'none';
+    if (show) visible++;
+  }
+  document.getElementById('countInfo').textContent = '显示 ' + visible + ' / 共 55 张';
+  document.getElementById('noResult').style.display = visible === 0 ? 'block' : 'none';
+}
+
+// 键盘快捷键 F 全部翻转
+document.addEventListener('keydown', function(e) {
+  if (e.target && e.target.tagName === 'INPUT') return;
+  if (e.key === 'f' || e.key === 'F') {
+    flipAll();
+  }
+});
+</script>
+</body>
+</html>

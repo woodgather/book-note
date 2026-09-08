@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C程序设计语言 - Anki精华卡片</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #2563eb;
+    --primary-light: #3b82f6;
+    --primary-dark: #1d4ed8;
+    --bg: #f1f5f9;
+    --card-front: #ffffff;
+    --card-back: #eff6ff;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --accent: #f59e0b;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+    --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* 头部 */
+  .header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    color: white;
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .header .subtitle {
+    font-size: 15px;
+    opacity: 0.9;
+    margin-bottom: 24px;
+  }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    opacity: 0.85;
+  }
+
+  /* 控制栏 */
+  .controls {
+    max-width: 1200px;
+    margin: -24px auto 0;
+    padding: 0 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 280px;
+    max-width: 400px;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    background: white;
+    box-shadow: var(--shadow);
+    outline: none;
+    transition: box-shadow 0.2s;
+  }
+
+  .search-box input:focus {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2), var(--shadow);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: 16px;
+  }
+
+  .filter-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    background: white;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .filter-btn.active {
+    background: var(--primary);
+    color: white;
+  }
+
+  .action-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--accent);
+    color: white;
+    box-shadow: var(--shadow);
+    transition: all 0.2s;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* 章节分隔 */
+  .chapter-divider {
+    max-width: 1200px;
+    margin: 40px auto 16px;
+    padding: 0 24px;
+  }
+
+  .chapter-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--primary);
+  }
+
+  .chapter-num {
+    background: var(--primary);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* 卡片网格 - 2列 */
+  .cards-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px 48px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* 卡片翻转效果 */
+  .card-container {
+    perspective: 1200px;
+    height: 300px;
+    cursor: pointer;
+  }
+
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 14px;
+  }
+
+  .card-container.flipped .card {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 14px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .card-front {
+    background: var(--card-front);
+  }
+
+  .card-back {
+    background: linear-gradient(135deg, var(--card-back) 0%, #dbeafe 100%);
+    transform: rotateY(180deg);
+  }
+
+  /* 卡片标签 */
+  .card-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    align-self: flex-start;
+  }
+
+  .card-front .card-tag {
+    background: #ede9fe;
+    color: #6d28d9;
+  }
+
+  .card-back .card-tag {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  /* 卡片编号 */
+  .card-num {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 12px;
+    color: var(--text-light);
+    font-weight: 500;
+  }
+
+  /* 问题/答案标题 */
+  .card-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  /* 问题文本 */
+  .question-text {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.6;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  /* 答案文本 */
+  .answer-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.7;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .answer-text code {
+    background: rgba(0,0,0,0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    font-size: 12px;
+  }
+
+  .answer-text pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 8px 0;
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    overflow-x: auto;
+  }
+
+  .answer-text ul {
+    padding-left: 20px;
+    margin: 4px 0;
+  }
+
+  .answer-text li {
+    margin-bottom: 3px;
+  }
+
+  .answer-text strong {
+    color: var(--primary-dark);
+  }
+
+  /* 翻转提示 */
+  .flip-hint {
+    font-size: 12px;
+    color: var(--text-light);
+    text-align: center;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .flip-icon {
+    display: inline-block;
+    transition: transform 0.3s;
+  }
+
+  .card-container:hover .flip-icon {
+    transform: rotate(180deg);
+  }
+
+  /* 滚动条美化 */
+  .answer-text::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .answer-text::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .answer-text::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 2px;
+  }
+
+  /* 页脚 */
+  .footer {
+    text-align: center;
+    padding: 32px 24px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    background: white;
+  }
+
+  /* 无结果提示 */
+  .no-results {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--text-light);
+    grid-column: 1 / -1;
+  }
+
+  .no-results .icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+
+  /* 难度指示 */
+  .difficulty {
+    display: inline-flex;
+    gap: 2px;
+    vertical-align: middle;
+  }
+
+  .diff-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    display: inline-block;
+  }
+
+  .diff-dot.filled {
+    background: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📚 C 程序设计语言 · 精华卡片</h1>
+  <div class="subtitle">基于 K&amp;R《C程序设计语言（第二版）》核心知识点提炼</div>
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-num" id="totalCards">0</div>
+      <div class="stat-label">张卡片</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">8</div>
+      <div class="stat-label">个章节</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">⭐⭐⭐</div>
+      <div class="stat-label">经典必读</div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="搜索卡片内容...">
+  </div>
+  <button class="filter-btn active" data-chapter="all">全部</button>
+  <button class="filter-btn" data-chapter="ch1">第1章</button>
+  <button class="filter-btn" data-chapter="ch2">第2章</button>
+  <button class="filter-btn" data-chapter="ch3">第3章</button>
+  <button class="filter-btn" data-chapter="ch4">第4章</button>
+  <button class="filter-btn" data-chapter="ch5">第5章</button>
+  <button class="filter-btn" data-chapter="ch6">第6章</button>
+  <button class="filter-btn" data-chapter="ch7">第7章</button>
+  <button class="filter-btn" data-chapter="ch8">第8章</button>
+  <button class="action-btn" id="flipAllBtn">🔄 翻转全部</button>
+</div>
+
+<div id="cardsContainer"></div>
+
+<div class="footer">
+  点击卡片翻转查看答案 · 数据来源：《The C Programming Language, 2nd Edition》by Kernighan & Ritchie
+</div>
+
+<script>
+// Anki卡片数据
+const cards = [
+  // ===== 第1章 导言 =====
+  {
+    id: 1,
+    chapter: "ch1",
+    chapterName: "第1章 导言",
+    difficulty: 1,
+    tag: "基础概念",
+    question: "C语言程序的基本结构由哪两部分组成？每个程序的入口点是什么？",
+    answer: "C语言程序由<strong>函数</strong>和<strong>变量</strong>组成。函数包含指定计算操作的语句，变量用于存储计算过程中使用的值。<br><br>每个C程序都从<code>main</code>函数的起点开始执行，因此每个程序必须在某个位置包含一个<code>main</code>函数。"
+  },
+  {
+    id: 2,
+    chapter: "ch1",
+    chapterName: "第1章 导言",
+    difficulty: 1,
+    tag: "标准库",
+    question: "#include <stdio.h> 的作用是什么？printf 是 C 语言本身的一部分吗？",
+    answer: "<code>#include <stdio.h></code> 用于告诉编译器在本程序中包含标准输入/输出库的信息。许多C语言源程序的开始处都包含这一行。<br><br><code>printf</code> <strong>不是</strong>C语言本身的一部分，C语言本身并没有定义输入/输出功能。printf仅仅是标准库函数集中的一个函数。"
+  },
+  {
+    id: 3,
+    chapter: "ch1",
+    chapterName: "第1章 导言",
+    difficulty: 1,
+    tag: "转义字符",
+    question: "C语言中常见的转义字符有哪些？分别代表什么含义？",
+    answer: "C语言中常见的转义字符序列包括：<br><br><ul><li><code>\\n</code> — 换行符</li><li><code>\\t</code> — 制表符（Tab）</li><li><code>\\b</code> — 回退符（退格）</li><li><code>\\\"</code> — 双引号</li><li><code>\\\\</code> — 反斜杠符本身</li></ul>转义字符序列看起来像两个字符，但只表示一个字符。"
+  },
+  {
+    id: 4,
+    chapter: "ch1",
+    chapterName: "第1章 导言",
+    difficulty: 1,
+    tag: "变量声明",
+    question: "C语言中变量声明的位置和规则是什么？",
+    answer: "在C语言中，所有变量都必须<strong>先声明后使用</strong>。声明通常放在函数的起始处，在任何可执行语句之前。<br><br>声明用于说明变量的属性，由一个<strong>类型名</strong>和一个<strong>变量表</strong>组成，例如：<pre>int lower, upper, step;\nchar c, line[1000];</pre>"
+  },
+  {
+    id: 5,
+    chapter: "ch1",
+    chapterName: "第1章 导言",
+    difficulty: 2,
+    tag: "算术运算",
+    question: "为什么 5/9 的结果是 0？如何正确计算摄氏温度？",
+    answer: "在C语言中，整数除法会<strong>截断</strong>结果，即舍弃小数部分。因此 5/9 的结果为 0。<br><br>要正确计算摄氏温度，应使用浮点数运算：<br>当常数中包含小数点时，该常数为浮点数。<code>5.0/9.0</code> 的结果为 <code>0.555...</code>。<br><br>公式 <code>c = (5.0/9.0) * (fahr-32)</code> 可正确计算。"
+  },
+  {
+    id: 6,
+    chapter: "ch1",
+    chapterName: "第1章 导言",
+    difficulty: 1,
+    tag: "符号常量",
+    question: "#define 的作用是什么？使用符号常量有什么好处？",
+    answer: "<code>#define</code> 指令用于定义<strong>符号常量</strong>（或宏替换）。语法为：<pre>#define 名字 替换文本</pre>在该定义之后，程序中出现的所有定义名字（未被引号引起来、不是其他名字的一部分）都将被替换为对应的文本。<br><br><strong>好处：</strong><ul><li>给魔法数字赋予有意义的名字，提高可读性</li><li>便于修改，只需改一处</li><li>通常用大写字母命名符号常量</li></ul>"
+  },
+  {
+    id: 7,
+    chapter: "ch1",
+    chapterName: "第1章 导言",
+    difficulty: 2,
+    tag: "字符I/O",
+    question: "getchar() 和 putchar() 的作用是什么？EOF 是什么？",
+    answer: "<code>getchar()</code> 从标准输入读取下一个字符，并返回其值。<code>putchar(c)</code> 将字符 c 打印到标准输出。<br><br><code>EOF</code>（End Of File）是文件结束标志，是一个在 <code>stdio.h</code> 中定义的<strong>整型常量</strong>，其值为 -1。当 getchar 到达输入末尾时返回 EOF。<br><br>注意：用于存储 getchar 返回值的变量必须是 <code>int</code> 类型，而不是 <code>char</code> 类型，因为 EOF 值超出了 char 范围。"
+  },
+  {
+    id: 8,
+    chapter: "ch1",
+    chapterName: "第1章 导言",
+    difficulty: 2,
+    tag: "传值调用",
+    question: "什么是传值调用（call by value）？它有什么特点？",
+    answer: "C语言中，函数参数的传递方式是<strong>传值调用</strong>：函数接收的是参数值的副本，而不是原始变量。<br><br><strong>特点：</strong><ul><li>函数内部修改参数值不会影响调用函数中的原始变量</li><li>被调函数可以直接操作副本，无需担心副作用</li><li>如果需要修改原始变量，必须传递<strong>指针</strong>（地址）</li></ul>这是C语言的一个重要特性，与传引用调用不同。"
+  },
+  {
+    id: 9,
+    chapter: "ch1",
+    chapterName: "第1章 导言",
+    difficulty: 2,
+    tag: "字符数组",
+    question: "C语言中字符串是如何表示的？字符串以什么结尾？",
+    answer: "C语言中的字符串是以字符数组的形式存储的，以特殊字符 <code>'\\0'</code>（空字符，值为0）作为字符串的结束标志。<br><br>例如，字符串 <code>\"hello\"</code> 在内存中占 6 个字符位置：h e l l o \\0<br><br>这意味着字符数组的长度必须比字符串中实际字符数<strong>多1</strong>，以容纳结束符。"
+  },
+  {
+    id: 10,
+    chapter: "ch1",
+    chapterName: "第1章 导言",
+    difficulty: 3,
+    tag: "作用域",
+    question: "外部变量与局部变量的区别是什么？什么是自动变量？",
+    answer: "<strong>外部变量（全局变量）：</strong>定义在所有函数之外，可以被多个函数访问。生命周期贯穿整个程序执行期。<br><br><strong>局部变量（自动变量）：</strong>定义在函数内部，仅在该函数内有效。函数调用时创建，函数返回时消失，因此称为\"自动变量\"。<br><br><strong>作用域规则：</strong><ul><li>外部变量在文件级可见</li><li>内部变量（自动变量）在函数或块内可见</li><li>同名时内部变量会遮蔽外部变量</li></ul>"
+  },
+
+  // ===== 第2章 类型、运算符与表达式 =====
+  {
+    id: 11,
+    chapter: "ch2",
+    chapterName: "第2章 类型、运算符与表达式",
+    difficulty: 1,
+    tag: "数据类型",
+    question: "C语言的基本数据类型有哪些？各自的典型长度是多少？",
+    answer: "C语言的基本数据类型：<br><br><ul><li><code>char</code> — 字符，1个字节（8位），可存放一个字符</li><li><code>int</code> — 整数，通常反映机器的自然字长（16或32位）</li><li><code>float</code> — 单精度浮点数</li><li><code>double</code> — 双精度浮点数</li></ul><br>类型限定符：<ul><li><code>short</code> — 短整型，不少于16位</li><li><code>long</code> — 长整型，不少于32位</li><li><code>signed</code> / <code>unsigned</code> — 有符号/无符号</li></ul>"
+  },
+  {
+    id: 12,
+    chapter: "ch2",
+    chapterName: "第2章 类型、运算符与表达式",
+    difficulty: 2,
+    tag: "常量",
+    question: "C语言中有哪些类型的常量？各举一例。",
+    answer: "C语言中的常量类型：<br><br><ul><li><strong>整型常量</strong>：如 <code>123</code>、<code>037</code>（八进制，以0开头）、<code>0xFF</code>（十六进制，以0x开头）</li><li><strong>浮点常量</strong>：如 <code>3.14</code>、<code>1.5e-3</code>（科学计数法）</li><li><strong>字符常量</strong>：如 <code>'A'</code>、<code>'\\n'</code>，实际上是一个整数值</li><li><strong>字符串常量</strong>：如 <code>\"hello\"</code>，是字符数组，以\\0结尾</li><li><strong>枚举常量</strong>：使用 <code>enum</code> 定义的一组常量值</li></ul>"
+  },
+  {
+    id: 13,
+    chapter: "ch2",
+    chapterName: "第2章 类型、运算符与表达式",
+    difficulty: 2,
+    tag: "类型转换",
+    question: "C语言中类型转换的规则是什么？什么是隐式转换和显式转换？",
+    answer: "<strong>隐式转换（自动转换）：</strong>当不同类型的操作数进行运算时，较窄的类型会自动转换为较宽的类型：<br>char/short → int → unsigned → long → double<br>float → double<br><br><strong>显式转换（强制类型转换）：</strong>使用 <code>(类型)表达式</code> 的形式，如 <code>(int) 3.14</code>。<br><br><strong>规则总结：</strong><ul><li>窄类型向宽类型转换（提升），避免信息丢失</li><li>有符号和无符号混合时，结果为无符号（需小心！）</li><li>赋值时右操作数转换为左操作数类型</li></ul>"
+  },
+  {
+    id: 14,
+    chapter: "ch2",
+    chapterName: "第2章 类型、运算符与表达式",
+    difficulty: 2,
+    tag: "自增运算符",
+    question: "++i 和 i++ 有什么区别？前缀和后缀自增的区别是什么？",
+    answer: "<code>++i</code>（前缀自增）和 <code>i++</code>（后缀自增）都会使变量 i 的值加1，但它们<strong>返回的值不同</strong>：<br><br><ul><li><strong>前缀 ++i</strong>：先将i加1，然后返回<strong>增加后</strong>的值</li><li><strong>后缀 i++</strong>：先返回<strong>增加前</strong>的值，然后将i加1</li></ul><br>当仅需要递增变量而不使用其值时，前缀和后缀效果相同。<br>自减运算符 <code>--</code> 同理。"
+  },
+  {
+    id: 15,
+    chapter: "ch2",
+    chapterName: "第2章 类型、运算符与表达式",
+    difficulty: 3,
+    tag: "位运算符",
+    question: "C语言的位运算符有哪些？各自的功能是什么？",
+    answer: "C语言的位运算符（用于整型操作数）：<br><br><ul><li><code>&</code> — 按位与：对应位都为1则结果为1</li><li><code>|</code> — 按位或：对应位有一个为1则结果为1</li><li><code>^</code> — 按位异或：对应位不同则结果为1</li><li><code>~</code> — 按位取反：0变1，1变0（一元运算符）</li><li><code><<</code> — 左移：左移n位，右边补0</li><li><code>>></code> — 右移：右移n位（无符号数补0，有符号数取决于实现）</li></ul><br>注意：位运算符 <code>&</code>、<code>^</code>、<code>|</code> 的优先级比 <code>==</code> 和 <code>!=</code> 低，使用时需加括号。"
+  },
+  {
+    id: 16,
+    chapter: "ch2",
+    chapterName: "第2章 类型、运算符与表达式",
+    difficulty: 2,
+    tag: "赋值运算符",
+    question: "什么是复合赋值运算符？x *= y + 1 等价于什么？",
+    answer: "复合赋值运算符将算术运算和赋值结合在一起。常见的有：<code>+=</code>、<code>-=</code>、<code>*=</code>、<code>/=</code>、<code>%=</code>、<code>&=</code>、<code>^=</code>、<code>|=</code>、<code><<=</code>、<code>>>=</code> 等。<br><br><code>x *= y + 1</code> 等价于 <code>x = x * (y + 1)</code><br><br>注意：右边表达式被当作一个整体。复合赋值的优点是书写简洁，且左操作数只计算一次。"
+  },
+  {
+    id: 17,
+    chapter: "ch2",
+    chapterName: "第2章 类型、运算符与表达式",
+    difficulty: 2,
+    tag: "条件表达式",
+    question: "条件运算符 ? : 的语法和用法是什么？举一个例子。",
+    answer: "条件运算符是C语言中唯一的三元运算符，语法为：<br><code>表达式1 ? 表达式2 : 表达式3</code><br><br>执行时先计算表达式1：<ul><li>如果为真（非0），计算表达式2的值并作为结果</li><li>如果为假（0），计算表达式3的值并作为结果</li></ul><br>例子：求两个数中的较大值<br><code>max = (a > b) ? a : b;</code><br><br>条件表达式可以出现在常量表达式中，比if-else更简洁。"
+  },
+  {
+    id: 18,
+    chapter: "ch2",
+    chapterName: "第2章 类型、运算符与表达式",
+    difficulty: 3,
+    tag: "优先级",
+    question: "C语言运算符优先级的大致顺序是怎样的？有哪些需要特别注意的地方？",
+    answer: "运算符优先级从高到低（主要类别）：<br><br>1. <code>()</code> <code>[]</code> <code>-></code> <code>.</code> — 左结合<br>2. <code>!</code> <code>~</code> <code>++</code> <code>--</code> 等一元运算符 — 右结合<br>3. <code>*</code> <code>/</code> <code>%</code> — 左结合<br>4. <code>+</code> <code>-</code> — 左结合<br>5. <code><<</code> <code>>></code> — 左结合<br>6. <code><</code> <code><=</code> <code>></code> <code>>=</code> — 左结合<br>7. <code>==</code> <code>!=</code> — 左结合<br>8. <code>&</code> → <code>^</code> → <code>|</code> — 左结合<br>9. <code>&&</code> → <code>||</code> — 左结合<br>10. <code>?:</code> — 右结合<br>11. <code>=</code> 等赋值符 — 右结合<br>12. <code>,</code> — 左结合<br><br><strong>注意：</strong>位运算符 &、^、| 优先级低于 == 和 !=，使用时需要加括号。"
+  },
+  {
+    id: 19,
+    chapter: "ch2",
+    chapterName: "第2章 类型、运算符与表达式",
+    difficulty: 2,
+    tag: "求值顺序",
+    question: "C语言中函数参数和操作数的求值顺序是确定的吗？哪些运算符有确定的求值顺序？",
+    answer: "C语言<strong>没有指定</strong>大多数运算符中多个操作数的计算顺序，也<strong>没有指定</strong>函数参数的求值顺序。因此，如果表达式的结果依赖于求值顺序，属于不好的编程风格。<br><br>只有以下四个运算符保证了从左到右的求值顺序：<br><br><ul><li><code>&&</code> — 逻辑与（短路求值）</li><li><code>||</code> — 逻辑或（短路求值）</li><li><code>?:</code> — 条件运算符</li><li><code>,</code> — 逗号运算符</li></ul>"
+  },
+  {
+    id: 20,
+    chapter: "ch2",
+    chapterName: "第2章 类型、运算符与表达式",
+    difficulty: 2,
+    tag: "逻辑运算符",
+    question: "逻辑运算符 && 和 || 的短路求值特性是什么？",
+    answer: "逻辑与 <code>&&</code> 和逻辑或 <code>||</code> 都具有<strong>短路求值</strong>的特性：<br><br><ul><li><code>&&</code>：如果左操作数为假（0），则<strong>不计算</strong>右操作数，整个表达式直接为假</li><li><code>||</code>：如果左操作数为真（非0），则<strong>不计算</strong>右操作数，整个表达式直接为真</li></ul><br>它们还保证了从左到右的求值顺序。<br>典型用法：<code>if (i < n && a[i] > 0)</code> — 先检查边界再访问数组。"
+  },
+  {
+    id: 60,
+    chapter: "ch2",
+    chapterName: "第2章 类型、运算符与表达式",
+    difficulty: 1,
+    tag: "sizeof",
+    question: "sizeof 运算符的作用是什么？它的返回值类型是什么？",
+    answer: "<code>sizeof</code> 运算符用于计算其操作数的存储大小（以字节为单位）。<br><br><strong>用法：</strong><ul><li><code>sizeof(类型名)</code> — 如 <code>sizeof(int)</code></li><li><code>sizeof 表达式</code> — 如 <code>sizeof x</code></li></ul><br><strong>返回值类型：</strong><code>size_t</code>，是一个无符号整数类型。<br><br><strong>重要特性：</strong><ul><li>sizeof 是编译时求值（变长数组除外），不计算其操作数的副作用</li><li>对数组使用返回整个数组的大小，对指针使用返回指针本身的大小</li><li>常用于动态内存分配：<code>malloc(n * sizeof(int))</code></li></ul>"
+  },
+
+  // ===== 第3章 控制流 =====
+  {
+    id: 21,
+    chapter: "ch3",
+    chapterName: "第3章 控制流",
+    difficulty: 1,
+    tag: "语句与块",
+    question: "C语言中分号的作用是什么？什么是复合语句（程序块）？",
+    answer: "在C语言中，分号是<strong>语句结束符</strong>。表达式后加上分号就变成了语句。<br><br><strong>复合语句（程序块）：</strong>用一对花括号 <code>{}</code> 把一组声明和语句括在一起就构成了一个复合语句。<br><br>复合语句在语法上等价于单条语句，可以出现在任何单条语句可以出现的地方。右花括号后不需要分号。"
+  },
+  {
+    id: 22,
+    chapter: "ch3",
+    chapterName: "第3章 控制流",
+    difficulty: 1,
+    tag: "if-else",
+    question: "if-else 语句中，else 总是与哪个 if 配对？如果想要不同的配对怎么办？",
+    answer: "C语言规定，<code>else</code> 总是与<strong>离它最近的且尚未配对的</strong> <code>if</code> 相结合。<br><br>例如：<pre>if (n > 0)\n    if (a > b)\n        z = a;\n    else\n        z = b;</pre>else 与内层 if 配对。<br><br>如果希望 else 与外层 if 配对，必须<strong>用花括号</strong>明确界定：<pre>if (n > 0) {\n    if (a > b)\n        z = a;\n} else\n    z = b;</pre>"
+  },
+  {
+    id: 23,
+    chapter: "ch3",
+    chapterName: "第3章 控制流",
+    difficulty: 2,
+    tag: "switch",
+    question: "switch 语句的语法和执行规则是什么？break 的作用是什么？",
+    answer: "<code>switch</code> 语句用于多路分支选择：<pre>switch (表达式) {\n    case 常量表达式1:\n        语句序列\n        break;\n    case 常量表达式2:\n        语句序列\n        break;\n    default:\n        语句序列\n}</pre><br><strong>执行规则：</strong>计算表达式的值，与case后的常量比较，匹配则从该case处开始执行。<br><br><code>break</code> 的作用是<strong>跳出</strong> switch语句。如果没有break，程序会继续执行下一个case（称为贯穿/fall through）。<br>default 是可选的，用于处理所有未匹配的情况。"
+  },
+  {
+    id: 24,
+    chapter: "ch3",
+    chapterName: "第3章 控制流",
+    difficulty: 2,
+    tag: "循环",
+    question: "while 循环和 for 循环有什么区别和联系？什么时候用哪个？",
+    answer: "<strong>while 循环：</strong><br><code>while (表达式) 语句</code> — 每次循环前测试条件<br><br><strong>for 循环：</strong><br><code>for (expr1; expr2; expr3) 语句</code> — 等价于：<pre>expr1;\nwhile (expr2) {\n    语句\n    expr3;\n}</pre><br><strong>选择建议：</strong><ul><li>当循环有明确的初始化和更新步骤（如计数循环）时，用 <code>for</code> 更简洁</li><li>当循环条件更简单、没有明显的循环变量时，用 <code>while</code> 更清晰</li><li>两者可以相互转换，选择可读性更好的</li></ul>"
+  },
+  {
+    id: 25,
+    chapter: "ch3",
+    chapterName: "第3章 控制流",
+    difficulty: 2,
+    tag: "do-while",
+    question: "do-while 循环与 while 循环的区别是什么？",
+    answer: "<code>do-while</code> 循环语法：<pre>do\n    语句\nwhile (表达式);</pre><br><strong>与 while 的区别：</strong><ul><li><code>while</code>：先判断条件，条件为真才执行循环体（循环体可能一次都不执行）</li><li><code>do-while</code>：先执行循环体，再判断条件（循环体<strong>至少执行一次</strong>）</li></ul><br>do-while 适用于循环体至少需要执行一次的情况，例如菜单驱动程序或输入验证。注意 while 后必须有分号。"
+  },
+  {
+    id: 26,
+    chapter: "ch3",
+    chapterName: "第3章 控制流",
+    difficulty: 2,
+    tag: "break/continue",
+    question: "break 和 continue 的区别是什么？",
+    answer: "<strong>break 语句：</strong><ul><li>用于跳出最内层的循环或 switch 语句</li><li>立即终止整个循环，继续执行循环后的语句</li><li>常用于提前退出循环</li></ul><br><strong>continue 语句：</strong><ul><li>用于跳过本次循环体的剩余部分，直接进入下一次循环的条件判断</li><li>不终止整个循环，只跳过当前迭代</li><li>在 for 循环中，continue 后会执行 expr3（更新表达式）</li></ul><br>简单说：break 是\"退出循环\"，continue 是\"跳过本次，继续下次\"。"
+  },
+  {
+    id: 27,
+    chapter: "ch3",
+    chapterName: "第3章 控制流",
+    difficulty: 3,
+    tag: "goto",
+    question: "goto 语句的用法和争议是什么？什么时候可以考虑使用 goto？",
+    answer: "<code>goto</code> 语句可以无条件跳转到函数内的某个标号处。标号由标识符加冒号组成。<br><br><strong>争议：</strong>goto 容易破坏程序结构，使代码难以理解和维护，因此一般<strong>不推荐使用</strong>。<br><br><strong>合理使用场景：</strong><ul><li>从深层嵌套的循环中一次性跳出（比多层 break 更高效）</li><li>在函数末尾集中处理错误/清理工作（统一的出口）</li></ul><br>大多数情况下，使用结构化的控制流（break、continue、return）就足够了。"
+  },
+
+  // ===== 第4章 函数与程序结构 =====
+  {
+    id: 28,
+    chapter: "ch4",
+    chapterName: "第4章 函数与程序结构",
+    difficulty: 2,
+    tag: "函数返回值",
+    question: "函数如何返回非整型值？函数原型的作用是什么？",
+    answer: "函数返回非整型值的方法：<ul><li>在函数定义中指定返回类型，如 <code>double power(double base, int n)</code></li><li>在调用之前声明函数原型，使编译器知道返回类型</li></ul><br><strong>函数原型的作用：</strong><ul><li>告诉编译器函数的返回类型、参数个数和类型</li><li>编译器可以对参数进行类型检查和自动转换</li><li>函数原型通常放在头文件中</li></ul><br>如果函数在使用前未声明且返回值不是int，可能导致错误。"
+  },
+  {
+    id: 29,
+    chapter: "ch4",
+    chapterName: "第4章 函数与程序结构",
+    difficulty: 2,
+    tag: "static",
+    question: "static 关键字有哪些用途？分别有什么作用？",
+    answer: "<code>static</code> 有两个主要用途：<br><br><strong>1. 用于内部变量/函数（限制作用域）：</strong><br>用 static 声明的函数或全局变量，其作用域仅限于<strong>所在的源文件</strong>，对其他文件不可见。用于实现信息隐藏。<br><br><strong>2. 用于局部变量（改变存储期）：</strong><br>函数内的 static 局部变量在函数调用之间<strong>保持其值</strong>。与自动变量不同，static 变量只初始化一次，在程序整个执行期间存在。<br><br>总结：static 对外部对象是限制可见性，对内部对象是改变存储期。"
+  },
+  {
+    id: 30,
+    chapter: "ch4",
+    chapterName: "第4章 函数与程序结构",
+    difficulty: 2,
+    tag: "寄存器变量",
+    question: "register 变量的作用是什么？它有什么限制？",
+    answer: "<code>register</code> 关键字用于声明寄存器变量，建议编译器将该变量存放在寄存器中，以提高访问速度。<br><br><strong>特点：</strong><ul><li>寄存器变量访问速度更快</li><li>适用于频繁使用的变量（如循环控制变量）</li><li>取地址运算符 <code>&</code> 不能用于 register 变量</li><li>只是一个\"建议\"，编译器可以忽略</li><li>寄存器数量有限，过多声明可能无效</li></ul><br>现代编译器优化能力很强，通常会自动决定哪些变量放入寄存器，无需手动指定。"
+  },
+  {
+    id: 31,
+    chapter: "ch4",
+    chapterName: "第4章 函数与程序结构",
+    difficulty: 2,
+    tag: "递归",
+    question: "什么是递归函数？递归的优缺点是什么？",
+    answer: "<strong>递归函数</strong>是指直接或间接调用自身的函数。递归通常用于可以分解为相同子问题的场景。<br><br><strong>优点：</strong><ul><li>代码简洁优雅，符合某些问题的自然描述</li><li>树结构、分治算法等用递归更直观</li></ul><br><strong>缺点：</strong><ul><li>函数调用有开销，效率可能低于迭代</li><li>递归深度过大可能导致栈溢出</li><li>可能存在重复计算（如朴素的斐波那契）</li></ul><br>递归的关键是要有<strong>基准情形（base case）</strong>，即递归终止条件，否则会无限递归。"
+  },
+  {
+    id: 32,
+    chapter: "ch4",
+    chapterName: "第4章 函数与程序结构",
+    difficulty: 2,
+    tag: "预处理",
+    question: "C预处理器的主要功能有哪些？",
+    answer: "C预处理器在编译前对源代码进行处理，主要功能包括：<br><br><strong>1. 文件包含</strong>：<code>#include <文件名></code> 或 <code>#include \"文件名\"</code><br><br><strong>2. 宏定义</strong>：<ul><li><code>#define 名字 替换文本</code> — 简单宏</li><li><code>#define 宏名(参数) 替换文本</code> — 带参数的宏</li><li><code>#undef 名字</code> — 取消宏定义</li></ul><br><strong>3. 条件编译</strong>：<code>#if</code>、<code>#ifdef</code>、<code>#ifndef</code>、<code>#else</code>、<code>#elif</code>、<code>#endif</code><br><br><strong>4. 其他</strong>：<code>#error</code>、<code>#pragma</code>、<code>#line</code> 等"
+  },
+  {
+    id: 33,
+    chapter: "ch4",
+    chapterName: "第4章 函数与程序结构",
+    difficulty: 3,
+    tag: "宏的坑",
+    question: "带参数的宏定义有哪些常见陷阱？",
+    answer: "带参数的宏虽然方便，但有不少陷阱：<br><br><strong>1. 运算符优先级问题</strong>：宏参数直接替换，可能导致优先级问题。解决方案：参数和整体都加括号。<pre>#define max(a,b) ((a) > (b) ? (a) : (b))</pre><br><strong>2. 参数多次求值</strong>：如果参数在宏体中出现多次，可能被计算多次（有副作用时很危险）。<br>例：<code>max(i++, j)</code> 中 i 可能自增两次！<br><br><strong>3. 分号问题</strong>：宏定义末尾不要加分号，否则调用后再加会产生多余空语句。<br><br><strong>4. 单行行延续</strong>：多行宏需用 \\ 续行。"
+  },
+
+  // ===== 第5章 指针与数组 =====
+  {
+    id: 34,
+    chapter: "ch5",
+    chapterName: "第5章 指针与数组",
+    difficulty: 3,
+    tag: "指针基础",
+    question: "什么是指针？* 和 & 运算符分别有什么作用？",
+    answer: "<strong>指针</strong>是一个变量，其值是另一个变量的地址（内存位置）。<br><br><code>&</code> — 取地址运算符：应用于一个变量，返回该变量的内存地址。<br>例：<code>int *p = &x;</code> p 指向 x<br><br><code>*</code> — 间接寻址/解引用运算符：应用于指针，访问指针指向的变量的值。<br>例：<code>*p = 10;</code> 将 p 指向的变量赋值为 10<br><br>指针声明中的 <code>*</code> 不是运算符，只是类型的一部分，说明该变量是指针类型。<br><br>指针是C语言最强大也最容易出错的特性之一。"
+  },
+  {
+    id: 35,
+    chapter: "ch5",
+    chapterName: "第5章 指针与数组",
+    difficulty: 3,
+    tag: "指针与数组",
+    question: "指针与数组有什么关系？a[i] 和 *(a+i) 等价吗？",
+    answer: "指针与数组在C语言中关系密切：<br><br><ul><li>数组名在大多数表达式中会被转换为指向数组第一个元素的指针</li><li><code>a[i]</code> 等价于 <code>*(a + i)</code></li><li><code>&a[i]</code> 等价于 <code>a + i</code></li></ul><br><strong>但数组名和指针不完全相同：</strong><ul><li>数组是常量指针，不能被赋值（不能做 <code>a++</code>）</li><li>sizeof(数组) 返回整个数组的大小，sizeof(指针) 返回指针本身的大小</li></ul><br>指针可以做算术运算，加1是指向下一个元素（不是加1个字节）。"
+  },
+  {
+    id: 36,
+    chapter: "ch5",
+    chapterName: "第5章 指针与数组",
+    difficulty: 3,
+    tag: "地址算术",
+    question: "指针的算术运算有哪些规则？什么是合法的？",
+    answer: "指针算术运算的规则：<br><br><strong>合法的运算：</strong><ul><li>指针 + 整数：指针向前移动 n 个元素</li><li>指针 - 整数：指针向后移动 n 个元素</li><li>指针 - 指针：两个指针指向同一数组时，结果为元素个数（ptrdiff_t 类型）</li><li>指针的比较：<, <=, ==, !=, >=, >（同一数组内有效）</li></ul><br><strong>不合法的运算：</strong><ul><li>指针 + 指针（无意义）</li><li>指针的乘除运算</li></ul><br><strong>注意：</strong>指针加减整数时，整数会自动乘以所指类型的大小（按元素移动，不是按字节）。"
+  },
+  {
+    id: 37,
+    chapter: "ch5",
+    chapterName: "第5章 指针与数组",
+    difficulty: 3,
+    tag: "字符指针",
+    question: "字符数组和字符指针有什么区别？char a[] = \"string\" 和 char *p = \"string\" 有什么不同？",
+    answer: "两者的重要区别：<br><br><strong>char a[] = \"string\";</strong><ul><li>a 是字符数组，内容可修改</li><li>字符串存储在数组中，可以用 <code>a[i] = 'x'</code> 修改</li><li>a 是常量，不能重新赋值</li></ul><br><strong>char *p = \"string\";</strong><ul><li>p 是指向字符串常量的指针</li><li>字符串常量存储在只读区域，尝试修改会导致<strong>未定义行为</strong></li><li>p 可以重新指向其他地方</li></ul><br>经验法则：如果需要修改字符串内容，使用字符数组；如果只是引用字符串字面量，使用 const char*。"
+  },
+  {
+    id: 38,
+    chapter: "ch5",
+    chapterName: "第5章 指针与数组",
+    difficulty: 3,
+    tag: "指针数组",
+    question: "什么是指针数组？它和二维数组有什么区别？",
+    answer: "<strong>指针数组</strong>：数组的每个元素都是一个指针。例如 <code>char *argv[]</code>。<br><br><strong>与二维数组的区别：</strong><ul><li>二维数组：每行长度相同，内存连续分配</li><li>指针数组：每个指针可以指向不同长度的数据，各行长度可以不同，内存不一定连续</li><li>指针数组需要额外的存储空间来存储指针</li></ul><br>典型应用：命令行参数 <code>int main(int argc, char *argv[])</code> 中 argv 就是指针数组，每个元素指向一个参数字符串。"
+  },
+  {
+    id: 39,
+    chapter: "ch5",
+    chapterName: "第5章 指针与数组",
+    difficulty: 3,
+    tag: "命令行参数",
+    question: "C语言中 main 函数的命令行参数 argc 和 argv 分别代表什么？",
+    answer: "<code>int main(int argc, char *argv[])</code><br><br><strong>argc</strong>（argument count）：命令行参数的个数，包括程序名本身。<br><br><strong>argv</strong>（argument vector）：指向命令行参数的指针数组。<ul><li><code>argv[0]</code> 指向程序名字符串</li><li><code>argv[1]</code> 到 <code>argv[argc-1]</code> 指向实际的参数</li><li><code>argv[argc]</code> 为 <code>NULL</code>（空指针）</li></ul><br>例如执行 <code>./program hello world</code>：<ul><li>argc = 3</li><li>argv[0] = \"./program\"</li><li>argv[1] = \"hello\"</li><li>argv[2] = \"world\"</li><li>argv[3] = NULL</li></ul>"
+  },
+  {
+    id: 40,
+    chapter: "ch5",
+    chapterName: "第5章 指针与数组",
+    difficulty: 4,
+    tag: "函数指针",
+    question: "什么是指向函数的指针？它有什么用途？",
+    answer: "<strong>函数指针</strong>是指向函数的指针变量，它的值是函数的入口地址。<br><br><strong>声明示例：</strong><code>int (*comp)(int, int)</code> — comp 是一个指向函数的指针，该函数接受两个 int 参数，返回 int。<br><br><strong>用途：</strong><ul><li>作为函数参数传递，实现通用算法（如快速排序的比较函数）</li><li>回调函数机制</li><li>存储在表中（跳转表），根据条件调用不同函数</li></ul><br>标准库中的 <code>qsort</code> 函数就是典型例子，它接受一个比较函数指针。"
+  },
+  {
+    id: 41,
+    chapter: "ch5",
+    chapterName: "第5章 指针与数组",
+    difficulty: 4,
+    tag: "复杂声明",
+    question: "如何理解 C 语言中的复杂声明？例如 int (*(*f())[])() 是什么意思？",
+    answer: "理解复杂声明的方法是<strong>从内向外</strong>读，从变量名开始，按照优先级：<br><br>优先级从高到低：<ol><li>括号内的 <code>()</code> 和 <code>[]</code></li><li>前缀的 <code>*</code>（指向...的指针）</li><li>右边的返回类型</li></ol><br><code>int (*(*f())[])()</code> 的解读：<ul><li>f 是一个函数</li><li>返回一个指针</li><li>该指针指向一个数组</li><li>数组元素是指针</li><li>指向返回 int 的函数</li></ul><br>即：f 是函数，返回指向\"返回int的函数指针数组\"的指针。<br><br>复杂声明建议用 typedef 简化。"
+  },
+
+  // ===== 第6章 结构 =====
+  {
+    id: 42,
+    chapter: "ch6",
+    chapterName: "第6章 结构",
+    difficulty: 2,
+    tag: "结构基础",
+    question: "什么是结构（struct）？如何定义和使用结构？",
+    answer: "<strong>结构</strong>是由若干成员组成的集合，各成员可以是不同类型，通过一个名字来引用。<br><br><strong>定义结构：</strong><pre>struct point {\n    int x;\n    int y;\n};</pre><br><strong>声明变量：</strong><br><code>struct point p;</code><br><br><strong>访问成员：</strong>使用点运算符 <code>.</code><br><code>p.x = 10; p.y = 20;</code><br><br>结构可以作为整体赋值、作为函数参数传递、作为函数返回值。结构的大小通常至少是各成员大小之和（可能有填充）。"
+  },
+  {
+    id: 43,
+    chapter: "ch6",
+    chapterName: "第6章 结构",
+    difficulty: 2,
+    tag: "结构与函数",
+    question: "结构作为函数参数时是如何传递的？如何提高效率？",
+    answer: "结构作为函数参数时，采用<strong>传值调用</strong>，即整个结构会被复制一份。<br><br><strong>效率问题：</strong>如果结构很大，复制开销会比较大。<br><br><strong>提高效率的方法：</strong>传递指向结构的<strong>指针</strong>：<pre>void print_point(struct point *p)</pre>这样只需要传递一个地址（4或8字节），而不是整个结构。<br><br>访问指针指向的结构成员使用 <code>-></code> 运算符：<br><code>p->x</code> 等价于 <code>(*p).x</code>"
+  },
+  {
+    id: 44,
+    chapter: "ch6",
+    chapterName: "第6章 结构",
+    difficulty: 3,
+    tag: "自引用结构",
+    question: "什么是自引用结构？举一个典型应用例子。",
+    answer: "<strong>自引用结构</strong>是指结构中包含一个指向自身类型的指针的结构。<br><br><strong>典型例子：链表节点</strong><pre>struct node {\n    int data;\n    struct node *next;  // 指向同类型结构的指针\n};</pre><br>注意：结构中只能包含指向自身的<strong>指针</strong>，不能包含自身类型的成员（会导致无限递归的大小定义）。<br><br><strong>应用：</strong>链表、树、图等数据结构都基于自引用结构实现。通过指针串联起各个节点。"
+  },
+  {
+    id: 45,
+    chapter: "ch6",
+    chapterName: "第6章 结构",
+    difficulty: 2,
+    tag: "typedef",
+    question: "typedef 的作用是什么？使用 typedef 有什么好处？",
+    answer: "<code>typedef</code> 用于为类型创建一个新的名字（别名）。<br><br><strong>语法：</strong><br><code>typedef 类型 新名字;</code><br><br><strong>例子：</strong><pre>typedef int Length;  // Length 成为 int 的别名\ntypedef struct point Point;  // Point 代替 struct point</pre><br><strong>好处：</strong><ul><li>使程序更易于理解和维护（语义化的类型名）</li><li>提高可移植性（修改一处即可改变类型）</li><li>简化复杂类型的声明（如函数指针、数组指针等）</li><li>与结构配合使用可省去 struct 关键字</li></ul><br>注意：typedef 是定义类型别名，不是定义新类型。"
+  },
+  {
+    id: 46,
+    chapter: "ch6",
+    chapterName: "第6章 结构",
+    difficulty: 3,
+    tag: "联合",
+    question: "联合（union）是什么？它和结构有什么区别？",
+    answer: "<strong>联合</strong>是一种特殊的类型，它可以在相同的内存位置存储不同类型的数据，但同一时刻只能存储其中一种。<br><br><strong>与结构的区别：</strong><ul><li><strong>struct</strong>：各成员有各自的存储空间，总大小是各成员大小之和（加填充）</li><li><strong>union</strong>：所有成员共享同一块存储空间，大小为最大成员的大小</li></ul><br><strong>声明语法：</strong><pre>union u_tag {\n    int ival;\n    float fval;\n    char *sval;\n} u;</pre><br>用途：当一个变量需要表示多种类型但同一时刻只用一种时（节省空间），或用于类型双关操作。"
+  },
+  {
+    id: 47,
+    chapter: "ch6",
+    chapterName: "第6章 结构",
+    difficulty: 3,
+    tag: "位字段",
+    question: "什么是位字段（bit-field）？它有什么用途？",
+    answer: "<strong>位字段</strong>是结构中以位为单位指定长度的成员，用于紧凑地存储数据。<br><br><strong>语法：</strong><pre>struct flags {\n    unsigned int is_active : 1;  // 占1位\n    unsigned int priority : 3;   // 占3位\n    unsigned int mode : 2;       // 占2位\n};</pre><br><strong>用途：</strong><ul><li>节省存储空间（特别适合硬件寄存器、标志位等）</li><li>表示一些只需要少量位的属性</li></ul><br><strong>注意：</strong><ul><li>位字段必须是 int 或 unsigned int 类型</li><li>不能取地址（&操作符不用于位字段）</li><li>位字段的分配细节依赖于具体实现</li></ul>"
+  },
+
+  // ===== 第7章 输入与输出 =====
+  {
+    id: 48,
+    chapter: "ch7",
+    chapterName: "第7章 输入与输出",
+    difficulty: 2,
+    tag: "标准I/O",
+    question: "C语言的标准输入/输出模型是什么？标准流有哪些？",
+    answer: "C语言的标准I/O库提供了一个字符流的接口，隐藏了不同系统I/O的差异。<br><br><strong>三个标准流（自动打开）：</strong><ul><li><code>stdin</code> — 标准输入，通常是键盘</li><li><code>stdout</code> — 标准输出，通常是终端屏幕</li><li><code>stderr</code> — 标准错误，通常也是终端（不受重定向影响）</li></ul><br>所有数据都被当作字节序列来处理。<br>标准I/O库提供了缓冲机制，提高了效率。<br>使用前需包含 <code>#include <stdio.h></code>。"
+  },
+  {
+    id: 49,
+    chapter: "ch7",
+    chapterName: "第7章 输入与输出",
+    difficulty: 2,
+    tag: "printf",
+    question: "printf 函数的常用格式转换说明符有哪些？",
+    answer: "printf 常用格式说明符：<br><br><ul><li><code>%d</code> / <code>%i</code> — 十进制有符号整数</li><li><code>%u</code> — 十进制无符号整数</li><li><code>%o</code> — 八进制整数</li><li><code>%x</code> / <code>%X</code> — 十六进制整数</li><li><code>%c</code> — 单个字符</li><li><code>%s</code> — 字符串</li><li><code>%f</code> — 浮点数（小数形式）</li><li><code>%e</code> / <code>%E</code> — 浮点数（科学计数法）</li><li><code>%g</code> / <code>%G</code> — 浮点数（自动选择）</li><li><code>%p</code> — 指针地址</li><li><code>%%</code> — 输出一个 % 字符</li></ul><br>还可以指定宽度、精度、左对齐等修饰符。"
+  },
+  {
+    id: 50,
+    chapter: "ch7",
+    chapterName: "第7章 输入与输出",
+    difficulty: 2,
+    tag: "scanf",
+    question: "scanf 函数的作用和使用注意事项是什么？",
+    answer: "<code>scanf</code> 用于从标准输入读取格式化数据。<br><br><strong>格式说明符</strong>与 printf 类似，但注意：<ul><li>参数必须是<strong>指针</strong>（变量地址），如 <code>scanf(\"%d\", &x)</code></li><li>字符串 %s 读取时自动添加 \\0 结尾</li><li>默认跳过空白符（空格、换行、制表符等）</li></ul><br><strong>注意事项：</strong><ul><li>忘记 & 运算符是常见错误（数组名本身是地址，不需要&）</li><li>返回值是成功读取的项目数，可用于判断输入是否有效</li><li>读取失败时，输入指针停在出错位置，可能导致后续读取异常</li></ul>"
+  },
+  {
+    id: 51,
+    chapter: "ch7",
+    chapterName: "第7章 输入与输出",
+    difficulty: 2,
+    tag: "文件访问",
+    question: "C语言中如何打开和关闭文件？fopen 的模式有哪些？",
+    answer: "文件操作使用 <code>FILE *</code> 类型的文件指针。<br><br><strong>打开文件：</strong><br><code>FILE *fp = fopen(文件名, 模式);</code><br><br><strong>常见模式：</strong><ul><li><code>\"r\"</code> — 只读（文件必须存在）</li><li><code>\"w\"</code> — 只写（文件不存在则创建，存在则清空）</li><li><code>\"a\"</code> — 追加（文件不存在则创建）</li><li><code>\"r+\"</code> — 读写（文件必须存在）</li><li><code>\"w+\"</code> — 读写（清空或创建）</li><li><code>\"a+\"</code> — 读写追加</li></ul><br><strong>关闭文件：</strong><br><code>fclose(fp);</code><br><br>fopen 失败时返回 NULL，必须检查。"
+  },
+  {
+    id: 52,
+    chapter: "ch7",
+    chapterName: "第7章 输入与输出",
+    difficulty: 2,
+    tag: "错误处理",
+    question: "stderr 与 stdout 有什么区别？为什么错误信息应该输出到 stderr？",
+    answer: "<strong>stdout（标准输出）：</strong>用于正常的程序输出。<br><strong>stderr（标准错误）：</strong>用于输出错误和诊断信息。<br><br><strong>关键区别：</strong><ul><li>它们都是默认输出到终端</li><li>但是当 stdout 被重定向到文件时（如 <code>program > out.txt</code>），stderr 仍然输出到终端</li><li>这样用户即使把输出保存到文件，也能看到错误信息</li></ul><br>这就是为什么错误信息应该输出到 stderr 的原因 — 确保错误信息总能被用户看到。<br><br>可以用 <code>fprintf(stderr, \"error: ...\\n\")</code> 输出错误。"
+  },
+  {
+    id: 53,
+    chapter: "ch7",
+    chapterName: "第7章 输入与输出",
+    difficulty: 2,
+    tag: "行I/O",
+    question: "gets 和 fgets 有什么区别？为什么推荐使用 fgets？",
+    answer: "<strong>gets（已废弃，不推荐）：</strong><ul><li>从标准输入读取一行，存入缓冲区</li><li>不检查缓冲区大小，可能导致<strong>缓冲区溢出</strong>（安全漏洞）</li><li>会丢弃换行符</li></ul><br><strong>fgets（推荐使用）：</strong><ul><li>有最大字符数限制，不会溢出</li><li>语法：<code>fgets(char *s, int n, FILE *stream)</code></li><li>最多读取 n-1 个字符，自动添加 \\0</li><li>换行符 <code>\\n</code> 也会被读入缓冲区</li></ul><br>gets 函数因为严重的安全问题，在 C99 中被标记为过时，C11 中被移除。始终使用 fgets。"
+  },
+
+  // ===== 第8章 UNIX系统接口 =====
+  {
+    id: 54,
+    chapter: "ch8",
+    chapterName: "第8章 UNIX系统接口",
+    difficulty: 3,
+    tag: "文件描述符",
+    question: "什么是文件描述符？标准文件描述符有哪些？",
+    answer: "<strong>文件描述符</strong>是一个小的非负整数，内核用它来标识和追踪进程打开的文件。<br><br><strong>三个标准文件描述符：</strong><ul><li><code>0</code> — 标准输入 (stdin)</li><li><code>1</code> — 标准输出 (stdout)</li><li><code>2</code> — 标准错误 (stderr)</li></ul><br>这是UNIX/Linux系统层面的概念，比标准I/O库（FILE*）更低级。<br><br>标准I/O库（如 printf、fopen 等）是在文件描述符基础上构建的，提供了缓冲和格式化等高层功能。"
+  },
+  {
+    id: 55,
+    chapter: "ch8",
+    chapterName: "第8章 UNIX系统接口",
+    difficulty: 3,
+    tag: "低级I/O",
+    question: "低级 I/O 函数 read 和 write 的特点是什么？与标准I/O有什么区别？",
+    answer: "<strong>read 和 write</strong> 是系统调用，提供无缓冲的原始I/O：<br><br><pre>int read(int fd, void *buf, int n);\nint write(int fd, void *buf, int n);</pre><br><strong>特点：</strong><ul><li>直接操作文件描述符</li><li>没有缓冲机制（每次调用都是系统调用）</li><li>返回实际读取/写入的字节数</li><li>效率较低（频繁调用开销大）</li></ul><br><strong>与标准I/O的区别：</strong><ul><li>标准I/O（FILE*）有缓冲，减少系统调用次数</li><li>低级I/O更原始，直接与操作系统交互</li><li>标准I/O基于低级I/O实现</li></ul>"
+  },
+  {
+    id: 56,
+    chapter: "ch8",
+    chapterName: "第8章 UNIX系统接口",
+    difficulty: 3,
+    tag: "随机访问",
+    question: "如何实现文件的随机访问？lseek 函数的作用是什么？",
+    answer: "<code>lseek</code> 函数可以改变文件的读写位置（文件偏移量），实现随机访问：<br><br><pre>long lseek(int fd, long offset, int origin);</pre><br><strong>origin 参数：</strong><ul><li><code>SEEK_SET</code> (0) — 从文件开头计算偏移</li><li><code>SEEK_CUR</code> (1) — 从当前位置计算偏移</li><li><code>SEEK_END</code> (2) — 从文件末尾计算偏移</li></ul><br><strong>返回值：</strong>新的文件位置（相对于文件开头的字节数）。<br><br>相当于标准I/O中的 fseek 函数，但 lseek 是系统调用，直接操作文件描述符。<br>返回 -1 表示出错。"
+  },
+  {
+    id: 57,
+    chapter: "ch8",
+    chapterName: "第8章 UNIX系统接口",
+    difficulty: 4,
+    tag: "存储分配",
+    question: "malloc 和 free 的工作原理是什么？内存分配需要考虑哪些问题？",
+    answer: "<code>malloc(size)</code> 从堆中分配指定大小的内存块，返回指向该块的指针（失败返回NULL）。<br><code>free(ptr)</code> 释放之前分配的内存块。<br><br><strong>工作原理（简化版）：</strong><ul><li>维护一个空闲块链表</li><li>malloc 搜索合适大小的空闲块（首次适配/最佳适配等策略）</li><li>如果空间不够，向操作系统申请更多内存（如 sbrk 系统调用）</li><li>free 将块归还到空闲链表，可能合并相邻空闲块（减少碎片）</li></ul><br><strong>需要考虑的问题：</strong><ul><li>内存碎片（外部碎片/内部碎片）</li><li>对齐要求（数据必须按特定地址边界对齐）</li><li>内存泄漏（忘记 free）</li><li>重复释放、野指针等</li></ul>"
+  },
+  {
+    id: 58,
+    chapter: "ch8",
+    chapterName: "第8章 UNIX系统接口",
+    difficulty: 3,
+    tag: "库函数vs系统调用",
+    question: "标准库函数和系统调用有什么区别和联系？",
+    answer: "<strong>系统调用：</strong><ul><li>操作系统内核提供的接口</li><li>如 open、read、write、close、lseek、sbrk 等</li><li>每次调用都要从用户态切换到内核态，开销较大</li><li>数量有限，是操作系统的基本功能</li></ul><br><strong>标准库函数：</strong><ul><li>在系统调用之上封装的函数库</li><li>如 fopen、printf、fscanf、malloc 等</li><li>提供缓冲、格式化等高层功能</li><li>可以跨平台（只要操作系统支持）</li></ul><br><strong>关系：</strong>标准库函数<strong>基于</strong>系统调用实现。例如 fopen 内部调用 open，fgetc 内部调用 read（但有缓冲）。"
+  },
+  {
+    id: 59,
+    chapter: "ch8",
+    chapterName: "第8章 UNIX系统接口",
+    difficulty: 3,
+    tag: "目录列表",
+    question: "在 UNIX 系统中如何读取目录内容？目录项结构包含什么？",
+    answer: "UNIX系统中读取目录使用 <code>opendir</code>、<code>readdir</code>、<code>closedir</code> 等函数。<br><br><strong>基本流程：</strong><ol><li>调用 <code>opendir(path)</code> 打开目录，返回 DIR* 指针</li><li>循环调用 <code>readdir(dirp)</code> 逐个读取目录项</li><li>readdir 返回指向 <code>struct dirent</code> 的指针（NULL表示读完）</li><li>调用 <code>closedir(dirp)</code> 关闭目录</li></ul><br><strong>目录项结构（简化）：</strong><ul><li><code>d_name</code> — 文件名</li><li><code>d_ino</code> — inode 号（索引节点号）</li></ul><br>要获取文件详细信息（大小、权限等），需要用 <code>stat</code> 函数。"
+  }
+];
+
+// 渲染卡片
+function renderCards(filteredCards) {
+  const container = document.getElementById('cardsContainer');
+  container.innerHTML = '';
+
+  if (filteredCards.length === 0) {
+    container.innerHTML = `
+      <div class="no-results">
+        <div class="icon">🔍</div>
+        <div>没有找到匹配的卡片</div>
+      </div>
+    `;
+    return;
+  }
+
+  // 按章节分组
+  const chapters = {};
+  const chapterOrder = ['ch1','ch2','ch3','ch4','ch5','ch6','ch7','ch8'];
+  filteredCards.forEach(card => {
+    if (!chapters[card.chapter]) {
+      chapters[card.chapter] = { name: card.chapterName, cards: [] };
+    }
+    chapters[card.chapter].cards.push(card);
+  });
+
+  chapterOrder.forEach(chapterKey => {
+    if (!chapters[chapterKey]) return;
+    const chapter = chapters[chapterKey];
+
+    const divider = document.createElement('div');
+    divider.className = 'chapter-divider';
+    divider.innerHTML = `
+      <div class="chapter-title">
+        <span class="chapter-num">${chapterKey.replace('ch', '')}</span>
+        ${chapter.name}
+        <span style="font-size:13px; color:#64748b; font-weight:normal; margin-left:8px;">(${chapter.cards.length} 张)</span>
+      </div>
+    `;
+    container.appendChild(divider);
+
+    const grid = document.createElement('div');
+    grid.className = 'cards-grid';
+
+    chapter.cards.forEach(card => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card-container';
+      cardEl.dataset.cardId = card.id;
+
+      const diffDots = Array(5).fill(0).map((_, i) =>
+        `<span class="diff-dot ${i < card.difficulty ? 'filled' : ''}"></span>`
+      ).join('');
+
+      cardEl.innerHTML = `
+        <div class="card">
+          <div class="card-face card-front">
+            <div class="card-num">#${String(card.id).padStart(2, '0')} <span class="difficulty">${diffDots}</span></div>
+            <span class="card-tag">${card.tag}</span>
+            <div class="card-label">问题 Question</div>
+            <div class="question-text">${card.question}</div>
+            <div class="flip-hint"><span class="flip-icon">↻</span> 点击翻转查看答案</div>
+          </div>
+          <div class="card-face card-back">
+            <div class="card-num">#${String(card.id).padStart(2, '0')}</div>
+            <span class="card-tag">答案</span>
+            <div class="card-label">答案 Answer</div>
+            <div class="answer-text">${card.answer}</div>
+            <div class="flip-hint"><span class="flip-icon">↻</span> 点击翻转返回</div>
+          </div>
+        </div>
+      `;
+
+      cardEl.addEventListener('click', () => {
+        cardEl.classList.toggle('flipped');
+      });
+
+      grid.appendChild(cardEl);
+    });
+
+    container.appendChild(grid);
+  });
+}
+
+// 状态管理
+let currentChapter = 'all';
+let searchQuery = '';
+
+function filterCards() {
+  let filtered = cards;
+
+  if (currentChapter !== 'all') {
+    filtered = filtered.filter(c => c.chapter === currentChapter);
+  }
+
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    filtered = filtered.filter(c =>
+      c.question.toLowerCase().includes(q) ||
+      c.answer.toLowerCase().includes(q) ||
+      c.tag.toLowerCase().includes(q)
+    );
+  }
+
+  document.getElementById('totalCards').textContent = filtered.length;
+  renderCards(filtered);
+}
+
+// 事件绑定
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  searchQuery = e.target.value;
+  filterCards();
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentChapter = btn.dataset.chapter;
+    filterCards();
+  });
+});
+
+document.getElementById('flipAllBtn').addEventListener('click', () => {
+  const allFlipped = document.querySelectorAll('.card-container.flipped');
+  const allCards = document.querySelectorAll('.card-container');
+
+  if (allFlipped.length === allCards.length) {
+    allCards.forEach(c => c.classList.remove('flipped'));
+  } else {
+    allCards.forEach(c => c.classList.add('flipped'));
+  }
+});
+
+// 初始化
+filterCards();
+</script>
+
+</body>
+</html>

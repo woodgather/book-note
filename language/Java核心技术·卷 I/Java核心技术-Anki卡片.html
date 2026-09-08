@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java核心技术·卷I 精华 Anki 卡片</title>
+<style>
+  :root {
+    --bg: #f0f4f8;
+    --card-front: #ffffff;
+    --card-back: #f0f9ff;
+    --accent: #3b82f6;
+    --accent-light: #dbeafe;
+    --accent-dark: #1d4ed8;
+    --text: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border: #e2e8f0;
+    --tag-bg: #eef2ff;
+    --tag-text: #4f46e5;
+    --success: #10b981;
+    --success-light: #d1fae5;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.1);
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    font-size: 15px;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 隐藏的 radio 放在最前面作为控制源 */
+  .filter-radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* ===== 页面头部 ===== */
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 24px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    animation: float 20s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, 30px); }
+  }
+
+  .header-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .page-header .subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 18px;
+    font-weight: 400;
+  }
+
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .stat-pill {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .stat-pill strong {
+    font-size: 15px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
+  /* ===== 章节筛选栏 ===== */
+  .chapter-filter {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .filter-row {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-right: 4px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .ch-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    background: #f8fafc;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .ch-btn:hover {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    border-color: var(--accent-light);
+  }
+
+  /* 选中状态 - 通过 radio 的 :checked 控制 label 样式 */
+  #ch-all:checked ~ .chapter-filter [for="ch-all"],
+  #ch-1:checked ~ .chapter-filter [for="ch-1"],
+  #ch-2:checked ~ .chapter-filter [for="ch-2"],
+  #ch-3:checked ~ .chapter-filter [for="ch-3"],
+  #ch-4:checked ~ .chapter-filter [for="ch-4"],
+  #ch-5:checked ~ .chapter-filter [for="ch-5"],
+  #ch-6:checked ~ .chapter-filter [for="ch-6"],
+  #ch-7:checked ~ .chapter-filter [for="ch-7"],
+  #ch-8:checked ~ .chapter-filter [for="ch-8"],
+  #ch-9:checked ~ .chapter-filter [for="ch-9"],
+  #ch-10:checked ~ .chapter-filter [for="ch-10"],
+  #ch-13:checked ~ .chapter-filter [for="ch-13"],
+  #ch-14:checked ~ .chapter-filter [for="ch-14"] {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  }
+
+  /* ===== 提示条 ===== */
+  .tip-bar {
+    max-width: 1200px;
+    margin: 20px auto 0;
+    padding: 0 24px;
+  }
+
+  .tip-box {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .tip-box .icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* ===== 卡片网格 ===== */
+  .main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 22px 24px 60px;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  @media (max-width: 900px) {
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===== 翻卡组件 ===== */
+  .card-wrap {
+    perspective: 1800px;
+    height: 300px;
+  }
+
+  .card-toggle {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .card-clicker {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+
+  .card-toggle:checked + .card-clicker .card {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    background: var(--card-front);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .card-clicker:hover .card-face {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-front {
+    border-top: 5px solid var(--accent);
+  }
+
+  .card-back {
+    background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+    transform: rotateY(180deg);
+    border-top: 5px solid var(--success);
+  }
+
+  /* 卡片内标签 */
+  .card-tag {
+    display: inline-flex;
+    align-items: center;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    padding: 3px 11px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    align-self: flex-start;
+    letter-spacing: 0.3px;
+  }
+
+  .card-back .card-tag {
+    background: var(--success-light);
+    color: #065f46;
+  }
+
+  /* 问题 */
+  .card-question {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.65;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.2px;
+  }
+
+  /* 答案 */
+  .card-answer {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+    font-weight: 400;
+  }
+
+  .card-answer::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .card-answer::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+
+  .card-answer::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .card-answer strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .card-answer code {
+    background: #f1f5f9;
+    color: #dc2626;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+
+  .card-answer ul,
+  .card-answer ol {
+    padding-left: 20px;
+    margin: 5px 0;
+  }
+
+  .card-answer li {
+    margin-bottom: 3px;
+  }
+
+  .card-answer ul ul,
+  .card-answer ol ul {
+    margin: 3px 0;
+  }
+
+  .card-answer ul ul li {
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+
+  /* 底部提示 */
+  .card-footer {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    text-align: right;
+    border-top: 1px solid var(--border);
+    padding-top: 9px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .card-back .card-footer {
+    border-top-color: rgba(16, 185, 129, 0.2);
+  }
+
+  /* ===== 章节筛选逻辑（核心） ===== */
+  .card-wrap { display: block; }
+
+  /* 默认显示全部 */
+  #ch-all:checked ~ .main-content .card-wrap { display: block; }
+
+  /* 选中单个章节时，只显示对应章节的卡片 */
+  #ch-1:checked ~ .main-content .card-wrap { display: none; }
+  #ch-1:checked ~ .main-content .card-wrap.ch-1 { display: block; }
+
+  #ch-2:checked ~ .main-content .card-wrap { display: none; }
+  #ch-2:checked ~ .main-content .card-wrap.ch-2 { display: block; }
+
+  #ch-3:checked ~ .main-content .card-wrap { display: none; }
+  #ch-3:checked ~ .main-content .card-wrap.ch-3 { display: block; }
+
+  #ch-4:checked ~ .main-content .card-wrap { display: none; }
+  #ch-4:checked ~ .main-content .card-wrap.ch-4 { display: block; }
+
+  #ch-5:checked ~ .main-content .card-wrap { display: none; }
+  #ch-5:checked ~ .main-content .card-wrap.ch-5 { display: block; }
+
+  #ch-6:checked ~ .main-content .card-wrap { display: none; }
+  #ch-6:checked ~ .main-content .card-wrap.ch-6 { display: block; }
+
+  #ch-7:checked ~ .main-content .card-wrap { display: none; }
+  #ch-7:checked ~ .main-content .card-wrap.ch-7 { display: block; }
+
+  #ch-8:checked ~ .main-content .card-wrap { display: none; }
+  #ch-8:checked ~ .main-content .card-wrap.ch-8 { display: block; }
+
+  #ch-9:checked ~ .main-content .card-wrap { display: none; }
+  #ch-9:checked ~ .main-content .card-wrap.ch-9 { display: block; }
+
+  #ch-10:checked ~ .main-content .card-wrap { display: none; }
+  #ch-10:checked ~ .main-content .card-wrap.ch-10 { display: block; }
+
+  #ch-13:checked ~ .main-content .card-wrap { display: none; }
+  #ch-13:checked ~ .main-content .card-wrap.ch-13 { display: block; }
+
+  #ch-14:checked ~ .main-content .card-wrap { display: none; }
+  #ch-14:checked ~ .main-content .card-wrap.ch-14 { display: block; }
+
+  /* ===== 页脚 ===== */
+  .page-footer {
+    text-align: center;
+    padding: 28px 24px 36px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    border-top: 1px solid var(--border);
+    background: white;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- 隐藏的筛选控制 radio（必须放在 body 的直接子元素，且在内容前面） -->
+<input type="radio" name="chapter" id="ch-all" class="filter-radio" checked>
+<input type="radio" name="chapter" id="ch-1" class="filter-radio">
+<input type="radio" name="chapter" id="ch-2" class="filter-radio">
+<input type="radio" name="chapter" id="ch-3" class="filter-radio">
+<input type="radio" name="chapter" id="ch-4" class="filter-radio">
+<input type="radio" name="chapter" id="ch-5" class="filter-radio">
+<input type="radio" name="chapter" id="ch-6" class="filter-radio">
+<input type="radio" name="chapter" id="ch-7" class="filter-radio">
+<input type="radio" name="chapter" id="ch-8" class="filter-radio">
+<input type="radio" name="chapter" id="ch-9" class="filter-radio">
+<input type="radio" name="chapter" id="ch-10" class="filter-radio">
+<input type="radio" name="chapter" id="ch-13" class="filter-radio">
+<input type="radio" name="chapter" id="ch-14" class="filter-radio">
+
+<!-- 页面头部 -->
+<header class="page-header">
+  <div class="header-content">
+    <h1>📚 Java核心技术·卷I 精华卡片</h1>
+    <p class="subtitle">原书第10版 · 基础知识 · Anki 精华版</p>
+    <div class="stats-bar">
+      <span class="stat-pill"><strong>47</strong> 张卡片</span>
+      <span class="stat-pill"><strong>12</strong> 个章节</span>
+      <span class="stat-pill"><strong>纯CSS</strong> 零依赖</span>
+    </div>
+  </div>
+</header>
+
+<!-- 章节筛选栏（sticky 顶部） -->
+<nav class="chapter-filter">
+  <div class="filter-row">
+    <span class="filter-label">📖 按章节筛选：</span>
+    <label for="ch-all" class="ch-btn">全部</label>
+    <label for="ch-1" class="ch-btn">第1章 概述</label>
+    <label for="ch-2" class="ch-btn">第2章 环境</label>
+    <label for="ch-3" class="ch-btn">第3章 基本结构</label>
+    <label for="ch-4" class="ch-btn">第4章 对象与类</label>
+    <label for="ch-5" class="ch-btn">第5章 继承</label>
+    <label for="ch-6" class="ch-btn">第6章 接口与内部类</label>
+    <label for="ch-7" class="ch-btn">第7章 异常</label>
+    <label for="ch-8" class="ch-btn">第8章 泛型</label>
+    <label for="ch-9" class="ch-btn">第9章 集合</label>
+    <label for="ch-10" class="ch-btn">第10-12章 Swing</label>
+    <label for="ch-13" class="ch-btn">第13章 部署</label>
+    <label for="ch-14" class="ch-btn">第14章 并发</label>
+  </div>
+</nav>
+
+<!-- 提示条 -->
+<div class="tip-bar">
+  <div class="tip-box">
+    <span class="icon">💡</span>
+    <span>使用顶部标签按章节筛选卡片；点击任意卡片即可翻转查看答案，再次点击返回题目。</span>
+  </div>
+</div>
+
+<main class="main-content">
+  <div class="cards-grid">
+
+    <!-- 第1章 -->
+    <div class="card-wrap ch-1">
+      <input type="checkbox" id="card1" class="card-toggle">
+      <label for="card1" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第1章 · 概述</span>
+          <div class="card-question">Java语言的主要特点有哪些？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <ul>
+              <li><strong>简单性</strong>：语法简洁，去除了C++中复杂的指针、多继承等</li>
+              <li><strong>面向对象</strong>：纯面向对象，一切皆对象（除基本类型外）</li>
+              <li><strong>分布式</strong>：内置网络类库，支持网络编程</li>
+              <li><strong>健壮性</strong>：强类型检查、异常处理、垃圾回收</li>
+              <li><strong>安全性</strong>：沙箱机制、字节码校验</li>
+              <li><strong>体系结构中立</strong>：字节码可在任何JVM上运行</li>
+              <li><strong>可移植性</strong>：基本数据类型大小固定</li>
+              <li><strong>解释型</strong>：JVM解释执行字节码</li>
+              <li><strong>高性能</strong>：JIT即时编译技术</li>
+              <li><strong>多线程</strong>：内置多线程支持</li>
+              <li><strong>动态性</strong>：反射、动态加载类</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-1">
+      <input type="checkbox" id="card2" class="card-toggle">
+      <label for="card2" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第1章 · 基础概念</span>
+          <div class="card-question">什么是Java的"一次编写，到处运行"（WORA）？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            WORA（Write Once, Run Anywhere）是Java核心理念：
+            <br><br>
+            1. Java源代码（<code>.java</code>）编译为<strong>字节码</strong>（<code>.class</code>）
+            <br>
+            2. 字节码是平台中立的中间表示
+            <br>
+            3. 任何安装了<strong>Java虚拟机（JVM）</strong>的平台都能运行相同字节码
+            <br>
+            4. JVM负责将字节码翻译为本地机器码执行
+            <br><br>
+            这使得Java程序具有跨平台可移植性，无需为不同平台重写代码。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-1">
+      <input type="checkbox" id="card3" class="card-toggle">
+      <label for="card3" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第1章 · JDK/JRE/JVM</span>
+          <div class="card-question">JDK、JRE、JVM三者的区别与联系是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <ul>
+              <li><strong>JVM（Java虚拟机）</strong>：运行Java字节码的虚拟机，是Java跨平台的核心。不同平台有不同的JVM实现。</li>
+              <li><strong>JRE（Java运行时环境）</strong>：包含JVM + Java核心类库。运行已编译Java程序的最低环境。</li>
+              <li><strong>JDK（Java开发工具包）</strong>：包含JRE + 开发工具（编译器javac、调试器jdb、打包工具jar等）。</li>
+            </ul>
+            <br>
+            包含关系：<code>JDK ⊃ JRE ⊃ JVM</code>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-1">
+      <input type="checkbox" id="card4" class="card-toggle">
+      <label for="card4" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第1章 · 发展史</span>
+          <div class="card-question">Java的主要版本里程碑有哪些？（至Java 9）</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <ul>
+              <li><strong>Java 1.0（1996）</strong>：首个正式版本，Oak语言改名Java</li>
+              <li><strong>Java 1.2（1998）</strong>：引入Swing、集合框架</li>
+              <li><strong>Java 5（2004）</strong>：泛型、注解、枚举、增强for循环、自动装箱</li>
+              <li><strong>Java 7（2011）</strong>：switch支持字符串、try-with-resources、菱形语法</li>
+              <li><strong>Java 8（2014）</strong>：Lambda表达式、Stream API、新日期时间API、接口默认方法</li>
+              <li><strong>Java 9（2017）</strong>：模块系统（JPMS）、JShell</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <!-- 第2章 -->
+    <div class="card-wrap ch-2">
+      <input type="checkbox" id="card5" class="card-toggle">
+      <label for="card5" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第2章 · 编译运行</span>
+          <div class="card-question">从源码到运行的完整流程是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            1. <strong>编写源码</strong>：创建 <code>.java</code> 源文件
+            <br>
+            2. <strong>编译</strong>：<code>javac Hello.java</code> 生成 <code>Hello.class</code> 字节码文件
+            <br>
+            3. <strong>运行</strong>：<code>java Hello</code> 启动JVM加载并执行字节码
+            <br><br>
+            注意：<code>java</code> 命令后跟的是<strong>类名</strong>，不是文件名（不加 <code>.class</code>）。
+            <br><br>
+            Java 11起可直接运行单文件源码：<code>java Hello.java</code>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-2">
+      <input type="checkbox" id="card6" class="card-toggle">
+      <label for="card6" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第2章 · 配置</span>
+          <div class="card-question">什么是CLASSPATH？它的作用是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            CLASSPATH是JVM查找类文件的路径列表。
+            <br><br>
+            <strong>作用</strong>：告诉JVM在哪里寻找用户定义的类和第三方库。
+            <br><br>
+            <strong>设置方式</strong>：
+            <ul>
+              <li>环境变量：<code>set CLASSPATH=path1;path2</code></li>
+              <li>命令行参数：<code>java -cp path1:path2 MainClass</code></li>
+            </ul>
+            <strong>注意</strong>：
+            <ul>
+              <li>当前目录 <code>.</code> 默认在classpath中</li>
+              <li>Java 6以后可不设CLASSPATH</li>
+              <li>JAR文件需指定到具体文件名</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <!-- 第3章 -->
+    <div class="card-wrap ch-3">
+      <input type="checkbox" id="card7" class="card-toggle">
+      <label for="card7" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第3章 · 数据类型</span>
+          <div class="card-question">Java的8种基本数据类型及其大小和范围？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>整数类型</strong>：
+            <ul>
+              <li><code>byte</code>：1字节，-128 ~ 127</li>
+              <li><code>short</code>：2字节，-32768 ~ 32767</li>
+              <li><code>int</code>：4字节，-2^31 ~ 2^31-1（约±21亿）</li>
+              <li><code>long</code>：8字节，后缀L/l</li>
+            </ul>
+            <strong>浮点类型</strong>：
+            <ul>
+              <li><code>float</code>：4字节，后缀F/f</li>
+              <li><code>double</code>：8字节，默认浮点类型</li>
+            </ul>
+            <strong>字符/布尔</strong>：
+            <ul>
+              <li><code>char</code>：2字节，Unicode字符</li>
+              <li><code>boolean</code>：true/false</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-3">
+      <input type="checkbox" id="card8" class="card-toggle">
+      <label for="card8" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第3章 · 字符串</span>
+          <div class="card-question">String、StringBuilder、StringBuffer的区别？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <ul>
+              <li><strong>String</strong>：不可变字符序列，每次拼接创建新对象，性能差。线程安全（不可变）。</li>
+              <li><strong>StringBuilder</strong>：可变字符序列，效率高。<strong>非线程安全</strong>。Java 5引入。</li>
+              <li><strong>StringBuffer</strong>：可变字符序列，效率较低。<strong>线程安全</strong>（方法加synchronized）。早期版本。</li>
+            </ul>
+            <br>
+            <strong>选用原则</strong>：
+            <ul>
+              <li>少量字符串操作 → 直接用String</li>
+              <li>单线程大量操作 → 用StringBuilder（首选）</li>
+              <li>多线程环境 → 用StringBuffer</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-3">
+      <input type="checkbox" id="card9" class="card-toggle">
+      <label for="card9" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第3章 · 字符串</span>
+          <div class="card-question">String为什么设计为不可变的？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            String不可变的原因：
+            <br><br>
+            1. <strong>字符串常量池</strong>：可缓存字符串，节省内存。相同字面量共享同一对象。
+            <br>
+            2. <strong>安全性</strong>：作为参数传递时不会被修改（如数据库URL、文件名）。
+            <br>
+            3. <strong>线程安全</strong>：多线程环境下不会有竞态问题。
+            <br>
+            4. <strong>哈希缓存</strong>：hashCode只需计算一次，可缓存，提高作为HashMap键的性能。
+            <br>
+            5. <strong>类加载安全</strong>：类名是字符串，不可变保证加载的类不会被篡改。
+            <br><br>
+            代价：每次修改都创建新对象，频繁操作时用StringBuilder。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-3">
+      <input type="checkbox" id="card10" class="card-toggle">
+      <label for="card10" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第3章 · 比较</span>
+          <div class="card-question">== 和 equals() 的区别是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <ul>
+              <li><strong><code>==</code></strong>：比较<strong>引用地址</strong>（对于对象），即两个变量是否指向内存中的同一个对象。对于基本数据类型，比较的是值。</li>
+              <li><strong><code>equals()</code></strong>：比较<strong>对象的内容</strong>是否相等。但默认实现（Object类中）仍是==比较，需要类重写此方法才能比较内容。</li>
+            </ul>
+            <br>
+            示例：
+            <br>
+            <code>String s1 = new String("abc");</code>
+            <br>
+            <code>String s2 = new String("abc");</code>
+            <br>
+            <code>s1 == s2 → false</code>（不同对象）
+            <br>
+            <code>s1.equals(s2) → true</code>（内容相同）
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-3">
+      <input type="checkbox" id="card11" class="card-toggle">
+      <label for="card11" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第3章 · 数组</span>
+          <div class="card-question">Java数组的特点和基本用法？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>特点</strong>：
+            <ul>
+              <li>固定大小，一旦创建长度不可变</li>
+              <li>存储相同类型的元素</li>
+              <li>元素在内存中连续存储</li>
+              <li>数组本身是对象，继承自Object</li>
+            </ul>
+            <strong>声明与创建</strong>：
+            <ul>
+              <li>声明：<code>int[] arr;</code></li>
+              <li>创建：<code>arr = new int[10];</code></li>
+              <li>初始化：<code>int[] arr = {1, 2, 3};</code></li>
+            </ul>
+            <strong>工具类</strong>：<code>java.util.Arrays</code> 提供排序、查找、拷贝等方法。
+            <br><br>
+            注意：数组下标从0开始，越界抛出 <code>ArrayIndexOutOfBoundsException</code>。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-3">
+      <input type="checkbox" id="card12" class="card-toggle">
+      <label for="card12" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第3章 · 控制流</span>
+          <div class="card-question">Java的控制流语句有哪些？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>分支语句</strong>：
+            <ul>
+              <li><code>if-else</code>：条件分支，条件为boolean表达式</li>
+              <li><code>switch</code>：多分支选择，支持byte/short/int/char/String/枚举</li>
+            </ul>
+            <strong>循环语句</strong>：
+            <ul>
+              <li><code>for</code>：已知循环次数时使用</li>
+              <li><code>while</code>：先判断后执行，可能一次都不执行</li>
+              <li><code>do-while</code>：先执行后判断，至少执行一次</li>
+            </ul>
+            <strong>中断控制</strong>：
+            <ul>
+              <li><code>break</code>：跳出循环或switch</li>
+              <li><code>continue</code>：跳过本次循环</li>
+              <li><code>return</code>：返回方法</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <!-- 第4章 -->
+    <div class="card-wrap ch-4">
+      <input type="checkbox" id="card13" class="card-toggle">
+      <label for="card13" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第4章 · 面向对象</span>
+          <div class="card-question">面向对象编程的三大特征是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <ul>
+              <li><strong>封装</strong>：将数据和操作数据的方法绑定在一起，隐藏内部实现，仅对外暴露必要接口。通过访问修饰符实现。</li>
+              <li><strong>继承</strong>：子类继承父类的属性和方法，可扩展或重写。实现代码复用和层次结构。Java是单继承。</li>
+              <li><strong>多态</strong>：同一个方法调用可以有不同的执行方式。
+                <ul>
+                  <li>编译时多态：方法重载（overloading）</li>
+                  <li>运行时多态：方法重写（overriding）+ 向上转型</li>
+                </ul>
+              </li>
+            </ul>
+            <br>
+            封装是基础，继承是手段，多态是目的。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-4">
+      <input type="checkbox" id="card14" class="card-toggle">
+      <label for="card14" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第4章 · 访问修饰符</span>
+          <div class="card-question">Java的4种访问修饰符及其可见范围？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            按可见性从大到小：
+            <br><br>
+            1. <strong>public</strong>：对所有类可见
+            <br>
+            2. <strong>protected</strong>：本包所有类 + 不同包的子类可见
+            <br>
+            3. <strong>默认（包私有）</strong>：本包所有类可见
+            <br>
+            4. <strong>private</strong>：仅对本类内部可见
+            <br><br>
+            | 修饰符 | 本类 | 同包 | 子类 | 其他 |
+            <br>|--------|------|------|------|------|
+            <br>| public | ✓ | ✓ | ✓ | ✓ |
+            <br>| protected | ✓ | ✓ | ✓ | ✗ |
+            <br>| 默认 | ✓ | ✓ | ✗ | ✗ |
+            <br>| private | ✓ | ✗ | ✗ | ✗ |
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-4">
+      <input type="checkbox" id="card15" class="card-toggle">
+      <label for="card15" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第4章 · 构造方法</span>
+          <div class="card-question">构造方法的特点和作用是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>作用</strong>：创建对象时初始化对象的状态。
+            <br><br>
+            <strong>特点</strong>：
+            <ul>
+              <li>方法名与类名完全相同</li>
+              <li>没有返回值类型（连void都不能写）</li>
+              <li>可以重载（多个构造方法参数不同）</li>
+              <li>创建对象时自动调用一次</li>
+              <li>未显式定义时，编译器自动生成无参默认构造</li>
+              <li>已定义有参构造时，编译器不再生成默认构造</li>
+              <li>可用 <code>this()</code> 调用本类其他构造（必须第一行）</li>
+              <li>可用 <code>super()</code> 调用父类构造（必须第一行）</li>
+            </ul>
+            构造方法可以用private修饰（单例模式）。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-4">
+      <input type="checkbox" id="card16" class="card-toggle">
+      <label for="card16" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第4章 · this关键字</span>
+          <div class="card-question">this关键字的作用有哪些？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            this代表当前对象的引用：
+            <br><br>
+            1. <strong>调用成员变量</strong>：区分成员变量和局部变量
+            <br><code>this.name = name;</code>
+            <br><br>
+            2. <strong>调用本类方法</strong>：<code>this.method();</code>
+            <br><br>
+            3. <strong>调用本类其他构造方法</strong>：<code>this(param);</code>
+            <br>必须是构造方法的第一行语句
+            <br><br>
+            4. <strong>返回当前对象</strong>：链式调用中返回this
+            <br><code>public Person setName(String n) { this.name=n; return this; }</code>
+            <br><br>
+            5. <strong>作为参数传递</strong>：将当前对象传给其他方法
+            <br><br>
+            注意：static方法中不能使用this。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-4">
+      <input type="checkbox" id="card17" class="card-toggle">
+      <label for="card17" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第4章 · static</span>
+          <div class="card-question">static关键字的作用和特点？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            static表示"静态的"，属于类而非对象。
+            <br><br>
+            <strong>静态变量</strong>：
+            <ul>
+              <li>所有对象共享同一份，内存中只有一份</li>
+              <li>类加载时初始化</li>
+            </ul>
+            <strong>静态方法</strong>：
+            <ul>
+              <li>属于类，不属于对象</li>
+              <li>不能访问非静态成员（没有this引用）</li>
+              <li>可通过类名直接调用</li>
+            </ul>
+            <strong>静态代码块</strong>：
+            <ul>
+              <li>类加载时执行一次，初始化静态资源</li>
+            </ul>
+            <strong>静态内部类</strong>：不依赖外部类实例。
+            <br><br>
+            使用场景：工具方法、常量、全局计数器等。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <!-- 第5章 -->
+    <div class="card-wrap ch-5">
+      <input type="checkbox" id="card18" class="card-toggle">
+      <label for="card18" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第5章 · 继承</span>
+          <div class="card-question">Java继承的特点和super关键字的用法？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>继承特点</strong>：
+            <ul>
+              <li>使用 <code>extends</code> 关键字</li>
+              <li>Java是<strong>单继承</strong>：只能直接继承一个父类</li>
+              <li>子类继承父类非private的字段和方法</li>
+              <li>所有类默认继承 <code>Object</code> 类</li>
+            </ul>
+            <strong>super关键字</strong>：
+            <ul>
+              <li><code>super.字段</code>：访问父类的字段</li>
+              <li><code>super.方法()</code>：调用父类的方法</li>
+              <li><code>super(参数)</code>：调用父类构造方法，必须第一行</li>
+            </ul>
+            注意：子类构造方法默认第一行是 <code>super()</code>。如果父类没有无参构造，子类必须显式调用 <code>super(参数)</code>。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-5">
+      <input type="checkbox" id="card19" class="card-toggle">
+      <label for="card19" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第5章 · 重写vs重载</span>
+          <div class="card-question">方法重写（Override）与重载（Overload）的区别？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>方法重写（Override）</strong>：子类对父类方法重新实现。
+            <ul>
+              <li>方法名、参数列表、返回类型必须一致</li>
+              <li>访问权限不能比父类更严格</li>
+              <li>抛出异常不能比父类更宽泛</li>
+              <li>@Override 注解可辅助检查</li>
+              <li>运行时多态</li>
+            </ul>
+            <strong>方法重载（Overload）</strong>：同类中多个同名方法参数不同。
+            <ul>
+              <li>方法名相同，参数列表不同</li>
+              <li>与返回值类型无关</li>
+              <li>编译时多态</li>
+            </ul>
+            <br>
+            区别：重写是父子类关系（运行时多态），重载是同类关系（编译时多态）。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-5">
+      <input type="checkbox" id="card20" class="card-toggle">
+      <label for="card20" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第5章 · 多态</span>
+          <div class="card-question">什么是多态？实现多态的条件是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>多态</strong>：同一方法调用，根据对象实际类型执行不同实现。
+            <br><br>
+            <strong>三个必要条件</strong>：
+            <ol>
+              <li><strong>继承</strong>：存在父子类关系</li>
+              <li><strong>重写</strong>：子类重写父类的方法</li>
+              <li><strong>向上转型</strong>：父类引用指向子类对象</li>
+            </ol>
+            示例：
+            <br><code>Animal a = new Dog();</code>
+            <br><code>a.eat(); // 调用Dog的eat方法</code>
+            <br><br>
+            <strong>动态绑定</strong>：运行时JVM根据对象实际类型调用相应方法。
+            <br><br>
+            注意：属性没有多态（看引用类型），只有实例方法有多态。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-5">
+      <input type="checkbox" id="card21" class="card-toggle">
+      <label for="card21" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第5章 · Object类</span>
+          <div class="card-question">Object类的主要方法有哪些？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            Object是所有类的根类，主要方法：
+            <ul>
+              <li><code>equals(Object obj)</code>：判断对象是否相等，默认比较引用地址</li>
+              <li><code>hashCode()</code>：返回对象哈希码值，与equals配合</li>
+              <li><code>toString()</code>：返回对象字符串表示</li>
+              <li><code>getClass()</code>：返回对象的运行时类对象</li>
+              <li><code>finalize()</code>：垃圾回收前调用（已废弃）</li>
+              <li><code>clone()</code>：对象克隆，需实现Cloneable</li>
+              <li><code>wait()</code>：线程等待</li>
+              <li><code>notify()/notifyAll()</code>：唤醒等待线程</li>
+            </ul>
+            <br>
+            重要约定：重写equals时必须重写hashCode，保证相等对象哈希码相同。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-5">
+      <input type="checkbox" id="card22" class="card-toggle">
+      <label for="card22" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第5章 · 抽象类vs接口</span>
+          <div class="card-question">抽象类和接口的区别是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>抽象类（abstract class）</strong>：
+            <ul>
+              <li>用 <code>abstract class</code> 声明</li>
+              <li>可有抽象方法和具体方法</li>
+              <li>可有成员变量、构造方法</li>
+              <li>单继承</li>
+            </ul>
+            <strong>接口（interface）</strong>：
+            <ul>
+              <li>用 <code>interface</code> 声明</li>
+              <li>Java 8前只能有抽象方法</li>
+              <li>只能有常量（public static final）</li>
+              <li>多实现：一个类可实现多个接口</li>
+              <li>Java 8+：支持默认方法和静态方法</li>
+            </ul>
+            <br>
+            设计理念：抽象类是"is-a"关系，接口是"like-a"能力契约。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <!-- 第6章 -->
+    <div class="card-wrap ch-6">
+      <input type="checkbox" id="card23" class="card-toggle">
+      <label for="card23" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第6章 · 接口</span>
+          <div class="card-question">Java 8中接口有哪些新特性？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            Java 8对接口做了重要增强：
+            <br><br>
+            <strong>默认方法（Default Method）</strong>：
+            <ul>
+              <li>用 <code>default</code> 关键字修饰</li>
+              <li>接口中可以有具体实现的方法</li>
+              <li>实现类可直接使用，也可重写</li>
+              <li>解决接口升级的兼容性问题</li>
+            </ul>
+            <strong>静态方法（Static Method）</strong>：
+            <ul>
+              <li>接口中可以有静态方法</li>
+              <li>通过接口名调用</li>
+            </ul>
+            <strong>函数式接口</strong>：
+            <ul>
+              <li>只有一个抽象方法的接口</li>
+              <li>可用Lambda表达式表示</li>
+              <li>@FunctionalInterface 注解标记</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-6">
+      <input type="checkbox" id="card24" class="card-toggle">
+      <label for="card24" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第6章 · Lambda</span>
+          <div class="card-question">什么是Lambda表达式？语法和常用函数式接口？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>Lambda表达式</strong>：匿名函数，可作为参数传递。
+            <br><br>
+            <strong>语法</strong>：<code>(参数列表) -&gt; { 方法体 }</code>
+            <br><br>
+            简化规则：
+            <ul>
+              <li>参数类型可省略（编译器推断）</li>
+              <li>单个参数可省略小括号</li>
+              <li>单条语句可省略大括号和return</li>
+            </ul>
+            <strong>常用函数式接口</strong>：
+            <ul>
+              <li><code>Predicate&lt;T&gt;</code>：断言，boolean test(T t)</li>
+              <li><code>Consumer&lt;T&gt;</code>：消费，void accept(T t)</li>
+              <li><code>Function&lt;T, R&gt;</code>：转换，R apply(T t)</li>
+              <li><code>Supplier&lt;T&gt;</code>：供给，T get()</li>
+            </ul>
+            使用前提：对应一个函数式接口。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-6">
+      <input type="checkbox" id="card25" class="card-toggle">
+      <label for="card25" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第6章 · 内部类</span>
+          <div class="card-question">Java中有哪几种内部类？各自特点？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>1. 成员内部类</strong>：
+            <ul>
+              <li>定义在类内部，成员位置</li>
+              <li>依赖外部类实例，持有外部类引用</li>
+              <li>可访问外部类所有成员</li>
+            </ul>
+            <strong>2. 静态内部类</strong>：
+            <ul>
+              <li>static修饰的成员内部类</li>
+              <li>不依赖外部类实例</li>
+              <li>只能访问外部类静态成员</li>
+            </ul>
+            <strong>3. 局部内部类</strong>：
+            <ul>
+              <li>定义在方法或代码块中</li>
+              <li>作用域仅限方法内</li>
+              <li>访问局部变量必须是final</li>
+            </ul>
+            <strong>4. 匿名内部类</strong>：
+            <ul>
+              <li>没有名字的局部内部类</li>
+              <li>必须继承一个类或实现一个接口</li>
+              <li>只能使用一次</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <!-- 第7章 -->
+    <div class="card-wrap ch-7">
+      <input type="checkbox" id="card26" class="card-toggle">
+      <label for="card26" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第7章 · 异常体系</span>
+          <div class="card-question">Java异常体系结构是怎样的？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            所有异常继承自 <code>Throwable</code>：
+            <br><br>
+            <strong>Error（错误）</strong>：系统级错误，程序无法处理
+            <ul>
+              <li>如：OutOfMemoryError、StackOverflowError</li>
+              <li>一般不捕获，发生后程序应终止</li>
+            </ul>
+            <strong>Exception（异常）</strong>：程序可处理
+            <ul>
+              <li><strong>RuntimeException</strong>：非受检异常
+                <ul>
+                  <li>如：NullPointerException、ArrayIndexOutOfBoundsException</li>
+                  <li>编译器不强制要求处理</li>
+                </ul>
+              </li>
+              <li><strong>Checked Exception</strong>：受检异常
+                <ul>
+                  <li>如：IOException、SQLException</li>
+                  <li>编译器强制要求处理</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-7">
+      <input type="checkbox" id="card27" class="card-toggle">
+      <label for="card27" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第7章 · throws vs throw</span>
+          <div class="card-question">throws 和 throw 的区别？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <ul>
+              <li><strong><code>throws</code></strong>：声明异常，用在<strong>方法签名</strong>上，表示该方法可能抛出某些异常，调用者需要处理。
+                <br>语法：<code>void method() throws IOException, SQLException</code>
+              </li>
+              <li><strong><code>throw</code></strong>：抛出异常，用在<strong>方法体内</strong>，手动抛出一个异常对象。
+                <br>语法：<code>throw new RuntimeException("错误信息");</code>
+              </li>
+            </ul>
+            <br>
+            联系：方法内throw了受检异常，方法必须throws声明（或内部捕获）。
+            <br>RuntimeException可以不声明throws。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-7">
+      <input type="checkbox" id="card28" class="card-toggle">
+      <label for="card28" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第7章 · try-catch</span>
+          <div class="card-question">try-catch-finally的执行规则？什么是try-with-resources？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>执行规则</strong>：
+            <ul>
+              <li>无异常：跳过catch，执行finally</li>
+              <li>有异常：跳到对应catch，然后执行finally</li>
+              <li>finally总会执行（除非System.exit(0)）</li>
+              <li>多个catch按顺序匹配，子类异常放前面</li>
+            </ul>
+            <strong>try-with-resources（Java 7）</strong>：
+            <ul>
+              <li>自动关闭实现了AutoCloseable接口的资源</li>
+              <li>语法：<code>try (资源声明) { ... }</code></li>
+              <li>资源在try结束后自动关闭，无需finally手动关闭</li>
+              <li>更安全、更简洁，推荐使用</li>
+            </ul>
+            注意：finally中有return会覆盖try/catch中的return值，应避免。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-7">
+      <input type="checkbox" id="card29" class="card-toggle">
+      <label for="card29" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第7章 · 自定义异常</span>
+          <div class="card-question">自定义异常的最佳实践？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>自定义异常步骤</strong>：
+            <ol>
+              <li>继承Exception（受检）或RuntimeException（非受检）</li>
+              <li>提供无参构造方法</li>
+              <li>提供带String消息的构造方法</li>
+              <li>提供带消息和Throwable原因的构造方法（异常链）</li>
+            </ol>
+            <strong>最佳实践</strong>：
+            <ul>
+              <li>优先使用标准异常，不要滥用自定义异常</li>
+              <li>业务异常建议继承RuntimeException</li>
+              <li>异常信息要具体、有意义</li>
+              <li>不要吞掉异常（catch后什么都不做）</li>
+              <li>不要用异常控制正常业务流程</li>
+              <li>捕获更具体的异常，不要直接catch Exception</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <!-- 第8章 -->
+    <div class="card-wrap ch-8">
+      <input type="checkbox" id="card30" class="card-toggle">
+      <label for="card30" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第8章 · 泛型基础</span>
+          <div class="card-question">什么是泛型？泛型的好处是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>泛型（Generics）</strong>：参数化类型，让类/接口/方法可以操作多种数据类型，同时保证类型安全。
+            <br><br>
+            <strong>好处</strong>：
+            <ul>
+              <li><strong>类型安全</strong>：编译时检查类型，避免运行时ClassCastException</li>
+              <li><strong>避免强制转换</strong>：代码更简洁</li>
+              <li><strong>代码复用</strong>：一套代码可处理多种类型</li>
+              <li><strong>可读性好</strong>：从声明就能看出集合存储什么类型</li>
+            </ul>
+            <strong>泛型擦除</strong>：Java泛型是"伪泛型"，编译后会擦除类型参数，替换为其上界（默认为Object）。
+            <br><br>
+            泛型只在编译期有效，运行时 <code>List&lt;String&gt;</code> 和 <code>List&lt;Integer&gt;</code> 是同一个Class。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-8">
+      <input type="checkbox" id="card31" class="card-toggle">
+      <label for="card31" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第8章 · 通配符</span>
+          <div class="card-question">泛型通配符有哪些？PECS原则是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            三种通配符：
+            <br><br>
+            <strong>1. 无限制 <code>?</code></strong>：任意类型，只能读不能写（除null）
+            <br><br>
+            <strong>2. 上界 <code>? extends T</code></strong>：T或T的子类
+            <ul>
+              <li><strong>Producer Extends</strong>：主要用于读取（生产）</li>
+              <li>不能添加元素（除null）</li>
+            </ul>
+            <strong>3. 下界 <code>? super T</code></strong>：T或T的父类
+            <ul>
+              <li><strong>Consumer Super</strong>：主要用于写入（消费）</li>
+              <li>可以添加T及其子类对象</li>
+            </ul>
+            <br>
+            <strong>PECS原则</strong>：
+            <br>Producer Extends, Consumer Super
+            <br>生产者（提供数据）用extends，消费者（接收数据）用super。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-8">
+      <input type="checkbox" id="card32" class="card-toggle">
+      <label for="card32" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第8章 · 类型擦除</span>
+          <div class="card-question">泛型类型擦除是怎么回事？有什么限制？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>类型擦除</strong>：Java泛型在编译阶段擦除类型参数，替换为其上界（无界则为Object），必要处插入强制类型转换。
+            <br><br>
+            <strong>擦除规则</strong>：
+            <ul>
+              <li>无限制 <code>&lt;T&gt;</code> → 替换为 <code>Object</code></li>
+              <li>有限制 <code>&lt;T extends Comparable&gt;</code> → 替换为 <code>Comparable</code></li>
+              <li>桥方法：编译器生成以保持多态</li>
+            </ul>
+            <strong>限制</strong>：
+            <ul>
+              <li>不能用基本类型做实参</li>
+              <li>运行时无法获取泛型类型信息</li>
+              <li>不能创建泛型数组 <code>new T[]</code></li>
+              <li>不能实例化类型变量 <code>new T()</code></li>
+              <li>静态上下文中不能使用类型参数</li>
+              <li>异常类不能是泛型的</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <!-- 第9章 -->
+    <div class="card-wrap ch-9">
+      <input type="checkbox" id="card33" class="card-toggle">
+      <label for="card33" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第9章 · 集合框架</span>
+          <div class="card-question">Java集合框架的整体结构是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>Collection（单列）</strong>：
+            <ul>
+              <li><strong>List</strong>（有序可重复）：
+                <ul>
+                  <li>ArrayList：数组，查询快增删慢</li>
+                  <li>LinkedList：链表，增删快查询慢</li>
+                  <li>Vector：数组，线程安全（旧）</li>
+                </ul>
+              </li>
+              <li><strong>Set</strong>（无序不可重复）：
+                <ul>
+                  <li>HashSet：哈希表，最快</li>
+                  <li>LinkedHashSet：哈希+链表，插入有序</li>
+                  <li>TreeSet：红黑树，排序</li>
+                </ul>
+              </li>
+              <li><strong>Queue</strong>：队列，FIFO</li>
+            </ul>
+            <strong>Map（双列，键值对）</strong>：
+            <ul>
+              <li>HashMap：哈希表，最快，允许null</li>
+              <li>LinkedHashMap：哈希+链表，有序</li>
+              <li>TreeMap：红黑树，按键排序</li>
+              <li>Hashtable：线程安全（旧）</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-9">
+      <input type="checkbox" id="card34" class="card-toggle">
+      <label for="card34" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第9章 · ArrayList</span>
+          <div class="card-question">ArrayList的底层实现和扩容机制？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>底层实现</strong>：
+            <ul>
+              <li>基于<strong>Object数组</strong>存储元素</li>
+              <li>默认初始容量10（Java 8后懒加载）</li>
+              <li>随机访问O(1)，增删O(n)</li>
+            </ul>
+            <strong>扩容机制</strong>：
+            <ul>
+              <li>元素个数超过数组容量时触发</li>
+              <li>新容量 = 旧容量 × <strong>1.5</strong></li>
+              <li>（旧容量 + 旧容量右移一位）</li>
+              <li>创建新数组，复制旧元素</li>
+              <li>使用 <code>Arrays.copyOf()</code> 复制</li>
+            </ul>
+            <strong>优化建议</strong>：
+            <ul>
+              <li>预知大小时指定初始容量</li>
+              <li><code>ensureCapacity(int)</code> 预分配</li>
+              <li><code>trimToSize()</code> 节省空间</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-9">
+      <input type="checkbox" id="card35" class="card-toggle">
+      <label for="card35" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第9章 · HashMap</span>
+          <div class="card-question">HashMap的底层实现（Java 8）？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            Java 8的HashMap：<strong>数组 + 链表 + 红黑树</strong>
+            <br><br>
+            <strong>数据结构</strong>：
+            <ul>
+              <li>主体是Node数组（哈希桶数组）</li>
+              <li>每个位置是链表，解决哈希冲突</li>
+              <li>链表长度 > 8 且数组长度 > 64 → 转红黑树</li>
+              <li>树节点数 < 6 → 转回链表</li>
+            </ul>
+            <strong>重要参数</strong>：
+            <ul>
+              <li>初始容量：16（必须是2的幂）</li>
+              <li>加载因子：0.75</li>
+            </ul>
+            <strong>put流程</strong>：
+            <ol>
+              <li>计算key的hash值（扰动函数）</li>
+              <li>(n-1) & hash 计算数组下标</li>
+              <li>无冲突直接放入</li>
+              <li>有冲突遍历链表/红黑树</li>
+              <li>超过阈值则扩容（2倍）</li>
+            </ol>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-9">
+      <input type="checkbox" id="card36" class="card-toggle">
+      <label for="card36" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第9章 · HashMap</span>
+          <div class="card-question">HashMap为什么容量是2的幂？为什么用红黑树？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>为什么容量是2的幂？</strong>
+            <ol>
+              <li><strong>计算高效</strong>：<code>hash & (n-1)</code> 位运算比取模快</li>
+              <li><strong>分布均匀</strong>：二进制全1，哈希分布更好</li>
+              <li><strong>扩容高效</strong>：2倍扩容时元素位置变化有规律</li>
+            </ol>
+            <strong>为什么用红黑树不用AVL树？</strong>
+            <ul>
+              <li>红黑树近似平衡，插入删除更快</li>
+              <li>HashMap增删查都有，红黑树综合性能更好</li>
+            </ul>
+            <strong>为什么阈值是8？</strong>
+            <ul>
+              <li>哈希良好时链表长度遵循泊松分布</li>
+              <li>长度为8的概率仅约千万分之六</li>
+            </ul>
+            <strong>转回链表是6？</strong>
+            <ul>
+              <li>留缓冲区间，避免边界附近频繁来回转换</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-9">
+      <input type="checkbox" id="card37" class="card-toggle">
+      <label for="card37" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第9章 · ConcurrentHashMap</span>
+          <div class="card-question">ConcurrentHashMap的实现原理（Java 8）？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            Java 8的ConcurrentHashMap：<strong>CAS + synchronized + 数组+链表+红黑树</strong>
+            <br><br>
+            <strong>线程安全机制</strong>：
+            <ul>
+              <li>数组元素 <code>volatile</code> 修饰，保证可见性</li>
+              <li>节点初始化使用 <strong>CAS</strong>，无锁化</li>
+              <li>链表头节点用 <strong>synchronized</strong> 加锁</li>
+              <li>锁粒度是"每个桶"，并发度等于数组长度</li>
+            </ul>
+            <strong>相比Java 7的改进</strong>：
+            <ul>
+              <li>Java 7：分段锁Segment，默认16段，并发度低</li>
+              <li>Java 8：锁粒度细化到每个桶节点</li>
+              <li>引入红黑树，冲突严重时性能更稳定</li>
+            </ul>
+            <strong>为什么不用ReentrantLock？</strong>
+            <ul>
+              <li>synchronized在Java 8+性能已优化很好</li>
+              <li>减少内存开销，有锁升级机制</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-9">
+      <input type="checkbox" id="card38" class="card-toggle">
+      <label for="card38" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第9章 · 迭代器</span>
+          <div class="card-question">Iterator和Iterable的区别？fail-fast是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>Iterable</strong>：
+            <ul>
+              <li>表示"可迭代的"</li>
+              <li>有 <code>iterator()</code> 方法返回Iterator</li>
+              <li>实现了Iterable可用增强for循环</li>
+            </ul>
+            <strong>Iterator</strong>：
+            <ul>
+              <li>真正的迭代器</li>
+              <li><code>hasNext()</code>、<code>next()</code>、<code>remove()</code></li>
+              <li>单向遍历</li>
+            </ul>
+            <strong>fail-fast（快速失败）</strong>：
+            <ul>
+              <li>迭代中集合被修改，抛出ConcurrentModificationException</li>
+              <li>modCount计数机制</li>
+              <li>ArrayList、HashMap等采用</li>
+            </ul>
+            <strong>fail-safe</strong>：
+            <ul>
+              <li>迭代集合副本，修改不影响迭代</li>
+              <li>ConcurrentHashMap、CopyOnWriteArrayList</li>
+              <li>不抛异常，但可能读到旧数据</li>
+            </ul>
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <!-- 第10-12章 -->
+    <div class="card-wrap ch-10">
+      <input type="checkbox" id="card39" class="card-toggle">
+      <label for="card39" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第10-12章 · Swing</span>
+          <div class="card-question">Swing和AWT的区别是什么？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>AWT</strong>：
+            <ul>
+              <li>Java最早的GUI工具包</li>
+              <li>重量级组件，依赖操作系统本地组件</li>
+              <li>外观随平台变化</li>
+              <li>组件种类少，功能有限</li>
+            </ul>
+            <strong>Swing</strong>：
+            <ul>
+              <li>在AWT基础上发展的轻量级GUI</li>
+              <li>轻量级组件，全部由Java代码绘制</li>
+              <li>跨平台外观一致</li>
+              <li>组件更丰富（JTable、JTree等）</li>
+              <li>以"J"开头：JButton、JFrame等</li>
+            </ul>
+            <br>
+            关系：Swing基于AWT构建。
+            <br><br>
+            注意：Swing是单线程的，所有UI操作必须在<strong>事件dispatch线程（EDT）</strong>中执行。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <!-- 第13章 -->
+    <div class="card-wrap ch-13">
+      <input type="checkbox" id="card40" class="card-toggle">
+      <label for="card40" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第13章 · JAR</span>
+          <div class="card-question">JAR文件是什么？有什么作用？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>JAR（Java Archive）</strong>：Java归档文件，基于ZIP格式。
+            <br><br>
+            <strong>作用</strong>：
+            <ul>
+              <li>将多个类文件和资源打包成一个文件</li>
+              <li>便于分发和部署</li>
+              <li>可压缩，减小体积</li>
+              <li>可签名，保证安全性</li>
+              <li>可设置为可执行JAR，直接运行</li>
+            </ul>
+            <strong>常用命令</strong>：
+            <ul>
+              <li>创建：<code>jar cf app.jar *.class</code></li>
+              <li>查看：<code>jar tf app.jar</code></li>
+              <li>提取：<code>jar xf app.jar</code></li>
+              <li>运行：<code>java -jar app.jar</code></li>
+            </ul>
+            <strong>MANIFEST.MF</strong>：描述JAR信息，如Main-Class指定主类。
+            <br><br>
+            相关格式：WAR（Web应用）、EAR（企业应用）。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <!-- 第14章 -->
+    <div class="card-wrap ch-14">
+      <input type="checkbox" id="card41" class="card-toggle">
+      <label for="card41" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第14章 · 线程基础</span>
+          <div class="card-question">创建线程的方式有哪些？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            Java创建线程主要有4种方式：
+            <br><br>
+            <strong>1. 继承Thread类</strong>：
+            <ul><li>继承Thread，重写run()方法</li><li>简单直观，但Java单继承限制</li></ul>
+            <strong>2. 实现Runnable接口</strong>：
+            <ul><li>实现Runnable，重写run()方法</li><li>推荐，避免单继承限制</li></ul>
+            <strong>3. 实现Callable接口</strong>：
+            <ul><li>实现Callable，重写call()方法</li><li>有返回值，可抛出异常</li></ul>
+            <strong>4. 线程池</strong>：
+            <ul><li>使用ExecutorService创建线程池</li><li>管理线程生命周期，复用线程</li><li>生产环境推荐使用</li></ul>
+            <br>
+            注意：启动线程必须调用 <code>start()</code>，不能直接调用 <code>run()</code>。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-14">
+      <input type="checkbox" id="card42" class="card-toggle">
+      <label for="card42" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第14章 · 线程状态</span>
+          <div class="card-question">线程有哪些状态？状态之间如何转换？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            Java线程有6种状态（Thread.State枚举）：
+            <br><br>
+            1. <strong>NEW（新建）</strong>：创建了Thread对象，未调用start()
+            <br>
+            2. <strong>RUNNABLE（可运行）</strong>：包括就绪和运行中
+            <br>
+            3. <strong>BLOCKED（阻塞）</strong>：等待获取锁（synchronized）
+            <br>
+            4. <strong>WAITING（等待）</strong>：wait()、join()等，需被唤醒
+            <br>
+            5. <strong>TIMED_WAITING（计时等待）</strong>：sleep(time)等，超时自动返回
+            <br>
+            6. <strong>TERMINATED（终止）</strong>：run()执行完毕或异常退出
+            <br><br>
+            转换：NEW → RUNNABLE → 各种等待/阻塞 → TERMINATED
+            <br><br>
+            注意：Java没有Running状态，运行和就绪都属于RUNNABLE。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-14">
+      <input type="checkbox" id="card43" class="card-toggle">
+      <label for="card43" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第14章 · synchronized</span>
+          <div class="card-question">synchronized的用法和原理？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>用法</strong>：
+            <ul>
+              <li><strong>修饰实例方法</strong>：锁当前实例this</li>
+              <li><strong>修饰静态方法</strong>：锁类的Class对象</li>
+              <li><strong>修饰代码块</strong>：锁指定对象</li>
+            </ul>
+            <strong>底层原理</strong>：
+            <ul>
+              <li>基于对象头<strong>Mark Word</strong>和monitor监视器</li>
+              <li>每个对象都有一个monitor锁</li>
+              <li>同步块使用monitorenter/monitorexit指令</li>
+            </ul>
+            <strong>锁升级（Java 6+）</strong>：
+            <ol>
+              <li><strong>偏向锁</strong>：无竞争时偏向第一个线程</li>
+              <li><strong>轻量级锁</strong>：有竞争时CAS自旋</li>
+              <li><strong>重量级锁</strong>：竞争激烈，挂起线程</li>
+            </ol>
+            锁只能升级不能降级。synchronized是可重入的。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-14">
+      <input type="checkbox" id="card44" class="card-toggle">
+      <label for="card44" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第14章 · volatile</span>
+          <div class="card-question">volatile关键字的作用和原理？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>volatile两大作用</strong>：
+            <br><br>
+            <strong>1. 保证可见性</strong>：
+            <ul>
+              <li>volatile变量的修改对所有线程立即可见</li>
+              <li>写操作直接写入主内存，读操作直接从主内存读</li>
+              <li>通过内存屏障实现</li>
+            </ul>
+            <strong>2. 禁止指令重排序</strong>：
+            <ul>
+              <li>volatile读写前后插入内存屏障</li>
+              <li>保证之前的写操作不会被重排到后面</li>
+              <li>DCL单例中必须用volatile</li>
+            </ul>
+            <strong>与synchronized比较</strong>：
+            <ul>
+              <li>volatile更轻量，不互斥</li>
+              <li>volatile只保证可见性和有序性，不保证原子性</li>
+              <li>synchronized保证三者</li>
+            </ul>
+            使用场景：状态标志位、双重检查单例。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-14">
+      <input type="checkbox" id="card45" class="card-toggle">
+      <label for="card45" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第14章 · 线程池</span>
+          <div class="card-question">线程池的核心参数和工作原理？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <strong>ThreadPoolExecutor 7个核心参数</strong>：
+            <ol>
+              <li><strong>corePoolSize</strong>：核心线程数</li>
+              <li><strong>maximumPoolSize</strong>：最大线程数</li>
+              <li><strong>keepAliveTime</strong>：非核心线程空闲存活时间</li>
+              <li><strong>unit</strong>：时间单位</li>
+              <li><strong>workQueue</strong>：任务队列</li>
+              <li><strong>threadFactory</strong>：线程工厂</li>
+              <li><strong>handler</strong>：拒绝策略</li>
+            </ol>
+            <strong>执行流程</strong>：
+            <ol>
+              <li>线程数 < corePoolSize → 创建新核心线程</li>
+              <li>核心线程满 → 加入workQueue</li>
+              <li>队列满 → 创建非核心线程</li>
+              <li>达到最大线程数 → 执行拒绝策略</li>
+            </ol>
+            <strong>四种拒绝策略</strong>：AbortPolicy、CallerRunsPolicy、DiscardPolicy、DiscardOldestPolicy
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-14">
+      <input type="checkbox" id="card46" class="card-toggle">
+      <label for="card46" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第14章 · 锁</span>
+          <div class="card-question">ReentrantLock和synchronized的区别？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            <ul>
+              <li><strong>底层实现</strong>：synchronized是JVM关键字；ReentrantLock是JDK API类</li>
+              <li><strong>锁的获取</strong>：synchronized自动获取释放；ReentrantLock需手动lock()/unlock()</li>
+              <li><strong>可重入</strong>：两者都是可重入的</li>
+              <li><strong>公平锁</strong>：synchronized只能非公平；ReentrantLock可选择公平/非公平</li>
+              <li><strong>可中断</strong>：synchronized不可中断；ReentrantLock可通过lockInterruptibly()响应中断</li>
+              <li><strong>超时获取</strong>：synchronized不支持；ReentrantLock的tryLock()支持超时</li>
+              <li><strong>多条件</strong>：synchronized只有一个条件变量；ReentrantLock可绑定多个Condition</li>
+              <li><strong>性能</strong>：低竞争时synchronized更优；高竞争时ReentrantLock更灵活</li>
+            </ul>
+            <br>
+            ReentrantLock需在finally中释放锁，避免死锁。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+    <div class="card-wrap ch-14">
+      <input type="checkbox" id="card47" class="card-toggle">
+      <label for="card47" class="card-clicker"><div class="card">
+        <div class="card-face card-front">
+          <span class="card-tag">第14章 · 并发工具</span>
+          <div class="card-question">JUC中的常用同步工具类有哪些？</div>
+          <div class="card-footer">👆 点击翻转查看答案</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-tag">答案</span>
+          <div class="card-answer">
+            java.util.concurrent（JUC）常用工具：
+            <br><br>
+            <strong>CountDownLatch</strong>：
+            <ul><li>倒计时门闩，线程等待其他线程完成</li><li>只能用一次</li></ul>
+            <strong>CyclicBarrier</strong>：
+            <ul><li>循环栅栏，一组线程互相等待到某点再一起执行</li><li>可循环使用</li></ul>
+            <strong>Semaphore</strong>：
+            <ul><li>信号量，控制同时访问资源的线程数（限流）</li></ul>
+            <strong>Exchanger</strong>：
+            <ul><li>两个线程在交换点交换数据</li></ul>
+            <strong>原子类</strong>：
+            <ul><li>AtomicInteger、AtomicLong等</li><li>基于CAS，无锁线程安全</li></ul>
+            <strong>并发集合</strong>：
+            <ul><li>ConcurrentHashMap、CopyOnWriteArrayList、BlockingQueue</li></ul>
+            <strong>Future/Callable</strong>：异步任务，有返回值。
+          </div>
+          <div class="card-footer">👆 点击返回题目</div>
+        </div>
+      </div></label>
+    </div>
+
+  </div>
+</main>
+
+<footer class="page-footer">
+  基于《Java核心技术·卷I（原书第10版）》Cay S. Horstmann 著 · 共 47 张精华卡片 · 点击任意卡片即可翻转
+</footer>
+
+</body>
+</html>

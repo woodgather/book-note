@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C++ Primer 第5版 · 精华 Anki 卡片</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f7fa;
+    --card-front: #ffffff;
+    --card-back: #f0f7ff;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --text: #1e293b;
+    --text-soft: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 4px 20px rgba(0,0,0,0.06);
+    --shadow-hover: 0 10px 30px rgba(0,0,0,0.12);
+    --tag-bg: #eff6ff;
+    --tag-text: #1d4ed8;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 20px;
+  }
+
+  .header {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    text-align: center;
+    padding: 30px 20px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .header p {
+    color: var(--text-soft);
+    font-size: 15px;
+  }
+
+  .toolbar {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 10px 14px 10px 38px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-box input:focus {
+    border-color: var(--accent);
+  }
+
+  .search-box::before {
+    content: "🔍";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+  }
+
+  .filter-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+
+  .chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--text-soft);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .chip.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .stats {
+    font-size: 13px;
+    color: var(--text-soft);
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--text);
+    transition: all 0.2s;
+  }
+
+  .btn:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .btn-primary:hover {
+    background: #1d4ed8;
+    color: white;
+  }
+
+  .cards-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .card-wrapper {
+    perspective: 1200px;
+    height: 280px;
+  }
+
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .card.flipped {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 14px;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .card-front {
+    background: var(--card-front);
+    border: 1px solid var(--border);
+  }
+
+  .card-back {
+    background: var(--card-back);
+    border: 1px solid #bfdbfe;
+    transform: rotateY(180deg);
+  }
+
+  .card-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    margin-bottom: 14px;
+    align-self: flex-start;
+  }
+
+  .card-front .card-tag {
+    background: #f1f5f9;
+    color: #475569;
+  }
+
+  .card-question {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text);
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .card-answer {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text);
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .card-answer code, .card-question code {
+    background: rgba(0,0,0,0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "JetBrains Mono", "Fira Code", Consolas, Monaco, monospace;
+    font-size: 0.92em;
+  }
+
+  .card-back code {
+    background: rgba(37, 99, 235, 0.1);
+  }
+
+  .card-answer pre, .card-question pre {
+    background: rgba(0,0,0,0.04);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    overflow-x: auto;
+    margin: 6px 0;
+    font-family: "JetBrains Mono", "Fira Code", Consolas, Monaco, monospace;
+    white-space: pre-wrap;
+  }
+
+  .card-hint {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--text-soft);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .card-hint::before, .card-hint::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .card-hint::before { margin-right: 10px; }
+  .card-hint::after { margin-left: 10px; }
+
+  .card-number {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 12px;
+    color: var(--text-soft);
+    font-weight: 500;
+    opacity: 0.7;
+  }
+
+  .section-divider {
+    grid-column: 1 / -1;
+    padding: 28px 4px 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    border-bottom: 2px solid var(--accent);
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-divider .icon {
+    font-size: 22px;
+  }
+
+  /* Scrollbar */
+  .card-answer::-webkit-scrollbar,
+  .card-question::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .card-answer::-webkit-scrollbar-thumb,
+  .card-question::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+
+  .footer {
+    max-width: 1200px;
+    margin: 40px auto 20px;
+    text-align: center;
+    color: var(--text-soft);
+    font-size: 13px;
+  }
+
+  @media (max-width: 800px) {
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
+    .card-wrapper {
+      height: 300px;
+    }
+    .toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .stats { margin-left: 0; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📘 C++ Primer 第5版 · 精华 Anki 卡片</h1>
+  <p>点击卡片翻转查看答案 · 共 <span id="total-count">0</span> 张卡片</p>
+</div>
+
+<div class="toolbar">
+  <div class="search-box">
+    <input type="text" id="search-input" placeholder="搜索卡片内容...">
+  </div>
+  <div class="filter-chips" id="filter-chips">
+    <span class="chip active" data-filter="all">全部</span>
+  </div>
+  <div class="actions">
+    <button class="btn" onclick="flipAll()">全部翻转</button>
+    <button class="btn btn-primary" onclick="shuffleCards()">打乱顺序</button>
+  </div>
+</div>
+
+<div class="stats" id="stats">显示 0 / 0 张</div>
+
+<div class="cards-grid" id="cards-grid"></div>
+
+<div class="footer">
+  基于《C++ Primer 中文版（第5版）》Stanley B. Lippman 等著 · 王刚 杨巨峰 译
+</div>
+
+<script>
+const cards = [
+  // 第1章 开始
+  { category: "第1章 开始", tag: "基础",
+    q: "C++程序的基本结构由哪些部分组成？一个最简单的Hello World程序是什么样的？",
+    a: "C++程序由一个或多个函数组成，其中必须有且仅有一个名为main的函数。操作系统通过调用main函数来运行程序。\n\n<pre>#include <iostream>\n\nint main()\n{\n    std::cout << \"Hello, World!\" << std::endl;\n    return 0;\n}</pre>\n\n- <code>#include <iostream></code>：包含IO库头文件\n- <code>main</code>函数：程序入口，返回int类型\n- <code>std::cout</code>：标准输出流\n- <code>return 0</code>：表示程序成功执行" },
+  { category: "第1章 开始", tag: "基础",
+    q: "什么是变量？C++中变量的声明和定义有什么区别？",
+    a: "变量是一个具名的存储空间，用于存储数据。\n\n<b>声明</b>（declaration）：使得名字为程序所知，规定了变量的类型和名字。\n<pre>extern int i; // 声明i，而非定义</pre>\n\n<b>定义</b>（definition）：创建与名字关联的实体，分配存储空间。\n<pre>int j;        // 定义j\nextern double pi = 3.14; // 定义（因为有初始化）</pre>\n\n变量可以被声明多次，但只能被定义一次。" },
+  { category: "第1章 开始", tag: "基础",
+    q: "C++中的注释有哪几种形式？各自的使用场景是什么？",
+    a: "C++支持两种注释形式：\n\n<b>单行注释</b>：以 <code>//</code> 开始，到行尾结束\n<pre>int x = 5; // 这是一条单行注释</pre>\n\n<b>注释对</b>（多行注释）：以 <code>/*</code> 开始，<code>*/</code> 结束\n<pre>/* 这是一段\n   多行注释 */</pre>\n\n<b>注意</b>：注释对不能嵌套。一般而言，单行注释适用于半行或单行的说明；注释对适用于多行的解释性说明。" },
+
+  // 第2章 变量和基本类型
+  { category: "第2章 变量和基本类型", tag: "类型",
+    q: "C++的基本内置类型有哪些？请列举算术类型并说明各自的用途。",
+    a: "C++基本内置类型分为：<b>算术类型</b>和<code>void</code>。\n\n算术类型包括：\n- <b>布尔型</b>：<code>bool</code>，取值 true/false\n- <b>字符型</b>：<code>char</code>、<code>wchar_t</code>、<code>char16_t</code>、<code>char32_t</code>\n- <b>整型</b>：<code>short</code>、<code>int</code>、<code>long</code>、<code>long long</code>（均有signed/unsigned版本）\n- <b>浮点型</b>：<code>float</code>、<code>double</code>、<code>long double</code>\n\n建议：整数用<code>int</code>，浮点用<code>double</code>，字符用<code>char</code>，这是最常用的组合。" },
+  { category: "第2章 变量和基本类型", tag: "类型",
+    q: "有符号（signed）和无符号（unsigned）整型有什么区别？使用时应注意什么？",
+    a: "<b>signed</b>：可以表示正数、负数和零，取值范围对称（近似）。\n<b>unsigned</b>：只能表示非负数，最小值为0，最大值更大。\n\n<b>注意事项</b>：\n1. 切勿混用有符号和无符号类型。signed值会自动转为unsigned，负数会变成很大的正数\n<pre>for (unsigned i = 10; i >= 0; --i) // 死循环！i永远>=0</pre>\n2. <code>unsigned int</code> 可简写为 <code>unsigned</code>\n3. 当值确定不会为负时使用unsigned，否则使用signed" },
+  { category: "第2章 变量和基本类型", tag: "类型转换",
+    q: "什么是隐式类型转换？列举常见的隐式转换场景。",
+    a: "隐式类型转换是由编译器自动执行的类型转换，无需程序员介入。\n\n常见场景：\n1. 算术转换：整型提升（小整数转int）、不同类型运算转成相同类型\n2. 数组名转指针：大多数情况下数组名自动转为指向首元素的指针\n3. 指针转换：0/nullptr转任意指针类型，任意非常量指针转void*\n4. 转换为bool：算术/指针值为0→false，否则→true\n5. 转换为常量：非常量对象的引用/指针可转为常量引用/指针\n6. 类类型转换：如string转const char*、istream转bool\n\n<b>原则</b>：所有算术类型都会转换为运算中宽度最大的类型。" },
+  { category: "第2章 变量和基本类型", tag: "const",
+    q: "const变量有哪些特性？const对象的初始化规则是什么？",
+    a: "<code>const</code>修饰的变量一旦创建后其值就不能改变，因此必须初始化。\n\n<b>特性</b>：\n1. 必须初始化：<code>const int bufSize = 512;</code>\n2. 默认仅在本文件内有效。要在多个文件共享，必须在定义和声明处都加<code>extern</code>\n3. 顶层const：表示对象本身是常量（如 <code>const int ci = 0;</code>）\n4. 底层const：表示指针/引用所指对象是常量（如 <code>const int *p = &ci;</code>）\n\n<b>初始化例外</b>：用非常量对象初始化const对象是允许的\n<pre>int i = 42;\nconst int ci = i;  // 正确：i的值被拷贝给ci</pre>" },
+  { category: "第2章 变量和基本类型", tag: "const",
+    q: "const指针和指向const的指针有什么区别？",
+    a: "<b>指向const的指针</b>（底层const）：不能通过指针修改所指对象的值\n<pre>const int *p;  // p可以指向不同的int，但不能通过p改值</pre>\n\n<b>const指针</b>（顶层const）：指针本身是常量，不能指向其他地址\n<pre>int *const p = &i;  // p永远指向i，但可以通过p修改i的值</pre>\n\n<b>两者结合</b>：指向const对象的const指针\n<pre>const int *const p = &ci; // 既不能改p的指向，也不能通过p改值</pre>\n\n<b>记忆</b>：从右向左读。<code>*const</code>是const指针，<code>const int</code>是指向const int。" },
+  { category: "第2章 变量和基本类型", tag: "类型别名",
+    q: "C++中定义类型别名的方式有哪些？有什么需要注意的陷阱？",
+    a: "两种方式定义类型别名：\n\n<b>传统方式</b>：<code>typedef</code>\n<pre>typedef double wages; // wages是double的同义词</pre>\n\n<b>C++11方式</b>：<code>using</code>别名声明（更清晰）\n<pre>using SI = Sales_item;  // SI是Sales_item的同义词</pre>\n\n<b>重要陷阱</b>：当类型别名是指针/引用时，不要直接展开理解\n<pre>typedef char *pstring;\nconst pstring cstr = 0; // cstr是指向char的const指针（顶层const）\n// 不等于 const char *cstr!  那是指向const char的指针</pre>" },
+  { category: "第2章 变量和基本类型", tag: "auto",
+    q: "auto类型说明符的工作原理是什么？使用时有哪些需要注意的地方？",
+    a: "<code>auto</code>让编译器根据初始值推断变量类型（C++11引入）。\n\n<b>注意事项</b>：\n1. auto会忽略顶层const，保留底层const\n<pre>const int ci = 0;\nauto b = ci;  // b是int（顶层const被忽略）\nauto &r = ci; // r是const int&（绑定到const对象，底层保留）</pre>\n2. 引用作为初始值时，以引用对象的类型作为auto的类型\n3. 如果希望推断出顶层const，需明确指出：<code>const auto f = ci;</code>\n4. 设置auto的引用时，初始值中的顶层const仍然保留\n5. 一条auto声明语句只能有一种基本类型" },
+  { category: "第2章 变量和基本类型", tag: "decltype",
+    q: "decltype类型说明符的作用是什么？与auto有何区别？",
+    a: "<code>decltype</code>返回操作数的数据类型，但不计算表达式的值（C++11）。\n\n<b>与auto的区别</b>：\n- auto需要初始化表达式来推断类型，且会忽略顶层const和引用\n- decltype可以只给类型名，且会完整保留类型信息（包括顶层const和引用）\n\n<b>特殊规则</b>：如果表达式是加括号的变量，结果是引用类型\n<pre>int x = 0;\ndecltype(x) a = x;     // a是int\ndecltype((x)) b = x;   // b是int&（双层括号永远是引用）\ndecltype(*p) c = x;    // c是int&（解引用返回引用类型）</pre>" },
+
+  // 第3章 字符串、向量和数组
+  { category: "第3章 字符串/向量/数组", tag: "string",
+    q: "标准库string的常用操作有哪些？请列举至少8种。",
+    a: "常用string操作：\n1. <code>s.empty()</code>：判空，返回bool\n2. <code>s.size()</code>：返回字符个数（类型为size_type）\n3. <code>s[n]</code>：下标访问第n个字符\n4. <code>s1 + s2</code>：字符串拼接\n5. <code>s1 = s2</code>：赋值替换\n6. <code>s1 == s2</code>：相等性判断（区分大小写）\n7. <code>s1 < s2</code>：字典序比较\n8. <code>getline(cin, s)</code>：读取一整行（保留空格）\n9. <code>s.substr(pos, len)</code>：取子串\n10. <code>s.find(c)</code>：查找字符/子串\n\n注意：<code>s.size()</code>返回无符号类型，不要与int混用。" },
+  { category: "第3章 字符串/向量/数组", tag: "vector",
+    q: "标准库vector是什么？它的特点和常用操作有哪些？",
+    a: "<code>vector</code>是标准库容器，表示对象的集合，所有对象类型相同。\n\n<b>特点</b>：\n- 动态大小：可以在运行时高效地添加元素\n- 模板类：使用时需指定元素类型 <code>vector<int></code>\n- 连续存储：元素在内存中连续存放\n\n<b>常用操作</b>：\n- <code>v.push_back(t)</code>：尾部添加元素\n- <code>v.empty()</code> / <code>v.size()</code>：判空/大小\n- <code>v[n]</code>：下标访问\n- <code>v.begin()</code> / <code>v.end()</code>：迭代器\n- <code>v.insert(it, t)</code>：在迭代器位置插入\n- <code>v.pop_back()</code>：删除尾元素\n\n<b>重要</b>：不能用下标添加元素，只能用下标访问已存在的元素。" },
+  { category: "第3章 字符串/向量/数组", tag: "迭代器",
+    q: "什么是迭代器？迭代器的基本操作和类型有哪些？",
+    a: "迭代器是一种访问容器元素的机制，类似于指针，指向容器中的某个位置。\n\n<b>基本操作</b>：\n- <code>*it</code>：解引用，获取所指元素\n- <code>it->mem</code>：等价于 <code>(*it).mem</code>\n- <code>++it</code> / <code>--it</code>：前进/后退一个元素\n- <code>it == it2</code> / <code>it != it2</code>：比较是否指向同一位置\n\n<b>迭代器类型</b>：\n- <code>iterator</code>：可读写\n- <code>const_iterator</code>：只读（C++11 可通过 cbegin()/cend() 获取）\n- <code>reverse_iterator</code>：反向迭代器\n\n<b>注意</b>：使用迭代器的循环体中，不要向容器添加/删除元素（会使迭代器失效）。" },
+  { category: "第3章 字符串/向量/数组", tag: "数组",
+    q: "C++内置数组与vector相比有什么特点？数组与指针的关系是什么？",
+    a: "<b>内置数组特点</b>：\n- 大小固定，编译时必须确定（constexpr维度）\n- 不能拷贝或赋值\n- 没有size()等成员函数\n- 效率略高但安全性差，容易越界\n\n<b>数组与指针的关系</b>：\n- 大多数情况下，数组名会自动转换为指向首元素的指针\n- <code>int *p = ia;</code> 等价于 <code>int *p = &ia[0];</code>\n- 使用数组作为auto的初始值时，推断出的是指针而非数组\n- 使用decltype时，返回的是数组类型\n\n<b>建议</b>：尽量使用vector和string代替内置数组，更安全且功能更强。" },
+  { category: "第3章 字符串/向量/数组", tag: "范围for",
+    q: "范围for语句（range-based for）的语法和原理是什么？",
+    a: "范围for语句（C++11）遍历序列中的每个元素：\n<pre>for (declaration : expression)\n    statement</pre>\n\n<b>示例</b>：\n<pre>vector<int> v = {1,2,3};\nfor (auto &i : v)   // 引用可修改元素\n    i *= 2;</pre>\n\n<b>原理</b>：等价于使用迭代器遍历，由编译器自动展开为begin/end的循环。\n\n<b>注意</b>：\n1. 范围for中不能改变vector等容器的大小（不能push_back/erase）\n2. 要修改元素需用引用，否则得到的是拷贝\n3. expression必须是一个序列，如数组、容器、或有begin/end的类" },
+
+  // 第4章 表达式
+  { category: "第4章 表达式", tag: "表达式",
+    q: "C++表达式中的左值（lvalue）和右值（rvalue）有什么区别？",
+    a: "<b>左值</b>：可以出现在赋值号左边的表达式，代表一个内存位置，可以取地址。如：变量名、解引用表达式、下标表达式（返回引用的）。\n\n<b>右值</b>：只能出现在赋值号右边的表达式，代表一个值本身，不能取地址。如：字面值常量、算术表达式、返回值（非引用）的函数调用。\n\n<b>通俗理解</b>：\n- 左值 = 有持久身份的对象（有名字、有地址）\n- 右值 = 临时的值（用完就消失）\n\n<b>关键规则</b>：需要左值的地方（如赋值左操作数）不能用右值；但右值的地方可以用左值（左值会被当作用的值）。" },
+  { category: "第4章 表达式", tag: "表达式",
+    q: "递增递减运算符（++/--）的前置版本和后置版本有什么区别？为什么通常优先使用前置版本？",
+    a: "<b>前置版本</b>（<code>++i</code>）：先加1，返回改变后的对象（左值）\n<b>后置版本</b>（<code>i++</code>）：先返回原始值的副本，再加1\n\n<pre>int i = 0, j;\nj = ++i;  // j=1, i=1  （先加再用）\nj = i++;  // j=1, i=2  （先用再加）</pre>\n\n<b>为什么优先用前置</b>：\n1. 后置版本需要保存原始值的副本，对于复杂类型（如迭代器）开销更大\n2. 前置版本语义更直接，表达\"我需要加1后的值\"\n3. 除非确实需要旧值，否则都应该用前置版本" },
+  { category: "第4章 表达式", tag: "类型转换",
+    q: "什么是显式类型转换（强制类型转换）？四种命名的强制转换分别是什么？",
+    a: "显式类型转换是程序员主动要求的类型转换。C++有四种命名转换：\n\n1. <code>static_cast<T>(e)</code>：任何明确定义的类型转换（只要不包含底层const），如算术类型转换、void*转具体指针\n2. <code>dynamic_cast<T>(e)</code>：运行时类型识别，用于多态类型的向下转型（安全）\n3. <code>const_cast<T>(e)</code>：只能改变底层const，即去除常量性\n4. <code>reinterpret_cast<T>(e)</code>：底层重新解释比特位，极度危险，尽量不用\n\n<b>建议</b>：尽量避免强制转换。使用命名转换比旧式转换更清晰、更容易被发现。" },
+  { category: "第4章 表达式", tag: "sizeof",
+    q: "sizeof运算符的作用和特点是什么？对不同类型求值有什么规律？",
+    a: "<code>sizeof</code>返回一个对象或类型所占的字节数，结果为<code>size_t</code>类型。\n\n<b>对不同类型的结果</b>：\n- <code>sizeof(type)</code>：该类型对象所占字节数\n- <code>sizeof expr</code>：表达式结果类型的大小（不求值表达式）\n- 对char/char&：结果为1\n- 对指针：指针本身的大小（32位=4，64位=8）\n- 对数组：整个数组的大小（元素大小×元素个数）\n- 对string/vector：只返回固定部分大小，不等于元素占用空间\n\n<b>用法示例</b>：\n<pre>int arr[10];\nsize_t n = sizeof(arr) / sizeof(*arr); // 数组元素个数 = 10</pre>" },
+
+  // 第5章 语句
+  { category: "第5章 语句", tag: "语句",
+    q: "switch语句的执行流程是怎样的？使用时有哪些注意事项？",
+    a: "<b>执行流程</b>：计算switch表达式的值，与每个case标签比较，匹配成功则从该case开始顺序执行后续所有语句（包括后面的case），直到遇到break或switch结束。\n\n<b>注意事项</b>：\n1. case标签必须是整型常量表达式\n2. 不要漏写break，否则会\"贯穿\"到下一个case（这也是switch灵活之处，但需慎用）\n3. 可使用default标签处理未匹配的情况\n4. case中定义变量须用花括号限定作用域\n<pre>switch (val) {\n    case 1: { int x = 0; /* ... */ break; }\n    case 2: /* ... */ break;\n    default: /* ... */\n}</pre>\n5. 多个case标签可以连写表示同一逻辑" },
+  { category: "第5章 语句", tag: "语句",
+    q: "C++中有哪些跳转语句？各自的作用和使用场景是什么？",
+    a: "C++有四种跳转语句：\n\n1. <code>break</code>：终止离它最近的循环或switch语句，从其后第一条语句继续。只能出现在循环或switch内部。\n\n2. <code>continue</code>：终止最近的循环的当前迭代，立即开始下一次迭代。只能在循环内部使用。\n\n3. <code>goto</code>：无条件跳转到同一函数内的指定标签语句。形式：<code>goto label;</code> 跳转到 <code>label: statement;</code>。<b>尽量避免使用</b>，会使程序难以理解和修改。\n\n4. <code>return</code>：终止当前函数并返回一个值（可选）。" },
+  { category: "第5章 语句", tag: "异常",
+    q: "C++异常处理机制由哪几部分组成？throw、try、catch分别起什么作用？",
+    a: "异常处理机制三部分：\n\n1. <code>throw 表达式</code>：抛出异常。遇到throw后程序暂停当前函数，开始查找匹配的catch子句。\n<pre>throw runtime_error(\"data must refer to same ISBN\");</pre>\n\n2. <code>try 语句块</code>：try块中的代码如果抛出异常，会被后面的catch子句处理。\n<pre>try {\n    // 可能抛出异常的代码\n} catch (const runtime_error &e) {\n    cout << e.what() << endl;\n}</pre>\n\n3. <code>catch 子句</code>：异常处理代码，捕获指定类型的异常。\n\n<b>异常类</b>：标准库定义了exception、runtime_error、logic_error等。<code>e.what()</code>返回错误信息字符串。\n\n<b>栈展开</b>：如果当前函数没有catch，异常会沿调用链向上传播，直到找到匹配的catch；若最终未找到，程序调用terminate终止。" },
+
+  // 第6章 函数
+  { category: "第6章 函数", tag: "函数",
+    q: "函数参数传递有哪几种方式？各自的特点和适用场景是什么？",
+    a: "三种参数传递方式：\n\n1. <b>值传递</b>：实参的值被拷贝给形参，形参与实参是独立对象。用于：参数是简单类型（int、double等）且函数不需要修改实参。\n\n2. <b>引用传递</b>：形参是实参的别名，不拷贝。效率更高，且函数可修改实参。用于：需要修改实参、或传递大型对象避免拷贝开销。\n<pre>void swap(int &a, int &b);  // 通过引用交换</pre>\n\n3. <b>指针传递</b>：传递的是指针的值（地址），通过指针可间接修改所指对象。C中常用，C++中推荐用引用代替。\n\n<b>原则</b>：如果函数无需修改实参，使用<code>const</code>引用更安全高效。" },
+  { category: "第6章 函数", tag: "函数",
+    q: "什么是函数重载？重载的判断规则是什么？返回类型为什么不能作为重载依据？",
+    a: "<b>函数重载</b>：同一作用域内的几个函数名字相同但形参列表不同（参数个数或类型不同）。\n\n<b>重载判断规则</b>：\n- 只有形参列表不同才能重载\n- 顶层const形参与非顶层const形参视为相同（<code>int</code>与<code>const int</code>不构成重载）\n- 底层const可以区分重载（<code>const int*</code>与<code>int*</code>构成重载）\n\n<b>为什么返回类型不算</b>：因为调用函数时可以忽略返回值，编译器无法仅根据返回类型确定调用哪个函数。\n<pre>int func(double);\ndouble func(double); // 错误：仅返回类型不同</pre>" },
+  { category: "第6章 函数", tag: "函数",
+    q: "默认实参的使用规则是什么？有哪些需要注意的地方？",
+    a: "默认实参：调用函数时可以省略该实参，使用默认值。\n\n<b>规则</b>：\n1. 一旦某个形参被赋予了默认值，它后面的所有形参都必须有默认值\n2. 默认实参只能在函数声明中指定，通常放在头文件中\n3. 同一个函数不能在声明中重复指定默认实参（即使值相同）\n4. 实参按位置解析，从左到右填充\n\n<pre>typedef string::size_type sz;\nstring screen(sz ht = 24, sz wid = 80, char bg = ' ');</pre>\n\n<b>调用</b>：\n<pre>screen();            // = screen(24, 80, ' ')\nscreen(66);          // = screen(66, 80, ' ')\nscreen(66, 256, '#'); // 全部显式指定</pre>\n\n<b>注意</b>：默认实参的名字在函数声明的作用域内解析，但求值发生在函数调用时。" },
+  { category: "第6章 函数", tag: "函数",
+    q: "什么是内联函数（inline）？它的作用、适用场景和限制是什么？",
+    a: "<code>inline</code>函数是一种优化手段，建议编译器将函数体在每个调用点展开，避免函数调用开销。\n\n<b>使用方式</b>：函数声明/定义前加<code>inline</code>关键字\n<pre>inline const string &shorterString(const string &s1, const string &s2) {\n    return s1.size() <= s2.size() ? s1 : s2;\n}</pre>\n\n<b>适用场景</b>：\n- 函数体很小（几行代码）\n- 调用频繁\n- 用于替代宏函数（更安全，有类型检查）\n\n<b>限制</b>：\n- inline只是向编译器发出的请求，编译器可以选择忽略\n- 递归函数、过长的函数一般不会被内联\n- inline函数的定义必须在头文件中（每个调用点都需要函数体）" },
+  { category: "第6章 函数", tag: "constexpr",
+    q: "constexpr函数是什么？它有哪些特点和规则？",
+    a: "<code>constexpr</code>函数（C++11）：能用于常量表达式的函数，在编译时求值。\n\n<b>特点和规则</b>：\n1. 函数的返回类型和所有形参类型都得是字面值类型\n2. 函数体中必须有且只有一条return语句（C++11限制，C++14放宽）\n3. 函数体内可以包含其他语句，但不能有运行时才执行的操作（如I/O、动态分配）\n4. constexpr函数被隐式地指定为内联函数\n\n<pre>constexpr int new_sz() { return 42; }\nconstexpr int foo = new_sz();  // 编译时求值</pre>\n\n<b>灵活之处</b>：constexpr函数不一定在编译时求值。如果实参是常量表达式则编译时求值，否则运行时求值。" },
+  { category: "第6章 函数", tag: "指针函数",
+    q: "什么是函数指针？如何声明和使用函数指针？",
+    a: "函数指针：指向函数的指针，其类型由函数的返回类型和形参类型决定。\n\n<b>声明</b>：\n<pre>// pf是一个指向函数的指针，该函数接受两个int，返回bool\nbool (*pf)(int, int);</pre>\n\n<b>赋值和调用</b>：\n<pre>bool lengthCompare(const string &, const string &);\n\nbool (*p)(const string&, const string&) = lengthCompare;\n// 或 auto p = lengthCompare;  // 自动推断\n\n// 调用（两种方式等价）\np(\"hi\", \"bye\");        // 直接调用\n(*p)(\"hi\", \"bye\");     // 解引用后调用</pre>\n\n<b>用途</b>：作为函数参数（回调函数）、作为函数返回类型、存放在函数表中。\n\n<b>简化</b>：可用<code>typedef</code>或<code>using</code>定义类型别名：\n<pre>using Func = bool(const string&, const string&);\nusing FuncPtr = bool(*)(const string&, const string&);</pre>" },
+
+  // 第7章 类
+  { category: "第7章 类", tag: "类",
+    q: "C++中类的基本组成和访问说明符有哪些？public、private、protected的区别是什么？",
+    a: "类由成员（数据成员和成员函数）组成，通过访问说明符控制访问权限：\n\n1. <code>public</code>：公有成员，整个程序都可以访问。定义类的接口。\n2. <code>private</code>：私有成员，只能被类的成员函数和友元访问。封装实现细节。\n3. <code>protected</code>：保护成员，可被本类成员、友元和派生类成员访问。用于继承。\n\n<b>class 与 struct 的区别</b>：\n- 唯一区别是默认访问权限不同\n- <code>class</code>：默认访问权限是private\n- <code>struct</code>：默认访问权限是public\n\n<b>封装的意义</b>：\n- 使用户代码无法直接修改对象内部状态\n- 类的实现可以随意改变，只要接口不变，用户代码无需修改" },
+  { category: "第7章 类", tag: "类",
+    q: "什么是构造函数？构造函数有哪些特点和种类？",
+    a: "构造函数：与类同名的特殊成员函数，用于初始化对象的数据成员。对象被创建时自动调用。\n\n<b>特点</b>：\n- 没有返回类型\n- 可以重载\n- 名字必须与类名相同\n- 不能被声明为const\n\n<b>种类</b>：\n1. <b>默认构造函数</b>：无需实参即可调用的构造函数。若类中无任何构造函数，编译器自动合成默认构造函数。\n2. <b>构造函数初始值列表</b>：在函数体前初始化成员\n<pre>Sales_data(const string &s) : bookNo(s), units_sold(0), revenue(0) {}</pre>\n3. <b>拷贝构造函数</b>：参数是自身类类型的const引用\n4. <b>移动构造函数</b>（C++11）：参数是右值引用\n5. <b>委托构造函数</b>（C++11）：调用本类其他构造函数\n6. <code>=default</code> / <code>=delete</code>：显式要求/禁止编译器合成版本" },
+  { category: "第7章 类", tag: "类",
+    q: "什么是友元？友元的作用和使用注意事项是什么？",
+    a: "友元（friend）：允许其他类或函数访问本类的非公有成员。\n\n<b>声明方式</b>：在类中以<code>friend</code>关键字声明\n<pre>class Sales_data {\nfriend Sales_data add(const Sales_data&, const Sales_data&);\nfriend ostream &print(ostream&, const Sales_data&);\npublic:\n    // ...\nprivate:\n    string bookNo;\n    double revenue;\n};</pre>\n\n<b>友元的种类</b>：\n1. 友元函数：普通函数成为友元\n2. 友元类：整个类都是友元，该类的所有成员函数都可访问本类非公有成员\n3. 成员函数友元：只让另一个类的某个特定成员函数成为友元\n\n<b>注意事项</b>：\n- 友元关系是单向的，不传递、不继承\n- 友元声明只是访问权限声明，不是普通的函数声明\n- 友元破坏封装性，应谨慎使用，仅在确实需要时使用" },
+  { category: "第7章 类", tag: "类",
+    q: "什么是this指针？它的作用和特性是什么？",
+    a: "<code>this</code>是一个隐含的指针，成员函数通过它访问调用该函数的对象。\n\n<b>特点</b>：\n1. this是一个常量指针，不能修改它的值（始终指向当前对象）\n2. this只在成员函数内部有效\n3. 成员函数调用时，编译器自动将对象地址传给this形参\n\n<pre>// 成员函数调用\ndata.combine(rhs);\n// 等价于：Sales_data::combine(&data, rhs); // this=&data</pre>\n\n<b>const成员函数</b>：在参数列表后加const，修改this的类型为指向const的指针，表示该函数不会修改对象。\n<pre>string isbn() const { return bookNo; }  // const成员函数</pre>\n\n<b>*this</b>：解引用this得到当前对象的引用。可用于返回对象本身：<code>return *this;</code>（链式调用的基础）" },
+  { category: "第7章 类", tag: "static",
+    q: "类的static成员是什么？它有什么特点和用途？",
+    a: "<code>static</code>类成员：属于类而非每个对象的成员，所有对象共享同一份static成员。\n\n<b>特点</b>：\n1. static成员不属于任何对象，没有this指针\n2. static成员函数不能声明为const（因为没有this指针）\n3. static数据成员必须在类外定义和初始化（类内只是声明）\n4. static成员可以是不完全类型（可以是自身类类型的指针/引用/对象）\n\n<pre>class Account {\npublic:\n    static double rate() { return interestRate; }\n    static void rate(double);\nprivate:\n    static double interestRate;  // 声明\n    static constexpr int period = 30; // const static可以类内初始化\n};\n\ndouble Account::interestRate = initRate(); // 类外定义+初始化</pre>\n\n<b>用途</b>：存储所有对象共享的数据（如利率、计数器）、提供不依赖对象的工具函数。" },
+
+  // 第8章 IO库
+  { category: "第8章 IO库", tag: "IO",
+    q: "C++标准IO库的层次结构是怎样的？主要有哪些类？",
+    a: "IO库主要类的继承关系：\n\n- <code>ios_base</code>：最基类，定义IO通用操作\n- <code>basic_ios</code>：继承ios_base，管理流的状态\n  - <code>istream</code>：输入流基类（cin所属类型）\n    - <code>ifstream</code>：文件输入流\n    - <code>istringstream</code>：字符串输入流\n  - <code>ostream</code>：输出流基类（cout所属类型）\n    - <code>ofstream</code>：文件输出流\n    - <code>ostringstream</code>：字符串输出流\n  - <code>iostream</code>：读写流（继承istream和ostream）\n    - <code>fstream</code>：文件读写流\n    - <code>stringstream</code>：字符串读写流\n\n<b>头文件</b>：\n- <code><iostream></code>：标准IO\n- <code><fstream></code>：文件IO\n- <code><sstream></code>：string流" },
+  { category: "第8章 IO库", tag: "IO",
+    q: "IO流的条件状态有哪些？如何检测和管理流的状态？",
+    a: "IO流定义了一组状态标志位，表示流的当前状态：\n\n<b>四种状态位</b>：\n- <code>strm::goodbit</code>：流处于正常状态（值为0）\n- <code>strm::badbit</code>：系统级错误，不可恢复（如磁盘故障）\n- <code>strm::failbit</code>：可恢复错误（如输入类型不匹配）\n- <code>strm::eofbit</code>：到达文件结束（同时会设置failbit）\n\n<b>状态检测函数</b>：\n- <code>s.good()</code>：流是否有效（所有位都没设置）\n- <code>s.fail()</code>：failbit或badbit是否置位\n- <code>s.eof()</code>：eofbit是否置位\n- <code>s.bad()</code>：badbit是否置位\n\n<b>流作为条件</b>：<code>while (cin >> s)</code> 等价于 <code>while (!cin.fail())</code>\n\n<b>状态管理</b>：\n- <code>s.clear()</code>：复位所有状态位\n- <code>s.clear(flags)</code>：复位后设置指定标志\n- <code>s.setstate(flags)</code>：追加设置指定标志\n- <code>s.rdstate()</code>：返回当前状态" },
+  { category: "第8章 IO库", tag: "IO",
+    q: "文件流（fstream）的打开模式有哪些？各自的含义是什么？",
+    a: "文件打开模式（在打开文件时指定）：\n\n- <code>in</code>：以读方式打开（ifstream默认）\n- <code>out</code>：以写方式打开（ofstream默认），会清空已有内容\n- <code>app</code>：每次写操作前定位到文件末尾（追加模式）\n- <code>ate</code>：打开文件后立即定位到文件末尾（end）\n- <code>trunc</code>：截断文件（清空内容），out默认行为\n- <code>binary</code>：以二进制方式进行IO\n\n<b>组合规则</b>：\n- <code>out</code>默认隐含<code>trunc</code>，要保留内容需同时指定<code>app</code>或<code>in</code>\n- <code>ate</code>可与任何模式组合，只影响打开时的初始位置\n- 以<code>out</code>打开但无<code>in</code>时，文件被截断\n\n<pre>ofstream out(\"file.txt\", ofstream::app);  // 追加模式\nifstream in(\"file.txt\");                   // 默认in模式\nfstream io(\"file.txt\", fstream::in | fstream::out);  // 读写</pre>" },
+  { category: "第8章 IO库", tag: "IO",
+    q: "string流（stringstream）有什么用途？常用操作有哪些？",
+    a: "string流将string当作IO流来处理，在内存中进行字符串读写。\n\n<b>三种类型</b>：\n- <code>istringstream</code>：从string读取\n- <code>ostringstream</code>：向string写入\n- <code>stringstream</code>：既读又写\n\n<b>常用操作</b>：\n- <code>sstream.str()</code>：返回底层string的拷贝\n- <code>sstream.str(s)</code>：将string s拷贝到string流中\n\n<b>典型用途</b>：\n1. <b>逐行解析</b>：先getline读一行，再用istringstream拆分单词\n<pre>string line; getline(cin, line);\nistringstream iss(line);\nstring word;\nwhile (iss >> word) { /* 处理每个单词 */ }</pre>\n\n2. <b>逐步构造输出</b>：用ostringstream拼接复杂输出，最后一次性取出\n<pre>ostringstream oss;\noss << \"Name: \" << name << \" Age: \" << age;\nstring result = oss.str();</pre>" },
+
+  // 第9章 顺序容器
+  { category: "第9章 顺序容器", tag: "容器",
+    q: "C++标准库有哪些顺序容器？各自的特点和适用场景是什么？",
+    a: "顺序容器共有6种，元素按位置有序存储：\n\n1. <code>vector</code>：可变大小数组，连续存储。支持快速随机访问。尾部插入/删除O(1)，中间插入/删除O(n)。<b>最常用的通用容器</b>。\n\n2. <code>deque</code>：双端队列，支持快速随机访问。头尾插入/删除O(1)，中间插入/删除O(n)。适用于需要在两端操作的场景。\n\n3. <code>list</code>：双向链表，不支持随机访问。任何位置插入/删除O(1)（需先定位迭代器）。适用于频繁在中间插入的场景。\n\n4. <code>forward_list</code>（C++11）：单向链表，只支持单向顺序访问。插入/删除O(1)。比list更省空间，但功能受限。\n\n5. <code>array</code>（C++11）：固定大小数组，连续存储。支持快速随机访问。不能添加/删除元素。比内置数组更安全易用。\n\n6. <code>string</code>：专门存储字符的vector。\n\n<b>选择原则</b>：默认用vector，除非有特殊理由用其他。" },
+  { category: "第9章 顺序容器", tag: "容器",
+    q: "容器的insert操作有哪些形式？它们的行为是什么？",
+    a: "insert在迭代器指定位置之前插入元素，返回指向第一个新插入元素的迭代器：\n\n1. <code>c.insert(p, t)</code>：在迭代器p之前插入值为t的元素\n2. <code>c.insert(p, n, t)</code>：在p之前插入n个值为t的元素\n3. <code>c.insert(p, b, e)</code>：在p之前插入迭代器b到e范围内的元素（b和e不能指向c本身）\n4. <code>c.insert(p, il)</code>：在p之前插入初始化列表il中的元素\n5. <code>c.emplace(p, args)</code>：在p之前用args构造一个元素（C++11，更高效）\n\n<pre>vector<string> svec;\nauto iter = svec.insert(svec.begin(), \"Hi!\");\n// 等价于 push_front（但vector没有push_front）</pre>\n\n<b>注意</b>：\n- 在vector/string中间插入会导致元素移动，可能使迭代器/引用/指针失效\n- insert的位置参数是一个迭代器，元素插在它指向的元素之前\n- forward_list有自己特殊的insert_after/erase_after操作" },
+  { category: "第9章 顺序容器", tag: "容器",
+    q: "什么是容器适配器？stack、queue、priority_queue的特点是什么？",
+    a: "容器适配器：基于已有容器实现，提供不同的接口行为。本质是对底层容器的封装。\n\n<b>stack</b>（栈，后进先出LIFO）：\n- 默认基于deque实现\n- 操作：<code>push()</code>、<code>pop()</code>、<code>top()</code>、<code>empty()</code>、<code>size()</code>\n- 只能访问栈顶元素\n\n<b>queue</b>（队列，先进先出FIFO）：\n- 默认基于deque实现\n- 操作：<code>push()</code>（尾插）、<code>pop()</code>（头删）、<code>front()</code>、<code>back()</code>\n- 队尾插入，队头删除\n\n<b>priority_queue</b>（优先队列）：\n- 默认基于vector实现，使用堆排序\n- 默认大顶堆（最大元素在队首）\n- 操作：<code>push()</code>、<code>pop()</code>、<code>top()</code>\n- 元素按优先级排序，默认使用<运算符\n\n适配器都定义在对应头文件中：<code><stack></code>、<code><queue></code>" },
+  { category: "第9章 顺序容器", tag: "迭代器失效",
+    q: "向容器添加或删除元素时，哪些情况会导致迭代器失效？不同容器有什么规律？",
+    a: "修改容器（添加/删除元素）可能使迭代器、指针、引用失效，导致未定义行为。\n\n<b>vector / string</b>：\n- 插入元素：若存储空间重新分配（扩容），则所有迭代器/指针/引用都失效；若未重新分配，则插入位置之后的失效\n- 删除元素：被删元素及之后的迭代器/指针/引用失效；尾后迭代器总是失效\n\n<b>deque</b>：\n- 在首尾之外的位置插入/删除：所有迭代器/指针/引用都失效\n- 在首尾插入/删除：迭代器失效，但指针和引用不失效\n\n<b>list / forward_list</b>：\n- 插入/删除元素：迭代器（包括尾后迭代器）不会失效，指针和引用也不失效\n- 只有被删除元素的迭代器/引用失效\n\n<b>重要原则</b>：不要保存end()返回的迭代器，每次循环都重新调用end()。\n<b>最佳实践</b>：在循环中插入/删除元素时，利用操作返回的迭代器更新位置。" },
+
+  // 第10章 泛型算法
+  { category: "第10章 泛型算法", tag: "算法",
+    q: "泛型算法的特点是什么？为什么称为\"泛型\"？算法如何分类？",
+    a: "泛型算法是标准库提供的一组通用算法，定义在<code><algorithm></code>和<code><numeric></code>中。\n\n<b>特点</b>：\n- \"泛型\"：可用于不同类型的容器和元素类型\n- 通过迭代器操作，不直接操作容器，因此不依赖容器类型\n- 算法永远不会执行容器的操作（不会直接添加/删除元素、不会改变容器大小）\n\n<b>主要分类</b>：\n1. <b>只读算法</b>：只读取不修改元素。如 find、count、accumulate、equal\n2. <b>写容器元素算法</b>：修改元素值。如 fill、replace、copy\n3. <b>重排容器元素算法</b>：改变元素顺序。如 sort、unique、reverse\n4. <b>划分算法</b>：partition将元素分为满足/不满足条件两组\n5. <b>排序算法</b>：sort、stable_sort、partial_sort\n6. <b>二分搜索</b>：binary_search、lower_bound、upper_bound\n\n<b>注意</b>：写入类的算法假定目标空间足够大，程序员必须保证这一点（可用插入迭代器保证安全）。" },
+  { category: "第10章 泛型算法", tag: "算法",
+    q: "什么是lambda表达式？它的语法和捕获方式有哪些？",
+    a: "lambda表达式（C++11）：可调用的代码单元，可理解为匿名的内联函数。\n\n<b>语法</b>：\n<pre>[capture list] (parameter list) mutable -> return type { function body }</pre>\n可省略参数列表和返回类型（自动推断）。\n\n<b>捕获方式</b>：\n- <code>[]</code>：空捕获，不使用外部变量\n- <code>[=]</code>：值捕获所有用到的变量（拷贝）\n- <code>[&]</code>：引用捕获所有用到的变量\n- <code>[x, &y]</code>：x值捕获，y引用捕获（混合显式捕获）\n- <code>[=, &y]</code>：y引用捕获，其余值捕获\n- <code>[&, x]</code>：x值捕获，其余引用捕获\n\n<b>mutable</b>：允许在lambda体内修改值捕获的变量（默认值捕获的变量不可修改）\n\n<b>适用场景</b>：作为算法的谓词参数，代替函数对象，代码更简洁直观。" },
+  { category: "第10章 泛型算法", tag: "算法",
+    q: "插入迭代器有哪几种？各自的特点和适用场景是什么？",
+    a: "插入迭代器是一种迭代器适配器，将赋值操作转换为插入操作，使算法可以向容器插入元素而不是覆盖元素。\n\n<b>三种插入迭代器</b>：\n\n1. <code>back_inserter</code>（尾后插入迭代器）：调用<code>push_back</code>，在容器尾部插入元素。最常用。\n<pre>vector<int> vec;\nfill_n(back_inserter(vec), 10, 0); // 安全地插入10个0</pre>\n\n2. <code>front_inserter</code>（首部插入迭代器）：调用<code>push_front</code>，在容器头部插入元素。每个新元素都插在最前面，顺序会颠倒。\n\n3. <code>inserter</code>（插入迭代器）：在指定迭代器之前插入元素。需要一个指向容器的迭代器参数。\n<pre>auto it = inserter(c, c.begin());\n*it = val;  // 等价于 it = c.insert(it, val); ++it;</pre>\n\n<b>作用</b>：解决算法写入目标空间不足的问题，确保算法写入时自动扩容。" },
+  { category: "第10章 泛型算法", tag: "算法",
+    q: "什么是谓词（predicate）？一元谓词和二元谓词是什么？",
+    a: "谓词是一种可调用表达式，其返回结果是能用作条件的值（可转换为bool）。\n\n<b>分类</b>：\n- <b>一元谓词</b>：接受一个参数\n- <b>二元谓词</b>：接受两个参数\n\n<b>用途</b>：算法常使用谓词作为参数来定制比较或判断逻辑。\n\n<b>示例</b>：\n<pre>// 一元谓词：判断字符串长度是否大于6\nbool moreThan6(const string &s) { return s.size() > 6; }\nauto cnt = count_if(words.begin(), words.end(), moreThan6);\n\n// 二元谓词：比较两个字符串长度\nbool isShorter(const string &s1, const string &s2) {\n    return s1.size() < s2.size();\n}\nsort(words.begin(), words.end(), isShorter);</pre>\n\n<b>提供谓词的方式</b>：普通函数、函数对象（重载()的类）、lambda表达式。标准库中还定义了一些算术/关系/逻辑函数对象（如plus<int>、greater<string>等）。" },
+
+  // 第11章 关联容器
+  { category: "第11章 关联容器", tag: "关联容器",
+    q: "关联容器有哪些类型？与顺序容器相比有什么不同？",
+    a: "关联容器按关键字保存和访问元素，元素按关键字有序组织（哈希容器除外）。\n\n<b>按有序性分</b>：\n- <b>有序关联容器</b>（基于红黑树，元素按关键字排序）：map、set、multimap、multiset\n- <b>无序关联容器</b>（C++11，基于哈希表）：unordered_map、unordered_set、unordered_multimap、unordered_multiset\n\n<b>按是否允许重复分</b>：\n- 不允许重复关键字：map、set、unordered_map、unordered_set\n- 允许重复关键字：multimap、multiset、unordered_multimap、unordered_multiset\n\n<b>map vs set</b>：\n- <code>map</code>：关键字-值对（字典结构），<code>pair<const key, value></code>\n- <code>set</code>：只有关键字，每个关键字唯一\n\n<b>与顺序容器的区别</b>：\n1. 元素按关键字有序存储（有序版本）\n2. 不支持位置相关的操作（如push_front）\n3. 不支持下标（set）或下标有特殊含义（map的下标会插入元素）\n4. 查找/插入/删除平均O(log n)，比顺序容器快得多" },
+  { category: "第11章 关联容器", tag: "关联容器",
+    q: "map的下标操作（operator[]）有什么特殊行为？使用时需要注意什么？",
+    a: "map的下标运算符行为与数组/vector的下标完全不同：\n\n<b>核心行为</b>：\n- 如果关键字已在map中：返回对应值的引用\n- 如果关键字<b>不在</b>map中：<b>插入</b>该关键字，值进行值初始化，并返回该值的引用\n\n<pre>map<string, size_t> word_count;\nword_count[\"Anna\"] = 1;  // 插入Anna: 1，然后赋值为1\n++word_count[\"Bob\"];    // 插入Bob: 0，然后自增为1</pre>\n\n<b>注意事项</b>：\n1. 下标操作可能改变map的大小（这是最容易出错的地方）\n2. 不能对const map使用下标（因为可能插入元素）\n3. 只想查找但不想插入时，应该用<code>find()</code>而不是下标\n4. 下标运算符返回的是左值（引用），可以读写\n\n<b>at()成员函数</b>（C++11）：访问元素但不插入，不存在则抛出out_of_range异常。" },
+  { category: "第11章 关联容器", tag: "关联容器",
+    q: "关联容器的insert操作有哪些形式？返回值是什么？",
+    a: "关联容器的insert用于添加元素，返回值取决于容器类型（是否允许重复）。\n\n<b>对于不允许重复关键字的容器（map、set）</b>：\n返回 <code>pair<迭代器, bool></code>：\n- 迭代器指向具有给定关键字的元素\n- bool表示是否成功插入（true=插入成功，false=已存在）\n<pre>auto ret = word_count.insert({word, 1});\nif (!ret.second)   // 单词已存在\n    ++ret.first->second;  // 计数加1</pre>\n\n<b>对于允许重复关键字的容器（multimap、multiset）</b>：\n只返回指向新元素的迭代器（因为总能插入），没有bool。\n\n<b>insert的形式</b>：\n- <code>c.insert(v)</code>：插入值v\n- <code>c.insert(b, e)</code>：插入迭代器范围\n- <code>c.insert(il)</code>：插入初始化列表\n- <code>c.emplace(args)</code>：用args构造元素（更高效）\n\n<b>注意</b>：map的insert参数必须是pair，通常用 <code>make_pair(key, val)</code> 或花括号初始化。" },
+  { category: "第11章 关联容器", tag: "无序容器",
+    q: "无序关联容器（unordered_*）的原理和特点是什么？与有序版本相比有何优劣？",
+    a: "无序关联容器（C++11）使用哈希函数和关键字类型的==运算符组织元素，底层是桶+链表（或开放寻址）。\n\n<b>原理</b>：\n- 用哈希函数将关键字映射到桶编号（桶数组）\n- 相同哈希值的元素放在同一个桶的链表中\n- 理想情况下每个桶只有零或一个元素，查找O(1)\n\n<b>与有序容器的对比</b>：\n\n| 方面 | 有序容器（map/set） | 无序容器（unordered_*） |\n|------|---------------------|------------------------|\n| 查找 | O(log n) | 平均O(1)，最坏O(n) |\n| 顺序 | 元素有序 | 元素无序 |\n| 要求 | 关键字支持<比较 | 关键字支持==和哈希函数 |\n| 迭代器失效 | 插入不失效（除被删） | 重哈希时失效 |\n\n<b>适用场景</b>：\n- 不需要有序、关键字容易哈希 → 用无序版本（更快）\n- 需要有序遍历、或关键字没有好的哈希函数 → 用有序版本\n- 性能敏感且数据量大时，无序容器通常更快" },
+
+  // 第12章 动态内存
+  { category: "第12章 动态内存", tag: "动态内存",
+    q: "智能指针有哪几种？shared_ptr的工作原理和特点是什么？",
+    a: "C++11引入了三种智能指针，定义在<code><memory></code>中：\n\n1. <code>shared_ptr</code>：共享式指针，允许多个指针指向同一个对象，通过引用计数管理\n2. <code>unique_ptr</code>：独占式指针，同一时间只能有一个指针指向对象\n3. <code>weak_ptr</code>：弱引用，不增加引用计数，配合shared_ptr使用\n\n<b>shared_ptr工作原理</b>：\n- 内部维护一个引用计数器，记录有多少个shared_ptr指向同一个对象\n- 拷贝/赋值时计数+1，销毁/重置时计数-1\n- 当计数变为0时，自动释放所指对象\n\n<b>创建方式</b>：\n<pre>shared_ptr<int> p = make_shared<int>(42); // 推荐方式\nshared_ptr<int> p2(new int(42));          // 也可用new</pre>\n\n<b>常用操作</b>：\n- <code>p.get()</code>：返回内置指针（慎用）\n- <code>p.use_count()</code>：返回引用计数（调试用）\n- <code>p.unique()</code>：是否唯一拥有\n- <code>p.reset()</code>：放弃所有权，计数减1\n\n<b>优点</b>：自动释放内存，避免内存泄漏，是RAII思想的体现。" },
+  { category: "第12章 动态内存", tag: "动态内存",
+    q: "unique_ptr的特点是什么？与shared_ptr有什么区别？",
+    a: "<code>unique_ptr</code>独占所指对象，同一时刻只能有一个unique_ptr指向该对象。\n\n<b>特点</b>：\n1. 不支持普通的拷贝和赋值（但可以通过move转移所有权）\n2. 没有make_shared那样的标准函数，需绑定到new返回的指针\n3. 可以管理动态数组（unique_ptr<T[]>）\n4. 释放对象时默认用delete，可自定义删除器\n5. 开销很小，比shared_ptr更轻量\n\n<pre>unique_ptr<int> p(new int(42));\nunique_ptr<int> p2(p);      // 错误：不能拷贝\nunique_ptr<int> p3 = move(p); // 正确：转移所有权，p变为空</pre>\n\n<b>与shared_ptr的区别</b>：\n- 所有权：unique_ptr独占，shared_ptr共享\n- 性能：unique_ptr开销更小，无引用计数\n- 灵活性：shared_ptr更灵活（可拷贝赋值），unique_ptr更严格\n- 适用：明确只有一个所有者用unique_ptr，多个共享用shared_ptr\n\n<b>原则</b>：优先使用unique_ptr，确实需要共享时才用shared_ptr。" },
+  { category: "第12章 动态内存", tag: "动态内存",
+    q: "什么是weak_ptr？它的作用和使用场景是什么？",
+    a: "<code>weak_ptr</code>是一种不控制对象生命周期的智能指针，指向由shared_ptr管理的对象，但不增加引用计数。\n\n<b>特点</b>：\n- 不影响shared_ptr的引用计数\n- 对象可能被释放，weak_ptr可能悬空\n- 不能直接解引用访问对象\n- 需通过lock()检查对象是否存在并获取shared_ptr\n\n<b>创建</b>：\n<pre>auto p = make_shared<int>(42);\nweak_ptr<int> wp(p);  // wp弱引用p指向的对象</pre>\n\n<b>常用操作</b>：\n- <code>wp.use_count()</code>：shared_ptr的引用计数\n- <code>wp.expired()</code>：对象是否已被释放（use_count==0）\n- <code>wp.lock()</code>：返回shared_ptr（若对象存在），否则返回空shared_ptr\n\n<b>典型应用场景</b>：\n1. <b>打破循环引用</b>：两个对象互相用shared_ptr引用对方会导致内存泄漏，改用weak_ptr可打破循环\n2. <b>观察者模式</b>：观察对象但不拥有它，对象释放后自动感知\n3. <b>缓存</b>：缓存对象但不延长其生命周期" },
+  { category: "第12章 动态内存", tag: "动态内存",
+    q: "new和delete的工作机制是什么？使用动态内存时常见的错误有哪些？",
+    a: "<b>new</b>：在自由存储区（堆）分配内存并构造对象，返回指向对象的指针。\n<pre>int *pi = new int(42);   // 直接初始化\nstring *ps = new string(10, '9');  // 有参构造\nauto p1 = new auto(obj);  // auto推断类型（C++11）\nint *p2 = new (nothrow) int; // 分配失败不抛异常，返回nullptr</pre>\n\n<b>delete</b>：销毁对象并释放内存。\n<pre>delete pi;     // 释放单个对象\ndelete[] pa;   // 释放数组</pre>\n\n<b>常见错误</b>：\n1. <b>内存泄漏</b>：忘记delete，new了之后没有对应delete\n2. <b>空悬指针</b>：使用已被delete的指针\n3. <b>重复释放</b>：同一块内存delete两次\n4. <b>不匹配的delete</b>：new[]配delete，或new配delete[]\n5. <b>访问越界</b>：访问动态数组时越界\n\n<b>为什么用智能指针</b>：智能指针自动管理内存，避免上述所有手动管理的问题。推荐优先使用make_shared/make_unique。" },
+
+  // 第13章 拷贝控制
+  { category: "第13章 拷贝控制", tag: "拷贝控制",
+    q: "什么是拷贝控制？类需要定义哪些拷贝控制成员？",
+    a: "拷贝控制：控制类对象在拷贝、赋值、移动和销毁时的行为。共5个特殊成员函数：\n\n1. <b>拷贝构造函数</b>：用同类型另一个对象初始化新对象\n<pre>ClassName(const ClassName &);</pre>\n\n2. <b>拷贝赋值运算符</b>：将同类型另一个对象赋值给已存在对象\n<pre>ClassName& operator=(const ClassName &);</pre>\n\n3. <b>析构函数</b>：对象销毁时执行清理工作\n<pre>~ClassName();</pre>\n\n4. <b>移动构造函数</b>（C++11）：用同类型右值对象\"偷取\"资源初始化新对象\n<pre>ClassName(ClassName &&);</pre>\n\n5. <b>移动赋值运算符</b>（C++11）：将右值对象的资源转移给已存在对象\n<pre>ClassName& operator=(ClassName &&);</pre>\n\n<b>三/五法则</b>：\n- 通常如果需要析构函数，就需要拷贝构造和拷贝赋值（三法则）\n- C++11增加移动操作后扩展为五法则\n- 如果类有需要管理的资源（如动态内存），就需要定义这些函数\n- 否则用编译器合成的默认版本即可" },
+  { category: "第13章 拷贝控制", tag: "拷贝控制",
+    q: "什么是深拷贝和浅拷贝？何时需要自定义拷贝构造函数？",
+    a: "<b>浅拷贝</b>：只拷贝对象的数据成员的值（指针只拷贝地址，不拷贝指向的内容）。编译器合成的拷贝构造就是浅拷贝。\n\n<b>深拷贝</b>：不仅拷贝对象本身，还拷贝指针/资源所指向的内容。\n\n<b>举例</b>：一个类有指针成员p，指向动态分配的内存\n- 浅拷贝：两个对象的p指向同一块内存 → 析构时double free\n- 深拷贝：为新对象分配独立的内存，内容相同但地址不同\n\n<b>何时需要自定义拷贝构造</b>：\n1. 类含有指针成员或分配了动态内存\n2. 类管理了其他资源（文件句柄、网络连接等）\n3. 类有需要特殊处理的数据成员\n4. 类的析构函数做了非平凡的工作\n\n<b>三/五法则原则</b>：如果类需要析构函数，几乎可以肯定它也需要拷贝构造函数和拷贝赋值运算符。" },
+  { category: "第13章 拷贝控制", tag: "拷贝控制",
+    q: "什么是移动语义和右值引用？为什么C++11要引入移动语义？",
+    a: "<b>右值引用</b>（C++11）：绑定到右值的引用，用<code>&&</code>表示。\n<pre>int &&rr = 10;   // rr绑定到右值10</pre>\n\n<b>左值 vs 右值</b>：\n- 左值：有持久身份、可以取地址的表达式（变量名等）\n- 右值：临时值、字面量、返回值（非引用）的函数等\n\n<b>移动语义</b>：将资源从一个对象\"转移\"到另一个对象，而不是拷贝。\n\n<b>为什么需要移动语义</b>：\n1. <b>性能优化</b>：拷贝大对象代价高昂，移动只需交换指针等O(1)操作\n2. <b>处理不可拷贝的类型</b>：如IO对象、unique_ptr等只能移动不能拷贝\n3. <b>临时对象优化</b>：函数返回值、临时对象等即将销毁的对象，直接\"偷取\"其资源\n\n<b>std::move</b>：将左值转换为右值引用，表示\"可以被当作右值来移动\"。\n<pre>vector<string> v1 = {\"a\", \"b\"};\nvector<string> v2 = std::move(v1); // v1变为空，资源转移给v2</pre>\n\n<b>注意</b>：调用move后，除了赋值或销毁移后源对象外，不能对其做任何假设。" },
+  { category: "第13章 拷贝控制", tag: "拷贝控制",
+    q: "=default和=delete的作用是什么？什么情况下使用？",
+    a: "<code>=default</code>和<code>=delete</code>（C++11）用于显式控制编译器合成的拷贝控制成员。\n\n<b>=default</b>：显式要求编译器生成默认版本\n<pre>class Sales_data {\npublic:\n    Sales_data() = default;  // 显式要求默认构造函数\n    Sales_data(const Sales_data&) = default; // 默认拷贝构造\n    ~Sales_data() = default;\n};</pre>\n- 可以出现在类内（内联）或类外定义处（非内联）\n- 只有编译器能合成的函数才能用=default\n\n<b>=delete</b>：显式删除该函数，阻止其被使用\n<pre>struct NoCopy {\n    NoCopy() = default;\n    NoCopy(const NoCopy&) = delete;     // 禁止拷贝\n    NoCopy &operator=(const NoCopy&) = delete; // 禁止赋值\n    ~NoCopy() = default;\n};</pre>\n- 阻止对象被拷贝/赋值/销毁等\n- 与private拷贝控制的区别：=delete更清晰，且在编译期就能发现错误\n- 可以对任何函数使用=delete（不仅是拷贝控制成员）\n\n<b>应用场景</b>：\n- 类有动态资源 → 自定义拷贝控制\n- 类不需要拷贝 → =delete\n- 默认行为就合适 → =default明确表达意图" },
+
+  // 第14章 重载运算与类型转换
+  { category: "第14章 重载运算", tag: "运算符重载",
+    q: "运算符重载的基本规则是什么？哪些运算符不能重载？",
+    a: "运算符重载：让类类型也能使用运算符，使代码更自然直观。\n\n<b>基本规则</b>：\n1. 重载运算符的参数中至少有一个是类类型（不能全部是内置类型）\n2. 不能改变运算符的优先级、结合性和操作数个数\n3. 不能发明新的运算符\n4. 运算符可以是成员函数或非成员函数\n   - 成员函数：第一个（左）操作数是this指针\n   - 非成员函数：所有操作数都在参数列表中\n5. 赋值（=）、下标（[]）、调用（()）、成员访问箭头（->）必须是成员函数\n\n<b>不能重载的运算符</b>：\n- <code>::</code> 作用域解析运算符\n- <code>.</code> 成员访问运算符\n- <code>.*</code> 成员指针访问运算符\n- <code>?:</code> 三元条件运算符\n- <code>sizeof</code>、<code>typeid</code>、四个强制类型转换运算符\n\n<b>最佳实践</b>：\n- 重载的运算符应保持原有语义（如operator+应该做加法）\n- 对称的运算符（如==、+）通常定义为非成员函数\n- 复合赋值（如+=）通常定义为成员函数，再用它实现算术运算符" },
+  { category: "第14章 重载运算", tag: "运算符重载",
+    q: "什么是函数调用运算符重载？什么是函数对象（仿函数）？",
+    a: "重载了函数调用运算符（<code>operator()</code>）的类的对象，可以像函数一样被调用，称为<b>函数对象</b>（或仿函数，functor）。\n\n<pre>struct absInt {\n    int operator()(int val) const {\n        return val < 0 ? -val : val;\n    }\n};\n\nabsInt absObj;\nint i = absObj(-10);  // 像函数一样调用对象</pre>\n\n<b>特点</b>：\n1. 函数对象可以有状态（数据成员），这是普通函数做不到的\n2. 可以定义不同版本的operator()（重载）\n3. 类类型的函数对象可以用于模板参数，性能优于函数指针（内联）\n\n<b>标准库函数对象</b>（定义在<code><functional></code>）：\n- 算术：plus<T>、minus<T>、multiplies<T>等\n- 关系：equal_to<T>、greater<T>、less<T>等\n- 逻辑：logical_and<T>、logical_not<T>等\n\n<b>用途</b>：常作为算法的谓词或比较函数，比普通函数更灵活且可保存状态。" },
+  { category: "第14章 重载运算", tag: "类型转换",
+    q: "什么是类型转换运算符？explicit转换运算符有什么作用？",
+    a: "类型转换运算符（转换函数）：将类类型转换为其他类型的特殊成员函数。\n\n<b>语法</b>：\n<pre>operator type() const;</pre>\n没有返回类型，没有形参，必须是成员函数，通常应该是const的。\n\n<pre>class SmallInt {\npublic:\n    SmallInt(int i = 0) : val(i) {}\n    operator int() const { return val; }  // 转换为int\nprivate:\n    int val;\n};\n\nSmallInt si = 5;\nint j = si + 3;  // 自动转换为int，j = 8</pre>\n\n<b>explicit类型转换运算符</b>（C++11）：加上explicit后，转换必须显式进行，防止隐式转换带来的意外。\n<pre>explicit operator int() const { return val; }\nint j = static_cast<int>(si); // 必须显式转换</pre>\n\n<b>例外</b>：转换为bool时，在条件语句中（if/while/for/!等）会自动发生（即使是explicit的），这是例外，叫\"语境转换\"。\n\n<b>建议</b>：通常将转换运算符声明为explicit，避免意外的隐式转换。" },
+
+  // 第15章 面向对象程序设计
+  { category: "第15章 面向对象程序设计", tag: "OOP",
+    q: "什么是虚函数？虚函数的工作原理（动态绑定）是什么？",
+    a: "<b>虚函数</b>：用<code>virtual</code>声明的成员函数，在运行时根据对象的实际类型决定调用哪个版本。\n\n<b>动态绑定</b>（运行时绑定）：函数调用在运行时才解析，取决于对象的实际类型（不是指针/引用的静态类型）。\n\n<pre>class Base {\npublic:\n    virtual void print() const { cout << \"Base\"; }\n};\nclass Derived : public Base {\npublic:\n    void print() const override { cout << \"Derived\"; } // 重写\n};\n\nBase *p = new Derived();\np->print();  // 调用Derived::print()（动态绑定）</pre>\n\n<b>关键概念</b>：\n- 静态类型：变量声明时的类型（编译期确定）\n- 动态类型：变量实际指向的对象类型（运行期确定）\n- 只有通过指针或引用调用虚函数才发生动态绑定\n- 虚函数一旦声明为virtual，在所有派生类中都是virtual的\n\n<b>实现机制</b>：编译器通常通过虚函数表（vtable）实现——每个有虚函数的类有一个虚函数表，对象有一个虚表指针（vptr）指向它。\n\n<b>override关键字</b>（C++11）：显式说明要重写基类虚函数，编译器会检查是否真的重写了（签名不匹配会报错）。" },
+  { category: "第15章 面向对象程序设计", tag: "OOP",
+    q: "什么是抽象基类？纯虚函数的语法和作用是什么？",
+    a: "<b>纯虚函数</b>：在虚函数声明后加<code>= 0</code>，表示该函数没有具体实现（或说无需实现）。\n\n<pre>class Disc_quote : public Quote {\npublic:\n    double net_price(size_t) const = 0; // 纯虚函数\n};</pre>\n\n<b>抽象基类</b>（ABC）：含有（或继承了但没有重写）纯虚函数的类。\n\n<b>特点</b>：\n1. 不能创建抽象基类的对象（不能实例化）\n2. 可以定义抽象基类的指针和引用，指向其派生类对象\n3. 派生类必须重写所有纯虚函数才能成为具体类（可以实例化）\n4. 纯虚函数也可以有定义（类外定义），但仍然是纯虚函数\n\n<b>作用</b>：\n- 定义接口规范：抽象基类定义了派生类必须实现的接口\n- 强制接口一致性：所有派生类都必须提供这些接口\n- 体现设计思想：\"是一个\"的is-a关系中，基类往往是抽象概念\n\n<b>设计原则</b>：将共同的接口和数据放在基类，特有实现放在派生类。不应该被实例化的基类应该设计为抽象基类。" },
+  { category: "第15章 面向对象程序设计", tag: "OOP",
+    q: "C++中有哪几种继承方式？访问说明符在继承中的作用是什么？",
+    a: "三种继承方式：<code>public</code>、<code>protected</code>、<code>private</code>继承。决定了基类成员在派生类中的访问权限。\n\n<b>规则</b>：基类成员在派生类中的访问级别 = max(自己的访问级别, 继承方式的访问级别)\n（public < protected < private）\n\n| 基类成员 | public继承 | protected继承 | private继承 |\n|---------|-----------|---------------|-------------|\n| public | public | protected | private |\n| protected | protected | protected | private |\n| private | 不可访问 | 不可访问 | 不可访问 |\n\n<b>三种继承的含义</b>：\n1. <b>public继承</b>：is-a关系，派生类是基类的一种。最常用。\n2. <b>protected继承</b>：基类的公有/保护成员在派生类中是protected的，用于实现继承（不对外暴露）。\n3. <b>private继承</b>：基类的所有可访问成员在派生类中都是private的，表示\"根据...实现出\"（has-a的一种实现方式）。\n\n<b>注意</b>：\n- 基类的private成员在派生类中始终不可直接访问（但存在）\n- class默认private继承，struct默认public继承\n- 友元关系不继承，基类的友元不会自动成为派生类的友元" },
+  { category: "第15章 面向对象程序设计", tag: "OOP",
+    q: "什么是多继承？多继承有什么问题？虚继承如何解决菱形继承问题？",
+    a: "<b>多继承</b>：一个派生类同时有多个直接基类。\n<pre>class Derived : public Base1, public Base2 { /* ... */ };</pre>\n\n<b>潜在问题</b>：\n1. <b>名字冲突</b>：两个基类有同名成员时，访问会有二义性\n2. <b>菱形继承</b>（钻石问题）：两个基类继承自同一个基类，导致最顶层基类有两份拷贝\n\n<b>菱形继承示例</b>：\n<pre>     Base\n     /  \\\n    /    \\\nBase1    Base2\n    \\    /\n     \\  /\n   Derived\n// 如果Base1和Base2都继承Base，Derived中会有两份Base子对象</pre>\n\n<b>虚继承</b>：使用<code>virtual</code>关键字继承，使得共享的虚基类子对象只存在一份。\n<pre>class Base1 : virtual public Base { /* ... */ };\nclass Base2 : virtual public Base { /* ... */ };\nclass Derived : public Base1, public Base2 { /* ... */ };\n// Derived中只有一份Base子对象</pre>\n\n<b>虚继承的特点</b>：\n- 虚基类由最底层的派生类负责初始化（不是直接基类）\n- 有额外的开销（需要指针或偏移量定位虚基类）\n- 设计时应谨慎使用多继承，能用单继承就不用多继承" },
+
+  // 第16章 模板与泛型编程
+  { category: "第16章 模板与泛型编程", tag: "模板",
+    q: "什么是函数模板？函数模板的定义和实例化是怎样的？",
+    a: "函数模板：可以用不同类型调用的函数蓝图，编译器根据实参类型推断模板参数并实例化出具体函数。\n\n<b>定义</b>：\n<pre>template <typename T>\nbool compare(const T &v1, const T &v2) {\n    return v1 < v2;\n}\n</pre>\n\n<b>模板参数</b>：\n- <code>typename</code>和<code>class</code>可以互换使用（含义相同）\n- 模板参数可以是类型参数，也可以是非类型参数（如整型常量）\n\n<b>实例化</b>：编译器用具体类型替换模板参数，生成具体的函数版本\n<pre>compare(1, 2);       // 实例化 compare<int>\ncompare(1.0, 2.0);   // 实例化 compare<double>\ncompare<string>(\"a\", \"b\"); // 显式指定模板参数</pre>\n\n<b>特点</b>：\n- 模板在编译时实例化（所以模板定义必须在头文件中）\n- 编译器只检查语法错误，类型相关的错误在实例化时才发现\n- 模板的代码生成发生在实例化时，不是定义时\n\n<b>非类型模板参数</b>：参数不是类型而是值，必须是常量表达式\n<pre>template<unsigned N, unsigned M>\nint compare(const char (&p1)[N], const char (&p2)[M]) { ... }</pre>" },
+  { category: "第16章 模板与泛型编程", tag: "模板",
+    q: "什么是类模板？类模板与函数模板有什么不同？",
+    a: "类模板：用于生成类的蓝图，实例化时必须显式指定模板参数（不能自动推断）。\n\n<b>定义</b>：\n<pre>template <typename T>\nclass Blob {\npublic:\n    Blob();\n    T& operator[](size_t i);\n    size_t size() const { return data->size(); }\nprivate:\n    shared_ptr<vector<T>> data;\n};</pre>\n\n<b>与函数模板的区别</b>：\n1. 类模板实例化时必须显式提供模板实参：<code>Blob<int> ia;</code>\n2. 类模板的成员函数在类外定义时，必须加上template参数列表\n<pre>template<typename T>\nBlob<T>::Blob() : data(make_shared<vector<T>>()) {}</pre>\n3. 类模板的成员函数只有在被使用时才会实例化（实例化推迟到调用时）\n4. 类模板的每个实例都是独立的类型：<code>Blob<int></code>和<code>Blob<string></code>是完全不同的类型\n\n<b>模板友元</b>：可以声明一个模板的所有实例都是友元，或特定实例是友元。\n\n<b>类型别名</b>：可以为类模板实例定义类型别名（C++11还支持模板别名）\n<pre>template<typename T> using twin = pair<T, T>;\ntwin<string> authors; // = pair<string, string></pre>" },
+  { category: "第16章 模板与泛型编程", tag: "模板",
+    q: "什么是模板特例化？为什么需要特例化？",
+    a: "模板特例化：为特定的模板参数提供特殊的实现版本。当通用模板不适合某些类型时使用。\n\n<b>函数模板特例化</b>：\n<pre>// 通用模板\ntemplate <typename T>\nint compare(const T &v1, const T &v2) { ... }\n\n// 针对const char*的特例化\ntemplate<>\nint compare<const char*>(const char* const &v1, const char* const &v2) {\n    return strcmp(v1, v2);\n}</pre>\n\n<b>类模板特例化</b>：\n- 全特例化：所有模板参数都被指定\n- 部分特例化（偏特化）：只指定部分模板参数（仅类模板支持，函数模板不支持）\n\n<pre>// 标准库的hash模板的一个特例化\ntemplate<> struct hash<string> {\n    size_t operator()(const string &s) const { ... }\n};</pre>\n\n<b>为什么需要特例化</b>：\n1. 通用实现对某些类型效率低或不正确（如指针类型需要特殊处理）\n2. 某些类型无法使用通用模板的操作\n3. 为特定类型提供优化版本\n\n<b>重载 vs 特例化</b>：\n- 重载：同名不同参数的多个模板/函数\n- 特例化：同一模板的特定版本（不影响函数匹配的选择优先级）" },
+
+  // 第17章 标准库特殊设施
+  { category: "第17章 标准库特殊设施", tag: "标准库",
+    q: "tuple元组是什么？它与pair有什么区别？适用场景是什么？",
+    a: "<code>tuple</code>（C++11，定义在<code><tuple></code>）：可以有任意数量、任意类型成员的模板。\n\n<b>与pair的区别</b>：\n- pair只能有两个成员，tuple可以有任意多个\n- pair的成员有名字（first、second），tuple的成员用get<N>()访问\n\n<b>基本操作</b>：\n<pre>tuple<size_t, size_t, size_t> threeD(10, 20, 30);\nauto item = make_tuple(\"hello\", 3.14, 42);\n\nget<0>(item);   // 第一个成员\nget<1>(item);   // 第二个成员\ntuple_size<decltype(item)>::value; // 成员个数：3\n// tuple_element<1, decltype(item)>::type → 第2个成员的类型：double</pre>\n\n<b>适用场景</b>：\n1. 函数需要返回多个值（比结构体更轻量）\n2. 临时组合不同类型的数据\n3. 作为泛型编程中的通用数据结构\n\n<b>比较</b>：两个tuple可以比较（前提是对应类型都支持<运算符），按字典序比较。\n\n<b>建议</b>：tuple常用于快速的、临时性的多值组合。如果数据有明确含义且经常使用，应该定义结构体（更清晰）。" },
+  { category: "第17章 标准库特殊设施", tag: "标准库",
+    q: "正则表达式库（regex）的基本组成和用法是什么？",
+    a: "C++11引入正则表达式库，定义在<code><regex></code>中。\n\n<b>核心组件</b>：\n- <code>regex</code>：表示一个正则表达式模式的类\n- <code>smatch</code>：匹配结果容器（保存string的匹配信息）\n- <code>regex_match</code>：检查整个字符串是否匹配\n- <code>regex_search</code>：搜索字符串中第一个匹配的子串\n- <code>regex_replace</code>：用格式串替换匹配的部分\n- <code>sregex_iterator</code>：迭代器，遍历所有匹配\n\n<b>示例</b>：\n<pre>string pattern = \"[[:alpha:]]*[^c]ei[[:alpha:]]*\";\nregex r(pattern);\nsmatch results;\nstring test_str = \"receipt friend theif receive\";\n\nif (regex_search(test_str, results, r))\n    cout << results.str() << endl;\n\n// 查找所有匹配\nfor (sregex_iterator it(test_str.begin(), test_str.end(), r), end_it;\n     it != end_it; ++it) {\n    cout << it->str() << endl;\n}</pre>\n\n<b>注意</b>：\n- regex对象的创建/编译代价较高，尽量在循环外创建\n- 正则语法错误会抛出regex_error异常\n- ECMAScript是默认语法，可选其他语法（basic、extended、awk、grep、egrep）" },
+  { category: "第17章 标准库特殊设施", tag: "标准库",
+    q: "随机数库（random）有哪些组件？为什么不推荐用rand()？",
+    a: "C++11引入的随机数库（<code><random></code>）比传统C的rand()更强大、更灵活、质量更高。\n\n<b>两大组件</b>：\n1. <b>随机数引擎类</b>：生成随机的unsigned整数序列\n   - <code>default_random_engine</code>：默认引擎\n   - <code>mt19937</code>：梅森旋转算法（常用，质量好）\n   - <code>linear_congruential_engine</code>：线性同余\n   - <code>random_device</code>：真随机数（如果硬件支持）\n\n2. <b>随机数分布类</b>：将引擎的结果映射到指定分布\n   - <code>uniform_int_distribution<T></code>：均匀整数分布\n   - <code>uniform_real_distribution<T></code>：均匀实数分布\n   - <code>normal_distribution<T></code>：正态分布\n   - <code>bernoulli_distribution</code>：伯努利分布\n\n<b>使用示例</b>：\n<pre>random_device rd;\nmt19937 gen(rd());  // 用真随机数种子\nuniform_int_distribution<> dis(1, 100); // 1到100均匀分布\n\nfor (int i = 0; i < 10; ++i)\n    cout << dis(gen) << \" \";  // 传入引擎生成随机数</pre>\n\n<b>为什么不用rand()</b>：\n- rand()范围有限（0到RAND_MAX，通常较小）\n- 质量不高（一些实现的随机性差）\n- 不能方便地产生特定分布\n- 用全局状态，线程不安全\n\n<b>注意</b>：引擎对象应保持在多次调用之间，不要每次都新建。" },
+
+  // 第18章 用于大型程序的工具
+  { category: "第18章 大型程序工具", tag: "命名空间",
+    q: "命名空间（namespace）的作用是什么？使用规则有哪些？",
+    a: "命名空间：用于划分全局作用域，防止名字冲突。每个命名空间是一个独立的作用域。\n\n<b>定义</b>：\n<pre>namespace my_lib {\n    void func();\n    class MyClass { /* ... */ };\n}</pre>\n\n<b>访问方式</b>：\n1. 作用域运算符：<code>my_lib::func()</code>\n2. using声明：<code>using my_lib::func;</code> 引入单个名字\n3. using指示：<code>using namespace my_lib;</code> 引入所有名字\n\n<b>重要特性</b>：\n- 命名空间可以是不连续的（可在多个文件中定义同一个命名空间）\n- 可以嵌套（命名空间内部定义命名空间）\n- 全局命名空间：隐式存在，所有全局名字都在其中（用<code>::name</code>访问）\n- 内联命名空间（C++11）：inline namespace中的名字可直接被外层命名空间使用，常用于版本控制\n- 未命名命名空间：static声明的文件内局部替代方案\n\n<b>最佳实践</b>：\n- 不要在头文件中使用using指示（会污染所有包含该头文件的作用域）\n- 尽量使用作用域运算符或using声明\n- 库应该放在命名空间中，避免污染全局\n- 命名空间名字应简洁但有意义" },
+  { category: "第18章 大型程序工具", tag: "异常",
+    q: "异常继承体系和标准异常类是怎样的？如何定义自己的异常类？",
+    a: "标准库异常类定义在<code><stdexcept></code>等头文件中，形成继承体系：\n\n最基类：<code>exception</code>（定义在<code><exception></code>），只定义了拷贝构造、拷贝赋值和虚析构，以及<code>what()</code>虚函数。\n\n直接派生：\n- <code>runtime_error</code>：运行时错误（只有运行时才能检测到）\n  - <code>range_error</code>、<code>overflow_error</code>、<code>underflow_error</code>\n  - <code>system_error</code>（系统调用错误）\n- <code>logic_error</code>：逻辑错误（理论上程序可以避免的）\n  - <code>domain_error</code>、<code>invalid_argument</code>\n  - <code>length_error</code>、<code>out_of_range</code>\n- <code>bad_alloc</code>：new分配失败\n- <code>bad_cast</code>：dynamic_cast失败\n\n<b>定义自己的异常类</b>：\n<pre>class out_of_stock : public std::runtime_error {\npublic:\n    explicit out_of_stock(const std::string &s)\n        : std::runtime_error(s) {}\n};</pre>\n\n<b>最佳实践</b>：\n- 自定义异常应继承自标准异常类（最好是runtime_error或logic_error）\n- 抛出异常时抛出对象，捕获时用引用（避免切片和拷贝）\n- catch按从特殊到一般的顺序排列\n- 异常说明（noexcept）：C++11中用noexcept指明函数不抛出异常" },
+
+  // 第19章 特殊工具与技术
+  { category: "第19章 特殊工具与技术", tag: "RTTI",
+    q: "什么是RTTI？typeid和dynamic_cast的作用是什么？",
+    a: "RTTI（Run-Time Type Identification，运行时类型识别）：允许程序在运行时获取对象的实际类型信息。\n\n<b>两个主要运算符</b>：\n\n1. <code>dynamic_cast<T*>(p)</code>：将基类指针安全地转换为派生类指针\n   - 转换成功：返回目标类型指针\n   - 转换失败：返回nullptr（指针版本）或抛出bad_cast异常（引用版本）\n<pre>if (Derived *dp = dynamic_cast<Derived*>(bp)) {\n    // 转换成功，使用dp\n} else {\n    // 转换失败\n}</pre>\n\n2. <code>typeid(e)</code>：返回表达式e的动态类型信息（type_info对象）\n   - <code>typeid(a) == typeid(b)</code>：判断两个对象是否同类型\n   - <code>typeid(a).name()</code>：返回类型名字符串（实现相关）\n<pre>if (typeid(*bp) == typeid(Derived)) {\n    Derived *dp = static_cast<Derived*>(bp);\n}</pre>\n\n<b>注意</b>：\n- RTTI只对有虚函数的类有效（多态类型），否则返回静态类型\n- 使用typeid作用于指针本身（而非解引用）时，返回的是指针的静态类型\n- 虚函数优先：能用虚函数解决的问题就不要用RTTI\n- RTTI主要用于无法用虚函数实现的情况（如异构容器的类型判别）" },
+  { category: "第19章 特殊工具与技术", tag: "内存模型",
+    q: "C++内存模型中，内存分为哪几个区？各自存放什么内容？",
+    a: "C++程序使用的内存分区：\n\n1. <b>栈</b>（stack）：\n   - 存放局部变量、函数参数、返回地址等\n   - 自动分配和释放（函数进入/退出）\n   - 大小有限，速度快\n   - 连续分配\n\n2. <b>堆</b>（heap / 自由存储区）：\n   - 由new/delete管理的动态内存\n   - 手动分配和释放\n   - 空间大（受限于系统内存），速度较慢\n   - 可能碎片化\n\n3. <b>静态存储区</b>（全局/静态区）：\n   - 存放全局变量、static数据成员、局部static变量\n   - 程序开始时分配，结束时释放\n   - 未初始化的在BSS段，初始化的在数据段\n\n4. <b>常量存储区</b>：\n   - 存放字符串字面值、const全局常量等\n   - 只读，不能修改\n\n5. <b>代码区</b>：\n   - 存放程序的机器指令\n   - 只读\n\n<b>对象生命周期</b>：\n- 全局对象：程序开始时构造，结束时析构\n- 局部对象：定义时构造，块结束时析构\n- 局部static对象：第一次使用时构造，程序结束时析构\n- 动态对象：new时构造，delete时析构" },
+];
+
+// 生成卡片HTML
+const grid = document.getElementById('cards-grid');
+const totalCount = document.getElementById('total-count');
+const stats = document.getElementById('stats');
+const searchInput = document.getElementById('search-input');
+const filterChips = document.getElementById('filter-chips');
+
+let currentFilter = 'all';
+let currentSearch = '';
+let currentCards = [...cards];
+let flippedSet = new Set();
+
+// 获取所有分类
+const categories = [...new Set(cards.map(c => c.category))];
+
+// 生成筛选标签
+categories.forEach(cat => {
+  const chip = document.createElement('span');
+  chip.className = 'chip';
+  chip.dataset.filter = cat;
+  chip.textContent = cat;
+  chip.onclick = () => setFilter(cat);
+  filterChips.appendChild(chip);
+});
+
+totalCount.textContent = cards.length;
+
+function renderCards() {
+  grid.innerHTML = '';
+  let lastCategory = '';
+  let visibleCount = 0;
+
+  currentCards.forEach((card, idx) => {
+    // 过滤
+    if (currentFilter !== 'all' && card.category !== currentFilter) return;
+    if (currentSearch) {
+      const searchLower = currentSearch.toLowerCase();
+      if (!card.q.toLowerCase().includes(searchLower) &&
+          !card.a.toLowerCase().includes(searchLower) &&
+          !card.category.toLowerCase().includes(searchLower)) {
+        return;
+      }
+    }
+
+    visibleCount++;
+
+    // 分类分隔
+    if (currentFilter === 'all' && card.category !== lastCategory) {
+      const divider = document.createElement('div');
+      divider.className = 'section-divider';
+      divider.innerHTML = `<span class="icon">📚</span> ${card.category}`;
+      grid.appendChild(divider);
+      lastCategory = card.category;
+    }
+
+    const cardKey = card.category + '|' + card.q;
+    const isFlipped = flippedSet.has(cardKey);
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'card-wrapper';
+
+    const cardEl = document.createElement('div');
+    cardEl.className = 'card' + (isFlipped ? ' flipped' : '');
+    cardEl.onclick = () => {
+      if (flippedSet.has(cardKey)) {
+        flippedSet.delete(cardKey);
+      } else {
+        flippedSet.add(cardKey);
+      }
+      cardEl.classList.toggle('flipped');
+    };
+
+    cardEl.innerHTML = `
+      <div class="card-face card-front">
+        <span class="card-number">#${idx + 1}</span>
+        <span class="card-tag">${card.tag}</span>
+        <div class="card-question">${formatContent(card.q)}</div>
+        <div class="card-hint">点击翻转查看答案</div>
+      </div>
+      <div class="card-face card-back">
+        <span class="card-number">#${idx + 1}</span>
+        <span class="card-tag">答案 · ${card.tag}</span>
+        <div class="card-answer">${formatContent(card.a)}</div>
+        <div class="card-hint">点击翻转返回问题</div>
+      </div>
+    `;
+
+    wrapper.appendChild(cardEl);
+    grid.appendChild(wrapper);
+  });
+
+  stats.textContent = `显示 ${visibleCount} / ${cards.length} 张`;
+}
+
+function formatContent(text) {
+  // 处理粗体
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // 处理换行
+  text = text.replace(/\n/g, '<br>');
+  return text;
+}
+
+function setFilter(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.filter === filter);
+  });
+  renderCards();
+}
+
+searchInput.addEventListener('input', (e) => {
+  currentSearch = e.target.value.trim();
+  renderCards();
+});
+
+function flipAll() {
+  const anyFlipped = flippedSet.size > 0;
+  if (anyFlipped) {
+    flippedSet.clear();
+  } else {
+    cards.forEach(c => flippedSet.add(c.category + '|' + c.q));
+  }
+  renderCards();
+}
+
+function shuffleCards() {
+  currentCards = [...cards].sort(() => Math.random() - 0.5);
+  flippedSet.clear();
+  renderCards();
+}
+
+// 初始渲染
+renderCards();
+</script>
+</body>
+</html>
