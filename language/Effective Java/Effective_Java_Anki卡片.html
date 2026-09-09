@@ -1,0 +1,4986 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Effective Java 精华 Anki 卡片</title>
+<style>
+  :root {
+    --bg-page: #f5f1e8;
+    --bg-card-front: #fdfbf7;
+    --bg-card-back: #eef2f7;
+    --bg-nav: #2b3a55;
+    --bg-nav-hover: #3a4d6e;
+    --bg-nav-active: #c87941;
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    --text-nav: #e8e0d0;
+    --accent: #c87941;
+    --accent-dark: #a85d2b;
+    --border-soft: #d9d2c3;
+    --card-shadow: 0 2px 8px rgba(43, 58, 85, 0.12);
+    --card-shadow-hover: 0 6px 20px rgba(43, 58, 85, 0.18);
+    --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
+    --font-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "JetBrains Mono", "Fira Code", Consolas, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: var(--font-serif);
+    line-height: 1.7;
+    font-size: 15px;
+    min-height: 100vh;
+  }
+
+  /* ---------- Header ---------- */
+  .page-header {
+    background: linear-gradient(135deg, var(--bg-nav) 0%, #1e2a42 100%);
+    color: var(--text-nav);
+    padding: 32px 40px 24px;
+    border-bottom: 3px solid var(--accent);
+  }
+  .page-header h1 {
+    font-family: var(--font-sans);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #fdfbf7;
+    margin-bottom: 4px;
+  }
+  .page-header .subtitle {
+    font-size: 14px;
+    color: #a8b3c7;
+    font-style: italic;
+    font-family: var(--font-serif);
+  }
+  .page-header .meta {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #8b97ad;
+    font-family: var(--font-sans);
+  }
+  .page-header .meta span + span::before {
+    content: "·";
+    margin: 0 10px;
+    color: var(--accent);
+  }
+
+  /* ---------- Chapter Tab Navigation ---------- */
+  .chapter-nav {
+    background: var(--bg-nav);
+    padding: 0 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .chapter-nav input[type="radio"] { display: none; }
+
+  .chapter-nav label {
+    display: inline-block;
+    padding: 12px 18px;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-nav);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .chapter-nav label:hover {
+    background: var(--bg-nav-hover);
+    color: #fff;
+  }
+  .chapter-nav label .tab-num {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    font-size: 11px;
+    margin-right: 8px;
+    font-weight: 600;
+  }
+
+  /* Active tab */
+  #tab-all:checked ~ .chapter-nav label[for="tab-all"],
+  #tab-ch2:checked ~ .chapter-nav label[for="tab-ch2"],
+  #tab-ch3:checked ~ .chapter-nav label[for="tab-ch3"],
+  #tab-ch4:checked ~ .chapter-nav label[for="tab-ch4"],
+  #tab-ch5:checked ~ .chapter-nav label[for="tab-ch5"],
+  #tab-ch6:checked ~ .chapter-nav label[for="tab-ch6"],
+  #tab-ch7:checked ~ .chapter-nav label[for="tab-ch7"],
+  #tab-ch8:checked ~ .chapter-nav label[for="tab-ch8"],
+  #tab-ch9:checked ~ .chapter-nav label[for="tab-ch9"],
+  #tab-ch10:checked ~ .chapter-nav label[for="tab-ch10"],
+  #tab-ch11:checked ~ .chapter-nav label[for="tab-ch11"],
+  #tab-ch12:checked ~ .chapter-nav label[for="tab-ch12"]
+  {
+    color: #fff;
+    border-bottom-color: var(--accent);
+    background: var(--bg-nav-hover);
+  }
+  #tab-all:checked ~ .chapter-nav label[for="tab-all"] .tab-num,
+  #tab-ch2:checked ~ .chapter-nav label[for="tab-ch2"] .tab-num,
+  #tab-ch3:checked ~ .chapter-nav label[for="tab-ch3"] .tab-num,
+  #tab-ch4:checked ~ .chapter-nav label[for="tab-ch4"] .tab-num,
+  #tab-ch5:checked ~ .chapter-nav label[for="tab-ch5"] .tab-num,
+  #tab-ch6:checked ~ .chapter-nav label[for="tab-ch6"] .tab-num,
+  #tab-ch7:checked ~ .chapter-nav label[for="tab-ch7"] .tab-num,
+  #tab-ch8:checked ~ .chapter-nav label[for="tab-ch8"] .tab-num,
+  #tab-ch9:checked ~ .chapter-nav label[for="tab-ch9"] .tab-num,
+  #tab-ch10:checked ~ .chapter-nav label[for="tab-ch10"] .tab-num,
+  #tab-ch11:checked ~ .chapter-nav label[for="tab-ch11"] .tab-num,
+  #tab-ch12:checked ~ .chapter-nav label[for="tab-ch12"] .tab-num
+  {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* ---------- Card Grid ---------- */
+  .main-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 36px 32px 60px;
+  }
+
+  .section-title {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--bg-nav);
+    margin-bottom: 6px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+  .section-desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+    font-family: var(--font-sans);
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  /* Hide all card sections by default */
+  .card-section { display: none; }
+
+  /* Show selected section */
+  #tab-all:checked ~ .main-content .card-section.all,
+  #tab-ch2:checked ~ .main-content .card-section.ch2,
+  #tab-ch3:checked ~ .main-content .card-section.ch3,
+  #tab-ch4:checked ~ .main-content .card-section.ch4,
+  #tab-ch5:checked ~ .main-content .card-section.ch5,
+  #tab-ch6:checked ~ .main-content .card-section.ch6,
+  #tab-ch7:checked ~ .main-content .card-section.ch7,
+  #tab-ch8:checked ~ .main-content .card-section.ch8,
+  #tab-ch9:checked ~ .main-content .card-section.ch9,
+  #tab-ch10:checked ~ .main-content .card-section.ch10,
+  #tab-ch11:checked ~ .main-content .card-section.ch11,
+  #tab-ch12:checked ~ .main-content .card-section.ch12
+  {
+    display: block;
+  }
+
+  /* ---------- Flip Card ---------- */
+  .flip-card {
+    perspective: 1200px;
+    height: 340px;
+  }
+  .flip-card input[type="checkbox"] { display: none; }
+
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    cursor: pointer;
+  }
+  .flip-card input:checked + .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .flip-card-front,
+  .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .flip-card-front:hover,
+  .flip-card-back:hover {
+    box-shadow: var(--card-shadow-hover);
+  }
+
+  /* Front of card - question */
+  .flip-card-front {
+    background: var(--bg-card-front);
+    border: 1px solid var(--border-soft);
+  }
+  .flip-card-back {
+    background: var(--bg-card-back);
+    border: 1px solid #c5d0de;
+    transform: rotateY(180deg);
+  }
+
+  .card-header {
+    padding: 14px 20px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-soft);
+    flex-shrink: 0;
+  }
+  .flip-card-back .card-header {
+    border-bottom-color: #c5d0de;
+    background: #dde5ef;
+  }
+
+  .card-item-num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    background: #f0e6d8;
+    padding: 3px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+  }
+  .flip-card-back .card-item-num {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .card-chapter-tag {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+  }
+
+  .card-body {
+    padding: 18px 22px;
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .card-question-title {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--bg-nav);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .card-question-hint {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  .flip-icon {
+    position: absolute;
+    bottom: 14px;
+    right: 18px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    opacity: 0.7;
+  }
+  .flip-icon::before {
+    content: "↻";
+    font-size: 14px;
+  }
+
+  /* Back - answer */
+  .card-answer {
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: var(--text-primary);
+  }
+  .card-answer h4 {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-dark);
+    margin: 10px 0 5px;
+  }
+  .card-answer h4:first-child { margin-top: 0; }
+  .card-answer ul, .card-answer ol {
+    padding-left: 20px;
+    margin: 6px 0;
+  }
+  .card-answer li {
+    margin: 4px 0;
+  }
+  .card-answer strong {
+    color: var(--bg-nav);
+    font-weight: 600;
+  }
+  .card-answer code {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    background: #e0e7f0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #2b4a7c;
+  }
+  .card-answer pre {
+    background: #2b3a55;
+    color: #e8e0d0;
+    padding: 10px 14px;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-x: auto;
+    margin: 8px 0;
+  }
+  .card-answer pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+
+  /* Scrollbar */
+  .card-body::-webkit-scrollbar { width: 5px; }
+  .card-body::-webkit-scrollbar-track { background: transparent; }
+  .card-body::-webkit-scrollbar-thumb { background: #c5c0b3; border-radius: 3px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+    .flip-card { height: 380px; }
+    .page-header { padding: 24px 20px 18px; }
+    .main-content { padding: 24px 16px 40px; }
+  }
+
+  /* Print */
+  @media print {
+    .chapter-nav { display: none; }
+    .card-section { display: block !important; }
+    .flip-card-inner { transform: none !important; }
+    .flip-card-back { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Radio buttons for tab switching (must be at top level) -->
+<input type="radio" name="chapter-tab" id="tab-all" checked>
+<input type="radio" name="chapter-tab" id="tab-ch2">
+<input type="radio" name="chapter-tab" id="tab-ch3">
+<input type="radio" name="chapter-tab" id="tab-ch4">
+<input type="radio" name="chapter-tab" id="tab-ch5">
+<input type="radio" name="chapter-tab" id="tab-ch6">
+<input type="radio" name="chapter-tab" id="tab-ch7">
+<input type="radio" name="chapter-tab" id="tab-ch8">
+<input type="radio" name="chapter-tab" id="tab-ch9">
+<input type="radio" name="chapter-tab" id="tab-ch10">
+<input type="radio" name="chapter-tab" id="tab-ch11">
+<input type="radio" name="chapter-tab" id="tab-ch12">
+
+<!-- Header -->
+<header class="page-header">
+  <h1>Effective Java 精华 Anki 卡片</h1>
+  <div class="subtitle">Joshua Bloch 著 · 第 3 版 · 90 条最佳实践</div>
+  <div class="meta">
+    <span>共 90 张卡片</span>
+    <span>12 个章节</span>
+    <span>点击卡片翻转查看答案</span>
+  </div>
+</header>
+
+<!-- Chapter Navigation -->
+<nav class="chapter-nav">
+  <label for="tab-all"><span class="tab-num">★</span>全部</label>
+  <label for="tab-ch2"><span class="tab-num">2</span>创建与销毁对象</label>
+  <label for="tab-ch3"><span class="tab-num">3</span>所有对象的通用方法</label>
+  <label for="tab-ch4"><span class="tab-num">4</span>类与接口</label>
+  <label for="tab-ch5"><span class="tab-num">5</span>泛型</label>
+  <label for="tab-ch6"><span class="tab-num">6</span>枚举与注解</label>
+  <label for="tab-ch7"><span class="tab-num">7</span>Lambda 与 Stream</label>
+  <label for="tab-ch8"><span class="tab-num">8</span>方法</label>
+  <label for="tab-ch9"><span class="tab-num">9</span>通用编程</label>
+  <label for="tab-ch10"><span class="tab-num">10</span>异常</label>
+  <label for="tab-ch11"><span class="tab-num">11</span>并发</label>
+  <label for="tab-ch12"><span class="tab-num">12</span>序列化</label>
+</nav>
+
+<main class="main-content">
+
+<!-- ============================================================ -->
+<!-- 第2章 创建与销毁对象 (Item 1-9) -->
+<!-- ============================================================ -->
+<section class="card-section all ch2">
+  <div class="section-title">第 2 章 · 创建与销毁对象</div>
+  <div class="section-desc">何时以及如何创建对象、何时以及如何避免创建对象、如何确保对象能够被适时地销毁、如何管理对象销毁前必须执行的各种清理动作。</div>
+  <div class="card-grid">
+
+    <!-- Item 1 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-01">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 01</span>
+            <span class="card-chapter-tag">创建与销毁对象</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要考虑使用静态工厂方法替代构造方法？</div>
+            <div class="card-question-hint">
+              一个类允许客户端获取其实例的传统方式是提供公共构造方法，但还有另一种技术应成为每个程序员工具箱的一部分。
+              <br><br>
+              请说出静态工厂方法相比构造方法的主要优势（至少 3 点）和劣势。
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">静态工厂方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>四大优势</h4>
+              <ol>
+                <li><strong>有名字</strong>——如果构造方法参数不能描述返回对象，命名良好的静态工厂更易读。例如 <code>BigInteger.probablePrime()</code> 比 <code>BigInteger(int, int, Random)</code> 更清晰。</li>
+                <li><strong>不必每次调用都创建新对象</strong>——可以预先构建实例或缓存复用，如 <code>Boolean.valueOf(boolean)</code> 返回的是预先创建好的 <code>TRUE</code> / <code>FALSE</code>。</li>
+                <li><strong>可以返回原返回类型的任何子类型</strong>——API 可以隐藏实现类，返回接口类型。例如 <code>Collections.unmodifiableList()</code> 返回的实现类是包私有的。</li>
+                <li><strong>返回对象的类型可以随调用参数变化</strong>——同一个方法可根据参数返回不同实现。如 <code>EnumSet.of()</code> 元素 ≤64 时返回 <code>RegularEnumSet</code>，否则返回 <code>JumboEnumSet</code>。</li>
+              </ol>
+              <h4>主要劣势</h4>
+              <ul>
+                <li>只提供静态工厂方法的类，如果没有 public/protected 构造方法，<strong>无法被子类化</strong>。</li>
+                <li>静态工厂方法在 API 文档中不像构造方法那样显眼，程序员不容易发现它们。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 2 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-02">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 02</span>
+            <span class="card-chapter-tag">创建与销毁对象</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">当构造方法参数过多时，为什么推荐使用 Builder 模式？</div>
+            <div class="card-question-hint">
+              考虑一个代表营养成分标签的类：有 3 个必需参数，以及超过 20 个可选参数。
+              <br><br>
+              传统的「可伸缩构造方法模式」和「JavaBean 模式」各有什么问题？Builder 模式如何解决？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">Builder 模式</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>可伸缩构造方法（Telescoping Constructor）的问题</h4>
+              <ul>
+                <li>参数太多时客户端代码难以编写和阅读，容易把参数顺序搞混导致 bug。</li>
+              </ul>
+              <h4>JavaBean 模式的问题</h4>
+              <ul>
+                <li>构造过程被分到了多个调用中，对象可能处于<strong>不一致状态</strong>。</li>
+                <li>类无法做成<strong>不可变</strong>的，需要额外的同步努力。</li>
+              </ul>
+              <h4>Builder 模式的优势</h4>
+              <ul>
+                <li>兼具安全性（构造完成才得到对象）和可读性（像命名参数一样设置）。</li>
+                <li>可以有多个 <code>build()</code> 变体，也可以对参数进行校验。</li>
+                <li>类可以是不可变的。</li>
+                <li>Builder 本身可以作为方法参数传递。</li>
+              </ul>
+              <h4>适用场景</h4>
+              <p>当类的构造方法或静态工厂中有<strong>多个参数</strong>（尤其是许多可选参数或相同类型的参数）时，Builder 是不错的选择。通常参数数 ≥4 个时就值得使用。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 3 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-03">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 03</span>
+            <span class="card-chapter-tag">创建与销毁对象</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">实现 Singleton 单例属性的几种方式及最佳实践是什么？</div>
+            <div class="card-question-hint">
+              单例是仅实例化一次的类。请描述三种实现方式，并说明为什么单元素枚举类型是最佳方法。
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">Singleton</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>方式一：public static final 字段</h4>
+<pre><code>public class Elvis {
+    public static final Elvis INSTANCE = new Elvis();
+    private Elvis() { }
+}</code></pre>
+              <p>优点：简单清晰。缺点：反射攻击可调用私有构造方法（需防御）、序列化时需特殊处理。</p>
+              <h4>方式二：静态工厂方法</h4>
+<pre><code>public class Elvis {
+    private static final Elvis INSTANCE = new Elvis();
+    private Elvis() { }
+    public static Elvis getInstance() { return INSTANCE; }
+}</code></pre>
+              <p>优点：灵活性（可以改是否单例而不改变 API）。缺点：同样存在反射和序列化问题。</p>
+              <h4>方式三：单元素枚举（最佳）</h4>
+<pre><code>public enum Elvis {
+    INSTANCE;
+}</code></pre>
+              <ul>
+                <li><strong>无偿提供序列化机制</strong>，防止多次实例化。</li>
+                <li>可以<strong>防止反射攻击</strong>。</li>
+                <li>代码最简洁。</li>
+                <li>单元素枚举类型已成为实现 Singleton 的最佳方法（前提是单例类不需要继承自其他类）。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 4 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-04">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 04</span>
+            <span class="card-chapter-tag">创建与销毁对象</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">如何确保一个工具类（utility class）无法被实例化？</div>
+            <div class="card-question-hint">
+              类似 <code>java.lang.Math</code>、<code>java.util.Arrays</code> 这样只包含静态方法和静态字段的类，不应该被实例化。
+              <br><br>
+              为什么用抽象类不行？正确做法是什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">非实例化</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么抽象类不行？</h4>
+              <ul>
+                <li>抽象类可以被子类化，子类仍然可以被实例化。</li>
+                <li>会误导用户以为它是为继承而设计的。</li>
+              </ul>
+              <h4>正确做法：私有构造方法</h4>
+<pre><code>public class UtilityClass {
+    // Suppress default constructor
+    private UtilityClass() {
+        throw new AssertionError();
+    }
+}</code></pre>
+              <h4>要点</h4>
+              <ul>
+                <li>因为类不含显式构造方法时编译器才会生成默认构造方法，所以<strong>包含私有构造方法</strong>即可防止默认构造方法生成。</li>
+                <li>构造方法中抛出 <code>AssertionError</code> 是额外保险，防止类内部意外调用。</li>
+                <li>副作用：这个类<strong>不能被子类化</strong>（子类构造方法必须调用父类构造方法，而父类没有可访问的构造方法）。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 5 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-05">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 05</span>
+            <span class="card-chapter-tag">创建与销毁对象</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么依赖注入（Dependency Injection）优于硬连接资源？</div>
+            <div class="card-question-hint">
+              考虑一个拼写检查器类，它依赖于字典。将其实现为静态工具类或单例有什么问题？依赖注入如何解决？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">依赖注入</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>静态工具类 / 单例的问题</h4>
+              <ul>
+                <li>假设只有一本字典可用，不够灵活。实际上有多种字典（英英、英汉、医学词典等）。</li>
+                <li>难以测试——无法注入 mock 字典进行单元测试。</li>
+                <li>不支持动态切换底层资源。</li>
+              </ul>
+              <h4>依赖注入的做法</h4>
+              <p>将资源（或工厂）作为构造方法参数传入：</p>
+<pre><code>public class SpellChecker {
+    private final Lexicon dictionary;
+    public SpellChecker(Lexicon dictionary) {
+        this.dictionary = Objects.requireNonNull(dictionary);
+    }
+    public boolean isValid(String word) { ... }
+}</code></pre>
+              <h4>优势</h4>
+              <ul>
+                <li><strong>灵活性</strong>——支持多个底层资源实现。</li>
+                <li><strong>可测试性</strong>——容易注入 mock 依赖。</li>
+                <li>保留了不可变性（依赖是 final 的）。</li>
+                <li>适用范围广：构造方法注入、静态工厂、Builder 都可以结合使用。</li>
+              </ul>
+              <p>虽然大型项目常使用框架（Spring, Dagger），但底层原理就是依赖注入——不要硬编码依赖，将它们传入。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 6 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-06">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 06</span>
+            <span class="card-chapter-tag">创建与销毁对象</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">避免创建不必要的对象——常见的性能陷阱有哪些？</div>
+            <div class="card-question-hint">
+              重用一个功能相同的对象通常比每次都创建新对象更合适。请举出几个典型的反面例子及改进方法。
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">对象复用</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>反面例子 1：String 构造方法</h4>
+              <p><code>new String("hello")</code> → 每次都创建新对象。</p>
+              <p>改进：直接用 <code>"hello"</code>，字符串常量会被 JVM 重用。</p>
+              <h4>反面例子 2：昂贵对象重复创建</h4>
+              <p>例如 <code>Pattern.matches()</code> 每次调用都会创建一个 Pattern 实例（创建成本高）。</p>
+              <p>改进：将 Pattern 缓存为 static final 常量，复用同一个实例。</p>
+              <h4>反面例子 3：自动装箱（autoboxing）</h4>
+<pre><code>// 慢！创建了大量 Long 实例
+private static long sum() {
+    Long sum = 0L;
+    for (long i = 0; i &lt; Integer.MAX_VALUE; i++)
+        sum += i;
+    return sum;
+}</code></pre>
+              <p>改进：使用基本类型 <code>long sum = 0L</code>，避免不必要的装箱。</p>
+              <h4>关键原则</h4>
+              <ul>
+                <li>优先使用基本类型而非装箱基本类型（见 Item 61）。</li>
+                <li>注意隐藏的对象创建（字符串拼接、正则、装箱）。</li>
+                <li>但不要走向极端——小对象创建回收成本很低，不必为了"省"而牺牲代码清晰性。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 7 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-07">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 07</span>
+            <span class="card-chapter-tag">创建与销毁对象</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">什么是"过期的对象引用"？它如何导致内存泄漏？</div>
+            <div class="card-question-hint">
+              考虑一个自定义的 Stack 类，内部用数组保存元素。当元素被 pop 出栈后，如果数组中的引用没有被清空，会发生什么？为什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">内存泄漏</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>问题所在</h4>
+              <p>如果 Stack 先增长后收缩，那么被弹出的对象不会被 GC 回收，因为 Stack 内部仍维护着对它们的<strong>过期引用</strong>（obsolete reference）——即永远不会再被解除引用的引用。</p>
+              <h4>修复方法</h4>
+              <p>对象引用过期时，手动清空它们：</p>
+<pre><code>public Object pop() {
+    if (size == 0)
+        throw new EmptyStackException();
+    Object result = elements[--size];
+    elements[size] = null; // 清除过期引用
+    return result;
+}</code></pre>
+              <h4>常见的内存泄漏来源</h4>
+              <ol>
+                <li><strong>自己管理内存的类</strong>（如 Stack、缓存）——只要类自己管理内存，就应警惕内存泄漏。</li>
+                <li><strong>缓存</strong>——对象放入缓存后容易被遗忘。使用 <code>WeakHashMap</code>（当键不再有外部引用时条目自动删除）或定期清理。</li>
+                <li><strong>监听器和回调</strong>——客户端注册回调后如果没有显式取消注册，会累积。用弱引用保存监听器。</li>
+              </ol>
+              <p>最佳防御：让垃圾回收器确定对象何时无用——当引用过期时，将其设为 null。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 8 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-08">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 08</span>
+            <span class="card-chapter-tag">创建与销毁对象</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要避免使用 Finalizer 和 Cleaner 机制？</div>
+            <div class="card-question-hint">
+              Finalizer 在 Java 9 中被弃用了，Cleaner 被作为替代。但两者都有严重问题。
+              <br><br>
+              它们有哪些缺点？资源清理的正确方式是什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">Finalizer / Cleaner</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>主要缺点</h4>
+              <ol>
+                <li><strong>不保证及时执行</strong>——GC 何时触发 finalization 完全不确定，不同 JVM 实现差异很大。不能用于时间关键的操作。</li>
+                <li><strong>不保证会执行</strong>——程序退出时甚至可能根本不运行。不能依赖它们来更新持久状态。</li>
+                <li><strong>严重的性能损失</strong>——使用 finalizer 会显著减慢对象创建和回收。</li>
+                <li><strong>安全风险</strong>——finalizer 攻击：子类 finalize 方法可以在构造时抛出异常后仍然调用 finalize，复活"半构造"的对象。</li>
+              </ol>
+              <h4>正确做法：try-with-resources</h4>
+              <p>让类实现 <code>AutoCloseable</code> 接口，客户端使用 try-with-resources 语句在不需要时关闭资源。</p>
+              <h4>Finalizer / Cleaner 的合法用途</h4>
+              <ul>
+                <li>作为<strong>安全网</strong>——当客户端忘记调用 <code>close()</code> 时，作为"迟做总比不做好"的最后清理手段（但要接受可能不及时）。</li>
+                <li>回收<strong>本地对等体</strong>（native peer）——Java 对象通过本地方法委托给本地对象，GC 无法回收本地部分。Cleaner 比 finalizer 好一些，因为它不阻塞 finalizer 线程。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 9 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-09">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 09</span>
+            <span class="card-chapter-tag">创建与销毁对象</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么 try-with-resources 优于 try-finally？</div>
+            <div class="card-question-hint">
+              在 Java 7 之前，try-finally 是确保资源被关闭的最佳方式。但它有一个严重的缺陷。
+              <br><br>
+              是什么缺陷？try-with-resources 如何解决？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">try-with-resources</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>try-finally 的问题：异常被吞噬</h4>
+              <p>如果 try 块和 finally 块中都抛出异常，finally 中的异常会"抹掉"try 中的异常。第一个异常（真正的原因）丢失了，调试非常困难。</p>
+              <p>多个资源时，嵌套的 try-finally 代码也极其臃肿难看。</p>
+              <h4>try-with-resources 的优势</h4>
+              <ul>
+                <li><strong>更简洁</strong>——自动关闭资源，代码更短更清晰。</li>
+                <li><strong>保留所有异常信息</strong>——第一个异常被保留，后续异常被"抑制"（suppressed），可以通过 <code>getSuppressed()</code> 获取。</li>
+                <li>可以配合 catch 和 finally 使用。</li>
+              </ul>
+<pre><code>// 推荐做法
+try (InputStream in = new FileInputStream(src);
+     OutputStream out = new FileOutputStream(dst)) {
+    byte[] buf = new byte[1024];
+    int n;
+    while ((n = in.read(buf)) &gt;= 0)
+        out.write(buf, 0, n);
+}</code></pre>
+              <h4>使用条件</h4>
+              <p>资源必须实现 <code>AutoCloseable</code> 接口（Java 库中许多类已实现）。编写自己的资源类时也应该实现 <code>AutoCloseable</code>。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 第3章 所有对象的通用方法 (Item 10-14) -->
+<!-- ============================================================ -->
+<section class="card-section all ch3">
+  <div class="section-title">第 3 章 · 所有对象的通用方法</div>
+  <div class="section-desc">Object 的非 final 方法（equals、hashCode、toString、clone）以及 Comparable.compareTo 的重写约定与最佳实践。</div>
+  <div class="card-grid">
+
+    <!-- Item 10 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-10">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 10</span>
+            <span class="card-chapter-tag">通用方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">重写 equals 方法时必须遵守的五条通用约定是什么？</div>
+            <div class="card-question-hint">
+              Object 的 equals 方法有明确的通用约定。不遵守约定的类会破坏依赖约定的其他类（如 HashMap、HashSet）。
+              <br><br>
+              请说出五条约定的名称及其含义。
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">equals 约定</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>五条通用约定</h4>
+              <ol>
+                <li><strong>自反性（reflexive）</strong>——对于任何非 null 引用值 x，<code>x.equals(x)</code> 必须返回 true。</li>
+                <li><strong>对称性（symmetric）</strong>——对于任何非 null 引用值 x 和 y，当且仅当 <code>y.equals(x)</code> 返回 true 时，<code>x.equals(y)</code> 才返回 true。</li>
+                <li><strong>传递性（transitive）</strong>——对于任何非 null 引用值 x、y、z，如果 <code>x.equals(y)</code> 返回 true 且 <code>y.equals(z)</code> 返回 true，则 <code>x.equals(z)</code> 必须返回 true。</li>
+                <li><strong>一致性（consistent）</strong>——对于任何非 null 引用值 x 和 y，只要 equals 的比较操作在对象中所用的信息没有被修改，多次调用就会一致地返回 true 或 false。</li>
+                <li><strong>非空性（non-null）</strong>——对于任何非 null 引用值 x，<code>x.equals(null)</code> 必须返回 false。</li>
+              </ol>
+              <h4>高质量 equals 的诀窍</h4>
+              <ol>
+                <li>用 <code>==</code> 检查「参数是否为这个对象的引用」</li>
+                <li>用 <code>instanceof</code> 检查「参数是否为正确的类型」</li>
+                <li>把参数转换成正确的类型</li>
+                <li>对类中的每个关键（significant）域进行比较</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 11 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-11">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 11</span>
+            <span class="card-chapter-tag">通用方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">重写 equals 时为什么必须同时重写 hashCode？</div>
+            <div class="card-question-hint">
+              一个最常见的错误来源。如果不这样做，会违反 Object 通用约定的哪一条？会造成什么实际后果？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">hashCode 约定</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>违反的约定</h4>
+              <p>相等的对象必须具有相等的散列码（hash code）。如果两个对象通过 equals 比较相等，那么调用它们的 hashCode 方法必须产生同样的整数结果。</p>
+              <h4>实际后果</h4>
+              <p>类的实例无法正常结合所有基于散列的集合一起工作，包括 <code>HashMap</code>、<code>HashSet</code> 和 <code>Hashtable</code>。</p>
+              <p>例：两个 equals 相等的对象放入 HashSet 后，你可能用另一个"相等"的对象去 <code>get()</code> 却找不到——因为 hashCode 不同，它们被放到了不同的桶里。</p>
+              <h4>编写好的 hashCode 方法</h4>
+              <ol>
+                <li>声明一个 int 变量 result，初始值为第一个关键域的散列码 c。</li>
+                <li>对每个剩余的关键域 f：
+                  <ul>
+                    <li>计算该域的散列码 c</li>
+                    <li>合并：<code>result = 31 * result + c</code></li>
+                  </ul>
+                </li>
+                <li>返回 result。</li>
+              </ol>
+              <p>或者直接用 <code>Objects.hash()</code>（简洁但稍慢），或考虑延迟初始化（缓存 hashCode，适用于不可变类）。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 12 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-12">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 12</span>
+            <span class="card-chapter-tag">通用方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么始终应该重写 toString 方法？</div>
+            <div class="card-question-hint">
+              Object 提供的默认实现（类名@散列码）通常对用户毫无帮助。重写 toString 带来什么好处？编写时应注意什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">toString</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么要重写</h4>
+              <ul>
+                <li>当对象被传递给 println、字符串拼接、断言、或者被调试器打印时，toString 会被自动调用。</li>
+                <li>好的 toString 能让类更易于使用和调试。</li>
+                <li>实际使用中，toString 应该返回对象中包含的所有值得关注的信息。</li>
+              </ul>
+              <h4>实现要点</h4>
+              <ol>
+                <li><strong>返回简洁但信息丰富的字符串</strong>——视觉上易于阅读。</li>
+                <li><strong>明确指定返回值的格式</strong>（对于值类尤其重要），并在文档中说明。指定格式后，就可以前后一致地使用。</li>
+                <li>如果指定了格式，考虑提供一个匹配的静态工厂或构造方法（如 <code>valueOf(String)</code>），方便解析。</li>
+                <li>为 toString 返回值中包含的所有信息提供<strong>独立的访问方法</strong>（getter），否则程序员必须解析 toString 的输出。</li>
+              </ol>
+              <p>即使不指定格式，也应该在文档中说明意图，让调用者知道能指望什么、不能指望什么。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 13 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-13">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 13</span>
+            <span class="card-chapter-tag">通用方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要"谨慎地重写 clone 方法"？Cloneable 接口有什么问题？</div>
+            <div class="card-question-hint">
+              Cloneable 接口的目的是作为一个 mixin 接口，表示对象允许被克隆。但它存在许多设计缺陷。
+              <br><br>
+              它有什么问题？有什么替代方案？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">clone</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>Cloneable 的设计问题</h4>
+              <ol>
+                <li><strong>接口中没有 clone 方法</strong>——它是一个标记接口，但标记的是 Object 中一个 protected 方法的行为。</li>
+                <li><strong>行为约定模糊</strong>——约定要求 x.clone().getClass() == x.getClass() 且 x.clone().equals(x) 为 true，但这些都是"应该"而非"必须"。</li>
+                <li><strong>与 final 域不兼容</strong>——如果类有指向可变对象的 final 域，clone 后修改克隆体会影响原对象（浅拷贝问题）。</li>
+                <li><strong>不支持协变返回类型的历史包袱</strong>（Java 5 之前）。</li>
+                <li><strong>构造机制绕过了构造方法</strong>——对象创建不通过构造方法，增加风险。</li>
+              </ol>
+              <h4>更好的替代方案</h4>
+              <ul>
+                <li><strong>复制构造方法</strong>：<code>public Yum(Yum yum) { ... }</code></li>
+                <li><strong>复制工厂</strong>：<code>public static Yum newInstance(Yum yum) { ... }</code></li>
+              </ul>
+              <p>这些方法不依赖于存在风险的对象创建机制、不要求遵守未详细说明的约定、与 final 域不冲突、不会抛出不必要的受检异常、不需要类型转换。</p>
+              <p>简而言之：Cloneable 有许多缺陷，新的接口不应该扩展它，新的可复制类也不应该实现它。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 14 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-14">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 14</span>
+            <span class="card-chapter-tag">通用方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">什么时候应该考虑实现 Comparable 接口？compareTo 有哪些约定？</div>
+            <div class="card-question-hint">
+              compareTo 虽然不是 Object 的方法，但与 equals 有许多相似之处。它的约定是什么？与 equals 的关系如何？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">Comparable</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>何时实现 Comparable</h4>
+              <p>如果一个类有<strong>明显的内在排序关系</strong>（如字母顺序、数值顺序、按日期排序），就应该实现 <code>Comparable</code> 接口。实现后，该类就能与依赖比较的通用算法和集合实现协作（<code>Arrays.sort()</code>、<code>TreeSet</code>、<code>Collections</code> 工具等）。</p>
+              <h4>compareTo 约定</h4>
+              <ol>
+                <li><strong>对称</strong>：sgn(x.compareTo(y)) == -sgn(y.compareTo(x))</li>
+                <li><strong>传递</strong>：若 x.compareTo(y) &gt; 0 且 y.compareTo(z) &gt; 0，则 x.compareTo(z) &gt; 0</li>
+                <li><strong>一致性</strong>：x.compareTo(y) == 0 意味着 sgn(x.compareTo(z)) == sgn(y.compareTo(z))</li>
+                <li><strong>强烈建议</strong>与 equals 一致：(x.compareTo(y) == 0) == (x.equals(y))。如果不一致，最好在文档中说明。</li>
+              </ol>
+              <h4>实现要点</h4>
+              <ul>
+                <li>比较关键域，从最重要的域开始。</li>
+                <li>从 Java 8 开始，优先使用 <code>Comparator</code> 接口提供的比较器构造方法，配合 lambda 写出更简洁的代码。</li>
+                <li>避免使用 &lt; 和 &gt; 运算符比较基本类型，应使用静态的 <code>compare</code> 方法（如 <code>Integer.compare(int, int)</code>）。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 第4章 类与接口 (Item 15-25) -->
+<!-- ============================================================ -->
+<section class="card-section all ch4">
+  <div class="section-title">第 4 章 · 类与接口</div>
+  <div class="section-desc">设计良好的类与接口的核心原则：最小化可访问性、不可变性、组合优于继承、接口优于抽象类等。</div>
+  <div class="card-grid">
+
+    <!-- Item 15 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-15">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 15</span>
+            <span class="card-chapter-tag">类与接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要使类和成员的可访问性最小化？Java 有哪些访问控制级别？</div>
+            <div class="card-question-hint">
+              这是区分设计良好组件和设计不佳组件的最重要因素。基本原则是什么？各级别的含义和使用场景？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">信息隐藏</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>基本原则：信息隐藏 / 封装</h4>
+              <p>将 API 和实现分离开。组件只通过 API 通信，不需要知道彼此的内部工作。</p>
+              <h4>四个访问级别（从高到低）</h4>
+              <ol>
+                <li><strong>public</strong>——任何地方都可访问。</li>
+                <li><strong>protected</strong>——同一个包和子类可访问。</li>
+                <li><strong>包级私有（package-private）</strong>——默认级别，同一个包内可访问。</li>
+                <li><strong>私有（private）</strong>——只有类本身能访问。</li>
+              </ol>
+              <h4>实践建议</h4>
+              <ul>
+                <li>让每个类或成员尽可能地<strong>不可访问</strong>——使用与功能一致的最低访问级别。</li>
+                <li>实例域<strong>决不能是 public</strong>（见 Item 16）。</li>
+                <li>包含可变域的类不能是不可变的。</li>
+                <li>公共类的公共可变域几乎总是错误的。</li>
+                <li>长度非零的数组总是可变的——如果有 public static final 的数组域，客户端可以修改数组内容。解决方案：返回不可变列表或返回数组的防御性拷贝。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 16 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-16">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 16</span>
+            <span class="card-chapter-tag">类与接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么公共类中应该使用访问方法（getter/setter）而不是公共属性？</div>
+            <div class="card-question-hint">
+              有时候人们会写一些退化的类——只有公共字段没有方法。为什么这是糟糕的做法？有例外情况吗？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">访问方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>公共字段的问题</h4>
+              <ul>
+                <li><strong>无法改变表示法</strong>——一旦字段是 public 的，就被"钉死"了，以后想改成其他内部结构会破坏所有客户端。</li>
+                <li><strong>无法附加约束</strong>——直接操作公共字段时不能进行验证或其他辅助操作。</li>
+                <li>违反封装原则。</li>
+              </ul>
+              <h4>访问方法的优势</h4>
+              <ul>
+                <li>保留了改变类内部表示的灵活性。</li>
+                <li>可以在 getter/setter 中添加逻辑（验证、同步、日志等）。</li>
+                <li>Java 生态系统中许多工具和框架依赖于 JavaBean 命名约定。</li>
+              </ul>
+              <h4>例外：包级私有或私有嵌套类</h4>
+              <p>如果一个类是<strong>包级私有的</strong>或者是<strong>私有的嵌套类</strong>，暴露其数据字段本质上没有什么错误——这种做法只在类的实现所在的包内可见，而不是在 API 中可见。只要类的表示法在包内是可接受的，就可以这样做。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 17 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-17">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 17</span>
+            <span class="card-chapter-tag">类与接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">不可变类（Immutable Class）有哪些优势？如何构建不可变类？</div>
+            <div class="card-question-hint">
+              不可变类是实例不能被修改的类。请说出它的主要优点和构造不可变类的五条规则。
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">不可变性</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>不可变类的五条规则</h4>
+              <ol>
+                <li>不要提供任何修改对象状态的方法（mutator）。</li>
+                <li>确保类不会被扩展——final 类或私有构造方法 + 静态工厂。</li>
+                <li>让所有域都是 final 的。</li>
+                <li>让所有域都是私有的。</li>
+                <li>确保对于任何可变组件的互斥访问——如果类有指向可变对象的域，必须确保客户端无法获得这些对象的引用（构造时用防御性拷贝，getter 不返回原对象）。</li>
+              </ol>
+              <h4>不可变类的优势</h4>
+              <ul>
+                <li><strong>简单</strong>——只有一种状态，即创建时的状态。</li>
+                <li><strong>线程安全</strong>——不需要同步，可以自由共享。</li>
+                <li><strong>可重用</strong>——常量（如 <code>BigInteger.ZERO</code>）、缓存、享元模式。</li>
+                <li><strong>失败原子性</strong>——部分失败不会让对象处于不一致状态。</li>
+              </ul>
+              <h4>主要缺点</h4>
+              <p>每个不同的值都需要一个单独的对象。如果执行的操作多步且每步都产生新对象，性能问题就会显现。对策：提供 companion 可变类（如 <code>StringBuilder</code> 对应 <code>String</code>）。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 18 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-18">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 18</span>
+            <span class="card-chapter-tag">类与接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么组合（composition）优于继承（inheritance）？</div>
+            <div class="card-question-hint">
+              继承是代码重用的有效方式，但不总是最好的工具。为什么"用继承来实现代码重用"是危险的？什么是"转发类"？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">组合优于继承</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>继承的问题</h4>
+              <ol>
+                <li><strong>破坏封装</strong>——子类依赖于父类的实现细节。父类的后续版本可能改变内部实现，即使其 API 没变，子类也可能被破坏。</li>
+                <li><strong>脆弱的基类问题</strong>——父类新增方法可能与子类方法签名冲突，或导致子类状态不一致。</li>
+                <li><strong>跨包继承尤其危险</strong>——不同包之间的继承是脆弱的。</li>
+              </ol>
+              <h4>组合 + 转发（Composition + Forwarding）</h4>
+              <p>在新类中包含一个私有域，引用现有类的实例（组合）。新类中的每个实例方法都可以调用被包含的现有类实例中对应的方法（转发），并返回结果。</p>
+              <p>这样得到的类非常稳固，不依赖于现有类的实现细节。即使现有类增加新方法，也不会影响新类。</p>
+              <h4>装饰器模式</h4>
+              <p>这种组合+转发的经典应用就是装饰器模式（Decorator Pattern）——用装饰类包装另一个类，添加新功能。如 <code>Collections.synchronizedList()</code>。</p>
+              <h4>何时适合用继承</h4>
+              <p>只有当两个类之间确实存在"is-a"关系时才使用继承。即使如此，如果父类在同一个包内且是为继承而设计的（Item 19），继承才是安全的。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 19 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-19">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 19</span>
+            <span class="card-chapter-tag">类与接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么必须"要么设计继承并提供文档说明，要么禁用继承"？</div>
+            <div class="card-question-hint">
+              Item 18 说继承很危险。但如果必须设计一个可被继承的类，应该怎么做？为什么普通的具体类不应该被继承？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">设计继承</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么需要特殊设计</h4>
+              <p>为了继承而设计一个类，是一项重大的责任。子类依赖于父类的实现细节，如果不精心设计并文档化"自用模式"（self-use），父类的改变就会破坏子类。</p>
+              <h4>设计继承的要点</h4>
+              <ol>
+                <li><strong>文档化自用模式</strong>——类必须在文档中精确描述每个可覆盖方法的自用情况：何时被调用、调用顺序、调用结果如何影响后续处理。</li>
+                <li><strong>以谨慎的设计提供受保护（protected）的成员</strong>——只暴露必要的钩子方法。</li>
+                <li><strong>构造方法绝不能调用可被覆盖的方法</strong>——父类构造方法在子类构造方法之前运行，如果父类构造调用了被子类覆盖的方法，方法会在子类状态初始化之前执行，往往导致失败。</li>
+                <li><strong>谨慎实现 Cloneable 和 Serializable</strong>——因为 clone 和 readObject 的行为类似于构造方法，也不能调用可覆盖方法。</li>
+              </ol>
+              <h4>如果不打算继承</h4>
+              <p>让类成为 final 的，或提供私有/包级私有构造方法（防止外部继承）。对于具体类，最佳实践通常是<strong>不让它们可被继承</strong>。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 20 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-20">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 20</span>
+            <span class="card-chapter-tag">类与接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么接口优于抽象类？什么是骨架实现（skeletal implementation）？</div>
+            <div class="card-question-hint">
+              Java 有两种机制来定义允许多个实现的类型。接口有哪些不可替代的优势？骨架实现如何结合两者的优点？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">接口优于抽象类</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>接口的优势</h4>
+              <ol>
+                <li><strong>现有的类可以轻松地实现新接口</strong>——只需添加 implements 并实现方法。而要继承一个新的抽象类，类必须插入到类型层次结构中，可能破坏类层级。</li>
+                <li><strong>允许多重继承</strong>——一个类可以实现多个接口。</li>
+                <li><strong>适合定义 mixin 类型</strong>——如 <code>Comparable</code>，表明类的实例具有某种可选的能力。抽象类不能被混入。</li>
+                <li><strong>层次结构不膨胀</strong>——接口可以构建非层级的类型框架。</li>
+              </ol>
+              <h4>骨架实现（Skeletal Implementation）</h4>
+              <p>为了结合接口和抽象类的优点：提供一个抽象的骨架实现类来配合接口。接口负责定义类型，骨架类负责实现大部分接口方法。</p>
+              <p>命名惯例：接口名 + <code>Abstract</code>，如 <code>AbstractList</code>、<code>AbstractSet</code>、<code>AbstractMap</code>。</p>
+              <p>客户端可以选择实现接口，也可以选择继承骨架实现（如果需要的话）——极大的灵活性。</p>
+              <h4>简单的接口 = 极大的灵活性</h4>
+              <p>接口通常是定义允许多个实现的类型的最佳途径。如果想导出一个重要的接口，强烈考虑同时提供一个骨架实现类。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 21 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-21">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 21</span>
+            <span class="card-chapter-tag">类与接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">Java 8 之后如何"为后代设计接口"？默认方法有哪些注意事项？</div>
+            <div class="card-question-hint">
+              Java 8 引入了默认方法（default method），可以在接口中提供方法的默认实现。但这带来了哪些风险？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">接口默认方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>默认方法的引入</h4>
+              <p>Java 8 之前，不可能在不破坏现有实现的情况下给接口添加方法。Java 8 之后可以通过默认方法来添加，但这并不意味着可以随意添加。</p>
+              <h4>主要风险和注意事项</h4>
+              <ol>
+                <li><strong>不能保证所有实现都能正常工作</strong>——默认方法是"一刀切"的，可能不适用于所有现有的实现。例如 <code>Collection.removeIf()</code> 的默认实现可能不兼容某些同步集合实现。</li>
+                <li><strong>类优先于接口</strong>——如果一个类继承了一个方法，而它实现的接口中有同名默认方法，类的方法总是胜出。这避免了"菱形问题"。</li>
+                <li><strong>默认方法不应是 Object 的方法</strong>——不能在接口中声明 equals、hashCode 等 Object 方法的默认实现。</li>
+              </ol>
+              <h4>最佳实践</h4>
+              <ul>
+                <li>默认方法主要用于在标准接口中提供<strong>工具方法</strong>（如 stream、forEach、removeIf 等）。</li>
+                <li>发布前必须在尽可能多的实现上<strong>测试默认方法</strong>。</li>
+                <li>设计新接口时仍然要谨慎——虽然有默认方法的帮助，但接口一旦发布就很难改变。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 22 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-22">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 22</span>
+            <span class="card-chapter-tag">类与接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么接口仅用来定义类型？什么是"常量接口反模式"？</div>
+            <div class="card-question-hint">
+              有些接口只包含常量，没有任何方法。为什么这是对接口的不良使用？正确做法是什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">常量接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>什么是常量接口反模式</h4>
+              <p>有些接口不包含任何方法，只包含静态 final 常量。实现这种接口的类只是为了"继承"常量，省去类名前缀。</p>
+              <h4>为什么这是不好的</h4>
+              <ol>
+                <li><strong>违背接口的用途</strong>——接口应该用于定义类型（描述类可以做什么），而不是用来导出常量。</li>
+                <li><strong>污染 API</strong>——常量成为类导出的 API 的一部分，但实际上只是实现细节。用户会困惑这些常量的用途。</li>
+                <li><strong>实现细节泄露</strong>——类内部使用了哪些常量本应是实现细节，却暴露在 API 中。</li>
+                <li><strong>向后兼容负担</strong>——如果将来类不再需要这些常量，仍然必须保留（因为 API 已承诺）。</li>
+              </ol>
+              <h4>正确做法</h4>
+              <ul>
+                <li>如果常量与某个类或接口关系紧密，就将其放入<strong>该类或接口中</strong>（如 <code>Integer.MAX_VALUE</code>）。</li>
+                <li>如果常量是一组枚举常量，使用<strong>枚举类型</strong>（Item 34）。</li>
+                <li>否则，放入一个<strong>工具类</strong>中，通过类名引用（如 <code>Math.PI</code>）。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 23 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-23">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 23</span>
+            <span class="card-chapter-tag">类与接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么类层次结构优于标签类（tagged class）？</div>
+            <div class="card-question-hint">
+              有时候一个类的实例有两种或更多"风格"，用一个标签域来区分。为什么这种做法有问题？应该用什么替代？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">标签类</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>标签类的问题</h4>
+              <p>标签类是一个类用一个字段（如 <code>shape</code> 枚举）标记自己的"种类"，然后根据种类在方法中用 switch 分支处理。</p>
+              <ol>
+                <li><strong>臃肿混乱</strong>——多个实现塞在一个类里，可读性差。</li>
+                <li><strong>内存浪费</strong>——每个实例都带着不属于自己"种类"的域。</li>
+                <li><strong>无法做成 final 域</strong>——除非在构造方法中初始化不相关的域。</li>
+                <li><strong>添加新种类需要修改所有 switch</strong>——容易遗漏，违反开闭原则。</li>
+                <li><strong>类型安全差</strong>——实例的实际语义靠标签值判断，编译器无法帮助验证。</li>
+              </ol>
+              <h4>替代方案：类层次结构（子类型化）</h4>
+              <p>用抽象类或接口定义一个类型，每种"风格"作为一个具体子类实现。</p>
+              <ul>
+                <li>每个类只有自己需要的域，简洁清晰。</li>
+                <li>所有域都可以是 final 的。</li>
+                <li>新增种类只需新增子类，无需修改已有代码。</li>
+                <li>编译器确保类型正确。</li>
+              </ul>
+              <p>简而言之：标签类几乎总是类层次结构的拙劣替代品。发现标签类时，考虑将其重构为继承层次。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 24 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-24">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 24</span>
+            <span class="card-chapter-tag">类与接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">静态成员类和非静态成员类有什么区别？为什么优先使用静态成员类？</div>
+            <div class="card-question-hint">
+              嵌套类有四种：静态成员类、非静态成员类、匿名类、局部类。请解释静态 vs 非静态成员类的核心区别。
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">静态成员类</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>核心区别：是否持有外部类引用</h4>
+              <ul>
+                <li><strong>非静态成员类</strong>——每个实例都隐含地关联着一个外部类实例。可以访问外部类的成员（包括 private）。非静态成员类的实例创建必须有一个外部类实例：<code>outer.new Inner()</code>。</li>
+                <li><strong>静态成员类</strong>——不持有外部类引用。与普通顶层类一样，只是被声明在另一个类内部以实现"逻辑上的嵌套"。使用 <code>Outer.Inner</code>。</li>
+              </ul>
+              <h4>非静态成员类的代价</h4>
+              <ul>
+                <li>每个内部类实例都需要一个外部类引用——消耗时间和空间。</li>
+                <li>可能导致<strong>内存泄漏</strong>——如果内部类实例存活时间超过外部类预期（例如被外部引用），外部类对象就无法被 GC 回收。</li>
+              </ul>
+              <h4>何时使用哪种</h4>
+              <ul>
+                <li><strong>静态成员类</strong>：当嵌套类只是为了组织代码、不需要访问外部类实例时。这是<strong>默认选择</strong>。</li>
+                <li><strong>非静态成员类</strong>：当每个实例必须绑定到一个外部类实例，且需要访问外部类状态时（如适配器模式、Iterator 实现）。</li>
+              </ul>
+              <p>如果你声明了一个成员类但它不需要访问外部实例，<strong>一定加上 static 修饰符</strong>。忘记加会导致每个实例都多一个外部类引用，浪费空间和时间。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 25 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-25">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 25</span>
+            <span class="card-chapter-tag">类与接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要将源文件限制为单个顶级类？</div>
+            <div class="card-question-hint">
+              Java 编译器允许在单个源文件中定义多个顶级类，但这样做有什么风险？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">源文件限制</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>风险：编译顺序影响行为</h4>
+              <p>如果一个类出现在多个源文件中，哪个定义会被使用取决于编译时先遇到哪个源文件。这会导致难以追踪的 bug——同样的代码，不同的编译顺序产生不同的结果。</p>
+              <h4>示例</h4>
+              <p>假设在 <code>Main.java</code> 中引用了类 <code>Utensil</code>，而 <code>Utensil</code> 同时定义在 <code>Utensil.java</code> 和 <code>Dessert.java</code> 两个文件中。编译时如果先遇到 <code>Dessert.java</code>，程序行为就由那个定义决定；如果先遇到 <code>Utensil.java</code>，行为就不同。</p>
+              <h4>如何避免</h4>
+              <ol>
+                <li><strong>永远不要把多个顶级类放在同一个源文件中</strong>。</li>
+                <li>如果多个类关系紧密，考虑将它们作为<strong>静态成员类</strong>放在同一个顶层类中（Item 24）。</li>
+              </ol>
+              <p>这条规则看似简单，但违反它可能导致极其隐蔽的错误。一个源文件一个顶级类——简单、安全、无争议。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 第5章 泛型 (Item 26-33) -->
+<!-- ============================================================ -->
+<section class="card-section all ch5">
+  <div class="section-title">第 5 章 · 泛型</div>
+  <div class="section-desc">泛型的最佳实践：消除原始类型、警告、列表与数组的区别、通配符、类型安全异构容器等。</div>
+  <div class="card-grid">
+
+    <!-- Item 26 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-26">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 26</span>
+            <span class="card-chapter-tag">泛型</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么不要使用原始类型（raw type）？原始类型有什么问题？</div>
+            <div class="card-question-hint">
+              比如 <code>List</code>（不带类型参数）就是原始类型。它为什么危险？List&lt;Object&gt; 和 List&lt;?&gt; 又分别是什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">原始类型</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>原始类型的问题</h4>
+              <ul>
+                <li><strong>丧失类型安全</strong>——编译时不检查元素类型，运行时才可能抛出 <code>ClassCastException</code>。错误被推迟到运行时，且远离出错的代码。</li>
+                <li><strong>失去了自文档化的优势</strong>——从声明看不出集合应该包含什么类型。</li>
+              </ul>
+              <h4>为什么 Java 还保留原始类型？</h4>
+              <p>为了与泛型出现之前的代码兼容（迁移兼容性）。但新代码不应使用。</p>
+              <h4>List、List&lt;Object&gt;、List&lt;?&gt; 的区别</h4>
+              <ul>
+                <li><code>List</code>（原始类型）——完全绕过泛型类型检查，不安全。</li>
+                <li><code>List&lt;Object&gt;</code>——告诉编译器可以放任何类型的对象，但仍然是类型安全的（编译器知道元素是 Object）。</li>
+                <li><code>List&lt;?&gt;</code>（无界通配符类型）——元素类型未知，<strong>除了 null 之外不能添加任何元素</strong>，读取出来也是 Object。安全但受限。</li>
+              </ul>
+              <h4>例外情况</h4>
+              <ul>
+                <li>必须在<strong>类字面量</strong>中使用原始类型：<code>List.class</code> 合法，<code>List&lt;String&gt;.class</code> 不合法。</li>
+                <li>使用 <code>instanceof</code> 操作符时：<code>o instanceof Set</code>（不能用泛型类型，除了无界通配符）。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 27 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-27">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 27</span>
+            <span class="card-chapter-tag">泛型</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">如何正确处理非检查警告（unchecked warning）？</div>
+            <div class="card-question-hint">
+              使用泛型时会看到很多 unchecked 警告。应该一律忽略吗？还是一律消除？正确策略是什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">非检查警告</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>基本原则</h4>
+              <ol>
+                <li><strong>尽可能消除每一个非检查警告</strong>——消除所有警告，就可以确保代码是类型安全的。</li>
+                <li>如果<strong>无法消除</strong>警告，但你可以证明引发警告的代码是类型安全的，才使用 <code>@SuppressWarnings("unchecked")</code> 抑制警告。</li>
+                <li><strong>始终在尽可能小的范围</strong>内使用 SuppressWarnings 注解——永远不要在整个类上使用。通常用在变量声明或很短的方法上。</li>
+              </ol>
+              <h4>为什么要在最小范围抑制</h4>
+              <p>如果在整个类上抑制警告，可能会掩盖重要的新警告。将注解加在变量声明上，可以精确控制抑制范围。</p>
+              <h4>每次抑制警告都要加注释</h4>
+              <p>添加注释说明为什么代码是类型安全的。这不仅帮助他人理解，也防止你自己以为只是"为了让编译器闭嘴"。</p>
+              <h4>示例</h4>
+<pre><code>public &lt;T&gt; T[] toArray(T[] a) {
+    if (a.length &lt; size) {
+        @SuppressWarnings("unchecked")
+        T[] result = (T[]) Arrays.copyOf(elements, size, a.getClass());
+        return result;
+    }
+    ...
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 28 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-28">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 28</span>
+            <span class="card-chapter-tag">泛型</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么列表（List）优于数组？两者在类型系统上有什么根本差异？</div>
+            <div class="card-question-hint">
+              数组和泛型有两大区别：协变 vs 不变，具体化 vs 擦除。请解释这些概念及其影响。
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">列表 vs 数组</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>差异一：协变 vs 不变</h4>
+              <ul>
+                <li><strong>数组是协变的（covariant）</strong>——如果 Sub 是 Super 的子类型，那么 <code>Sub[]</code> 也是 <code>Super[]</code> 的子类型。</li>
+                <li><strong>泛型是不变的（invariant）</strong>——对于两个不同类型 Type1 和 Type2，<code>List&lt;Type1&gt;</code> 既不是 <code>List&lt;Type2&gt;</code> 的子类型，也不是超类型。</li>
+              </ul>
+              <p>影响：数组可以在编译时通过类型检查但运行时失败（如 <code>Object[] a = new Long[1]; a[0] = "x";</code> 会抛出 ArrayStoreException）。而泛型错误在编译时就能发现。</p>
+              <h4>差异二：具体化 vs 擦除</h4>
+              <ul>
+                <li><strong>数组是具体化的（reified）</strong>——运行时知道并强制执行元素类型。</li>
+                <li><strong>泛型通过擦除（erasure）实现</strong>——编译时执行类型约束，运行时擦除类型信息。</li>
+              </ul>
+              <p>影响：创建泛型数组（如 <code>new List&lt;E&gt;[]</code>）是非法的，因为不是类型安全的。</p>
+              <h4>结论：优先选择列表</h4>
+              <ul>
+                <li>列表 + 泛型提供了编译时类型安全，比数组更安全。</li>
+                <li>数组和泛型不能很好地混合——如果发现自己把数组和泛型混合使用且收到编译错误，第一反应应该是用列表替换数组。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 29 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-29">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 29</span>
+            <span class="card-chapter-tag">泛型</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">如何将一个使用 Object 的类（如 Stack）泛型化？有哪些技术选择？</div>
+            <div class="card-question-hint">
+              将 Stack 类从用 Object 存储元素改造成泛型类 Stack&lt;E&gt;，会遇到什么障碍？有哪两种主流解决方案？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">泛型化</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>障碍：不能创建泛型数组</h4>
+              <p>当你把 <code>Object[] elements</code> 改为 <code>E[] elements</code>，然后用 <code>new E[DEFAULT_CAPACITY]</code> 初始化时，编译器会报错——不能创建泛型数组（Item 28）。</p>
+              <h4>解决方案一：使用 Object[] 存储 + 强转读取</h4>
+<pre><code>private Object[] elements;
+public E pop() {
+    @SuppressWarnings("unchecked")
+    E result = (E) elements[--size];
+    elements[size] = null;
+    return result;
+}</code></pre>
+              <p>这是 Java 类库（如 ArrayList）常用的做法。每次读取元素时做 unchecked 转换。</p>
+              <h4>解决方案二：将数组声明为 E[]，创建时强转</h4>
+<pre><code>private E[] elements;
+@SuppressWarnings("unchecked")
+public Stack() {
+    elements = (E[]) new Object[DEFAULT_CAPACITY];
+}</code></pre>
+              <p>只在构造时转换一次，之后直接使用。代码更简洁。</p>
+              <h4>如何选择</h4>
+              <p>第一种（读取时转换）在运行时更安全（数组的实际运行时类型始终是 Object[]），第二种（创建时转换）代码更简洁。实际中第二种更常用。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 30 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-30">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 30</span>
+            <span class="card-chapter-tag">泛型</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">什么是泛型方法？为什么应该优先使用泛型方法？</div>
+            <div class="card-question-hint">
+              正如类可以是泛型的，方法也可以是泛型的。泛型方法有什么好处？与泛型类型有何不同？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">泛型方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>什么是泛型方法</h4>
+              <p>声明了一个或多个类型参数的方法。类型参数列表位于方法的修饰符和返回类型之间。</p>
+<pre><code>// 泛型方法
+public static &lt;E&gt; Set&lt;E&gt; union(Set&lt;E&gt; s1, Set&lt;E&gt; s2) {
+    Set&lt;E&gt; result = new HashSet&lt;&gt;(s1);
+    result.addAll(s2);
+    return result;
+}</code></pre>
+              <h4>优势</h4>
+              <ul>
+                <li><strong>类型安全</strong>——像泛型类一样，编译器检查类型。</li>
+                <li><strong>类型推导</strong>——调用时通常不需要显式指定类型参数，编译器可以从参数推断出来。</li>
+                <li><strong>不需要创建整个泛型类</strong>——如果只有一个方法需要类型参数，只需让那个方法是泛型的。</li>
+              </ul>
+              <h4>泛型单例工厂（Generic Singleton Factory）</h4>
+              <p>对于不可变但适用于多种类型的对象，可以使用泛型静态方法来分发（如 <code>Collections.reverseOrder()</code>、<code>Collections.emptySet()</code>）。因为泛型是通过擦除实现的，所以一个实例可以适用于所有类型参数。</p>
+              <h4>递归类型限制（Recursive Type Bound）</h4>
+              <p>如 <code>&lt;T extends Comparable&lt;T&gt;&gt;</code>，表示 T 必须实现与自身的比较——这是确保可以对集合进行排序的标准方式。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 31 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-31">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 31</span>
+            <span class="card-chapter-tag">泛型</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">如何使用限定通配符（bounded wildcard）增加 API 的灵活性？PECS 是什么意思？</div>
+            <div class="card-question-hint">
+              参数化类型是不变的（invariant），但有时你需要更多灵活性。生产者和消费者分别应该用什么通配符？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">通配符 / PECS</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>PECS 原则</h4>
+              <p><strong>P</strong>roducer <strong>E</strong>xtends, <strong>C</strong>onsumer <strong>S</strong>uper</p>
+              <p>生产者-extends，消费者-super。</p>
+              <h4>生产者（生产 T 实例）→ extends</h4>
+              <p>如果参数化类型表示一个 T 的生产者，使用 <code>&lt;? extends T&gt;</code>。</p>
+              <p>例：<code>pushAll(Iterable&lt;? extends E&gt; src)</code>——src 生产 E 类型的元素供栈使用。</p>
+              <h4>消费者（消费 T 实例）→ super</h4>
+              <p>如果参数化类型表示一个 T 的消费者，使用 <code>&lt;? super T&gt;</code>。</p>
+              <p>例：<code>popAll(Collection&lt;? super E&gt; dst)</code>——dst 消费栈中弹出的 E 元素。</p>
+              <h4>记忆方法</h4>
+              <p>如果方法从参数中<strong>读取</strong>（获取）元素，参数是生产者 → extends。</p>
+              <p>如果方法向参数中<strong>写入</strong>（添加）元素，参数是消费者 → super。</p>
+              <p>如果既读又写，则不需要通配符。</p>
+              <h4>注意</h4>
+              <ul>
+                <li>不要用通配符作为返回类型——它迫使客户端也考虑通配符。</li>
+                <li>Comparable 和 Comparator 永远是消费者——通常用 <code>Comparable&lt;? super T&gt;</code>。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 32 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-32">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 32</span>
+            <span class="card-chapter-tag">泛型</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么泛型和可变参数（varargs）结合时要小心？什么是堆污染？</div>
+            <div class="card-question-hint">
+              可变参数方法在调用时会创建一个数组来保存参数。如果可变参数的类型是泛型或参数化类型，会发生什么问题？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">泛型可变参数</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>问题根源</h4>
+              <p>可变参数（varargs）的底层实现是数组。而泛型数组是不安全的（Item 28）。两者结合就会产生混乱。</p>
+              <h4>堆污染（Heap Pollution）</h4>
+              <p>当一个参数化类型的变量引用了一个不属于该类型的对象时，就发生了堆污染。</p>
+<pre><code>// 危险的示例
+static void dangerous(List&lt;String&gt;... stringLists) {
+    List&lt;Integer&gt; intList = List.of(42);
+    Object[] objects = stringLists;
+    objects[0] = intList;  // 堆污染！
+    String s = stringLists[0].get(0);  // ClassCastException
+}</code></pre>
+              <h4>@SafeVarargs 注解</h4>
+              <ul>
+                <li>用于在方法作者保证类型安全的情况下，抑制客户端的警告。</li>
+                <li>方法是安全的条件：
+                  <ol>
+                    <li>方法没有在可变参数数组中存储任何东西。</li>
+                    <li>没有让对数组的引用逃逸到不信任的代码中。</li>
+                  </ol>
+                </li>
+              </ul>
+              <h4>更安全的替代</h4>
+              <p>当方法同时有泛型和可变参数时，考虑用 <code>List</code> 参数替代可变参数，这样编译器可以保证类型安全。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 33 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-33">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 33</span>
+            <span class="card-chapter-tag">泛型</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">什么是类型安全的异构容器（typesafe heterogeneous container）？</div>
+            <div class="card-question-hint">
+              泛型的常见用法是容器（Set、Map、ThreadLocal 等），每个容器只有固定数量的类型参数。但如果需要更多灵活性呢？比如数据库的一行有任意多列。
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">异构容器</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>思路：参数化键（key），而不是容器</h4>
+              <p>不是让容器有一个类型参数，而是让每个键都是参数化的。将参数化的键提交给容器以插入或检索值。</p>
+              <h4>类型令牌（Type Token）</h4>
+              <p><code>Class&lt;T&gt;</code> 扮演参数化键的角色。因为 <code>Class</code> 是泛型的：<code>String.class</code> 的类型是 <code>Class&lt;String&gt;</code>。</p>
+              <h4>Favorites 示例</h4>
+<pre><code>public class Favorites {
+    private Map&lt;Class&lt;?&gt;, Object&gt; favorites = new HashMap&lt;&gt;();
+    public &lt;T&gt; void putFavorite(Class&lt;T&gt; type, T instance) {
+        favorites.put(Objects.requireNonNull(type),
+                      type.cast(instance));
+    }
+    public &lt;T&gt; T getFavorite(Class&lt;T&gt; type) {
+        return type.cast(favorites.get(type));
+    }
+}</code></pre>
+              <h4>关键点</h4>
+              <ul>
+                <li>Map 的值类型是 <code>Object</code>，但键是参数化的 <code>Class&lt;T&gt;</code>。</li>
+                <li>使用 <code>Class.cast()</code> 方法将值动态转换回正确的类型，确保类型安全。</li>
+                <li>限制：不能用于不可具体化的类型（如 <code>List&lt;String&gt;</code>），因为 <code>List&lt;String&gt;.class</code> 不存在。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 第6章 枚举与注解 (Item 34-41) -->
+<!-- ============================================================ -->
+<section class="card-section all ch6">
+  <div class="section-title">第 6 章 · 枚举与注解</div>
+  <div class="section-desc">枚举类型替代整型常量、EnumSet/EnumMap、注解优于命名模式、标记接口等最佳实践。</div>
+  <div class="card-grid">
+
+    <!-- Item 34 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-34">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 34</span>
+            <span class="card-chapter-tag">枚举与注解</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么枚举类型优于 int 枚举模式和 String 枚举模式？</div>
+            <div class="card-question-hint">
+              在枚举类型加入 Java 之前，有两种常见的枚举实现模式：int 枚举和 String 枚举。它们各有什么问题？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">枚举类型</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>int 枚举模式的问题</h4>
+              <ul>
+                <li><strong>类型不安全</strong>——可以将 APPLE 常量传给期望 ORANGE 的方法。</li>
+                <li><strong>易碎</strong>——常量值编译进客户端，如果值改变，客户端必须重新编译。</li>
+                <li><strong>打印值无意义</strong>——打印一个 int 枚举常量只能看到数字，看不出含义。</li>
+                <li>没有遍历所有值的可靠方式。</li>
+              </ul>
+              <h4>String 枚举模式的问题</h4>
+              <ul>
+                <li>性能问题（字符串比较）。</li>
+                <li>依赖于字符串字面量的正确性，拼写错误在编译时不会被发现。</li>
+              </ul>
+              <h4>枚举类型的优势</h4>
+              <ol>
+                <li><strong>编译时类型安全</strong>——方法参数声明为枚举类型，传错类型编译不通过。</li>
+                <li><strong>命名空间</strong>——同名常量互不干扰。</li>
+                <li><strong>功能强大</strong>——是类，可以有字段、方法、实现接口。</li>
+                <li><strong>可遍历</strong>——<code>values()</code> 方法返回所有常量。</li>
+                <li><strong>可添加新常量而不破坏客户端</strong>。</li>
+                <li><strong>toString() 提供可打印字符串</strong>。</li>
+              </ol>
+              <p>枚举本质上是单例的（Java 保证每个常量只有一个实例），可以用作单例（Item 3）。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 35 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-35">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 35</span>
+            <span class="card-chapter-tag">枚举与注解</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要使用实例属性（instance field）替代 ordinal()？</div>
+            <div class="card-question-hint">
+              所有枚举都有一个 <code>ordinal()</code> 方法返回常量在枚举类型中的位置。为什么不应该依赖它？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">ordinal</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>问题</h4>
+              <p><code>ordinal()</code> 返回枚举常量在枚举声明中的位置（从 0 开始）。如果使用 ordinal 来表示与业务相关的值（如顺序编号、状态码），一旦常量顺序改变或在中间插入新常量，所有依赖 ordinal 值的代码都会出错。</p>
+              <h4>反例</h4>
+<pre><code>// 错误的做法
+public enum Ensemble {
+    SOLO, DUET, TRIO;
+    public int numberOfMusicians() {
+        return ordinal() + 1;  // 脆弱！
+    }
+}</code></pre>
+              <h4>正确做法：使用实例属性</h4>
+<pre><code>public enum Ensemble {
+    SOLO(1), DUET(2), TRIO(3);
+    private final int numberOfMusicians;
+    Ensemble(int size) { this.numberOfMusicians = size; }
+    public int numberOfMusicians() { return numberOfMusicians; }
+}</code></pre>
+              <h4>ordinal 的用途</h4>
+              <p>API 设计时特意说明：<code>ordinal()</code> 是为基于枚举的通用数据结构（如 <code>EnumSet</code> 和 <code>EnumMap</code>）设计的。除非你在编写这样的结构，否则最好避免使用 ordinal()。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 36 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-36">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 36</span>
+            <span class="card-chapter-tag">枚举与注解</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么 EnumSet 替代位属性（bit field）？</div>
+            <div class="card-question-hint">
+              位属性（用 int 的不同位表示不同标志）在以前很常见。为什么 EnumSet 是更好的选择？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">EnumSet</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>位属性的问题</h4>
+              <ul>
+                <li>打印输出时难以理解——只是一个数字。</li>
+                <li>遍历所有元素需要手动移位。</li>
+                <li>类型不安全——不同枚举的位属性无法区分。</li>
+              </ul>
+              <h4>EnumSet 的优势</h4>
+              <ol>
+                <li><strong>类型安全</strong>——是 Set 接口的实现。</li>
+                <li><strong>高性能</strong>——内部用单个 long 表示（如果枚举 ≤64 个），性能与位属性相当。</li>
+                <li><strong>丰富的 Set 操作</strong>——removeAll、retainAll、containsAll 等。</li>
+                <li><strong>可读性好</strong>——打印输出就是集合内容。</li>
+                <li><strong>可遍历</strong>——可以直接迭代。</li>
+              </ol>
+<pre><code>// 位属性（旧方式）
+public static final int STYLE_BOLD = 1 &lt;&lt; 0;
+public static final int STYLE_ITALIC = 1 &lt;&lt; 1;
+text.applyStyles(STYLE_BOLD | STYLE_ITALIC);
+
+// EnumSet（新方式）
+text.applyStyles(EnumSet.of(Style.BOLD, Style.ITALIC));</code></pre>
+              <p>结论：每当需要使用枚举元素的集合时，都应该优先使用 EnumSet，而不是位属性。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 37 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-37">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 37</span>
+            <span class="card-chapter-tag">枚举与注解</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么 EnumMap 替代序数索引（ordinal indexing）？</div>
+            <div class="card-question-hint">
+              有时候会看到用 <code>ordinal()</code> 作为数组索引来索引枚举值。这有什么问题？EnumMap 如何解决？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">EnumMap</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>使用 ordinal 做数组索引的问题</h4>
+              <ul>
+                <li><strong>类型不安全</strong>——数组不知道索引代表什么，编译器无法检查正确性。</li>
+                <li><strong>需要手动处理偏移</strong>——ordinal 从 0 开始，如果想从 1 开始要做偏移转换。</li>
+                <li><strong>脆弱</strong>——如果枚举常量顺序变化或数量变化，数组可能越界或错位。</li>
+                <li><strong>代码不优雅</strong>——到处都是强制类型转换。</li>
+              </ul>
+              <h4>EnumMap 的优势</h4>
+              <ol>
+                <li><strong>类型安全</strong>——键是枚举类型，Map 接口保证正确性。</li>
+                <li><strong>高性能</strong>——内部使用数组实现，性能与数组相当。</li>
+                <li><strong>健壮</strong>——不需要担心数组大小、索引越界。</li>
+                <li><strong>代码清晰</strong>——语义明确。</li>
+              </ol>
+<pre><code>// 用 ordinal 索引数组（不好）
+Plant[] plantsByLifeCycle = new Plant[LifeCycle.values().length];
+
+// 用 EnumMap（好）
+Map&lt;LifeCycle, List&lt;Plant&gt;&gt; plantsByLifeCycle =
+    new EnumMap&lt;&gt;(LifeCycle.class);
+for (LifeCycle lc : LifeCycle.values())
+    plantsByLifeCycle.put(lc, new ArrayList&lt;&gt;());</code></pre>
+              <p>经验法则：最好不要用 ordinal() 来索引数组，用 EnumMap 替代。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 38 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-38">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 38</span>
+            <span class="card-chapter-tag">枚举与注解</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">如何用接口模拟可扩展的枚举？枚举为什么不能被继承？</div>
+            <div class="card-question-hint">
+              枚举类型不能被子类化——这是设计决定。但有时你需要"扩展"枚举。如何用接口来模拟？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">可扩展枚举</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么枚举不能继承</h4>
+              <p>枚举扩展是一个糟糕的想法——子集和超集的关系会很乱。所以 Java 设计者决定不支持枚举继承。</p>
+              <h4>模拟方法：接口 + 枚举实现</h4>
+              <p>定义一个接口描述操作，然后让基础枚举和扩展枚举都实现这个接口。</p>
+<pre><code>public interface Operation {
+    double apply(double x, double y);
+}
+
+// 基础枚举
+public enum BasicOperation implements Operation {
+    PLUS("+") { public double apply(...) { ... } },
+    MINUS("-") { public double apply(...) { ... } };
+    ...
+}
+
+// 扩展枚举
+public enum ExtendedOperation implements Operation {
+    EXP("^") { public double apply(...) { ... } },
+    REMAINDER("%") { public double apply(...) { ... } };
+    ...
+}</code></pre>
+              <h4>如何使用扩展</h4>
+              <p>在需要 Operation 类型的地方，可以传入任何实现该接口的枚举实例。如果需要传入"一组扩展后的枚举"，可以使用有限制的类型参数：</p>
+<pre><code>public static &lt;T extends Enum&lt;T&gt; &amp; Operation&gt; void
+    test(Class&lt;T&gt; opSet) {
+    for (T op : opSet.getEnumConstants())
+        ...
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 39 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-39">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 39</span>
+            <span class="card-chapter-tag">枚举与注解</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么注解优于命名模式（naming pattern）？</div>
+            <div class="card-question-hint">
+              在 JUnit 早期版本中，测试方法必须以 test 开头——这就是命名模式。注解类型如何更好地解决这个问题？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">注解</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>命名模式的问题</h4>
+              <ol>
+                <li><strong>拼写错误</strong>——方法名拼写错了（如 <code>tstSomething</code>）不会报错，测试只是被静默跳过。</li>
+                <li><strong>无法保证只用于正确的程序元素</strong>——可以命名一个类叫 <code>TestSomething</code>，但工具不会执行它。</li>
+                <li><strong>没有参数化能力</strong>——无法表示"应该抛出某个特定异常"等复杂语义。</li>
+                <li><strong>值不能携带元数据</strong>——只能从名字推断含义。</li>
+              </ol>
+              <h4>注解的优势</h4>
+              <ol>
+                <li><strong>编译器检查</strong>——拼写错误直接报错。</li>
+                <li><strong>@Target 限制使用范围</strong>——只能用于方法、类等指定位置。</li>
+                <li><strong>参数化</strong>——可以带参数，表达丰富语义（如期望的异常类型、超时时长）。</li>
+                <li><strong>可组合</strong>——多个注解可以叠加。</li>
+              </ol>
+              <h4>特殊注解类型</h4>
+              <ul>
+                <li><strong>标记注解</strong>（marker annotation）——没有参数，只是标记（如 <code>@Test</code>）。</li>
+                <li><strong>元注解</strong>（meta-annotation）——作用于注解的注解，如 <code>@Retention</code>、<code>@Target</code>、<code>@Repeatable</code>。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 40 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-40">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 40</span>
+            <span class="card-chapter-tag">枚举与注解</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么应该始终使用 @Override 注解？</div>
+            <div class="card-question-hint">
+              一个看似简单的习惯，但能防止一类常见且难以发现的 bug。是什么 bug？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">@Override</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>防止"看似重写实则重载"的 bug</h4>
+              <p>当你想重写父类方法但不小心参数写错了（或返回类型错了、方法名拼错了），编译器不会报错——因为你以为在重写，实际上只是定义了一个新方法（重载）。这是一个静默的 bug。</p>
+              <h4>@Override 的保护</h4>
+              <p>如果你加了 <code>@Override</code> 注解但方法并没有真正重写父类方法，编译器会报错。这样你在编译时就能发现问题。</p>
+              <h4>应该在哪里使用</h4>
+              <ul>
+                <li>在你想要重写父类或接口中方法声明的<strong>每个方法</strong>上都使用。</li>
+                <li>无论是重写具体类的方法、抽象类的方法、还是接口的方法，都应该使用。</li>
+                <li>现代 IDE 可以自动添加，但需要养成习惯。</li>
+              </ul>
+              <h4>一个例外</h4>
+              <p>在<strong>具体类</strong>中重写<strong>抽象方法</strong>时，虽然可以不加（编译器已经会检查），但加了也无害且能保持一致性。</p>
+              <p>简单的习惯，巨大的价值——几秒钟的输入，可能省下几小时的调试。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 41 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-41">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 41</span>
+            <span class="card-chapter-tag">枚举与注解</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">标记接口（marker interface）与标记注解各有什么优势？何时用哪个？</div>
+            <div class="card-question-hint">
+              标记接口（如 Serializable）和标记注解（如 @Override）都用于标记类/方法。它们的区别和适用场景？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">标记接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>标记接口的优势</h4>
+              <ol>
+                <li><strong>定义类型</strong>——标记接口是一种类型，由其实例构成。可以在编译时检测错误（例如方法参数限定为 <code>Serializable</code>，传错类型编译不通过）。</li>
+                <li><strong>更精确的目标</strong>——接口只能标记类/接口，可以精确地说"某个类的所有子类都实现了这个标记"。</li>
+              </ol>
+              <h4>标记注解的优势</h4>
+              <ol>
+                <li><strong>可以加参数</strong>——可以携带更多元数据（如 <code>@Test(timeout=100)</code>）。</li>
+                <li><strong>可以应用于更广泛的元素</strong>——方法、字段、变量、包等都可以用注解标记。</li>
+                <li><strong>是注解框架的一部分</strong>——可以与其他注解一起使用，形成框架。</li>
+              </ol>
+              <h4>选择原则</h4>
+              <ul>
+                <li>如果标记是用于<strong>类和接口</strong>，且你希望能够编写只接受该标记类型的方法——用<strong>标记接口</strong>。这让你可以利用编译时类型检查。</li>
+                <li>如果标记是用于<strong>类和接口以外的程序元素</strong>（方法、字段等），或者需要携带参数——用<strong>标记注解</strong>。</li>
+              </ul>
+              <p>Java 中 <code>Serializable</code> 是标记接口的经典例子，<code>@Override</code> 是标记注解的经典例子。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 第7章 Lambda与Stream (Item 42-48) -->
+<!-- ============================================================ -->
+<section class="card-section all ch7">
+  <div class="section-title">第 7 章 · Lambda 与 Stream</div>
+  <div class="section-desc">Java 8 引入的函数式编程风格：lambda、方法引用、Stream API 的最佳实践与陷阱。</div>
+  <div class="card-grid">
+
+    <!-- Item 42 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-42">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 42</span>
+            <span class="card-chapter-tag">Lambda 与 Stream</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么 lambda 表达式优于匿名类？</div>
+            <div class="card-question-hint">
+              Java 8 之前，创建小的函数对象通常用匿名类。lambda 带来了什么改变？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">Lambda</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>匿名类的问题</h4>
+              <ul>
+                <li>模板代码太多——即使是一个只有一行方法的类，也要写一大段代码。</li>
+                <li>可读性差——样板代码掩盖了真正的逻辑。</li>
+                <li>创建实例有开销。</li>
+              </ul>
+              <h4>Lambda 的优势</h4>
+              <ol>
+                <li><strong>简洁</strong>——省略了类定义、方法声明等一切冗余，只保留核心逻辑。</li>
+                <li><strong>类型推导</strong>——编译器可以从上下文（函数式接口、参数类型）推导出 lambda 的类型，代码更干净。</li>
+                <li><strong>函数式编程</strong>——开启了函数式编程风格，配合 Stream API 表达能力更强。</li>
+              </ol>
+<pre><code>// 匿名类
+Collections.sort(words, new Comparator&lt;String&gt;() {
+    public int compare(String s1, String s2) {
+        return Integer.compare(s1.length(), s2.length());
+    }
+});
+
+// Lambda
+Collections.sort(words,
+    (s1, s2) -&gt; Integer.compare(s1.length(), s2.length()));
+
+// 更简洁：比较器构造方法
+Collections.sort(words,
+    Comparator.comparingInt(String::length));</code></pre>
+              <h4>注意</h4>
+              <ul>
+                <li>Lambda 没有名称和文档——如果计算不够自描述或太长，就不应该用 lambda。</li>
+                <li>不要在 lambda 中使用 <code>this</code>——它指的是外围实例，而不是 lambda 本身。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 43 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-43">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 43</span>
+            <span class="card-chapter-tag">Lambda 与 Stream</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么方法引用（method reference）优于 lambda 表达式？</div>
+            <div class="card-question-hint">
+              Lambda 很简洁，但有时方法引用更简洁更清晰。有哪几种方法引用？分别如何使用？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">方法引用</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>优势</h4>
+              <ul>
+                <li>比 lambda 更简洁、更清晰。</li>
+                <li>方法名就是文档——一眼就能看出意图。</li>
+                <li>当 lambda 变得复杂时，替换成命名方法 + 方法引用是提高可读性的好方法。</li>
+              </ul>
+              <h4>五种方法引用类型</h4>
+              <ol>
+                <li><strong>静态方法</strong>：<code>Integer::parseInt</code> → <code>str -&gt; Integer.parseInt(str)</code></li>
+                <li><strong>实例方法（绑定接收者）</strong>：<code>str::length</code> → <code>() -&gt; str.length()</code></li>
+                <li><strong>实例方法（未绑定接收者）</strong>：<code>String::length</code> → <code>str -&gt; str.length()</code></li>
+                <li><strong>类构造方法</strong>：<code>TreeMap&lt;K,V&gt;::new</code> → <code>() -&gt; new TreeMap&lt;K,V&gt;()</code></li>
+                <li><strong>数组构造方法</strong>：<code>int[]::new</code> → <code>len -&gt; new int[len]</code></li>
+              </ol>
+              <h4>何时选择哪个</h4>
+              <p>通常方法引用更短更清晰，优先选择。但如果 lambda 更短更清晰（例如方法名很长或需要复杂的前置/后置处理），就坚持用 lambda。</p>
+              <p>经验法则：如果方法引用更短更清晰，就用方法引用；否则用 lambda。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 44 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-44">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 44</span>
+            <span class="card-chapter-tag">Lambda 与 Stream</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么应该优先使用标准的函数式接口？</div>
+            <div class="card-question-hint">
+              Java 8 在 <code>java.util.function</code> 包中提供了 43 个标准函数式接口。为什么不自己写？有哪些最重要的接口？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">函数式接口</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么用标准接口</h4>
+              <ol>
+                <li><strong>易于理解</strong>——大家都熟悉这些标准接口。</li>
+                <li><strong>互操作性</strong>——使用相同接口的代码可以互相协作。</li>
+                <li><strong>丰富的默认方法</strong>——比如 <code>Function.andThen()</code>、<code>Predicate.and()</code> 等。</li>
+              </ol>
+              <h4>六大基本函数式接口</h4>
+              <table style="font-size:12px;width:100%;border-collapse:collapse;">
+                <tr style="background:#dde5ef;"><th style="padding:4px;text-align:left;">接口</th><th style="padding:4px;text-align:left;">签名</th><th style="padding:4px;text-align:left;">例子</th></tr>
+                <tr><td style="padding:4px;"><code>UnaryOperator&lt;T&gt;</code></td><td style="padding:4px;"><code>T apply(T t)</code></td><td style="padding:4px;">String::toLowerCase</td></tr>
+                <tr><td style="padding:4px;"><code>BinaryOperator&lt;T&gt;</code></td><td style="padding:4px;"><code>T apply(T t1, T t2)</code></td><td style="padding:4px;">BigInteger::add</td></tr>
+                <tr><td style="padding:4px;"><code>Predicate&lt;T&gt;</code></td><td style="padding:4px;"><code>boolean test(T t)</code></td><td style="padding:4px;">Collection::isEmpty</td></tr>
+                <tr><td style="padding:4px;"><code>Function&lt;T,R&gt;</code></td><td style="padding:4px;"><code>R apply(T t)</code></td><td style="padding:4px;">Arrays::asList</td></tr>
+                <tr><td style="padding:4px;"><code>Supplier&lt;T&gt;</code></td><td style="padding:4px;"><code>T get()</code></td><td style="padding:4px;">Instant::now</td></tr>
+                <tr><td style="padding:4px;"><code>Consumer&lt;T&gt;</code></td><td style="padding:4px;"><code>void accept(T t)</code></td><td style="padding:4px;">System.out::println</td></tr>
+              </table>
+              <h4>何时编写自己的函数式接口</h4>
+              <p>如果标准接口无法满足（需要特殊命名约定、有重要的契约/默认方法），才自己写。例如 <code>Comparator&lt;T&gt;</code> 虽然结构上就是 <code>ToIntBiFunction&lt;T,T&gt;</code>，但它有自己的语义约定和丰富的默认方法，所以是值得的。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 45 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-45">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 45</span>
+            <span class="card-chapter-tag">Lambda 与 Stream</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要"明智审慎地使用 Stream"？Stream 有什么陷阱？</div>
+            <div class="card-question-hint">
+              Stream API 很强大，但过度使用或不当使用会让代码难以阅读和维护。什么情况下不应该用 Stream？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">Stream 慎用</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>Stream 的价值</h4>
+              <p>Stream 提供了声明式编程风格，可以简洁地表达复杂的数据转换，适合序列计算、过滤、映射、归约等操作。</p>
+              <h4>主要陷阱</h4>
+              <ol>
+                <li><strong>可读性下降</strong>——过度使用 Stream（特别是长 pipeline）会让代码变得晦涩难懂。没有显式的变量名和中间步骤。</li>
+                <li><strong>难以调试</strong>——Stream pipeline 中的异常堆栈信息很难追踪。</li>
+                <li><strong>不适合需要局部变量的场景</strong>——Stream 是无状态的 pipeline，如果计算需要在多步中读写局部变量，就很难用 Stream 表达。</li>
+                <li><strong>滥用 peek 等方法</strong>——在 Stream 中做副作用操作是反模式。</li>
+                <li><strong>无限流需要谨慎处理</strong>——可能导致程序挂起。</li>
+              </ol>
+              <h4>最佳实践</h4>
+              <ul>
+                <li>使用<strong>有意义的方法名</strong>来提取复杂的 stream 操作，保持 pipeline 简洁。</li>
+                <li>Stream 和迭代式代码各有优势，选择<strong>最清晰、最简洁</strong>的方式，不必强行用 Stream。</li>
+                <li>如果计算需要修改局部变量或使用 try-catch，迭代方式可能更好。</li>
+                <li>用方法引用替代 lambda 来提高可读性。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 46 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-46">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 46</span>
+            <span class="card-chapter-tag">Lambda 与 Stream</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么 Stream 中应优先使用无副作用的函数？</div>
+            <div class="card-question-hint">
+              Stream 的本质是函数式的。什么是"有副作用的函数"？为什么在 Stream 中使用它们是错误的？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">无副作用函数</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>问题</h4>
+              <p>有些人把 Stream 当作"增强的 for-each 循环"，在 forEach 或 peek 中做各种副作用操作（修改变量、写外部数据结构）。这完全背离了 Stream 的设计初衷。</p>
+              <h4>为什么不好</h4>
+              <ol>
+                <li><strong>失去并行化能力</strong>——有副作用的函数无法安全地并行执行。</li>
+                <li><strong>可读性差</strong>——Stream pipeline 的价值在于声明式、纯函数的转换。夹杂副作用让代码意图不清晰。</li>
+                <li><strong>难以推理</strong>——纯函数的结果只取决于输入，有副作用则依赖外部状态。</li>
+              </ol>
+              <h4>正确做法</h4>
+              <p>Stream 的中间操作（map、filter、flatMap 等）应该是<strong>无副作用的纯函数</strong>。结果通过收集器（Collector）聚合，而不是通过副作用累积。</p>
+              <p>收集器（<code>Collectors</code>）是 Stream 的最佳搭档：</p>
+              <ul>
+                <li><code>toList()</code>、<code>toSet()</code>、<code>toMap()</code> — 收集到集合</li>
+                <li><code>groupingBy()</code> — 分组</li>
+                <li><code>joining()</code> — 字符串拼接</li>
+                <li><code>counting()</code>、<code>summingInt()</code> — 统计</li>
+                <li><code>maxBy()</code>、<code>minBy()</code> — 最大/最小</li>
+                <li><code>partitioningBy()</code> — 分区（true/false）</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 47 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-47">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 47</span>
+            <span class="card-chapter-tag">Lambda 与 Stream</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么方法返回类型应优先选择 Collection 而不是 Stream？</div>
+            <div class="card-question-hint">
+              既然 Stream 这么强大，为什么不把所有返回集合的方法都改成返回 Stream？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">Collection vs Stream</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>问题</h4>
+              <p>Stream 只能被消费一次——如果你试图遍历两次会抛出异常。如果方法返回 Stream，客户端可能想做简单的 for-each 遍历，却不得不处理一次性迭代的限制。</p>
+              <h4>为什么 Collection 通常更好</h4>
+              <ol>
+                <li><strong>双重用途</strong>——Collection 既可以用于 for-each 遍历，也可以通过 <code>stream()</code> 方法转为 Stream。</li>
+                <li><strong>可重复遍历</strong>——Collection 可以反复迭代。</li>
+                <li><strong>丰富的 API</strong>——size、contains、isEmpty 等方法立即可用。</li>
+                <li><strong>互操作性好</strong>——更多代码接受 Collection 参数而不是 Stream 参数。</li>
+              </ol>
+              <h4>什么时候返回 Stream 是合理的</h4>
+              <ul>
+                <li>返回的是<strong>大量数据</strong>且只需要 Stream 处理。</li>
+                <li>返回的是<strong>无限</strong>或延迟计算的数据。</li>
+                <li>方法本身就是 Stream pipeline 的一部分（如中间操作）。</li>
+              </ul>
+              <h4>什么时候返回 Iterable</h4>
+              <p>当集合可能很大但客户端只需要遍历（不需要 size() 等方法）时，Iterable 是一个轻量选择。但大多数情况下 Collection 更好。</p>
+              <p>简而言之：编写公共 API 时，优先返回 Collection 而不是 Stream——给客户端最大的灵活性。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 48 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-48">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 48</span>
+            <span class="card-chapter-tag">Lambda 与 Stream</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要谨慎使用 Stream 并行？</div>
+            <div class="card-question-hint">
+              Stream 有个 <code>parallel()</code> 方法，调用后似乎就能免费获得并行性能。但实际中常常适得其反。为什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">流并行</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>并行不是免费的性能提升</h4>
+              <p>并行化有开销：任务划分、线程调度、结果合并。如果数据量不大或计算不密集，并行化的开销可能超过收益。</p>
+              <h4>并行效果好的条件</h4>
+              <ol>
+                <li><strong>数据量大</strong>——数据元素足够多，每个元素的计算开销足够大。</li>
+                <li><strong>数据源可有效拆分</strong>——<code>ArrayList</code>、数组、<code>IntStream.range</code> 等效果好；<code>LinkedList</code>、<code>Stream.iterate</code> 效果差。</li>
+                <li><strong>终端操作适合并行</strong>——reduce、collect 等有可合并的结果；forEach 等有副作用的不适合。</li>
+                <li><strong>Q 因素高</strong>——即每个元素的计算成本高。</li>
+              </ol>
+              <h4>常见陷阱</h4>
+              <ul>
+                <li><strong>性能下降</strong>——开销超过收益，特别是小数据集。</li>
+                <li><strong>结果错误</strong>——如果使用了有状态的中间操作（如 distinct、sorted、limit）或有副作用的函数。</li>
+                <li><strong>死锁</strong>——共享公共的 ForkJoinPool。</li>
+              </ul>
+              <h4>原则</h4>
+              <p>不要为了"可能更快"就随便加 <code>parallel()</code>。只有在有性能问题、数据足够大、计算足够重、并且经过<strong>基准测试验证</strong>的情况下才使用并行流。大多数情况下，顺序流是正确且高效的选择。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 第8章 方法 (Item 49-56) -->
+<!-- ============================================================ -->
+<section class="card-section all ch8">
+  <div class="section-title">第 8 章 · 方法</div>
+  <div class="section-desc">参数校验、防御性拷贝、方法签名设计、重载、可变参数、返回值与文档注释。</div>
+  <div class="card-grid">
+
+    <!-- Item 49 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-49">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 49</span>
+            <span class="card-chapter-tag">方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要检查参数有效性？应该在什么时候检查？</div>
+            <div class="card-question-hint">
+              如果方法接收到无效参数会发生什么？为什么应该在方法执行前就检查出来？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">参数校验</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么检查</h4>
+              <ol>
+                <li><strong>及早发现错误</strong>——错误越早被发现，越容易定位和修复。如果等到方法执行到一半才出错，可能已经造成了部分状态变更。</li>
+                <li><strong>保持失败原子性</strong>（Item 76）——方法执行前参数就被验证通过，不会在失败后留下不一致状态。</li>
+                <li><strong>文档与实现一致</strong>——如果文档说参数不能为 null 但代码没检查，实际行为就与文档不符。</li>
+              </ol>
+              <h4>如何检查</h4>
+              <ul>
+                <li>使用 <code>Objects.requireNonNull()</code>（Java 7+）检查非 null 参数。</li>
+                <li>对于范围检查，使用 <code>Objects.checkFromIndexSize()</code> 等工具方法（Java 9+）。</li>
+                <li>使用 <code>assert</code> 检查私有方法的参数（仅在调试时启用）。</li>
+                <li>在 Javadoc 中用 <code>@throws</code> 标签记录违反约束时抛出的异常。</li>
+              </ul>
+              <h4>例外：计算过程中自然会检测的</h4>
+              <p>有些参数错误会在计算过程中自然被检测到（比如传给一个会自己检查的方法）。但即便如此，主动检查通常也是更好的做法，因为可以提供更有意义的错误信息。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 50 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-50">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 50</span>
+            <span class="card-chapter-tag">方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">什么是防御性拷贝（defensive copy）？什么时候需要做？</div>
+            <div class="card-question-hint">
+              即使在安全的 Java 语言中，如果不付出努力，类也不能与其他类隔离。为什么？请举例说明。
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">防御性拷贝</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>问题场景</h4>
+              <p>一个看似不可变的时间段类：</p>
+<pre><code>public final class Period {
+    private final Date start;
+    private final Date end;
+    public Period(Date start, Date end) {
+        if (start.after(end)) throw new IllegalArgumentException();
+        this.start = start;
+        this.end = end;
+    }
+    public Date start() { return start; }
+    public Date end() { return end; }
+}</code></pre>
+              <p>攻击方式 1：客户端修改传入的 Date 对象。</p>
+              <p>攻击方式 2：客户端通过 getter 修改内部的 Date 对象。</p>
+              <h4>防御方法</h4>
+              <ol>
+                <li><strong>构造方法中做防御性拷贝</strong>：
+<pre>this.start = new Date(start.getTime());</pre>
+                注意：先拷贝再校验（防止在拷贝和校验之间被并发修改）。
+                </li>
+                <li><strong>getter 返回拷贝而非原引用</strong>：
+<pre>public Date start() { return new Date(start.getTime()); }</pre>
+                </li>
+              </ol>
+              <h4>什么时候需要</h4>
+              <ul>
+                <li>类持有客户端可能修改的可变组件时（如 Date、数组）。</li>
+                <li>特别是在不可变类中——引用了可变对象就必须保护好。</li>
+              </ul>
+              <h4>提示</h4>
+              <p>Java 8 之后应该用 <code>Instant</code> 或 <code>LocalDate</code> 替代 <code>Date</code>，因为它们是不可变的，就不需要防御性拷贝了。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 51 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-51">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 51</span>
+            <span class="card-chapter-tag">方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">仔细设计方法签名——有哪些具体建议？</div>
+            <div class="card-question-hint">
+              方法签名是 API 的门面。好的签名让方法易于使用，不好的签名让人困惑。有哪些最佳实践？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">方法签名</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>命名</h4>
+              <ul>
+                <li>方法名称始终遵循<strong>标准命名约定</strong>（Item 68）。</li>
+                <li>名称应该是<strong>可理解的</strong>，并且与相同风格的名称保持一致。</li>
+                <li>不要选择过长的方法名——缩写只在约定俗成时使用。</li>
+              </ul>
+              <h4>参数列表</h4>
+              <ul>
+                <li><strong>参数不要太多</strong>——4 个或更少比较合适。同类型参数连续出现会容易混淆顺序。</li>
+                <li>减少参数的技术：
+                  <ol>
+                    <li>把方法拆分成多个方法（每个方法只用部分参数）。</li>
+                    <li>创建辅助类保存参数（参数对象模式）。</li>
+                    <li>使用 Builder 模式（Item 2）。</li>
+                  </ol>
+                </li>
+                <li>优先使用<strong>接口而不是类</strong>作为参数类型（Item 64）。</li>
+                <li>优先使用<strong>基本类型而不是装箱基本类型</strong>（Item 61）。</li>
+              </ul>
+              <h4>返回值</h4>
+              <ul>
+                <li>返回零长度数组或集合而不是 null（Item 54）。</li>
+                <li>考虑返回 Optional（Item 55）。</li>
+              </ul>
+              <p>设计好的方法签名就像设计好的 API——要考虑易用性、可读性和一致性。一旦发布就很难改变，所以值得多花时间思考。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 52 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-52">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 52</span>
+            <span class="card-chapter-tag">方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要明智审慎地使用重载（overloading）？重载有什么陷阱？</div>
+            <div class="card-question-hint">
+              重载方法的选择是在编译时决定的，重写方法的选择是在运行时决定的。这个区别会导致什么意外？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">重载</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>核心问题：重载是静态选择的</h4>
+              <p>对于重载方法，调用哪个版本取决于<strong>编译时的参数类型</strong>，而不是运行时的实际类型。这与重写（override）正好相反。</p>
+              <p>例：</p>
+<pre><code>public static String classify(Set&lt;?&gt; s) { return "Set"; }
+public static String classify(List&lt;?&gt; l) { return "List"; }
+public static String classify(Collection&lt;?&gt; c) { return "Collection"; }
+
+// 意外的行为：
+Collection&lt;?&gt;[] collections = { Set.of(), List.of() };
+for (Collection&lt;?&gt; c : collections)
+    System.out.println(classify(c));
+// 全部打印 "Collection"！
+// 因为编译时类型是 Collection，运行时不参与重载选择</code></pre>
+              <h4>重写 vs 重载</h4>
+              <ul>
+                <li><strong>重写</strong>：运行时根据对象的实际类型选择方法。</li>
+                <li><strong>重载</strong>：编译时根据参数的声明类型选择方法。</li>
+              </ul>
+              <h4>建议</h4>
+              <ol>
+                <li><strong>避免歧义</strong>——不要重载相同数量参数的方法，尤其是参数类型可以互相转换的情况。</li>
+                <li>用<strong>不同的方法名</strong>替代重载（如 <code>writeInt</code>、<code>writeLong</code>）。</li>
+                <li>如果必须重载，确保重载方法的行为<strong>一致</strong>——不管调用哪个重载，结果应该一致（如 <code>String.valueOf</code> 对各种类型都返回合理的字符串）。</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 53 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-53">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 53</span>
+            <span class="card-chapter-tag">方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要明智审慎地使用可变参数（varargs）？</div>
+            <div class="card-question-hint">
+              可变参数方法（varargs）很灵活，但也有性能和类型安全方面的问题。最佳实践是什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">可变参数</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>可变参数的特点</h4>
+              <p>每次调用都会创建并初始化一个数组。如果参数数量不固定，这很方便，但有性能开销。</p>
+              <h4>性能优化技巧</h4>
+              <p>如果方法通常被调用时参数数量很少，可以提供多个重载版本：</p>
+<pre><code>public void foo() { }
+public void foo(int a1) { }
+public void foo(int a1, int a2) { }
+public void foo(int a1, int a2, int... rest) { }</code></pre>
+              <p>这样大多数调用（0、1、2 个参数）不需要创建数组，只有参数更多时才使用可变参数版本。EnumSet 就是这样做的。</p>
+              <h4>与泛型结合的风险</h4>
+              <p>泛型 + 可变参数 = 堆污染风险（Item 32）。只有在方法确实类型安全时才使用 <code>@SafeVarargs</code> 注解。</p>
+              <h4>使用建议</h4>
+              <ul>
+                <li>当方法确实需要接受可变数量的参数时才使用。</li>
+                <li>如果性能是关键考虑因素，考虑提供固定参数数量的重载。</li>
+                <li>与泛型一起使用时务必确保类型安全（Item 32）。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 54 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-54">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 54</span>
+            <span class="card-chapter-tag">方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么应该返回空的数组或集合，而不是返回 null？</div>
+            <div class="card-question-hint">
+              一个常见的错误习惯是："没有元素时返回 null 可以避免分配空数组/集合的开销。"为什么这是错误的？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">返回空集合</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>返回 null 的问题</h4>
+              <ol>
+                <li><strong>客户端必须处理 null</strong>——每次调用后都要做 null 检查，代码臃肿。忘记检查就会导致 NullPointerException。</li>
+                <li><strong>降低可读性</strong>——客户端代码充斥着 if-null 检查。</li>
+                <li><strong>性能收益可忽略</strong>——空集合/数组的分配开销极小。现代 JVM 可以优化掉这些分配。</li>
+              </ol>
+              <h4>更好的做法</h4>
+              <ul>
+                <li>返回空集合：<code>Collections.emptyList()</code>、<code>Collections.emptySet()</code>、<code>Collections.emptyMap()</code>——这些都是单例，没有分配开销。</li>
+                <li>返回空数组：可以定义一个 static final 的零长度数组常量，重复使用。</li>
+              </ul>
+              <pre><code>// 正确示例
+public List&lt;Cheese&gt; getCheeses() {
+    return cheeses.isEmpty()
+        ? Collections.emptyList()
+        : new ArrayList&lt;&gt;(cheeses);
+}</code></pre>
+              <h4>关于性能的说明</h4>
+              <p>有人担心每次都返回新的空集合会有性能问题。其实 <code>Collections.emptyList()</code> 返回的是同一个不可变实例，完全没有分配开销。空数组也可以缓存为静态常量。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 55 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-55">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 55</span>
+            <span class="card-chapter-tag">方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">什么时候应该返回 Optional&lt;T&gt;？与返回 null 或抛出异常相比有什么优势？</div>
+            <div class="card-question-hint">
+              Java 8 引入了 Optional 类。它代表"可能有值也可能没有值"的结果。适用场景和不适用场景分别是什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">Optional</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>Optional 的优势</h4>
+              <ol>
+                <li><strong>明确表示可能没有结果</strong>——方法签名就说明了"可能返回空"，调用者必须处理。</li>
+                <li><strong>强制处理</strong>——不像 null 那样容易被忽略，必须调用 <code>get()</code>、<code>orElse()</code>、<code>orElseThrow()</code> 等方法才能获取值。</li>
+                <li><strong>流式 API</strong>——可以链式调用：<code>optional.map(...).filter(...).orElse(...)</code>。</li>
+              </ol>
+              <h4>何时使用</h4>
+              <ul>
+                <li>方法可能无法返回结果时（如查找失败）。</li>
+                <li>作为返回值类型（不要用作字段、集合元素、方法参数等）。</li>
+              </ul>
+              <h4>何时不使用</h4>
+              <ul>
+                <li><strong>集合类型不要用 Optional 包装</strong>——空集合已经能表达"没有元素"（Item 54）。</li>
+                <li>基本类型有专门的 Optional：<code>OptionalInt</code>、<code>OptionalLong</code>、<code>OptionalDouble</code>，比 <code>Optional&lt;Integer&gt;</code> 更好。</li>
+                <li>不要把 Optional 用作 map 的键、集合元素、类字段或方法参数。</li>
+              </ul>
+              <h4>常见用法</h4>
+              <ul>
+                <li><code>optional.orElse(defaultValue)</code>——提供默认值。</li>
+                <li><code>optional.orElseThrow(exceptionSupplier)</code>——没有值时抛异常。</li>
+                <li><code>optional.ifPresent(consumer)</code>——有值才执行。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 56 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-56">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 56</span>
+            <span class="card-chapter-tag">方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要为所有已公开的 API 元素编写文档注释？</div>
+            <div class="card-question-hint">
+              Javadoc 是 Java API 文档的标准。好的文档注释应该包含哪些内容？有什么约定？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">文档注释</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么重要</h4>
+              <p>API 文档是使用 API 的人看到的第一件东西。好的文档让 API 易于正确使用，不好的文档导致误用和 bug。</p>
+              <h4>文档注释应包含的内容</h4>
+              <ul>
+                <li><strong>概要描述</strong>——第一句话是概要，简明描述方法功能。</li>
+                <li><code>@param</code>——每个参数的含义和约束。</li>
+                <li><code>@return</code>——返回值说明（如果非 void）。</li>
+                <li><code>@throws</code>——可能抛出的异常及其条件。</li>
+                <li><code>@implSpec</code>——实现说明（如果子类需要知道实现细节）。</li>
+              </ul>
+              <h4>重要约定</h4>
+              <ol>
+                <li><strong>每个公开的 API 元素都应该有文档注释</strong>——包括类、接口、方法、字段。</li>
+                <li>文档注释应该描述方法做什么，而不是怎么做的。</li>
+                <li>必须列出所有<strong>前置条件</strong>和<strong>后置条件</strong>。</li>
+                <li>对于泛型类型或方法，必须在文档中说明每个类型参数。</li>
+                <li>对于枚举类型，必须为每个常量写文档。</li>
+                <li>对于注解类型，必须为每个成员写文档。</li>
+                <li>线程安全性应该在文档中说明（Item 82）。</li>
+              </ol>
+              <p>编写文档注释的过程本身也能帮助你发现 API 设计的问题——如果很难描述清楚，可能设计本身就有问题。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 第9章 通用编程 (Item 57-68) -->
+<!-- ============================================================ -->
+<section class="card-section all ch9">
+  <div class="section-title">第 9 章 · 通用编程</div>
+  <div class="section-desc">局部变量、循环、库、基本类型、字符串、反射、优化、命名约定等通用编程实践。</div>
+  <div class="card-grid">
+
+    <!-- Item 57 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-57">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 57</span>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要最小化局部变量的作用域？具体怎么做？</div>
+            <div class="card-question-hint">
+              这条规则听起来很基础，但非常重要。为什么变量作用域越小越好？有哪些实践技巧？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">局部变量作用域</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么最小化作用域</h4>
+              <ol>
+                <li><strong>可读性和可维护性</strong>——变量在哪里声明、用来做什么一目了然。</li>
+                <li><strong>减少错误</strong>——变量不会在不需要的地方被意外修改。</li>
+                <li><strong>避免命名冲突</strong>——作用域越小，变量名冲突的可能性越低。</li>
+              </ol>
+              <h4>实践技巧</h4>
+              <ul>
+                <li><strong>在第一次使用变量的地方声明它</strong>——不要在方法开头就声明所有变量。</li>
+                <li><strong>几乎所有局部变量都应该初始化</strong>——声明的同时给出初始值。如果初始化依赖于条件判断，考虑用三元表达式或提取方法。</li>
+                <li><strong>for 循环优先于 while 循环</strong>——for 循环把循环变量限制在循环体内，循环结束后变量不可访问。而 while 循环的变量在循环外仍然可见。</li>
+                <li><strong>方法要小而专注</strong>——如果方法太大，变量作用域自然就大了。把方法拆小可以自然地减小变量作用域。</li>
+              </ul>
+              <h4>一个反模式</h4>
+              <p>"在方法顶部声明所有变量"——这是 C 语言时代的遗留习惯（早期 C 要求变量必须在块的开头声明）。Java 没有这个限制，应该就近声明。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 58 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-58">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 58</span>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么 for-each 循环优于传统 for 循环？</div>
+            <div class="card-question-hint">
+              Java 5 引入的增强 for 循环（for-each）有什么优势？有没有不适合使用的场景？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">for-each 循环</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>传统 for 循环的问题</h4>
+              <ul>
+                <li><strong>容易出错</strong>——迭代器/索引变量重复出现，容易搞混（尤其是嵌套循环中）。</li>
+                <li><strong>样板代码多</strong>——每次都要写迭代器或索引声明。</li>
+                <li><strong>越界风险</strong>——索引循环可能写错边界导致 ArrayIndexOutOfBoundsException。</li>
+              </ul>
+              <h4>for-each 的优势</h4>
+              <ol>
+                <li><strong>简洁清晰</strong>——一眼就能看出意图。</li>
+                <li><strong>没有迭代器/索引变量</strong>——不会搞混。</li>
+                <li><strong>对所有 Iterable 都适用</strong>——数组、集合、任何 Iterable。</li>
+                <li><strong>没有性能损失</strong>——编译器生成的代码与手写的基本一样。</li>
+              </ol>
+              <h4>不适合使用 for-each 的场景</h4>
+              <ul>
+                <li><strong>需要删除元素</strong>——需要迭代器的 remove() 方法。（Java 8+ 可以用 Collection.removeIf()）</li>
+                <li><strong>需要替换元素</strong>——需要在遍历中设置新值。</li>
+                <li><strong>需要并行迭代多个集合</strong>——需要显式控制迭代器。</li>
+              </ul>
+              <p>除此之外，优先使用 for-each。它让代码更简洁、更安全、更不易出错。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 59 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-59">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 59</span>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要了解并使用库（而不是自己写）？</div>
+            <div class="card-question-hint">
+              许多程序员喜欢自己实现功能。为什么这通常是个坏主意？举几个常见的例子。
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">使用库</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>使用标准库的优势</h4>
+              <ol>
+                <li><strong>不用重复造轮子</strong>——专家已经实现过了，质量更高。</li>
+                <li><strong>性能优秀</strong>——标准库经过大量优化，而且 JVM 还可以做特殊优化。</li>
+                <li><strong>经过充分测试</strong>——亿万人使用，bug 早已被发现和修复。</li>
+                <li><strong>维护成本低</strong>——库自己会更新，你不用管。</li>
+                <li><strong>代码更可读</strong>——使用标准 API 的代码，其他程序员一看就懂。</li>
+              </ol>
+              <h4>常见的"自己写"陷阱</h4>
+              <ul>
+                <li><strong>随机数生成</strong>——很多人自己写随机算法（如用 Random.nextInt() 取模），结果有偏差。应该用 <code>ThreadLocalRandom</code> 或 <code>SecureRandom</code>。</li>
+                <li><strong>字符串工具</strong>——自己判断空字符串，其实有 <code>String.isEmpty()</code>、<code>isBlank()</code>。</li>
+                <li><strong>集合操作</strong>——自己实现排序、查找，其实 <code>Collections</code> 和 <code>Arrays</code> 都有。</li>
+                <li><strong>日期时间</strong>——自己算日期，用 <code>java.time</code> 包吧。</li>
+              </ul>
+              <h4>建议</h4>
+              <p>在写代码之前，先想想标准库有没有现成的。熟悉 <code>java.lang</code>、<code>java.util</code>、<code>java.io</code>、<code>java.time</code> 等常用包的内容。每个主要版本都有新东西加入，持续学习。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 60 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-60">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 60</span>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么需要精确答案时要避免使用 float 和 double？</div>
+            <div class="card-question-hint">
+              浮点数在金融计算等场景下为什么不适用？应该用什么替代？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">float / double</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>问题：二进制浮点数的精度限制</h4>
+              <p><code>float</code> 和 <code>double</code> 是基于 IEEE 754 标准的二进制浮点数。它们不能精确表示 0.1 这样的十进制小数（就像十进制不能精确表示 1/3 一样）。</p>
+              <p>经典示例：</p>
+<pre><code>System.out.println(1.00 - 9 * 0.10);
+// 输出：0.09999999999999998</code></pre>
+              <h4>替代方案</h4>
+              <ol>
+                <li><strong>BigDecimal</strong>——精确的十进制运算。适合货币计算等需要精确结果的场景。缺点：性能较慢、代码稍繁琐。</li>
+                <li><strong>使用 int 或 long</strong>——如果小数位数固定（如 2 位小数表示金额），可以乘以 100 用整数计算。性能最好。</li>
+              </ol>
+              <h4>什么时候用 float/double</h4>
+              <p>科学计算、工程计算等对精度要求不高（但范围要求大）的场景。float 主要用于大型 float 数组以节省内存，否则优先用 double（因为 Java 对 double 优化更好）。</p>
+              <h4>总结</h4>
+              <p>货币计算、精确金额、会计系统——绝对不要用 float/double。选择 BigDecimal 或整数分/厘计算。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 61 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-61">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 61</span>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么基本数据类型优于包装类（boxed primitive）？</div>
+            <div class="card-question-hint">
+              每个基本类型都有对应的包装类（int → Integer 等）。它们有什么区别？为什么默认应该选择基本类型？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">基本类型 vs 包装类</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>主要区别</h4>
+              <ul>
+                <li><strong>基本类型</strong>（int, long, double 等）——直接存储值，速度快，占内存少，没有 null。</li>
+                <li><strong>包装类</strong>（Integer, Long, Double 等）——是对象，有引用开销，可以为 null，可用于泛型。</li>
+              </ul>
+              <h4>包装类的问题</h4>
+              <ol>
+                <li><strong>性能差</strong>——对象创建和 GC 开销，自动装箱/拆箱有运行时成本。</li>
+                <li><strong>NullPointerException 风险</strong>——自动拆箱时如果是 null 会抛 NPE，而且可能发生在很隐蔽的地方。</li>
+                <li><strong>== 比较的是引用而不是值</strong>——<code>Integer a = 128; Integer b = 128; a == b</code> 为 false（超出缓存范围）！</li>
+                <li><strong>内存占用大</strong>——一个 Integer 对象占的内存远大于一个 int。</li>
+              </ol>
+              <h4>什么时候必须用包装类</h4>
+              <ul>
+                <li>作为<strong>泛型类型参数</strong>——泛型不允许基本类型（如 <code>List&lt;Integer&gt;</code>）。</li>
+                <li>需要表示"无值"（null）的场景——但考虑用 <code>OptionalInt</code> 替代（Item 55）。</li>
+              </ul>
+              <h4>原则</h4>
+              <p>能用基本类型就用基本类型。只有在必须用对象的场合（泛型、null 值）才用包装类。自动装箱/拆箱虽然方便，但掩盖了两者的区别，要格外小心。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 62 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-62">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 62</span>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么当其他类型更合适时应避免使用字符串？</div>
+            <div class="card-question-hint">
+              字符串很灵活，所以有时会被滥用。哪些东西不应该用字符串表示？为什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">字符串滥用</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>字符串被滥用的常见场景</h4>
+              <ol>
+                <li><strong>代替枚举类型</strong>——用字符串常量表示枚举值。没有类型安全，拼写错误运行时才发现。用枚举类型（Item 34）。</li>
+                <li><strong>代替聚合类型</strong>——把多个字段拼成一个字符串传递。难以解析、容易出错、性能差。写一个小类或使用 record。</li>
+                <li><strong>代替能力表（capability）</strong>——用字符串作为钥匙/权限标识。无法进行安全检查，容易伪造。应该用不可伪造的对象引用。</li>
+              </ol>
+              <h4>为什么字符串不适合</h4>
+              <ul>
+                <li><strong>没有类型安全</strong>——任何字符串都可以传入。</li>
+                <li><strong>没有语义</strong>——"admin" 是角色名、用户名还是权限名？从类型上看不出来。</li>
+                <li><strong>解析成本高</strong>——从字符串中提取信息需要解析，既慢又容易错。</li>
+                <li><strong>无法利用编译期检查</strong>——拼写错误、格式错误都要到运行时才发现。</li>
+              </ul>
+              <h4>原则</h4>
+              <p>如果有更合适的数据类型，就不要用字符串。数值用数值类型，是/否用 boolean，枚举用枚举类型，复合数据用类。字符串只适合表示文本数据。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 63 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-63">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <card class="card-item-num">ITEM 63</card>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">字符串连接的性能陷阱是什么？正确做法是什么？</div>
+            <div class="card-question-hint">
+              用 + 运算符连接字符串有什么性能问题？在什么情况下才是问题？应该如何优化？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">字符串拼接</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>问题</h4>
+              <p>使用 <code>+</code> 运算符在循环中拼接字符串时，每次循环都会创建新的 StringBuilder 和新的 String 对象，时间复杂度是 O(n²)。当字符串很多时性能急剧下降。</p>
+<pre><code>// 慢！O(n²)
+String result = "";
+for (int i = 0; i &lt; numItems; i++) {
+    result += lineForItem(i);
+}</code></pre>
+              <h4>正确做法：使用 StringBuilder</h4>
+<pre><code>// 快！O(n)
+StringBuilder sb = new StringBuilder();
+for (int i = 0; i &lt; numItems; i++) {
+    sb.append(lineForItem(i));
+}
+String result = sb.toString();</code></pre>
+              <h4>注意事项</h4>
+              <ul>
+                <li><strong>只有在循环/大量拼接</strong>时才会有显著性能问题。简单的几个字符串用 <code>+</code> 拼接完全没问题，编译器会优化。</li>
+                <li>提前预估 StringBuilder 的容量（<code>new StringBuilder(capacity)</code>）可以避免多次扩容，进一步提升性能。</li>
+                <li>不要过早优化——先确定这里真的是性能瓶颈再优化。</li>
+              </ul>
+              <p>简单的经验法则：如果字符串拼接的数量不固定（特别是在循环中），就用 StringBuilder。如果只是固定几个字符串拼接，用 <code>+</code> 既清晰又足够快。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 64 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-64">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 64</span>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么应该通过接口引用对象？</div>
+            <div class="card-question-hint">
+              声明变量时，应该用接口类型还是实现类类型？比如应该写 <code>List&lt;String&gt; list = new ArrayList&lt;&gt;()</code> 还是 <code>ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;()</code>？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">接口引用</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么用接口类型</h4>
+              <ol>
+                <li><strong>灵活性</strong>——以后想换个实现类（比如从 ArrayList 换成 LinkedList），只需改构造方法那一行，其他代码完全不变。</li>
+                <li><strong>面向接口编程</strong>——这是面向对象设计的基本原则。依赖于抽象而不是具体实现。</li>
+                <li><strong>更好的 API</strong>——方法参数和返回值用接口类型，适用范围更广。</li>
+              </ol>
+              <pre><code>// 推荐：接口类型引用
+List&lt;String&gt; list = new ArrayList&lt;&gt;();
+
+// 不推荐：具体类引用
+ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();</code></pre>
+              <h4>什么时候必须用类类型</h4>
+              <ul>
+                <li>如果需要使用<strong>接口中没有的方法</strong>（例如 ArrayList 的 <code>ensureCapacity</code> 或 LinkedList 的 <code>addFirst</code>），那就必须用具体类。</li>
+                <li>但这种情况应该三思——是不是真的需要这些特殊方法？如果需要，说明你依赖了具体实现。</li>
+              </ul>
+              <h4>选择规则</h4>
+              <p>如果有合适的接口类型，就用接口类型声明变量、参数、方法返回值。只有当类本身提供了接口没有的额外功能且你需要它时，才用类引用。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 65 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-65">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 65</span>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么接口优于反射？反射有什么代价？</div>
+            <div class="card-question-hint">
+              <code>java.lang.reflect</code> 提供了反射能力。但反射应该谨慎使用。它的优缺点分别是什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">反射</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>反射的代价</h4>
+              <ol>
+                <li><strong>编译时类型检查失效</strong>——拼写错误、参数类型错误都要到运行时才发现。</li>
+                <li><strong>代码冗长丑陋</strong>——需要处理大量异常，代码可读性差。</li>
+                <li><strong>性能差</strong>——反射调用比普通方法调用慢得多（几十到几百倍）。</li>
+                <li><strong>安全限制</strong>——在安全管理器下可能无法使用。</li>
+              </ol>
+              <h4>反射的合理用途</h4>
+              <ul>
+                <li><strong>创建对象</strong>——根据类名动态创建实例（如插件系统、SPI）。但创建后仍应通过接口访问。</li>
+                <li><strong>框架和工具</strong>——如依赖注入框架、ORM 框架、测试框架等。</li>
+              </ul>
+              <h4>最佳实践</h4>
+              <p>对于大多数应用程序，正常情况下不应该使用反射。如果只是想动态创建对象，可以用以下模式：</p>
+              <ol>
+                <li>用反射创建实例（<code>Class.newInstance()</code> 或构造方法）。</li>
+                <li>将创建的对象通过其<strong>接口</strong>或超类类型来访问（Item 64）。</li>
+              </ol>
+              <p>这样只在创建时使用反射（一次性能开销），后续访问都是正常的方法调用，既灵活又高效。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 66 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-66">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 66</span>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要明智审慎地使用本地方法（native methods）？</div>
+            <div class="card-question-hint">
+              Java 本地接口（JNI）允许 Java 调用本地方法（C/C++ 编写）。但应该少用。为什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">本地方法</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>本地方法的缺点</h4>
+              <ol>
+                <li><strong>不安全</strong>——本地语言（C/C++）不受 Java 安全机制保护，可能出现内存泄漏、缓冲区溢出等问题。</li>
+                <li><strong>平台相关</strong>——本地代码需要为每个平台重新编译，丧失了 Java "一次编写到处运行"的优势。</li>
+                <li><strong>难以调试</strong>——本地代码的 bug 更难发现和修复。</li>
+                <li><strong>性能未必更好</strong>——JNI 调用本身有开销，而且 JVM 的 JIT 编译器无法优化跨越 JNI 边界的代码。现代 JVM 对纯 Java 代码的优化已经非常好。</li>
+                <li><strong>降低可维护性</strong>——需要同时维护 Java 和本地代码两套代码。</li>
+              </ul>
+              <h4>合理的使用场景</h4>
+              <ul>
+                <li><strong>访问底层系统资源</strong>——如访问操作系统特定功能、注册表、设备驱动等。</li>
+                <li><strong>使用遗留本地库</strong>——不得不与已有的本地代码交互。</li>
+              </ul>
+              <h4>关于性能的说明</h4>
+              <p>过去用本地方法来提高性能的做法，现在大多不划算。Java 平台的性能已经大幅提升，很多情况下纯 Java 代码已经足够快。只有在确实需要并且经过基准测试验证的情况下，才考虑用本地方法优化。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 67 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-67">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 67</span>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要明智审慎地进行优化？有哪些常见的优化误区？</div>
+            <div class="card-question-hint">
+              "过早优化是万恶之源"——这句话经常被引用。在 Java 中优化代码应该遵循什么原则？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">优化</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>优化的三个谬论</h4>
+              <ol>
+                <li><strong>"随便哪里优化一下都有帮助"</strong>——大多数代码的性能对整体影响微乎其微。</li>
+                <li><strong>"我能猜出瓶颈在哪里"</strong>——人类对性能瓶颈的直觉非常不可靠。</li>
+                <li><strong>"优化后代码还是一样清晰"</strong>——为了性能做的折中往往损害可读性和可维护性。</li>
+              </ol>
+              <h4>正确的做法</h4>
+              <ol>
+                <li><strong>先写好代码，再考虑性能</strong>——写出清晰、正确、结构良好的代码。好的结构本身就更容易优化。</li>
+                <li><strong>用性能分析工具（profiler）找瓶颈</strong>——不要猜，用数据说话。</li>
+                <li><strong>测量优化效果</strong>——每次优化后都要测量，确认真的变快了。</li>
+                <li><strong>在更高层次优化</strong>——通常算法和数据结构的改进比低层微调效果大得多。</li>
+              </ol>
+              <h4>API 设计层面也要考虑性能</h4>
+              <p>虽然不应为了性能而牺牲好的 API 设计，但 API 设计会影响性能（例如可变类型 vs 不可变类型的选择、方法调用的开销）。值得在设计时就考虑到可能的性能影响，但不要因此牺牲设计的清晰性。</p>
+              <p>总结：努力写出好的代码，而不是快的代码。如果代码不够快，再去测量和优化。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 68 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-68">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 68</span>
+            <span class="card-chapter-tag">通用编程</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">Java 的命名约定有哪些？为什么遵守它们很重要？</div>
+            <div class="card-question-hint">
+              Java 有一套被广泛认可的命名约定。请说出包、类、方法、字段、常量等各自的命名规则。
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">命名约定</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>各类命名规则</h4>
+              <table style="font-size:12.5px;width:100%;border-collapse:collapse;">
+                <tr style="background:#dde5ef;"><th style="padding:4px;text-align:left;">类型</th><th style="padding:4px;text-align:left;">规则</th><th style="padding:4px;text-align:left;">示例</th></tr>
+                <tr><td style="padding:4px;">包（package）</td><td style="padding:4px;">全小写，按域名反序</td><td style="padding:4px;">java.util.concurrent</td></tr>
+                <tr><td style="padding:4px;">类/接口</td><td style="padding:4px;">PascalCase（大驼峰）</td><td style="padding:4px;">List, ArrayList</td></tr>
+                <tr><td style="padding:4px;">方法</td><td style="padding:4px;">camelCase（小驼峰），动词开头</td><td style="padding:4px;">add, remove, isEmpty</td></tr>
+                <tr><td style="padding:4px;">字段</td><td style="padding:4px;">camelCase</td><td style="padding:4px;">size, elements</td></tr>
+                <tr><td style="padding:4px;">常量</td><td style="padding:4px;">全大写+下划线</td><td style="padding:4px;">MAX_VALUE, DEFAULT_SIZE</td></tr>
+                <tr><td style="padding:4px;">类型参数</td><td style="padding:4px;">单个大写字母</td><td style="padding:4px;">T, E, K, V, R</td></tr>
+              </table>
+              <h4>为什么重要</h4>
+              <ol>
+                <li><strong>一致性</strong>——代码看起来像同一个人写的，降低认知负担。</li>
+                <li><strong>可读性</strong>——根据命名风格就能判断是什么种类的标识符。</li>
+                <li><strong>互操作性</strong>——与标准库和第三方库风格一致。</li>
+                <li><strong>职业素养</strong>——遵循约定是专业程序员的基本素质。</li>
+              </ol>
+              <p>约定虽然不是强制的，但被广泛接受。违反约定的代码会让人觉得不专业，也会增加阅读和维护成本。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 第10章 异常 (Item 69-77) -->
+<!-- ============================================================ -->
+<section class="card-section all ch10">
+  <div class="section-title">第 10 章 · 异常</div>
+  <div class="section-desc">受检异常 vs 运行时异常、标准异常、异常转译、异常文档、失败原子性等。</div>
+  <div class="card-grid">
+
+    <!-- Item 69 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-69">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 69</span>
+            <span class="card-chapter-tag">异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么只在真正异常的情况下才使用异常？</div>
+            <div class="card-question-hint">
+              有些人滥用异常来做控制流（比如用异常来结束循环）。为什么这是不好的做法？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">异常只用于异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么不能用异常做控制流</h4>
+              <ol>
+                <li><strong>慢</strong>——异常的创建、堆栈填充等开销很大，比正常控制流慢得多。JVM 也不会优化异常路径。</li>
+                <li><strong>代码意图不清晰</strong>——异常是用来表示异常情况的，用它做正常控制流会迷惑读者。</li>
+                <li><strong>可能掩盖真正的 bug</strong>——如果异常被用来做流程控制，真正的异常（如空指针、数组越界）可能被意外捕获并忽略。</li>
+                <li><strong>违反设计初衷</strong>——异常机制就是为异常情况设计的，不要滥用。</li>
+              </ol>
+              <h4>正确做法</h4>
+              <p>状态检查优先于异常——在执行可能失败的操作之前，先检查状态。</p>
+<pre><code>// 错误：用异常做控制流
+try {
+    int i = 0;
+    while (true)
+        range[i++].climb();
+} catch (ArrayIndexOutOfBoundsException e) { }
+
+// 正确：用边界检查
+for (Mountain m : range)
+    m.climb();</code></pre>
+              <h4>状态检查方式的选择</h4>
+              <ul>
+                <li>用 <strong>Optional</strong> 或返回<strong>特殊值</strong>（如 null、-1）表示失败。</li>
+                <li>或者提供 <strong>hasNext() / isEmpty()</strong> 等状态检查方法。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 70 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-70">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 70</span>
+            <span class="card-chapter-tag">异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">受检异常、运行时异常、Error 分别用于什么场景？</div>
+            <div class="card-question-hint">
+              Java 有三种可抛出结构。何时用受检异常？何时用运行时异常？Error 又是什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">异常分类</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>受检异常（checked exception）</h4>
+              <ul>
+                <li>继承自 <code>Exception</code>（但不是 RuntimeException 的子类）。</li>
+                <li>用于<strong>调用者可以合理地恢复</strong>的情况。</li>
+                <li>方法必须声明 throws，调用者必须捕获或继续抛出。</li>
+                <li>示例：<code>IOException</code>、<code>SQLException</code>。</li>
+              </ul>
+              <h4>运行时异常（unchecked / RuntimeException）</h4>
+              <ul>
+                <li>继承自 <code>RuntimeException</code>。</li>
+                <li>用于<strong>编程错误</strong>——即调用方违反了 API 约定。</li>
+                <li>不强制捕获，通常也不应该捕获（因为是 bug，应该修复而不是处理）。</li>
+                <li>示例：<code>NullPointerException</code>、<code>IllegalArgumentException</code>、<code>IllegalStateException</code>。</li>
+              </ul>
+              <h4>Error</h4>
+              <ul>
+                <li>继承自 <code>Error</code>。</li>
+                <li>由 JVM 保留使用，表示<strong>资源不足、约束失败或其他不可恢复的错误</strong>。</li>
+                <li>应用程序通常不应该抛出 Error，也不应该捕获。</li>
+                <li>示例：<code>OutOfMemoryError</code>、<code>StackOverflowError</code>。</li>
+              </ul>
+              <h4>判断标准</h4>
+              <p>问自己：调用者能做些什么来恢复？如果能，用受检异常。如果是调用方的编程错误，用运行时异常。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 71 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-71">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 71</span>
+            <span class="card-chapter-tag">异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要避免不必要地使用受检异常？</div>
+            <div class="card-question-hint">
+              受检异常强制调用者处理，这是好事。但过度使用会让 API 难以使用。什么时候不该用受检异常？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">避免不必要的受检异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>受检异常的代价</h4>
+              <ul>
+                <li>调用者必须处理——要么 try-catch，要么继续 throws 声明。</li>
+                <li>Stream 和 lambda 中使用不方便（lambda 不能抛出受检异常）。</li>
+                <li>过度使用会让方法调用变得繁琐，程序员可能会"吞掉"异常了事。</li>
+              </ul>
+              <h4>替代方案</h4>
+              <ol>
+                <li><strong>返回 Optional</strong>（Item 55）——如果失败是常见的且只有一种失败原因，返回空 Optional 比抛受检异常更简洁。</li>
+                <li><strong>提供状态检查方法</strong>——让调用者可以先检查再调用（如 <code>hasNext()</code>），从而避免异常。</li>
+                <li><strong>改为运行时异常</strong>——如果异常表示的是编程错误而不是可恢复的情况，应该是 RuntimeException。</li>
+              </ol>
+              <h4>何时用受检异常</h4>
+              <p>只有当：</p>
+              <ol>
+                <li>异常是无法避免的（即使正确使用 API 也可能发生）。</li>
+                <li>调用者可以采取有意义的恢复措施。</li>
+              </ol>
+              <p>两个条件都满足时才使用受检异常。否则用未受检异常或 Optional。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 72 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-72">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 72</span>
+            <span class="card-chapter-tag">异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要优先使用标准的异常？</div>
+            <div class="card-question-hint">
+              不要自己发明异常类型，Java 库已经提供了很多标准异常。使用标准异常有什么好处？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">标准异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>使用标准异常的好处</h4>
+              <ol>
+                <li><strong>易于理解</strong>——其他程序员已经熟悉这些异常的含义。</li>
+                <li><strong>学习成本低</strong>——API 用户不需要学习一堆新的异常类型。</li>
+                <li><strong>减少类加载</strong>——异常类越少，占用的内存和加载时间越少。</li>
+              </ul>
+              <h4>最常用的标准异常</h4>
+              <table style="font-size:12.5px;width:100%;border-collapse:collapse;">
+                <tr style="background:#dde5ef;"><th style="padding:4px;text-align:left;">异常</th><th style="padding:4px;text-align:left;">使用场景</th></tr>
+                <tr><td style="padding:4px;"><code>IllegalArgumentException</code></td><td style="padding:4px;">参数值不正确（非 null）</td></tr>
+                <tr><td style="padding:4px;"><code>IllegalStateException</code></td><td style="padding:4px;">对象状态不正确，方法无法执行</td></tr>
+                <tr><td style="padding:4px;"><code>NullPointerException</code></td><td style="padding:4px;">参数为 null 且不允许</td></tr>
+                <tr><td style="padding:4px;"><code>IndexOutOfBoundsException</code></td><td style="padding:4px;">索引越界</td></tr>
+                <tr><td style="padding:4px;"><code>ConcurrentModificationException</code></td><td style="padding:4px;">并发修改检测</td></tr>
+                <tr><td style="padding:4px;"><code>UnsupportedOperationException</code></td><td style="padding:4px;">对象不支持该操作</td></tr>
+              </table>
+              <h4>原则</h4>
+              <p>重用现有的异常，除非有充分的理由定义新的。选择最贴切的那个——不要随便选一个看起来差不多的。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 73 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-73">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 73</span>
+            <span class="card-chapter-tag">异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">什么是"异常转译"（exception translation）？为什么需要它？</div>
+            <div class="card-question-hint">
+              当底层抛出的异常与高层抽象不匹配时，应该怎么做？什么是异常链（exception chaining）？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">异常转译</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>什么是异常转译</h4>
+              <p>捕获低层异常，然后抛出一个对应高层抽象的新异常。让异常与抽象层次相匹配。</p>
+<pre><code>// 异常转译示例
+try {
+    // 使用低层资源
+    ...
+} catch (LowerLevelException e) {
+    throw new HigherLevelException("详细信息", e);
+}</code></pre>
+              <h4>为什么需要</h4>
+              <ul>
+                <li>调用者不需要了解底层实现细节。</li>
+                <li>异常应该反映 API 的抽象层次，而不是泄露实现细节。</li>
+                <li>让 API 更干净、更稳定。</li>
+              </ul>
+              <h4>异常链（Exception Chaining）</h4>
+              <p>在转译时将原始异常作为 cause 传入新异常（使用带 cause 参数的构造方法或 <code>initCause()</code>）。这样既提供了高层视角，又保留了底层原因，便于调试。</p>
+              <h4>与"异常转译"相关的实践</h4>
+              <ul>
+                <li><strong>异常转译</strong>优于"异常静默吞掉"。</li>
+                <li>但不要滥用——如果可以避免异常就更好（如在更高层做参数校验）。</li>
+                <li>低层方法如果能确保自己抛出的异常对高层也是合适的，就不需要转译。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 74 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-74">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 74</span>
+            <span class="card-chapter-tag">异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么每个方法抛出的异常都要有文档？</div>
+            <div class="card-question-hint">
+              异常也是 API 的一部分。文档化异常有什么重要性？应该文档化哪些异常？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">异常文档</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么重要</h4>
+              <p>异常描述了方法在什么情况下会失败。不文档化异常，调用者就不知道如何正确处理失败。</p>
+              <h4>文档化要求</h4>
+              <ul>
+                <li><strong>所有受检异常</strong>都应该用 <code>@throws</code> 标签单独文档化，说明在什么条件下抛出。</li>
+                <li><strong>未受检异常</strong>（RuntimeException）也应该文档化——虽然不强制捕获，但调用者知道可能发生什么异常仍然很重要。</li>
+                <li>接口方法的异常文档也很重要——它定义了实现者必须遵守的约定。</li>
+              </ul>
+              <h4>常见做法</h4>
+<pre><code>/**
+ * 从列表中获取指定位置的元素。
+ * @param index 要获取的元素索引
+ * @return 指定位置的元素
+ * @throws IndexOutOfBoundsException 如果索引越界
+ *         ({@code index &lt; 0 || index &gt;= size()})
+ */
+E get(int index);</code></pre>
+              <h4>注意事项</h4>
+              <ul>
+                <li>不要把所有可能的异常一股脑儿列出来——只文档化那些方法本身承诺可能抛出的。</li>
+                <li>运行时异常通常是编程错误的信号，说明调用者违反了约定。文档化它们就是在说明约定。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 75 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-75">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 75</span>
+            <span class="card-chapter-tag">异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么异常的细节消息中应该包含失败捕获信息？</div>
+            <div class="card-question-hint">
+              当异常抛出时，调试者需要知道出了什么问题。异常消息中应该包含哪些信息？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">异常细节消息</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么重要</h4>
+              <p>异常发生后，堆栈信息告诉你哪里出了错，但异常的细节消息告诉你为什么出错。好的细节消息能让你不用看源代码就理解问题。</p>
+              <h4>应该包含什么</h4>
+              <ul>
+                <li>所有<strong>参与失败</strong>的参数和字段的值。</li>
+                <li>例如 <code>IndexOutOfBoundsException</code> 应该包含：下界、上界、实际索引值。</li>
+              </ul>
+              <h4>示例</h4>
+<pre><code>public IndexOutOfBoundsException(int lowerBound, int upperBound, int index) {
+    super(String.format(
+        "Lower bound: %d, Upper bound: %d, Index: %d",
+        lowerBound, upperBound, index));
+    this.lowerBound = lowerBound;
+    this.upperBound = upperBound;
+    this.index = index;
+}</code></pre>
+              <h4>注意事项</h4>
+              <ul>
+                <li>异常消息是为<strong>程序员</strong>看的，不是给最终用户看的。所以应该包含技术细节，而不是用户友好的描述。</li>
+                <li>不需要冗长的叙述——简洁地列出关键值即可。</li>
+                <li>对于受检异常，可以考虑提供访问方法（getter）来获取失败信息，以便编程方式访问。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 76 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-76">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 76</span>
+            <span class="card-chapter-tag">异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">什么是"失败原子性"（failure atomicity）？如何实现？</div>
+            <div class="card-question-hint">
+              一个方法抛出异常后，对象应该处于什么状态？为什么这很重要？有哪些实现技术？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">失败原子性</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>什么是失败原子性</h4>
+              <p>方法抛出异常后，对象应该仍然处于<strong>定义良好的一致状态</strong>。换句话说，失败的方法调用不应该把对象搞坏。</p>
+              <h4>为什么重要</h4>
+              <ul>
+                <li>对象被破坏后，后续操作可能产生不可预测的结果。</li>
+                <li>调用者可能尝试恢复，前提是对象还处于有效状态。</li>
+                <li>对于不可变类，天然满足失败原子性。</li>
+              </ul>
+              <h4>实现技术</h4>
+              <ol>
+                <li><strong>参数校验放在修改之前</strong>——先检查所有参数是否合法，检查通过后才修改对象状态。（Item 49）</li>
+                <li><strong>调整操作顺序</strong>——把可能失败的操作放在前面，状态修改放在后面。</li>
+                <li><strong>写时复制（copy-on-write）</strong>——先在副本上操作，成功后再替换原对象。</li>
+                <li><strong>恢复代码（recovery / rollback）</strong>——用事务或回滚机制恢复到操作前状态。</li>
+              </ol>
+              <h4>注意</h4>
+              <p>虽然失败原子性通常是期望的，但不一定总能实现（如并发修改导致的 ConcurrentModificationException）。即使如此，也应该在文档中说明失败后的状态。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 77 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-77">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 77</span>
+            <span class="card-chapter-tag">异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么不要忽略异常？</div>
+            <div class="card-question-hint">
+              空的 catch 块是 Java 中最容易被滥用的反模式之一。为什么它如此危险？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">不要忽略异常</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>忽略异常的危险</h4>
+              <pre><code>// 糟糕的代码！
+try {
+    ...
+} catch (SomeException e) {
+    // 空的！
+}</code></pre>
+              <ol>
+                <li><strong>静默失败</strong>——错误发生了但没有人知道，后续可能在完全不相关的地方导致更严重的问题。</li>
+                <li><strong>难以调试</strong>——没有堆栈信息，找不到根因。</li>
+                <li><strong>对象可能被破坏</strong>——异常可能意味着不变量被违反，忽略它会让对象处于不一致状态。</li>
+              </ol>
+              <h4>正确做法</h4>
+              <ul>
+                <li><strong>处理异常</strong>——采取恢复措施，或向上抛出。</li>
+                <li><strong>至少记录日志</strong>——如果确定可以忽略（非常罕见），至少用日志记录下来，并加注释说明为什么可以忽略。</li>
+                <li><strong>重新抛出</strong>——如果不知道怎么处理，就抛给上层。</li>
+              </ul>
+              <h4>什么时候"可以"忽略</h4>
+              <p>极少数情况下，异常是预期的且无害的。例如：</p>
+              <ul>
+                <li>关闭资源时的异常（但 try-with-resources 已经处理了）。</li>
+                <li>FileInputStream 关闭时的异常（文件已经读完了）。</li>
+              </ul>
+              <p>即使在这些情况下，也应该记录日志并注释原因。<strong>空 catch 块永远不应该存在。</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 第11章 并发 (Item 78-84) -->
+<!-- ============================================================ -->
+<section class="card-section all ch11">
+  <div class="section-title">第 11 章 · 并发</div>
+  <div class="section-desc">共享可变数据的同步、并发工具、线程安全文档、延迟初始化等。</div>
+  <div class="card-grid">
+
+    <!-- Item 78 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-78">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 78</span>
+            <span class="card-chapter-tag">并发</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要同步访问共享的可变数据？同步仅仅是互斥吗？</div>
+            <div class="card-question-hint">
+              很多人对 synchronized 的理解仅限于"互斥"。但同步还有另一个同样重要的作用。是什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">同步访问共享可变数据</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>同步的两个作用</h4>
+              <ol>
+                <li><strong>互斥（mutual exclusion）</strong>——同一时刻只有一个线程能执行临界区代码，防止对象状态不一致。</li>
+                <li><strong>可见性（visibility）</strong>——确保一个线程的修改能被其他线程看到。进入同步块时读取最新值，退出时把修改刷回主存。</li>
+              </ol>
+              <p>很多人只知道互斥，忽略了可见性。这也是为什么即使操作是原子的（如读写一个 int 变量），仍然可能需要同步。</p>
+              <h4>没有同步的可怕后果</h4>
+              <p>一个线程修改了变量，另一个线程可能永远看不到修改——它可能一直读到旧值。这就是"活性失败"（liveness failure）。</p>
+              <h4>volatile 关键字</h4>
+              <p><code>volatile</code> 只保证可见性，不保证原子性。当不需要互斥只需要可见性时可以使用（例如状态标记位）。但如果是读-改-写操作（如 increment），volatile 不够，需要 synchronized 或原子类。</p>
+              <h4>最佳建议</h4>
+              <p>最好的方法是<strong>不共享可变数据</strong>——让数据不可变（Item 17），或把可变数据限制在单个线程内。如果必须共享，就正确同步。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 79 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-79">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 79</span>
+            <span class="card-chapter-tag">并发</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要避免过度同步？过度同步有什么问题？</div>
+            <div class="card-question-hint">
+              同步不够会有问题，同步太多也会有问题。过度同步会导致什么？应该怎么避免？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">避免过度同步</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>过度同步的问题</h4>
+              <ol>
+                <li><strong>性能下降</strong>——不必要的同步浪费资源。</li>
+                <li><strong>死锁风险</strong>——在同步块内调用外部方法（可能也加了锁），容易导致死锁。</li>
+                <li><strong>意外结果</strong>——在同步块中回调外部方法，外部方法可能修改对象状态或抛出异常，导致不一致。</li>
+              </ol>
+              <h4>正确做法</h4>
+              <ul>
+                <li>同步区域内做<strong>尽可能少</strong>的工作——只做必要的状态访问/修改。</li>
+                <li>永远不要在同步区域内调用<strong>外来方法</strong>（alien method）——即可能被重写的方法或作为参数传入的方法。</li>
+                <li>如果必须通知客户端，在同步区域外调用（先保存需要的数据，解锁后再回调）。</li>
+              </ul>
+              <h4>并发性和性能的平衡</h4>
+              <p>在同步区域内做的工作越少越好。将耗时的计算移出同步块。</p>
+              <h4>总结</h4>
+              <p>在同步区域中，不要调用设计为被重写的方法，也不要调用以函数对象形式提供的方法。从类的角度来看，这些都是外来方法，可能在持有锁的时候做各种事情（修改状态、获取其他锁……），导致死锁和数据损坏。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 80 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-80">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 80</span>
+            <span class="card-chapter-tag">并发</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么 Executor、任务和 Stream 优先于线程？</div>
+            <div class="card-question-hint">
+              直接操作 Thread 是低级做法。Java 5 之后有了 Executor Framework。它提供了什么优势？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">Executor Framework</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>直接操作线程的问题</h4>
+              <ul>
+                <li>每个任务创建一个新线程——线程创建和销毁有开销。</li>
+                <li>线程数量不受控——太多线程会耗尽内存和 CPU。</li>
+                <li>需要手动管理线程生命周期。</li>
+              </ul>
+              <h4>Executor Framework 的优势</h4>
+              <ol>
+                <li><strong>线程池复用</strong>——线程可以被重复使用，减少创建/销毁开销。</li>
+                <li><strong>任务与执行解耦</strong>——你提交任务（Runnable/Callable），由执行器决定如何运行。</li>
+                <li><strong>丰富的配置</strong>——可以配置线程数、队列、拒绝策略等。</li>
+                <li><strong>调度能力</strong>——ScheduledExecutorService 支持定时和延迟任务。</li>
+                <li><strong>结果获取</strong>——通过 Future 获取异步计算结果。</li>
+              </ol>
+              <h4>创建线程池的选择</h4>
+              <ul>
+                <li><code>Executors.newCachedThreadPool()</code>——按需创建线程，适合短小的异步任务。</li>
+                <li><code>Executors.newFixedThreadPool(n)</code>——固定线程数，适合 CPU 密集型任务。</li>
+                <li><code>Executors.newSingleThreadExecutor()</code>——单线程，保证顺序执行。</li>
+                <li>或直接用 <code>ThreadPoolExecutor</code> 精细配置。</li>
+              </ul>
+              <p>从 Java 8 开始，并行流（parallel stream）也是一种选择，但仅限于适合并行处理的数据密集型计算。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 81 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-81">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 81</span>
+            <span class="card-chapter-tag">并发</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么并发工具优于 wait 和 notify？</div>
+            <div class="card-question-hint">
+              直接使用 wait/notify 是很低级的机制。Java 5 之后的 java.util.concurrent 提供了哪些更好的工具？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">并发工具</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>wait/notify 的问题</h4>
+              <ul>
+                <li>容易出错——必须在循环中调用 wait（防止虚假唤醒），很容易遗漏。</li>
+                <li>代码晦涩——正确使用 wait/notify 的代码很难写对，也很难读。</li>
+                <li>需要手动管理条件队列。</li>
+              </ul>
+              <h4>并发工具分类</h4>
+              <ol>
+                <li><strong>同步器（Synchronizers）</strong>
+                  <ul>
+                    <li><code>CountDownLatch</code>——一次性门闩，等待计数归零。</li>
+                    <li><code>Semaphore</code>——信号量，控制并发数量。</li>
+                    <li><code>CyclicBarrier</code>——循环栅栏，多线程互相等待。</li>
+                    <li><code>Future</code> / <code>CompletableFuture</code>——异步结果。</li>
+                  </ul>
+                </li>
+                <li><strong>并发集合</strong>
+                  <ul>
+                    <li><code>ConcurrentHashMap</code>——高并发 Map。</li>
+                    <li><code>ConcurrentSkipListMap/Set</code>——并发有序集合。</li>
+                    <li><code>BlockingQueue</code>——阻塞队列（生产者-消费者模式）。</li>
+                  </ul>
+                </li>
+                <li><strong>原子类（java.util.concurrent.atomic）</strong>
+                  <ul>
+                    <li><code>AtomicLong</code>、<code>AtomicReference</code> 等——无锁原子操作。</li>
+                  </ul>
+                </li>
+              </ol>
+              <h4>建议</h4>
+              <p>用高层并发工具，几乎没有理由再使用 wait/notify。如果不得不使用（例如维护老代码），一定要在循环中调用 wait，并且使用标准模式。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 82 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-82">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 82</span>
+            <span class="card-chapter-tag">并发</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么线程安全属性应该写在文档中？</div>
+            <div class="card-question-hint">
+              一个类的线程安全性是它 API 的重要组成部分。线程安全性有哪些级别？应该如何文档化？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">线程安全文档</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么重要</h4>
+              <p>如果类的文档没说它是不是线程安全的，用户只能猜。猜错了可能导致并发 bug。或者用户被迫给每个调用都加锁，浪费性能。</p>
+              <h4>线程安全级别（从高到低）</h4>
+              <ol>
+                <li><strong>不可变（Immutable）</strong>——实例不可修改，多线程共享完全安全。如 String、Long。</li>
+                <li><strong>无条件线程安全</strong>——可变对象，但内部有足够同步，客户端无需外部同步。如 ConcurrentHashMap、AtomicLong。</li>
+                <li><strong>有条件线程安全</strong>——某些方法需要外部同步。如 Collections.synchronized 包装的集合（迭代时需要外部同步）。</li>
+                <li><strong>非线程安全</strong>——客户端必须自己加锁。如 ArrayList、HashMap。</li>
+                <li><strong>线程对立</strong>——即使每个方法都同步也不安全（因为有静态可变状态等）。尽量避免。</li>
+              </ol>
+              <h4>如何文档化</h4>
+              <ul>
+                <li>在类级别的 Javadoc 中说明线程安全级别。</li>
+                <li>有条件线程安全的类，需要说明哪些操作需要同步、同步在哪个锁上。</li>
+                <li>如果类暴露了内部锁（或建议使用某个锁），也需要文档化。</li>
+              </ul>
+              <p>不要假设类应该是线程安全的还是不安全的——明确地把你的承诺写在文档里。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 83 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-83">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 83</span>
+            <span class="card-chapter-tag">并发</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要谨慎使用延迟初始化（lazy initialization）？</div>
+            <div class="card-question-hint">
+              延迟初始化就是"直到第一次用到才初始化"。听起来很有用，为什么这条建议是"谨慎使用"？有哪些实现方式？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">延迟初始化</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么要谨慎</h4>
+              <ul>
+                <li><strong>性能收益通常被夸大</strong>——大多数情况下，正常初始化就够快了。</li>
+                <li><strong>增加复杂性</strong>——延迟初始化的代码更复杂，更容易出错（尤其是并发场景）。</li>
+                <li><strong>可能反而更慢</strong>——双重检查锁定等模式在某些实现下可能比直接初始化还慢。</li>
+              </ul>
+              <h4>实现方式（按推荐程度排序）</h4>
+              <ol>
+                <li><strong>正常初始化（默认选择）</strong>——大多数时候直接初始化最好。
+<pre><code>private final FieldType field = computeFieldValue();</code></pre>
+                </li>
+                <li><strong>holder 类模式（静态字段）</strong>——利用 JVM 的类加载延迟。
+<pre><code>private static class FieldHolder {
+    static final FieldType field = computeFieldValue();
+}
+static FieldType getField() { return FieldHolder.field; }</code></pre>
+                </li>
+                <li><strong>双重检查锁定（实例字段）</strong>——需要 volatile。
+<pre><code>private volatile FieldType field;
+FieldType getField() {
+    FieldType result = field;
+    if (result == null) {
+        synchronized (this) {
+            if (field == null)
+                field = result = computeFieldValue();
+        }
+    }
+    return result;
+}</code></pre>
+                </li>
+              </ol>
+              <p>总结：除非确实需要，否则不要用延迟初始化。多数情况下，即时初始化是最好的选择。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 84 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-84">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 84</span>
+            <span class="card-chapter-tag">并发</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么不要依赖线程调度器？</div>
+            <div class="card-question-hint">
+              线程调度器决定哪个线程运行多久。程序的正确性或性能不应该依赖于它。为什么？应该怎么做？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">线程调度器</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>为什么不能依赖</h4>
+              <ul>
+                <li><strong>不可移植</strong>——不同 JVM、不同操作系统的线程调度策略不同。</li>
+                <li><strong>脆弱</strong>——操作系统版本更新或 JVM 升级都可能改变调度行为。</li>
+                <li><strong>Thread.yield() 和线程优先级不可靠</strong>——它们只是对调度器的"建议"，具体行为取决于实现。</li>
+              </ul>
+              <h4>常见错误做法</h4>
+              <ul>
+                <li>用 <code>Thread.yield()</code> 来"让其他线程有机会运行"——不可靠。</li>
+                <li>调整线程优先级来"确保"某些线程先运行——不可移植。</li>
+                <li>通过 <code>Thread.sleep()</code> 来等待某个操作完成——竞态条件，不可靠。</li>
+              </ul>
+              <h4>正确做法</h4>
+              <ol>
+                <li><strong>使用并发工具</strong>（Item 81）——用锁、同步器、并发集合来控制线程交互。</li>
+                <li><strong>保持可运行线程的合理数量</strong>——线程数 ≈ CPU 核心数时性能最好（CPU 密集型）。</li>
+                <li><strong>让每个线程做有意义的工作</strong>——不要让线程忙等（busy waiting）。</li>
+                <li><strong>使用 wait/notify 或并发工具进行协调</strong>，而不是靠线程优先级或 yield。</li>
+              </ol>
+              <p>如果程序因为线程调度器的原因无法正常工作，那么它就是有 bug 的。修复方法是重构程序的并发结构，而不是调整线程优先级。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 第12章 序列化 (Item 85-90) -->
+<!-- ============================================================ -->
+<section class="card-section all ch12">
+  <div class="section-title">第 12 章 · 序列化</div>
+  <div class="section-desc">Java 序列化的陷阱与最佳实践：替代方案、自定义序列化、readObject 防御、序列化代理。</div>
+  <div class="card-grid">
+
+    <!-- Item 85 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-85">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 85</span>
+            <span class="card-chapter-tag">序列化</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么优先选择 Java 序列化的替代方案？</div>
+            <div class="card-question-hint">
+              Java 原生序列化（Serializable）有很多问题。有哪些替代方案？为什么它们更好？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">序列化替代方案</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>Java 序列化的问题</h4>
+              <ol>
+                <li><strong>安全漏洞</strong>——反序列化不可信数据可能导致远程代码执行等严重漏洞。</li>
+                <li><strong>类的"后门"构造</strong>——readObject 相当于另一个构造方法，绕过了正常的对象创建过程。</li>
+                <li><strong>版本兼容问题</strong>——类的结构变化可能导致序列化格式不兼容。</li>
+                <li><strong>测试负担重</strong>——需要测试序列化/反序列化的正确性和兼容性。</li>
+                <li><strong>跨语言不友好</strong>——只有 Java 能读。</li>
+              </ol>
+              <h4>替代方案</h4>
+              <ul>
+                <li><strong>JSON</strong>（如 Jackson、Gson）——文本格式，人类可读，跨语言。</li>
+                <li><strong>Protocol Buffers</strong>（protobuf）——二进制格式，高性能，跨语言，前向/后向兼容。</li>
+                <li><strong>MessagePack</strong>、<strong>Avro</strong>、<strong>Thrift</strong> 等。</li>
+              </ul>
+              <h4>选择建议</h4>
+              <ul>
+                <li>需要人类可读 → JSON。</li>
+                <li>需要高性能和紧凑表示 → Protocol Buffers 等二进制格式。</li>
+                <li>跨语言通信 → 一定选跨平台格式。</li>
+              </ul>
+              <p>除非有充分理由，否则不要使用 Java 原生序列化。如果必须使用，要非常谨慎地实现（后续条目会讲如何正确实现）。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 86 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-86">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 86</span>
+            <span class="card-chapter-tag">序列化</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么要非常谨慎地实现 Serializable？</div>
+            <div class="card-question-hint">
+              实现 Serializable 看起来很简单——什么都不用做，类就可以序列化了。但这其实是一个重大的承诺。为什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">谨慎实现 Serializable</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>实现 Serializable 的代价</h4>
+              <ol>
+                <li><strong>降低了改变类实现的灵活性</strong>——一旦发布，序列化格式就成了 API 的一部分，以后改变类结构需要考虑向后兼容。</li>
+                <li><strong>增加了 bug 和安全漏洞的可能性</strong>——序列化是"语言之外的对象创建机制"，可能绕过构造方法的约束。</li>
+                <li><strong>测试负担加重</strong>——需要测试序列化/反序列化，以及不同版本之间的兼容性。</li>
+                <li><strong>影响子类设计</strong>——父类实现了 Serializable，子类也必须处理序列化问题。</li>
+              </ol>
+              <h4>什么时候应该实现</h4>
+              <ul>
+                <li>类主要用于数据传输（如 DTO）。</li>
+                <li>类需要参与 Java 序列化框架（如 RMI、JMS）。</li>
+              </ul>
+              <h4>设计为继承的类要特别小心</h4>
+              <ul>
+                <li>如果类设计为被继承，通常<strong>不应该</strong>实现 Serializable（给子类增加不必要的负担）。</li>
+                <li>如果父类没有实现 Serializable，子类实现时要确保父类有可访问的无参构造方法。</li>
+              </ul>
+              <p>内部类（Item 24）通常不应该实现 Serializable——编译器生成的字段不稳定。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 87 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-87">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 87</span>
+            <span class="card-chapter-tag">序列化</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">什么时候应该考虑使用自定义的序列化形式？</div>
+            <div class="card-question-hint">
+              默认序列化形式（Serializable 什么都不用写）方便但不一定合适。自定义序列化形式有什么优势？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">自定义序列化形式</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>默认序列化形式的问题</h4>
+              <ul>
+                <li><strong>与内部表示绑定</strong>——默认序列化直接输出所有非 transient 字段，把内部结构暴露在序列化格式中。</li>
+                <li><strong>体积大</strong>——保存了不必要的信息（如冗余的链表指针）。</li>
+                <li><strong>速度慢</strong>——递归遍历对象图。</li>
+                <li><strong>栈溢出风险</strong>——对象图太深可能导致序列化时栈溢出。</li>
+              </ul>
+              <h4>什么时候用自定义形式</h4>
+              <ul>
+                <li>当类的<strong>物理表示</strong>与<strong>逻辑表示</strong>差异较大时。例如：
+                  <ul>
+                    <li>HashSet/HashMap——逻辑上是键值对集合，物理上是哈希表 + 链表/红黑树。</li>
+                    <li>String——逻辑上是字符序列，物理上有 offset/count 等内部字段（历史上）。</li>
+                  </ul>
+                </li>
+              </ul>
+              <h4>自定义序列化方法</h4>
+              <ul>
+                <li><code>writeObject()</code> / <code>readObject()</code>——自定义序列化/反序列化逻辑。</li>
+                <li><code>transient</code> 关键字——标记不参与默认序列化的字段。</li>
+              </ul>
+              <h4>原则</h4>
+              <p>如果默认序列化形式合理（类的物理表示基本就是逻辑表示），就用默认的。否则，应该认真考虑自定义序列化形式。设计好的序列化形式与设计好的 API 一样重要。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 88 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-88">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 88</span>
+            <span class="card-chapter-tag">序列化</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么 readObject 方法要"保护性地编写"？</div>
+            <div class="card-question-hint">
+              readObject 本质上是一个"以字节流为参数的构造方法"。但它没有构造方法的保护。有哪些常见陷阱？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">readObject 防御</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>核心问题</h4>
+              <p>反序列化会创建新对象，但绕开了正常的构造方法和参数校验。攻击者可以构造恶意字节流，让反序列化出来的对象违反类的不变量。</p>
+              <h4>readObject 必须做的事</h4>
+              <ol>
+                <li><strong>参数校验</strong>——反序列化后验证所有字段的合法性，确保对象处于有效状态。（Item 49）</li>
+                <li><strong>防御性拷贝</strong>——对可变对象的字段做拷贝，防止攻击者通过修改原始字节流中的引用结构来篡改内部状态。（Item 50）</li>
+                <li><strong>不要调用可覆盖的方法</strong>——与构造方法一样，readObject 中也不能调用可被覆盖的方法。（Item 19）</li>
+                <li><strong>保持失败原子性</strong>——反序列化失败不应该留下半初始化的对象。</li>
+              </ol>
+              <h4>常见攻击方式</h4>
+              <ul>
+                <li>伪造字节流让对象字段值违反约束（如负数长度）。</li>
+                <li>构造对象图让内部字段引用可变对象，反序列化后通过外部引用修改。</li>
+                <li>反序列化链（gadget chain）——利用一系列反射和方法调用达到远程代码执行。</li>
+              </ul>
+              <h4>防御</h4>
+              <p>永远不要反序列化不可信数据。如果必须实现 readObject，确保它像构造方法一样严格——校验所有参数，做防御性拷贝。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 89 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-89">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 89</span>
+            <span class="card-chapter-tag">序列化</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">为什么对于实例控制（Singleton），枚举类型优于 readResolve？</div>
+            <div class="card-question-hint">
+              如果一个 Singleton 类实现了 Serializable，反序列化会创建新实例，破坏单例。readResolve 可以解决，但枚举更好。为什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">readResolve vs 枚举</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>问题：序列化 + Singleton</h4>
+              <p>默认情况下，每次反序列化一个 Serializable 的单例类都会创建一个新对象——单例被破坏了！</p>
+              <h4>readResolve 方案</h4>
+              <p>提供一个 readResolve 方法，在反序列化后返回正确的单例实例，替换刚创建的对象：</p>
+<pre><code>private Object readResolve() {
+    return INSTANCE; // 返回真正的单例
+}</code></pre>
+              <h4>readResolve 的问题</h4>
+              <ol>
+                <li><strong>依赖所有字段都是 transient 的</strong>——如果有非 transient 的引用字段，攻击者可以在 readResolve 执行前获取到对象引用，进行"盗用"攻击。</li>
+                <li><strong>容易写错</strong>——访问修饰符、返回类型不对就不会被调用。</li>
+                <li><strong>不能阻止攻击者创建多个实例</strong>——通过字节流操纵仍然可能。</li>
+              </ol>
+              <h4>枚举方案（最佳）</h4>
+              <p>用单元素枚举实现单例（Item 3），序列化由 Java 保证：</p>
+              <ul>
+                <li>Java 保证枚举反序列化后还是同一个实例。</li>
+                <li>没有 readResolve 那种漏洞。</li>
+                <li>代码最简单。</li>
+              </ul>
+              <p>结论：如果你需要对实例进行控制，并且序列化很重要，枚举类型是最佳选择。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 90 -->
+    <div class="flip-card">
+      <input type="checkbox" id="card-90">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-header">
+            <span class="card-item-num">ITEM 90</span>
+            <span class="card-chapter-tag">序列化</span>
+          </div>
+          <div class="card-body">
+            <div class="card-question-title">什么是序列化代理模式（Serialization Proxy）？为什么它更安全？</div>
+            <div class="card-question-hint">
+              这是本书最后一条，也是防御序列化攻击最彻底的方法之一。它的基本思路是什么？
+            </div>
+            <div class="flip-icon">点击翻转</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-header">
+            <span class="card-item-num">✓ 答案</span>
+            <span class="card-chapter-tag">序列化代理</span>
+          </div>
+          <div class="card-body">
+            <div class="card-answer">
+              <h4>基本思路</h4>
+              <p>不直接序列化/反序列化原对象，而是用一个简单的代理对象来做序列化。</p>
+              <p><strong>序列化时</strong>：原对象 → 创建代理对象（保存逻辑数据）→ 序列化代理。</p>
+              <p><strong>反序列化时</strong>：反序列化代理 → 代理创建原对象（通过正常构造方法）→ 返回原对象。</p>
+              <h4>实现要点</h4>
+              <ol>
+                <li>在原类中定义一个<strong>私有静态内部类</strong>作为序列化代理，实现 Serializable。</li>
+                <li>原类提供 <code>writeReplace()</code> 方法，返回代理对象（序列化时自动调用）。</li>
+                <li>代理类提供 <code>readResolve()</code> 方法，调用原类构造方法创建实例。</li>
+                <li>原类的 <code>readObject()</code> 抛异常（防止直接反序列化攻击）。</li>
+              </ol>
+              <h4>优势</h4>
+              <ul>
+                <li><strong>极大的安全性</strong>——反序列化时使用正常的构造方法，所有构造方法的校验都生效。不需要防御性拷贝。</li>
+                <li><strong>灵活性</strong>——代理的字段可以与原类完全不同，解耦了物理表示和序列化格式。</li>
+                <li><strong>不影响类的不可变性</strong>——反序列化出来的就是构造好的不可变对象。</li>
+              </ul>
+              <h4>局限</h4>
+              <ul>
+                <li>不能与继承体系中的用户扩展类兼容（因为 readResolve 返回的是新对象，不是子类对象）。</li>
+                <li>有轻微的性能开销。</li>
+              </ul>
+              <p>对于不可变类，序列化代理模式是一个非常值得考虑的方案。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+</body>
+</html>

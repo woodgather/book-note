@@ -1,0 +1,2822 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kotlin编程权威指南 · Anki精华卡片</title>
+<style>
+  :root {
+    --primary: #7c3aed;
+    --primary-light: #a78bfa;
+    --primary-dark: #5b21b6;
+    --accent: #f59e0b;
+    --accent-light: #fbbf24;
+    --bg: #f8fafc;
+    --card-front: #ffffff;
+    --card-back: #ede9fe;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+    --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+    color: white;
+    padding: 36px 24px 28px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 24px rgba(124,58,237,0.25);
+  }
+  .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px; }
+  .header p { font-size: 13px; opacity: 0.9; }
+  .header .stats { display: inline-block; margin-top: 10px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 4px 14px; border-radius: 12px; backdrop-filter: blur(4px); }
+  .tab-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px 20px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 108px;
+    z-index: 99;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .tab-btn {
+    padding: 7px 15px;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--text-light);
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .tab-btn:hover {
+    border-color: var(--primary-light);
+    color: var(--primary);
+    background: #f5f3ff;
+  }
+  .tab-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 2px 10px rgba(124,58,237,0.3);
+    font-weight: 600;
+  }
+  .section-header {
+    max-width: 1200px;
+    margin: 28px auto 14px;
+    padding: 0 24px;
+  }
+  .section-header h2 {
+    font-size: 20px;
+    color: var(--primary-dark);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-header h2::before {
+    content: '';
+    width: 4px;
+    height: 22px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .section-header p {
+    color: var(--text-light);
+    font-size: 13px;
+    margin-top: 4px;
+    margin-left: 14px;
+  }
+  .card-count {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-left: 8px;
+    vertical-align: middle;
+    letter-spacing: 0.5px;
+  }
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 24px;
+  }
+  @media (max-width: 768px) {
+    .cards-grid { grid-template-columns: 1fr; gap: 14px; padding: 0 16px; }
+    .tab-nav { top: 120px; padding: 10px 12px; }
+    .header h1 { font-size: 20px; }
+  }
+  .flip-card {
+    perspective: 1200px;
+    height: 220px;
+    cursor: pointer;
+  }
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+  .flip-card-front,
+  .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .flip-card-front {
+    background: linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
+    border: 1.5px solid var(--border);
+    border-top: 4px solid var(--primary);
+  }
+  .flip-card-back {
+    background: linear-gradient(145deg, #ede9fe 0%, #ddd6fe 100%);
+    border: 1.5px solid #c4b5fd;
+    border-top: 4px solid var(--accent);
+    transform: rotateY(180deg);
+  }
+  .card-number {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-number::before {
+    content: '?';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    font-size: 11px;
+  }
+  .flip-card-back .card-number { color: var(--primary-dark); }
+  .flip-card-back .card-number::before { content: '\2713'; background: var(--accent); }
+  .card-question {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.55;
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-start;
+  }
+  .card-answer {
+    font-size: 13.5px;
+    color: #2d1b4e;
+    line-height: 1.7;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .card-answer code, .card-question code {
+    background: rgba(124,58,237,0.1);
+    color: var(--primary-dark);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: "SF Mono", "Fira Code", "Consolas", "Monaco", monospace;
+    font-size: 0.88em;
+    font-weight: 500;
+  }
+  .flip-card-back code {
+    background: rgba(255,255,255,0.5);
+    color: var(--primary-dark);
+  }
+  .flip-hint {
+    font-size: 11px;
+    color: var(--text-light);
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 6px;
+    opacity: 0.7;
+  }
+  .flip-hint .icon { font-size: 13px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .footer {
+    text-align: center;
+    padding: 28px 24px;
+    color: var(--text-light);
+    font-size: 12.5px;
+    border-top: 1px solid var(--border);
+    background: white;
+    margin-top: 20px;
+  }
+  .footer strong { color: var(--primary-dark); }
+  .card-answer::-webkit-scrollbar { width: 4px; }
+  .card-answer::-webkit-scrollbar-track { background: transparent; }
+  .card-answer::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📘 Kotlin编程权威指南 · Anki精华卡片</h1>
+  <p>点击卡片翻面查看答案 · 顶部标签切换章节</p>
+  <div class="stats">共 21 章 · 166 张卡片</div>
+</div>
+<div class="tab-nav" id="tabNav">
+  <button class="tab-btn active" data-tab="ch1" onclick="switchTab('ch1')">第1章 开发初体验</button>
+  <button class="tab-btn" data-tab="ch2" onclick="switchTab('ch2')">第2章 变量与类型</button>
+  <button class="tab-btn" data-tab="ch3" onclick="switchTab('ch3')">第3章 条件语句</button>
+  <button class="tab-btn" data-tab="ch4" onclick="switchTab('ch4')">第4章 函数</button>
+  <button class="tab-btn" data-tab="ch5" onclick="switchTab('ch5')">第5章 匿名函数</button>
+  <button class="tab-btn" data-tab="ch6" onclick="switchTab('ch6')">第6章 null安全</button>
+  <button class="tab-btn" data-tab="ch7" onclick="switchTab('ch7')">第7章 字符串</button>
+  <button class="tab-btn" data-tab="ch8" onclick="switchTab('ch8')">第8章 数字类型</button>
+  <button class="tab-btn" data-tab="ch9" onclick="switchTab('ch9')">第9章 标准库函数</button>
+  <button class="tab-btn" data-tab="ch10" onclick="switchTab('ch10')">第10章 List与Set</button>
+  <button class="tab-btn" data-tab="ch11" onclick="switchTab('ch11')">第11章 Map</button>
+  <button class="tab-btn" data-tab="ch12" onclick="switchTab('ch12')">第12章 定义类</button>
+  <button class="tab-btn" data-tab="ch13" onclick="switchTab('ch13')">第13章 初始化</button>
+  <button class="tab-btn" data-tab="ch14" onclick="switchTab('ch14')">第14章 继承</button>
+  <button class="tab-btn" data-tab="ch15" onclick="switchTab('ch15')">第15章 对象</button>
+  <button class="tab-btn" data-tab="ch16" onclick="switchTab('ch16')">第16章 接口与抽象类</button>
+  <button class="tab-btn" data-tab="ch17" onclick="switchTab('ch17')">第17章 泛型</button>
+  <button class="tab-btn" data-tab="ch18" onclick="switchTab('ch18')">第18章 扩展</button>
+  <button class="tab-btn" data-tab="ch19" onclick="switchTab('ch19')">第19章 函数式编程</button>
+  <button class="tab-btn" data-tab="ch20" onclick="switchTab('ch20')">第20章 Java互操作</button>
+  <button class="tab-btn" data-tab="ch22" onclick="switchTab('ch22')">第22章 协程</button>
+</div>
+
+<div class="tab-content active" id="ch1">
+  <div class="section-header">
+    <h2>第1章 Kotlin应用开发初体验 <span class="card-count">5张</span></h2>
+    <p>开发环境搭建与第一个Kotlin程序</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">Kotlin是由哪家公司创建的？官方推荐使用什么IDE进行Kotlin开发？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin由JetBrains公司创建。官方推荐使用<strong>IntelliJ IDEA</strong>作为Kotlin的集成开发环境（IDE）。IntelliJ提供了代码编辑、运行、调试、检查和重构等一体化工具链，能够帮助开发者编写风格良好的Kotlin代码。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">Kotlin源代码文件的后缀名是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin源代码文件的后缀名是<code>.kt</code>。就像Java文件使用<code>.java</code>后缀、Python文件使用<code>.py</code>后缀一样，<code>.kt</code>后缀表明文件中存放着Kotlin代码。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">Kotlin/JVM项目是什么意思？为什么开发Kotlin程序需要安装JDK？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin/JVM表示编写<strong>面向JVM（Java虚拟机）运行</strong>的Kotlin代码。需要JDK是因为IntelliJ需要JDK提供的JVM和Java工具，将Kotlin代码<strong>编译（转译）为字节码</strong>，然后在JVM上执行。Kotlin不仅可以面向JVM，还支持面向不同操作系统和平台（如JS、Native）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">Kotlin程序的入口函数是什么？写出Hello, World!程序的基本结构。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin程序的入口函数是<code>main</code>函数。基本结构如下：<br><br><code>fun main(args: Array&lt;String&gt;) {<br>&nbsp;&nbsp;println("Hello, world!")<br>}</code><br><br>其中<code>fun</code>是定义函数的关键字，<code>println</code>用于在控制台输出信息。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">IntelliJ项目中的src文件夹和.idea文件夹分别有什么作用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>src文件夹</strong>：存放项目的所有源代码文件（如.kt文件），是开发者主要工作的目录。<br><br><strong>.idea文件夹</strong>：存放整个项目的设置文件，以及用户在IDE中和项目交互相关的设置（例如当前打开了哪个文件）。这些文件由系统自动生成，一般不需要手动修改。<br><br>此外，External Libraries项包含项目的依赖库信息（如Java SDK和Kotlin运行时库）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch2">
+  <div class="section-header">
+    <h2>第2章 变量、常量和类型 <span class="card-count">7张</span></h2>
+    <p>变量声明、常量、数据类型与类型系统</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">Kotlin中声明变量和只读变量分别使用什么关键字？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>变量</strong>使用<code>var</code>关键字声明，其值可以被重新赋值和修改。<br><br><strong>只读变量（常量）</strong>使用<code>val</code>关键字声明，一旦赋值后就不能再修改。val是value的缩写，表示"值不可变"。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">Kotlin变量声明的完整语法格式是什么？各部分分别代表什么含义？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">语法格式：<code>var 变量名: 类型 = 值</code><br><br>例如：<code>var experiencePoints: Int = 5</code><br><br>各部分含义：<br>• <code>var</code>：声明可变变量的关键字<br>• <code>experiencePoints</code>：变量名<br>• <code>: Int</code>：冒号后指定变量的数据类型<br>• <code>=</code>：赋值运算符<br>• <code>5</code>：变量的初始值</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">什么是类型推断？Kotlin在什么情况下可以省略类型声明？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>类型推断</strong>是指Kotlin编译器能够根据变量的初始值自动推断出变量的数据类型，开发者无需显式指定类型。<br><br>当变量在声明时就提供了初始值时，可以省略类型声明。例如：<br><code>var experiencePoints = 5</code>  // 编译器自动推断为Int类型<br><br>但如果声明时没有初始值（延迟赋值），则必须显式指定类型。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">Kotlin的静态类型系统有什么特点和优势？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin使用<strong>静态类型系统</strong>，特点是编译器会按类型标识代码定义，以确保编码有效。<br><br>优势：<br>• <strong>类型安全</strong>：在编译时就能发现类型不匹配错误，避免运行时崩溃<br>• <strong>静态类型检查</strong>：IDE在代码输入时就开始检测，一旦发现类型不匹配就立即指出（红色波浪线）<br>• 代码更可靠，减少运行时错误<br>• IDE能提供更好的代码补全和重构支持</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">列举Kotlin中6种常用的内置数据类型及其用途。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin常用内置数据类型：<br>• <strong>String</strong>：字符串类型，存储文本数据<br>• <strong>Char</strong>：单字符类型，存储单个Unicode字符<br>• <strong>Boolean</strong>：布尔类型，值为true或false<br>• <strong>Int</strong>：整数类型，存储整数<br>• <strong>Double</strong>：双精度浮点数，存储小数<br>• <strong>List</strong>：列表集合，存储有序元素集合<br>• <strong>Set</strong>：集合，存储无重复元素的集合<br>• <strong>Map</strong>：映射，存储键值对集合</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">var和val的区别是什么？分别在什么场景下使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>var</strong>（variable）：可变变量，值可以被重新赋值修改。适用于需要变化的数据，如玩家的健康值、经验值等会变化的状态。<br><br><strong>val</strong>（value）：只读变量，一旦初始化后不能再修改。适用于不需要改变的值，如玩家名字、常量配置等固定不变的数据。<br><br>最佳实践：优先使用val，只有在确定需要修改时才用var。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">+=运算符的作用是什么？请举例说明。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><code>+=</code>是<strong>加法赋值运算符</strong>，作用是将变量当前值加上右边的值后再赋值给变量本身。<br><br>例如：<br><code>var experiencePoints = 5</code><br><code>experiencePoints += 5</code>  // 等价于 experiencePoints = experiencePoints + 5<br>// 结果为10<br><br>类似的还有：-=、*=、/=、%=等复合赋值运算符。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch3">
+  <div class="section-header">
+    <h2>第3章 条件语句 <span class="card-count">8张</span></h2>
+    <p>if/else、when表达式、比较运算符与字符串模板</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">Kotlin中if/else语句的基本结构是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">if/else语句基本结构：<br><br><code>if (条件) {</code><br><code>&nbsp;&nbsp;// 条件为true时执行</code><br><code>} else {</code><br><code>&nbsp;&nbsp;// 条件为false时执行</code><br><code>}</code><br><br>if后面跟布尔条件表达式，条件为true执行if分支，为false执行else分支。else分支是可选的。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">Kotlin中的==和===有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>==</strong>：<strong>结构相等</strong>运算符，比较两个对象的内容是否相等（调用equals方法）。对于字符串，比较的是字符内容是否相同。<br><br><strong>===</strong>：<strong>引用相等</strong>运算符，检查两个变量是否引用着同一个对象实例，即是否指向内存堆上的同一地址。<br><br>注意：在Java中==是引用比较，而Kotlin中==是结构相等（相当于Java的equals）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">列举Kotlin中6种常用的比较运算符。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin常用比较运算符：<br>• <code>&lt;</code> 小于<br>• <code>&lt;=</code> 小于等于<br>• <code>&gt;</code> 大于<br>• <code>&gt;=</code> 大于等于<br>• <code>==</code> 等于（结构相等）<br>• <code>!=</code> 不等于（结构不等）<br>• <code>===</code> 引用相等<br>• <code>!==</code> 引用不等</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">Kotlin的when表达式是什么？它与Java的switch语句有何不同？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>when表达式</strong>是Kotlin中的多路分支结构，类似于Java的switch但更强大。<br><br>与Java switch的不同：<br>• 不需要break，匹配到后自动停止<br>• 可以匹配各种类型（不仅是整数和枚举）<br>• 支持范围匹配（in 90..99）、类型匹配等<br>• 可以作为表达式使用，返回值<br>• 支持else分支（类似default）<br>• 可以组合多个条件（逗号分隔）</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">什么是字符串模板？Kotlin中如何使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>字符串模板</strong>是Kotlin中在字符串中插入变量或表达式的便捷方式。<br><br>使用方式：<br>• <code>$变量名</code>：插入变量值<br>• <code>${表达式}</code>：插入表达式的计算结果<br><br>例如：<br><code>println("$name is in excellent condition!")</code><br><code>println("Total: ${a + b}")</code><br><br>比字符串拼接（+）更简洁易读。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">Kotlin中if是语句还是表达式？两者有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">在Kotlin中，<strong>if可以是表达式</strong>，即它可以返回一个值。<br><br>区别：<br>• <strong>语句</strong>：执行一个操作，不返回值<br>• <strong>表达式</strong>：计算并返回一个值<br><br>例如，可以将if表达式的结果直接赋值给变量：<br><code>val max = if (a > b) a else b</code><br><br>这也是Kotlin没有三元运算符（?:）的原因，因为if表达式已经能实现相同功能。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">in运算符在when表达式中有什么作用？请举例说明。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><code>in</code>运算符用于判断值是否在某个范围内，可以用在when表达式的分支中。<br><br>例如：<br><code>when (healthPoints) {</code><br><code>&nbsp;&nbsp;100 -> "极佳"</code><br><code>&nbsp;&nbsp;in 90..99 -> "有轻微擦伤"</code><br><code>&nbsp;&nbsp;in 75..89 -> "有轻伤"</code><br><code>&nbsp;&nbsp;in 15..74 -> "看起来受伤很重"</code><br><code>&nbsp;&nbsp;else -> "情况不妙"</code><br><code>}</code><br><br><code>..</code>运算符创建的是闭区间（包含两端）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">什么是控制流？Kotlin中有哪些控制流结构？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>控制流</strong>是指控制代码执行顺序的语法结构，允许开发者编写各种条件规则，决定应用程序代码段该在何时运行。<br><br>Kotlin中的控制流结构：<br>• <code>if/else</code> 语句/表达式<br>• <code>when</code> 表达式（多路分支）<br>• <code>for</code> 循环<br>• <code>while</code> 循环<br>• <code>do/while</code> 循环<br>• 范围（range）和迭代</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch4">
+  <div class="section-header">
+    <h2>第4章 函数 <span class="card-count">8张</span></h2>
+    <p>函数定义、参数、返回值与函数式思维</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是函数？为什么要使用函数？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>函数</strong>是能完成某项特定任务的可复用代码块。<br><br>使用函数的原因：<br>• <strong>代码复用</strong>：避免重复编写相同逻辑<br>• <strong>模块化</strong>：将复杂任务分解为小的、易管理的部分<br>• <strong>可读性</strong>：函数名能清晰表达代码的意图<br>• <strong>可维护性</strong>：修改一处，处处生效<br>• <strong>抽象</strong>：使用者只需知道函数做什么，无需知道怎么做</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">Kotlin中定义函数的语法是什么？各部分分别代表什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">函数定义语法：<br><code>fun 函数名(参数名: 参数类型): 返回类型 {</code><br><code>&nbsp;&nbsp;函数体</code><br><code>}</code><br><br>各部分含义：<br>• <code>fun</code>：声明函数的关键字<br>• 函数名：描述函数功能的名称<br>• 参数列表：输入数据，格式为"名称: 类型"<br>• 返回类型：函数返回值的数据类型<br>• 函数体：函数执行的代码</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">什么是函数参数默认值？如何使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>参数默认值</strong>是指在函数定义时为参数指定一个默认值，调用函数时可以省略该参数，此时使用默认值。<br><br>定义方式：<br><code>fun greet(name: String = "陌生人") {</code><br><code>&nbsp;&nbsp;println("你好, $name!")</code><br><code>}</code><br><br>调用方式：<br><code>greet("Madrigal")</code>  // 使用传入值<br><code>greet()</code>  // 使用默认值"陌生人"<br><br>可以减少重载函数的数量。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">什么是单表达式函数？Kotlin中如何简化书写？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">当函数体只有一个表达式时，可以使用<strong>单表达式函数</strong>语法，省略花括号和return，使用等号连接。<br><br>常规写法：<br><code>fun add(a: Int, b: Int): Int {</code><br><code>&nbsp;&nbsp;return a + b</code><br><code>}</code><br><br>简化写法：<br><code>fun add(a: Int, b: Int): Int = a + b</code><br><br>甚至可以省略返回类型（类型推断）：<br><code>fun add(a: Int, b: Int) = a + b</code></div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">函数的可见性修饰符有哪些？默认可见性是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin中的函数可见性修饰符：<br>• <strong>public</strong>（默认）：任何地方都可以访问<br>• <strong>private</strong>：只能在定义它的文件或类内部访问<br>• <strong>internal</strong>：同一模块内可见<br>• <strong>protected</strong>：仅在类和子类中可见（用于类成员）<br><br>默认可见性是<strong>public</strong>，即不加修饰符时函数是公开的。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">什么是Unit返回类型？什么时候使用它？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>Unit</strong>是Kotlin中表示"无意义值"的类型，相当于Java中的void。<br><br>当函数不返回任何有意义的值时，返回类型就是Unit。可以显式声明，也可以省略（默认就是Unit）。<br><br>例如：<br><code>fun printMessage(msg: String): Unit {</code><br><code>&nbsp;&nbsp;println(msg)</code><br><code>}</code><br><br>等价于省略Unit的写法。<br><br>与Java void不同，Unit是一个真实的类型，可以作为泛型参数使用。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">什么是Nothing类型？它的用途是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>Nothing</strong>类型表示函数永远不会正常返回（即永远不会执行完成）。<br><br>用途：<br>• 总是抛出异常的函数<br>• 无限循环的函数<br>• <code>TODO()</code>函数（抛出NotImplementedError）<br><br>例如：<br><code>fun fail(): Nothing {</code><br><code>&nbsp;&nbsp;throw RuntimeException("失败")</code><br><code>}</code><br><br>编译器知道Nothing函数不会返回，可以帮助进行类型推断和代码分析。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">函数重构（Extract Function）的好处是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">函数重构的好处：<br>• <strong>提高可读性</strong>：函数名自解释代码意图<br>• <strong>减少重复</strong>：相同逻辑只需写一次<br>• <strong>便于测试</strong>：可以独立测试每个函数<br>• <strong>降低复杂度</strong>：将大函数拆分为小函数<br>• <strong>代码复用</strong>：一个函数可以在多处调用<br><br>IntelliJ中操作：选中代码 → 右键 → Refactor → Extract → Function...</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch5">
+  <div class="section-header">
+    <h2>第5章 匿名函数与函数类型 <span class="card-count">8张</span></h2>
+    <p>匿名函数、函数类型、lambda与it关键字</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是匿名函数？它与具名函数有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>匿名函数</strong>是定义时不取名字的函数。<br><br>与具名函数的区别：<br>• 匿名函数没有名字<br>• 匿名函数通常整体传递给其他函数，或者从其他函数返回<br>• 匿名函数通过<strong>函数类型</strong>进行交互<br>• 匿名函数可以用来定制标准库中的内置函数行为<br><br>匿名函数和具名函数一样，需要被调用才能执行。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">什么是函数类型？它的语法格式是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>函数类型</strong>描述了一个函数的特征：参数类型和返回类型。就像Int、String是数据类型一样，函数也有自己的类型。<br><br>语法格式：<code>(参数类型列表) -> 返回类型</code><br><br>例如：<br>• <code>() -> String</code>：无参，返回String<br>• <code>(Int, Int) -> Int</code>：两个Int参数，返回Int<br>• <code>(String) -> Unit</code>：一个String参数，无返回值<br><br>函数类型变量可以存储匿名函数。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">匿名函数如何调用？如果不调用会怎样？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">匿名函数通过在花括号后加<code>()</code>来调用（如果有参数就在括号里传值参）。<br><br>例如：<br><code>{ println("Hello") }()</code>  // 调用并执行<br><br>如果不调用，匿名函数只是一个值（函数类型的实例），不会执行。<br><br>将匿名函数赋值给变量后，可以通过变量名调用：<br><code>val f = { println("Hi") }</code><br><code>f()</code>  // 调用</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">什么是it关键字？在什么情况下使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><code>it</code>是Kotlin的<strong>隐式单参数名称</strong>。当匿名函数只有一个参数时，可以不用显式声明参数名，直接用<code>it</code>来引用这个参数。<br><br>例如：<br><code>listOf(1,2,3).filter { it > 2 }</code><br><br>等价于：<br><code>listOf(1,2,3).filter { num -> num > 2 }</code><br><br>使用it可以让代码更简洁，是Kotlin的惯用写法。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">什么是函数参数？请举例说明其用途。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>函数参数</strong>是指将一个函数（通常是匿名函数）作为参数传递给另一个函数。<br><br>例如，String的count函数可以接受一个函数参数来自定义统计规则：<br><br><code>"Mississippi".count({ letter -></code><br><code>&nbsp;&nbsp;letter == 's'</code><br><code>})</code><br>// 结果为4（统计s的个数）<br><br>这样，标准库函数就能灵活支持各种自定义行为，而不需要为每种情况写不同的函数。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">什么是lambda表达式？它与匿名函数是什么关系？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>lambda表达式</strong>（简称lambda）就是匿名函数的另一种称呼，是函数类型的字面量。<br><br>lambda语法：<br><code>{ 参数列表 -> 函数体 }</code><br><br>最后一行表达式的值就是lambda的返回值（不需要return关键字）。<br><br>匿名函数和lambda本质上是同一个概念的不同说法：一段没有名字的函数代码，可以作为值传递。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">什么是尾随lambda语法（trailing lambda）？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">当函数的最后一个参数是函数类型时，可以将lambda参数移到圆括号外面，这就是<strong>尾随lambda语法</strong>。<br><br>普通写法：<br><code>list.filter({ it > 5 })</code><br><br>尾随lambda写法：<br><code>list.filter { it > 5 }</code><br><br>如果lambda是唯一的参数，甚至可以省略圆括号。这种语法让代码更简洁，也便于构建DSL。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">什么是函数引用？如何使用::运算符？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>函数引用</strong>是将已有的具名函数作为函数类型值来传递的方式，使用<code>::</code>运算符。<br><br>例如：<br><code>fun nameIsLong(name: String) = name.length >= 20</code><br><br>使用函数引用：<br><code>"Madrigal".run(::nameIsLong)</code><br><br>等价于：<br><code>"Madrigal".run { nameIsLong(it) }</code><br><br>函数引用可以让链式调用更清晰、更简洁。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch6">
+  <div class="section-header">
+    <h2>第6章 null安全与异常 <span class="card-count">8张</span></h2>
+    <p>可空类型、安全调用、空合并与异常处理</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是null？Kotlin为什么要设计null安全机制？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>null</strong>是一个特殊值，表示变量的值不存在。<br><br>Kotlin设计null安全的原因：在Java等语言中，NullPointerException（空指针异常）是应用崩溃的最常见原因。因为任何引用类型变量都可能为null，而调用null的方法会导致崩溃。<br><br>Kotlin反其道而行之：<strong>默认情况下变量不可为null</strong>，从编译层面杜绝了空指针问题，从根源上解决了运行时崩溃。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">Kotlin中如何声明可空类型？语法是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">在类型名后面加问号<code>?</code>来声明可空类型。<br><br>例如：<br>• <code>var name: String?</code> —— 可空字符串<br>• <code>var age: Int?</code> —— 可空整数<br><br>含义：变量既可以存储对应类型的值，也可以存储null。<br><br>默认情况下（不加?），Kotlin的所有类型都是非空的，不能赋值为null。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">什么是安全调用操作符？如何使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>安全调用操作符</strong>是<code>?.</code>，用于在可空类型变量上安全地调用方法或访问属性。<br><br>如果变量不为null，就正常调用；如果为null，则整个表达式返回null，不会抛出异常。<br><br>例如：<br><code>val len: Int? = beverage?.length</code><br><br>如果beverage是null，len也为null；如果beverage不为null，len为字符串长度。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">什么是空合并操作符（Elvis运算符）？它的作用是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>空合并操作符</strong>是<code>?:</code>（又称Elvis运算符），用于在表达式为null时提供一个默认值。<br><br>语法：<code>表达式 ?: 默认值</code><br><br>如果左边表达式不为null，返回左边的值；如果为null，返回右边的默认值。<br><br>例如：<br><code>val drink = beverage ?: "Buttered Ale"</code><br><br>含义：如果beverage不为null就用它，否则用"Buttered Ale"作为默认值。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">let函数如何与安全调用配合使用处理可空值？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><code>?.let { }</code>是处理可空值的常用模式：当变量不为null时执行lambda，为null时不执行。<br><br>例如：<br><code>beverage?.let {</code><br><code>&nbsp;&nbsp;println(it.capitalize())</code><br><code>}</code><br><br>等价于：<br><code>if (beverage != null) {</code><br><code>&nbsp;&nbsp;println(beverage.capitalize())</code><br><code>}</code><br><br>使用let更简洁，并且支持链式调用风格。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">什么是非空断言（!!）？什么时候使用它？有什么风险？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>非空断言</strong>是<code>!!</code>运算符，作用是将可空类型强制转换为非空类型。<br><br>例如：<code>beverage!!.length</code><br><br>如果变量不为null，正常调用；如果为null，直接抛出NullPointerException。<br><br><strong>风险</strong>：会绕过Kotlin的null安全保护，可能导致运行时崩溃。<br><br><strong>使用场景</strong>：应尽量避免使用。只有在非常确定变量不可能为null，但编译器无法推断出来的极少数情况下才使用。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">Kotlin中异常是如何处理的？try/catch语法是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin使用try/catch块处理异常，语法与Java类似。<br><br>语法：<br><code>try {</code><br><code>&nbsp;&nbsp;// 可能抛出异常的代码</code><br><code>} catch (e: 异常类型) {</code><br><code>&nbsp;&nbsp;// 处理异常</code><br><code>} finally {</code><br><code>&nbsp;&nbsp;// 无论是否异常都执行</code><br><code>}</code><br><br>与Java不同的是，Kotlin中的try是表达式，可以返回值。Kotlin也没有受检异常（checked exceptions）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">什么是智能类型转换（smart cast）？它在null检查中有什么作用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>智能类型转换</strong>是Kotlin编译器的特性：当编译器确定一个可空变量在某个作用域内不可能为null时，会自动将其转换为非空类型，无需额外的安全调用。<br><br>例如：<br><code>if (beverage != null) {</code><br><code>&nbsp;&nbsp;println(beverage.length)  // 自动转换为非空</code><br><code>}</code><br><br>在if块内，beverage被智能转换为String（而非String?），可以直接调用方法。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch7">
+  <div class="section-header">
+    <h2>第7章 字符串 <span class="card-count">8张</span></h2>
+    <p>字符串操作、正则表达式、解构与比较</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是字符串模板？Kotlin中有哪两种插值方式？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>字符串模板</strong>是指在字符串中嵌入变量或表达式的功能。<br><br>两种插值方式：<br>• <code>$变量名</code>：简单变量插值<br>• <code>${表达式}</code>：复杂表达式插值<br><br>例如：<br><code>println("Madrigal speaks with $tavernMaster about their order.")</code><br><code>println("Madrigal exclaims: ${toDragonSpeak(phrase)}")</code><br><br>比字符串拼接（+运算符）更简洁、更易读。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">substring函数的作用是什么？Kotlin中如何使用范围截取子串？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><code>substring</code>函数用于从现有字符串中截取一部分，返回新字符串。<br><br>Kotlin支持使用IntRange作为参数：<br><br><code>val result = str.substring(0 until index)</code><br><br><code>until</code>创建不包含上限的范围（左闭右开）。<br><br>例如，从"Taernyl's Folly"截出老板名：<br><code>val tavernMaster = TAVERN_NAME.substring(0 until indexOfApostrophe)</code><br>// 结果为"Taernyl"</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">split函数的作用是什么？返回什么类型？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><code>split</code>函数用于按照指定分隔符将字符串分割成多个子字符串。<br><br>返回类型是<code>List&lt;String&gt;</code>（字符串列表）。<br><br>例如：<br><code>val data = "shandy,Dragon's Breath,5.91".split(',')</code><br>// 结果为["shandy", "Dragon's Breath", "5.91"]<br><br>可以通过索引访问各元素：data[0]、data[1]、data[2]。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">什么是解构（destructuring）？在字符串split后如何使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>解构</strong>是一种Kotlin语法特性，允许在一个表达式中同时为多个变量赋值。<br><br>split返回List集合，支持解构赋值：<br><br>常规写法：<br><code>val data = menuData.split(',')</code><br><code>val type = data[0]</code><br><code>val name = data[1]</code><br><code>val price = data[2]</code><br><br>解构写法：<br><code>val (type, name, price) = menuData.split(',')</code><br><br>更简洁，可读性更好。除了List，Map、Pair和数据类也支持解构。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">Kotlin中的字符串是可变的还是不可变的？replace函数真的修改了原字符串吗？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin中的字符串是<strong>不可变的</strong>（immutable），和Java一样。<br><br><code>replace</code>等字符串操作函数并不会修改原字符串，而是<strong>创建并返回一个新字符串</strong>。<br><br>即使使用var定义字符串变量，重新赋值时也是让变量指向一个新的字符串对象，原字符串对象本身不会被改变。<br><br>不可变特性使字符串更安全，避免了意外修改带来的bug。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">什么是正则表达式？Kotlin中如何使用Regex和replace函数结合？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>正则表达式（Regex）</strong>是一种用于模式匹配的工具，可以定义搜索模式来查找和替换匹配的字符。<br><br>Kotlin中使用Regex类：<br><code>phrase.replace(Regex("[aeiou]")) {</code><br><code>&nbsp;&nbsp;when (it.value) {</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;"a" -> "4"</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;"e" -> "3"</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;... // 其余映射</code><br><code>&nbsp;&nbsp;}</code><br><code>}</code><br><br>第一个参数是Regex（匹配模式），第二个参数是匿名函数（决定如何替换）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">字符串比较中，结构相等和引用相等有什么区别？分别用什么运算符？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>结构相等</strong>（==）：比较两个字符串的内容是否相同（每个字符是否一致）。这是最常用的字符串比较方式。<br><br><strong>引用相等</strong>（===）：检查两个变量是否指向内存堆上的同一个对象实例。<br><br>对于字符串比较，一般只关心内容是否相等，所以几乎总是用<code>==</code>。<br><br>注意：Java中==是引用比较（相当于Kotlin的===），而Kotlin中==是结构相等（相当于Java的equals）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">列举5种Kotlin中的转义字符及其含义。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin常用转义字符：<br>• <code>\t</code> —— Tab键（制表符）<br>• <code>\n</code> —— 新行（换行）<br>• <code>\r</code> —— 回车<br>• <code>\"</code> —— 双引号<br>• <code>\'</code> —— 单引号<br>• <code>\\</code> —— 反斜杠本身<br>• <code>\$</code> —— 美元符号<br>• <code>\uXXXX</code> —— Unicode字符<br><br>转义字符用于在字符串中表示那些有特殊含义或无法直接输入的字符。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch8">
+  <div class="section-header">
+    <h2>第8章 数 <span class="card-count">8张</span></h2>
+    <p>数字类型、类型转换、浮点数与格式化</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">Kotlin中有哪些常用数字类型？按位数从小到大列出。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin常用数字类型（均为有符号）：<br>• <strong>Byte</strong>：8位，范围 -128 ~ 127<br>• <strong>Short</strong>：16位，范围 -32768 ~ 32767<br>• <strong>Int</strong>：32位，范围约 -21亿 ~ 21亿<br>• <strong>Long</strong>：64位，范围约 -922京 ~ 922京<br>• <strong>Float</strong>：32位单精度浮点数<br>• <strong>Double</strong>：64位双精度浮点数<br><br>开发中最常用的是Int和Double。Short和Byte主要用于与Java遗留代码互操作或处理二进制数据。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">整数除法和浮点数除法有什么区别？如何确保得到小数结果？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">当两个操作数都是整数类型（如Int）时，Kotlin执行<strong>整数除法</strong>，结果也是整数，小数部分会被直接舍弃。<br><br>例如：10 / 100 = 0（Int）<br><br>如果至少有一个操作数是浮点类型（Double/Float），则执行<strong>浮点数除法</strong>，结果为小数。<br><br>例如：10 / 100.0 = 0.1（Double）<br><br>要确保得到小数结果，将其中一个数改为带小数点的形式（如100.0），或显式转换为Double。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">什么是浮点数精度问题？为什么10.1 - 5.91不等于4.19？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">浮点数是实数的<strong>近似值</strong>，使用二进制表示，无法精确表示所有十进制小数。因此浮点运算可能产生微小的误差。<br><br>例如：10.1 - 5.91 的实际结果是 4.1899999999999995，而不是 4.19。<br><br>这是计算机表示分数的固有特性：浮点数在精度（表达更广范围的数）和效率（计算速度）之间做了权衡。<br><br>对精度要求高的场景（如金融计算），应使用BigDecimal类型。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">如何格式化Double类型的输出，保留指定小数位数？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">使用String的<code>format</code>函数，配合格式化字符串来控制小数位数。<br><br>例如，保留2位小数：<br><code>"%.2f".format(remainingBalance)</code><br><br>其中：<br>• <code>%</code> —— 格式化占位符起始<br>• <code>.2</code> —— 保留2位小数（四舍五入）<br>• <code>f</code> —— 浮点数格式<br><br>Kotlin的格式化字符串与Java、C/C++等语言中的标准格式化规则一致。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">toInt()函数转换Double时是四舍五入还是截断小数？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Double调用<code>toInt()</code>转换时，是<strong>直接舍弃小数部分</strong>（截断），不是四舍五入。这也叫精度损失。<br><br>例如：<br><code>4.9.toInt()</code> = 4（不是5）<br><code>4.1899.toInt()</code> = 4<br><br>如果需要四舍五入取整，使用<code>roundToInt()</code>函数：<br><code>4.9.roundToInt()</code> = 5<br><br>需导入kotlin.math.roundToInt。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">Kotlin中字符串转数字有哪些安全的方式？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">字符串转数字的函数：<br>• <code>toInt()</code> / <code>toDouble()</code>：直接转换，格式错误会抛出异常<br>• <code>toIntOrNull()</code> / <code>toDoubleOrNull()</code>：<strong>安全转换</strong>，格式错误时返回null而非抛出异常<br><br>安全转换配合空合并运算符使用很方便：<br><code>val gold: Int = "5.91".toIntOrNull() ?: 0</code><br><br>建议优先使用带OrNull的安全转换函数，避免异常。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">什么是取模运算符（%）？它的作用是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><code>%</code>是<strong>取模运算符</strong>（又称取余运算符），用于求两个数相除的余数。<br><br>例如：<br><code>10 % 3 = 1</code>（10除以3余1）<br><br>常见用途：<br>• 获取小数部分：<code>4.19 % 1 = 0.19</code><br>• 判断奇偶：<code>num % 2 == 0</code> 为偶数<br>• 循环计数器重置等<br><br>在钱包换算场景中，可用 % 1 取出小数部分（银币）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">Byte和Short类型在什么场景下使用？为什么一般不常用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>Byte（8位）</strong>和<strong>Short（16位）</strong>在日常开发中很少使用，主要用于以下场景：<br>• 与Java遗留代码互操作<br>• 从文件读取数据流<br>• 处理图像等二进制数据（1个像素常由3字节表示RGB）<br>• 与不支持32位指令的CPU原生代码交互<br><br>大多数情况下，表示整数直接用<code>Int</code>即可，需要更大的数就用<code>Long</code>。用Byte/Short节省的内存很有限，反而增加了类型转换的麻烦。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch9">
+  <div class="section-header">
+    <h2>第9章 标准库函数 <span class="card-count">8张</span></h2>
+    <p>apply/let/run/with/also/takeIf六大标准函数</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">Kotlin标准库中的apply函数有什么作用？返回值是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>apply</strong>函数是一个配置函数，可以对接收者对象调用一系列函数来配置它。<br><br>特点：<br>• 在lambda中，接收者作为<strong>隐式this</strong>（相关作用域），可直接调用其方法<br>• <strong>返回接收者对象本身</strong><br><br>用途：对象初始化配置，减少重复变量名。<br><br>示例：<br><code>File("menu.txt").apply {</code><br><code>&nbsp;&nbsp;setReadable(true)</code><br><code>&nbsp;&nbsp;setWritable(true)</code><br><code>}</code></div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">let函数的作用是什么？返回值是什么？常见用途有哪些？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>let</strong>函数将接收者作为参数传入lambda（用it引用），返回lambda的结果。<br><br>特点：<br>• 接收者作为<strong>it参数</strong>传入lambda<br>• <strong>返回lambda的最后一行结果</strong><br><br>常见用途：<br>• 配合<code>?.</code>处理可空值（非空时才执行）<br>• 限制变量作用域，防止被意外修改<br>• 链式调用，避免中间变量<br><br>示例：<code>vipGuest?.let { "Welcome, $it" } ?: "默认欢迎语"</code></div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">run函数与apply函数有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">相同点：都有相关作用域（隐式this），在lambda中可直接调用接收者的方法。<br><br>不同点：<strong>返回值不同</strong><br>• <strong>apply</strong>：返回<strong>接收者对象</strong>本身<br>• <strong>run</strong>：返回<strong>lambda结果</strong><br><br>用途差异：<br>• apply 用于配置对象（创建并初始化）<br>• run 用于在对象上执行计算并返回结果<br><br>示例：<br><code>file.run { readText().contains("Dragon") }</code> // 返回Boolean</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">also函数的作用是什么？与let有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>also</strong>函数将接收者作为参数传入lambda（it引用），但<strong>返回接收者对象本身</strong>。<br><br>与let的区别：<br>• <code>let</code>：返回lambda结果<br>• <code>also</code>：返回接收者对象<br><br>also适合在链式调用中执行副作用（如打印日志），因为它返回原对象，可以继续链式调用。<br><br>示例：<br><code>File("file.txt")</code><br><code>&nbsp;&nbsp;.also { print(it.name) }</code><br><code>&nbsp;&nbsp;.also { fileContents = it.readLines() }</code></div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">takeIf函数的作用是什么？如何使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>takeIf</strong>函数判断lambda中的条件表达式（predicate），如果为true则返回接收者对象；如果为false则返回null。<br><br>用途：在链式调用中做条件判断，当满足条件时才继续后续操作。<br><br>示例：<br><code>val content = File("myfile.txt")</code><br><code>&nbsp;&nbsp;.takeIf { it.canRead() && it.canWrite() }</code><br><code>&nbsp;&nbsp;?.readText()</code><br><br>相比if/else写法，takeIf不需要临时变量，代码更简洁。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">with函数与run函数有什么区别？为什么不推荐使用with？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">功能行为基本一样：都有相关作用域，都返回lambda结果。<br><br>区别在于<strong>调用方式不同</strong>：<br>• <code>str.run { length }</code> —— 在对象上调用<br>• <code>with(str) { length }</code> —— 作为参数传入<br><br>不推荐使用with的原因：<br>• 调用风格不一致（不是链式调用的一部分）<br>• 与其他标准函数（都是接收者调用）的使用方式不统一<br>• 代码可读性稍差<br><br>建议：优先使用run而不是with。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">takeUnless和takeIf有什么区别？推荐使用哪个？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>takeIf</strong>：条件为true时返回接收者，为false返回null<br><strong>takeUnless</strong>：条件为false时返回接收者，为true返回null<br><br>两者功能相反。<br><br><strong>推荐使用takeIf</strong>，因为：<br>• "如果满足条件就返回"的逻辑更自然、更直观<br>• 复杂条件下takeUnless的双重否定更难理解<br>• 人脑中处理正向逻辑比反向逻辑更容易<br><br>只有非常简单的条件（如判断某个否定属性）时，takeUnless才可以接受。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">请用一句话总结六大标准函数的区别（返回值 + 是否传参）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">按返回值和是否将接收者传入lambda分类：<br><br><strong>返回lambda结果</strong>：<br>• let —— 接收者作为it传入（是传参）<br>• run —— 接收者作为隐式this（不传参，有作用域）<br><br><strong>返回接收者对象</strong>：<br>• apply —— 接收者作为隐式this（不传参，有作用域）<br>• also —— 接收者作为it传入（是传参）<br><br><strong>条件返回</strong>：<br>• takeIf —— 条件满足返回接收者，否则null<br>• takeUnless —— 条件不满足返回接收者，否则null</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch10">
+  <div class="section-header">
+    <h2>第10章 List与Set <span class="card-count">8张</span></h2>
+    <p>集合基础、List与Set的创建操作与遍历</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是集合？Kotlin中常见的集合类型有哪些？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>集合</strong>是用来存储一组相关数据的数据结构，可以作为值参传给函数。<br><br>Kotlin常见集合类型：<br>• <strong>List</strong>：有序集合，允许重复元素，通过索引访问<br>• <strong>Set</strong>：无序集合，元素唯一（不重复）<br>• <strong>Map</strong>：键值对集合，通过键获取值<br><br>和其他变量类型一样，集合也分为只读和可变两种。默认创建的是只读集合。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">如何创建只读List和可变List？分别用什么函数？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">创建<strong>只读List</strong>使用<code>listOf()</code>函数，创建后不能添加或删除元素。<br><br>创建<strong>可变List</strong>使用<code>mutableListOf()</code>函数，可以添加、删除、修改元素。<br><br>例如：<br><code>val readOnly = listOf("Eli", "Mordoc", "Sophie")</code><br><code>val mutable = mutableListOf("Eli", "Mordoc")</code><br><br>默认返回的是只读集合，这体现了Kotlin的安全设计理念。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">什么是参数化类型（泛型）？List<String>中的<String>表示什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>参数化类型</strong>（泛型）是指放在尖括号<code>&lt;&gt;</code>中的类型参数，它告诉编译器集合里将要存入什么类型的数据。<br><br><code>List&lt;String&gt;</code>表示这是一个只能存储String类型元素的列表。<br><br>好处：<br>• <strong>类型安全</strong>：编译器会阻止添加错误类型的元素<br>• <strong>自动类型推断</strong>：取出元素时不需要手动类型转换<br>• 代码更清晰，可读性更好</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">List的索引是从0开始还是从1开始？越界访问会怎样？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">List是<strong>零索引</strong>（zero-indexed）的，即第一个元素的索引是0，第二个是1，以此类推。<br><br>访问元素方式：使用方括号索引操作符 <code>list[index]</code><br><br>如果使用不存在的索引访问元素，会抛出<strong>ArrayIndexOutOfBoundsException</strong>（数组索引越界异常）。<br><br>安全获取元素可以使用<code>getOrNull(index)</code>或<code>getOrElse(index) { 默认值 }</code>。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">Set和List有什么区别？分别在什么场景下使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">区别：<br>• <strong>List</strong>：有序，允许重复元素，通过索引访问<br>• <strong>Set</strong>：无序（不保证顺序），元素唯一不重复<br><br>使用场景：<br>• 用List当需要按顺序存储、通过索引访问、或允许重复时<br>• 用Set当需要确保元素唯一性、或需要去重时<br><br>例如，存储顾客名单用List，存储不重复的顾客姓名用Set。<br><br>对应的可变版本：mutableListOf / mutableSetOf。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">如何安全地获取List中的元素？有哪些方法？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">安全获取List元素的方法：<br>• <code>first()</code> —— 获取第一个元素，空集合抛异常<br>• <code>last()</code> —— 获取最后一个元素，空集合抛异常<br>• <code>firstOrNull()</code> —— 获取第一个元素，空集合返回null<br>• <code>getOrNull(index)</code> —— 按索引获取，越界返回null<br>• <code>getOrElse(index) { 默认值 }</code> —— 越界返回默认值<br>• <code>elementAtOrNull(index)</code> —— 按索引安全获取<br><br>带OrNull后缀的函数更安全，不会抛出异常。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">什么是shuffled()函数？它有什么作用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><code>shuffled()</code>函数用于将集合中的元素随机打乱顺序，返回一个新的列表。<br><br>例如：<br><code>uniquePatrons.shuffled().first()</code><br>// 随机获取一个顾客<br><br>用途：<br>• 随机选取元素<br>• 打乱顺序（如洗牌）<br>• 随机排序展示<br><br>原集合不会被修改，返回的是新的打乱后的集合。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">forEach函数的作用是什么？如何使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><code>forEach</code>函数用于遍历集合中的每一个元素，对每个元素执行指定的操作。<br><br>语法：<br><code>collection.forEach { 对每个元素的操作 }</code><br><br>在lambda中，<code>it</code>代表当前遍历到的元素。<br><br>例如：<br><code>patronGold.forEach { patron, balance -></code><br><code>&nbsp;&nbsp;println("$patron: $balance")</code><br><code>}</code><br><br>比传统for循环更简洁、更函数式。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch11">
+  <div class="section-header">
+    <h2>第11章 Map <span class="card-count">8张</span></h2>
+    <p>键值对集合、Map的读写操作与遍历</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是Map？它与List和Set有什么不同？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>Map</strong>是存储键值对（key-value pair）的集合类型。<br><br>与List/Set的不同：<br>• <strong>存储方式</strong>：Map存储键值对，List/Set存储单个元素<br>• <strong>访问方式</strong>：Map通过键（key）获取值，List通过索引<br>• <strong>键的唯一性</strong>：Map的键必须唯一（类似Set的元素），值可以重复<br>• <strong>是否有序</strong>：与Set一样，不保证顺序<br><br>Map的键具有唯一性，值可以重复。如果添加重复键的项，新值会替换旧值。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">如何创建只读Map和可变Map？to关键字是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">创建<strong>只读Map</strong>使用<code>mapOf()</code>函数。<br>创建<strong>可变Map</strong>使用<code>mutableMapOf()</code>函数。<br><br><code>to</code>不是关键字，是一个函数（中缀表示法），用于将左右两个值组成一个Pair（键值对）。<br><br>例如：<br><code>mapOf("Eli" to 10.5, "Mordoc" to 8.0)</code><br><br>等价于：<br><code>mapOf(Pair("Eli", 10.5), Pair("Mordoc", 8.0))</code><br><br>to的写法更简洁、更符合自然语言。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">读取Map中的值有哪些方法？各有什么特点？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">读取Map值的常用方法：<br>• <code>map[key]</code> —— 取值运算符，键不存在返回null<br>• <code>getValue(key)</code> —— 键不存在抛出NoSuchElementException<br>• <code>getOrElse(key) { 默认值 }</code> —— 键不存在返回默认值（由lambda计算）<br>• <code>getOrDefault(key, 默认值)</code> —— 键不存在返回指定默认值<br><br>推荐使用getOrElse或getOrDefault，更安全也更灵活。[]操作符最简洁但要注意null返回。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">向可变Map中添加或修改元素有哪些方法？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">修改可变Map的常用方法：<br>• <code>map[key] = value</code> —— 赋值运算符，添加或更新<br>• <code>map += key to value</code> —— 追加赋值运算符<br>• <code>map.put(key, value)</code> —— put方法（Java风格）<br>• <code>map.putAll(另一个Map)</code> —— 批量添加<br>• <code>map.getOrPut(key) { 默认值 }</code> —— 不存在则添加并返回，存在则返回已有值<br><br>getOrPut很实用，可以省去先判断后添加的步骤。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">如何从Map中删除元素？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">从Map中删除元素的方法：<br>• <code>map.remove(key)</code> —— 删除指定键的键值对，返回被删除的值<br>• <code>map -= key</code> —— 删除指定键的项（运算符形式）<br>• <code>map.clear()</code> —— 清空整个Map<br>• <code>map - key</code> —— 返回删除指定键后的新Map（不修改原Map）<br><br>注意 -= 修改原Map，而 - 返回新的Map（不修改原Map）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">如何遍历Map？forEach中lambda的参数是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">使用<code>forEach</code>遍历Map：<br><br><code>patronGold.forEach { patron, balance -></code><br><code>&nbsp;&nbsp;println("$patron, balance: $balance")</code><br><code>}</code><br><br>lambda接收两个参数：第一个是键（key），第二个是值（value）。<br><br>也可以用for循环遍历：<br><code>for ((key, value) in map) { ... }</code><br><br>遍历Map时，键值对的顺序不保证（取决于具体实现）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">如果向Map中添加了重复的键，会发生什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">如果向Map中添加重复键的键值对，<strong>新的值会替换旧的值</strong>。<br><br>例如：<br><code>val map = mutableMapOf("Sophie" to 1.0)</code><br><code>map += "Sophie" to 6.0</code><br><code>// 结果：{Sophie=6.0}</code><br><br>这是因为Map的键必须唯一，相同的键只能对应一个值。<br><br>在初始化时提供重复键也一样，后面的会覆盖前面的。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">List、Set、Map三者的核心特性对比是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">三者对比总结：<br>• <strong>List</strong>：有序、允许重复、存储元素、支持解构<br>• <strong>Set</strong>：无序、元素唯一、存储元素、不支持解构<br>• <strong>Map</strong>：无序、键唯一、存储键值对、不支持解构<br><br>共同点：<br>• 默认都是只读的，需要修改要使用mutable版本<br>• 都使用参数化类型（泛型）指定元素类型<br>• 都支持forEach遍历和各种函数式操作<br><br>选择建议：按索引访问用List，去重用Set，按键查找用Map。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch12">
+  <div class="section-header">
+    <h2>第12章 定义类 <span class="card-count">8张</span></h2>
+    <p>面向对象基础、类定义、属性与封装</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是类？什么是对象（实例）？两者有什么关系？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>类（class）</strong>是一类事物的定义或蓝图，描述事物包含哪些数据和能做什么工作。<br><br><strong>对象（实例，instance）</strong>是根据类的定义创建的具体个体。<br><br>关系：类是蓝图/模板，对象是根据蓝图建造出来的具体实例。一个类可以创建多个实例。<br><br>例如：Player类是玩家的定义，而player = Player()是一个具体的玩家实例。就像建筑图纸是类，按图纸盖的房子是实例。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">Kotlin中如何定义一个类？如何实例化一个类？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">定义类使用<code>class</code>关键字：<br><code>class Player</code>  // 最简单的空类<br><br>带类体的类：<br><code>class Player {</code><br><code>&nbsp;&nbsp;// 属性和函数</code><br><code>}</code><br><br>实例化（创建对象）：在类名后加括号调用构造函数<br><code>val player = Player()</code><br><br>注意：Kotlin中实例化类不需要new关键字，直接像调用函数一样调用构造函数即可。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">什么是类属性和类函数？它们分别定义在哪里？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>类属性</strong>：定义在类体中的变量，描述类的状态/数据。例如玩家的名字、健康值等。<br><br><strong>类函数</strong>：定义在类体中的函数，描述类的行为/功能。例如玩家的castFireball等。<br><br>两者都定义在类的结构体（class body，即花括号）中。<br><br>外部通过点语法访问：<br><code>player.name</code>  // 访问属性<br><code>player.castFireball()</code>  // 调用函数</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">什么是封装（encapsulation）？为什么要封装？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>封装</strong>是面向对象编程的核心概念之一：一个类应该<strong>有选择地暴露其函数和属性</strong>，决定其他对象该如何与之交互。不需要暴露的实现细节应该私有保护起来。<br><br>为什么要封装：<br>• <strong>降低复杂度</strong>：外部只需知道公开接口，不需要了解内部细节<br>• <strong>提高安全性</strong>：防止外部直接修改内部状态导致错误<br>• <strong>便于维护</strong>：内部实现可以自由修改，不影响外部使用<br>• <strong>代码更清晰</strong>：公开接口代表了类的核心职责</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">Kotlin中有哪些可见性修饰符？默认可见性是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin的可见性修饰符：<br>• <strong>public</strong>（默认）：任何地方都可以访问<br>• <strong>private</strong>：只能在定义它的类（或文件）内部访问<br>• <strong>internal</strong>：同一模块内可见<br>• <strong>protected</strong>：仅类本身和子类可见<br><br>默认是public，即不加修饰符的属性和函数都是公开的。<br><br>封装原则：只暴露必要的公开接口，其他实现细节尽量声明为private。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">属性的getter和setter是什么？Kotlin中如何自定义它们？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin中的属性默认有自动生成的getter（读取）和setter（写入）。<br><br>可以自定义getter和setter：<br><code>var name = _name</code><br><code>&nbsp;&nbsp;get() = field.capitalize()</code><br><code>&nbsp;&nbsp;private set(value) {</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;field = value.trim()</code><br><code>&nbsp;&nbsp;}</code><br><br><code>field</code>是幕后字段（backing field），代表属性的实际存储值。<br><br>自定义getter可以在读取时动态计算，自定义setter可以在写入时做验证或转换。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">什么是点语法（dot notation）？如何使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>点语法</strong>是指通过<code>.</code>运算符来访问对象的属性和方法。<br><br>例如：<br><code>player.castFireball()</code>  // 调用player对象的castFireball函数<br><code>player.healthPoints</code>  // 访问player对象的healthPoints属性<br><br>只要函数或属性定义在某个类型中，就可以用点语法在该类型的实例上调用它。<br><br>点语法是面向对象编程中最基本的调用方式。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">为什么要把相关的函数和属性组织到类中？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">把相关代码组织到类中的好处：<br>• <strong>代码组织清晰</strong>：相关的数据和行为放在一起，便于理解和维护<br>• <strong>职责分明</strong>：每个类负责一个特定的功能领域<br>• <strong>便于扩展</strong>：新增功能时知道该加到哪个类中<br>• <strong>可复用性</strong>：一个类可以创建多个实例，或被其他项目使用<br>• <strong>便于测试</strong>：可以独立测试每个类的行为<br><br>这就是面向对象编程的核心思想：将数据和行为封装到类中。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch13">
+  <div class="section-header">
+    <h2>第13章 初始化 <span class="card-count">8张</span></h2>
+    <p>构造函数、属性初始化、延迟初始化与惰性初始化</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是主构造函数？它在哪里定义？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>主构造函数</strong>是类最主要的构造函数，定义在类头中（类名后面的括号里）。<br><br>语法：<br><code>class Player(_name: String, _health: Int) {</code><br><code>&nbsp;&nbsp;var name = _name</code><br><code>&nbsp;&nbsp;var health = _health</code><br><code>}</code><br><br>主构造函数参数用于在创建实例时传入初始值，然后赋给类属性。<br><br>主构造函数没有函数体，初始化逻辑可以写在init块中。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">如何在主构造函数里直接定义属性？有什么好处？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">对于使用默认getter/setter的属性，可以在主构造函数参数前加<code>val</code>或<code>var</code>，一步完成参数声明和属性定义。<br><br>例如：<br><code>class Player(val name: String, var healthPoints: Int)</code><br><br>等价于：先声明参数，再在类体里赋值给同名属性。<br><br>好处：<br>• 代码更简洁，减少样板代码<br>• 不需要下划线前缀的临时参数变量<br>• 声明即定义，更清晰</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">什么是init初始化块？它在什么时候执行？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>init块</strong>（初始化块）是类中用于执行初始化逻辑的代码块，使用<code>init</code>关键字定义。<br><br>执行时机：在对象创建时，主构造函数执行后，其他函数调用前执行。可以有多个init块，按定义顺序执行。<br><br>用途：<br>• 执行初始化逻辑（验证参数、计算初始值等）<br>• 因为主构造函数没有函数体，复杂初始化放在init块中<br>• 对象声明（object）的初始化也用init块</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">什么是次构造函数？与主构造函数有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>次构造函数</strong>是在类体中定义的额外构造函数，使用<code>constructor</code>关键字定义。<br><br>与主构造函数的区别：<br>• 主构造函数定义在类头，次构造函数定义在类体<br>• 一个类只能有一个主构造函数，但可以有多个次构造函数<br>• 次构造函数必须先委托调用主构造函数（用this关键字）<br>• 次构造函数可以有自己的函数体<br><br>用途：提供多种创建实例的方式。Kotlin中通常用默认参数代替次构造函数。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">什么是延迟初始化（lateinit）？它有什么特点？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>延迟初始化</strong>使用<code>lateinit var</code>声明属性，表示属性不会在构造时初始化，而是在之后某个时刻再赋值。<br><br>特点：<br>• 只能用于var，不能用于val<br>• 不能用于可空类型<br>• 不能用于基本数据类型（Int、Double等）<br>• 在初始化前访问会抛出UninitializedPropertyAccessException<br>• 可以用::property.isLateinit检查是否已初始化<br><br>用途：那些无法在构造时确定值，但使用前一定会初始化的属性（如Android的Activity的视图绑定）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">什么是惰性初始化（lazy）？它与lateinit有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>惰性初始化</strong>使用<code>by lazy { }</code>委托，属性在首次被访问时才执行初始化代码计算值。<br><br>特点：<br>• 只能用于val（只读）<br>• 线程安全（默认）<br>• 只初始化一次，之后缓存结果<br>• 初始化代码在首次访问时执行<br><br>与lateinit的区别：<br>• lazy用于val，lateinit用于var<br>• lazy在首次访问时自动初始化，lateinit需要手动赋值<br>• lazy有缓存和线程安全保证<br><br>用途：计算开销大且可能用不到的属性。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">初始化块（init）和属性初始化器的执行顺序是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">执行顺序：<br>1. <strong>主构造函数参数</strong>传入<br>2. <strong>属性初始化器</strong>按声明顺序执行（属性赋值语句）<br>3. <strong>init块</strong>按声明顺序执行<br>4. <strong>次构造函数</strong>体执行（如果通过次构造函数创建）<br><br>注意：属性初始化器和init块是按它们在类中出现的顺序交替执行的，不是所有属性都先于所有init块。<br><br>建议：将属性定义放在前面，init块放在后面，代码更易读。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">实例化（instantiation）和初始化（initialization）有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>实例化</strong>：调用构造函数创建一个类的对象，为对象分配内存。强调"创建一个新对象"这个动作。<br><br><strong>初始化</strong>：给对象的属性赋初始值，让对象进入可用状态。包括属性赋值、init块执行等。强调"让对象准备好可用"的过程。<br><br>理论上，实例化是分配内存，初始化是赋值。但在实践中，这两个术语经常互换使用，都指"创建并准备好对象"的整个过程。<br><br>Kotlin中，调用构造函数时两者一起发生。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch14">
+  <div class="section-header">
+    <h2>第14章 继承 <span class="card-count">8张</span></h2>
+    <p>类继承、open关键字、重写与多态</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是继承？继承有什么好处？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>继承</strong>是面向对象的特性，允许一个类（子类）获取另一个类（父类/超类）的所有属性和函数，然后可以添加自己特有的功能。<br><br>好处：<br>• <strong>代码复用</strong>：公共属性和函数只需在父类写一次<br>• <strong>层级结构</strong>：用类的层级关系表示事物的分类<br>• <strong>多态</strong>：父类变量可以引用子类对象<br>• <strong>易扩展</strong>：添加新的子类很方便<br><br>例如：Room是父类，TownSquare、Tavern等是子类，它们共享name属性但各有特色。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">Kotlin中类默认可以被继承吗？如何让类允许被继承？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin中的类默认是<strong>封闭的（final）</strong>，不允许被继承。这与Java不同（Java默认可以继承）。<br><br>要让类允许被继承，需要在class前加<code>open</code>关键字：<br><code>open class Room(val name: String)</code><br><br>同样，要让函数或属性允许被重写，也需要加<code>open</code>关键字。<br><br>Kotlin的设计理念：默认封闭，只有明确标记为open的才可以被继承/重写，更安全。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">如何定义一个子类？子类继承父类的语法是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">子类继承父类使用<code>:</code>运算符，并调用父类的构造函数。<br><br>语法：<br><code>class TownSquare : Room("Town Square")</code><br><br>如果子类有主构造函数，必须在主构造函数中调用父类构造函数并传参。<br><br>子类会继承父类所有的非私有属性和函数。子类还可以添加自己的属性和函数。<br><br>示例：TownSquare继承了Room的name属性和description()函数，同时可以添加自己的独特行为。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">什么是重写（override）？如何重写父类的函数或属性？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>重写</strong>是指在子类中重新定义父类中已有的函数或属性，提供自己的实现版本。<br><br>要求：<br>• 父类的函数/属性必须用<code>open</code>修饰<br>• 子类中重写时必须加<code>override</code>关键字<br><br>示例：<br><code>open class Room {</code><br><code>&nbsp;&nbsp;open fun load() = "Nothing to see here..."</code><br><code>}</code><br><code>class TownSquare : Room() {</code><br><code>&nbsp;&nbsp;override fun load() = "You entered the town square!"</code><br><code>}</code></div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">什么是多态（polymorphism）？它有什么作用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>多态</strong>是指父类类型的变量可以引用子类的对象，调用被重写的函数时会执行子类的版本。<br><br>例如：<br><code>val room: Room = TownSquare()</code><br><code>room.load()  // 执行的是TownSquare版本的load</code><br><br>作用：<br>• 可以用统一的父类接口处理不同的子类对象<br>• 代码更灵活，易于扩展（新增子类不影响现有代码）<br>• 是面向对象设计的核心特性之一<br><br>Room类型变量可以指向任何Room子类的实例，运行时自动调用正确版本的方法。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">如何在子类中调用父类的实现？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">使用<code>super</code>关键字调用父类的实现。<br><br>例如，重写函数时调用父类版本：<br><code>override fun load(): String {</code><br><code>&nbsp;&nbsp;val base = super.load()</code><br><code>&nbsp;&nbsp;return base + " More details here."</code><br><code>}</code><br><br>同样，子类构造函数需要调用父类构造函数（在主构造函数头中自动调用，或次构造函数用super()调用）。<br><br>用途：在父类实现基础上添加额外功能，而不是完全替换。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">protected可见性修饰符的作用是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>protected</strong>可见性：成员只在<strong>类自身和它的子类</strong>中可见。<br><br>与private的区别：<br>• private：只有类自身能访问<br>• protected：类自身和子类都能访问<br><br>与public的区别：<br>• public：任何地方都能访问<br>• protected：只有类和子类能访问<br><br>用途：那些子类需要访问但不希望对外公开的属性和函数。例如Room的dangerLevel属性，可以设为protected让子类修改。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">什么时候应该使用继承？什么时候不应该？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">适合使用继承的场景：<br>• 类之间有明确的"is-a"（是一种）关系<br>• 多个类有大量共同的代码可以抽取到父类<br>• 需要多态（父类引用指向不同子类）<br><br>不适合使用继承的场景：<br>• 只是为了复用代码但没有层级关系<br>• 组合比继承更合适时（"has-a"关系用组合）<br>• 父类和子类行为差异很大时<br><br>设计原则：优先使用组合（组合优于继承）。继承是强耦合，组合更灵活。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch15">
+  <div class="section-header">
+    <h2>第15章 对象 <span class="card-count">8张</span></h2>
+    <p>object关键字、单例、伴生对象、数据类与枚举类</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">object关键字有哪三种使用方式？分别是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">object关键字有三种用法：<br><br>1. <strong>对象声明（object declaration）</strong>：定义单例类，整个应用只有一个实例。<br>2. <strong>对象表达式（object expression）</strong>：创建匿名内部类的实例。<br>3. <strong>伴生对象（companion object）</strong>：定义在类内部的对象，其成员属于类而非实例。<br><br>三种方式的共性：都只能有一个实例。不同点在于使用场景和作用范围不同。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">什么是单例（singleton）？Kotlin中如何定义单例？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>单例</strong>是指只能产生一个实例的类。在整个应用运行周期内，只存在一个实例，即使多次"创建"，得到的都是同一个实例。<br><br>Kotlin中使用<strong>对象声明</strong>定义单例：<br><code>object Game {</code><br><code>&nbsp;&nbsp;fun play() { ... }</code><br><code>}</code><br><br>特点：<br>• 用object关键字替换class<br>• 自动创建唯一实例，不能手动调用构造函数<br>• 通过对象名直接访问其成员<br>• 首次被访问时初始化<br><br>用途：管理全局状态、工具类等。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">对象声明什么时候会被初始化？如何触发初始化？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">对象声明是<strong>惰性初始化</strong>的：在首次被访问（引用其属性或调用其函数）时才会初始化。<br><br>如果从未被访问过，对象声明永远不会初始化。<br><br>触发方式：<br>• 调用对象声明中的函数：<code>Game.play()</code><br>• 访问对象声明中的属性：<code>Game.score</code><br><br>初始化时会执行init块中的代码：<br><code>object Game {</code><br><code>&nbsp;&nbsp;init { println("欢迎来到游戏") }</code><br><code>}</code></div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">什么是伴生对象（companion object）？它有什么作用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>伴生对象</strong>是定义在类内部的对象声明，使用<code>companion object</code>关键字。<br><br>特点：<br>• 伴生对象的成员属于<strong>类本身</strong>，不属于类的实例<br>• 类似于Java的static成员<br>• 通过类名直接访问：<code>ClassName.property</code><br>• 一个类只能有一个伴生对象<br><br>用途：<br>• 定义工厂方法创建实例<br>• 存放常量（const val）<br>• 定义与类相关但不依赖实例的工具函数<br><br>访问方式：类名.成员名</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">什么是数据类（data class）？它有什么特点？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>数据类</strong>是专门用来存储数据的类，使用<code>data class</code>关键字定义。<br><br>特点：编译器自动生成：<br>• <code>equals()/hashCode()</code> —— 按属性比较相等<br>• <code>toString()</code> —— 显示所有属性值<br>• <code>componentN()</code> —— 支持解构声明<br>• <code>copy()</code> —— 复制对象并修改部分属性<br><br>要求：主构造函数至少有一个参数，且所有参数都必须是val或var。<br><br>用途：专门用来存数据的类（如用户信息、配置项等），减少样板代码。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">数据类的copy函数有什么作用？如何使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><code>copy()</code>函数可以复制一个数据类对象，并可选地修改某些属性的值，其他属性保持不变。<br><br>例如：<br><code>data class Player(val name: String, val hp: Int)</code><br><code>val p1 = Player("Madrigal", 100)</code><br><code>val p2 = p1.copy(hp = 80)</code><br>// p2的name还是"Madrigal"，hp变为80<br><br>用途：在不可变数据类的基础上创建修改后的新版本，保持原对象不变。非常适合函数式编程风格。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">什么是枚举类（enum class）？它有什么用途？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>枚举类</strong>是定义一组固定常量的类，使用<code>enum class</code>关键字。<br><br>例如：<br><code>enum class Direction { NORTH, SOUTH, EAST, WEST }</code><br><br>特点：<br>• 每个枚举常量都是该类的一个实例<br>• 常量数量固定且有限<br>• 编译器知道所有可能的值<br><br>用途：<br>• 表示有限的固定选项（方向、状态、类型等）<br>• 替代魔术字符串/数字，代码更安全、更易读<br>• 可以在when表达式中使用，编译器检查是否全覆盖<br>• 可以有属性和函数</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">什么是嵌套类和内部类？它们有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>嵌套类（nested class）</strong>：定义在另一个类内部的类，默认就是嵌套类。不持有外部类的引用，不能访问外部类的成员。<br><br><strong>内部类（inner class）</strong>：用<code>inner</code>关键字标记的嵌套类。持有外部类的引用，可以访问外部类的成员（包括私有成员）。<br><br>区别：<br>• 嵌套类：没有外部类引用，更独立，更安全<br>• 内部类：有外部类引用，可以访问外部类成员，但可能导致内存泄漏<br><br>选择建议：优先用嵌套类，只有确实需要访问外部类时才用inner。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch16">
+  <div class="section-header">
+    <h2>第16章 接口与抽象类 <span class="card-count">8张</span></h2>
+    <p>接口定义、默认实现、抽象类与多态</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是接口（interface）？接口的作用是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>接口</strong>定义了一组未实现的属性和行为（函数）。具体如何实现由实现接口的类来负责。<br><br>作用：<br>• 定义<strong>契约（contract）</strong>：约定一组能力和行为<br>• 实现<strong>多态</strong>：不同类实现同一接口，可以统一方式调用<br>• <strong>代码复用</strong>：多个类共享相同的行为约定<br>• 弥补单继承限制：一个类只能继承一个父类，但可以实现多个接口<br><br>接口只定义"能做什么"，不管"怎么做"。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">Kotlin中如何定义接口？如何实现接口？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">定义接口使用<code>interface</code>关键字：<br><code>interface Fightable {</code><br><code>&nbsp;&nbsp;var healthPoints: Int</code><br><code>&nbsp;&nbsp;fun attack(opponent: Fightable): Int</code><br><code>}</code><br><br>实现接口：使用<code>:</code>运算符（与继承语法相同），并具体实现所有属性和函数：<br><code>class Player : Fightable {</code><br><code>&nbsp;&nbsp;override var healthPoints = 100</code><br><code>&nbsp;&nbsp;override fun attack(opponent: Fightable) = ...</code><br><code>}</code><br><br>所有接口成员都需要override关键字。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">接口中可以有默认实现吗？有什么好处？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin的接口<strong>可以有默认实现</strong>：函数可以有默认函数体，属性可以有默认getter。<br><br>例如：<br><code>interface Fightable {</code><br><code>&nbsp;&nbsp;val damageRoll: Int</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;get() = (0 until diceCount).map { ... }.sum()</code><br><code>}</code><br><br>好处：<br>• 减少重复代码：公共实现只写一次<br>• 实现类可以选择使用默认实现或重写<br>• 给接口添加新方法时不破坏现有实现类<br><br>接口中的属性和函数默认就是open的。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">什么是抽象类？它与普通类和接口有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>抽象类</strong>使用<code>abstract</code>关键字定义，不能被实例化，只能被继承。<br><br>与普通类的区别：<br>• 抽象类不能实例化<br>• 可以包含抽象函数（只有定义没有实现）<br><br>与接口的区别：<br>• 抽象类有构造函数，接口没有<br>• 一个类只能继承一个抽象类（单继承），但可以实现多个接口<br>• 抽象类可以保存状态（属性），接口只能定义属性约定<br><br>抽象类介于接口和普通类之间：兼具部分接口特性和部分类特性。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">抽象函数和普通函数有什么区别？抽象类必须包含抽象函数吗？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>抽象函数</strong>：只有函数签名（定义），没有函数体，使用<code>abstract</code>关键字。子类必须重写实现它（除非子类也是抽象类）。<br><br>抽象类不一定必须包含抽象函数。但只要有一个抽象函数，类就必须声明为abstract。<br><br>抽象类也可以包含具体实现的函数和属性。<br><br>用途：定义一个基类模板，部分行为由子类决定。例如Monster抽象类定义了怪物的基本结构，具体怪物（Goblin等）提供具体实现。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">接口和抽象类应该如何选择？有什么经验法则？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">选择经验法则：<br><br>• 如果需要<strong>一组类共享行为约定</strong>，但没有继承关系 → 用<strong>接口</strong><br>• 如果需要<strong>继承关系</strong>，且父类不需要实例化 → 用<strong>抽象类</strong><br>• 如果父类需要被<strong>实例化</strong> → 用普通open类<br>• 一个类只能继承一个抽象类，但可以实现多个接口<br><br>简单来说：<br>"是一种"关系用抽象类（如Goblin是一种Monster）<br>"能做什么"关系用接口（如Player能战斗，实现Fightable）</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">接口中的属性和函数默认是open的吗？需要显式加open吗？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">接口中的属性和函数<strong>默认就是open的</strong>，不需要显式加open关键字。因为接口的设计目的就是被其他类实现的。<br><br>但在实现类中，必须使用<code>override</code>关键字来标记实现了接口的成员。<br><br>例如：<br><code>interface Fightable {</code><br><code>&nbsp;&nbsp;fun attack(opponent: Fightable): Int  // 默认为open</code><br><code>}</code><br><code>class Player : Fightable {</code><br><code>&nbsp;&nbsp;override fun attack(opponent: Fightable): Int { ... }</code><br><code>}</code></div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">什么是多态？接口是如何实现多态的？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>多态</strong>是指同一类型的变量可以引用不同类的对象，调用同一方法时表现出不同的行为。<br><br>通过接口实现多态：<br>• 定义接口（如Fightable）<br>• 多个类实现该接口（如Player、Goblin都实现Fightable）<br>• 使用接口类型作为参数或变量类型<br><br>例如：<br><code>fun slay(monster: Monster) {</code><br><code>&nbsp;&nbsp;monster.attack(player)  // monster和player都是Fightable</code><br><code>&nbsp;&nbsp;player.attack(monster)</code><br><code>}</code><br><br>不管传入什么实现类，都能正确调用其attack方法。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch17">
+  <div class="section-header">
+    <h2>第17章 泛型 <span class="card-count">8张</span></h2>
+    <p>泛型类、泛型函数与类型参数</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是泛型（generic）？泛型有什么作用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>泛型</strong>允许类或函数接受类型参数，使其可以操作多种类型的数据，而不需要为每种类型重复编写代码。<br><br>作用：<br>• <strong>代码复用</strong>：一个类/函数可以处理多种类型<br>• <strong>类型安全</strong>：编译器进行类型检查，避免类型转换错误<br>• <strong>更简洁</strong>：不需要为每种类型写重复代码<br><br>例如，List&lt;T&gt;就是泛型类，可以存储String、Int、Room等任意类型，而不需要为每种类型写一个List类。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">如何定义一个泛型类？泛型参数的语法是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">定义泛型类：在类名后用尖括号<code>&lt;T&gt;</code>指定类型参数。<br><br>例如：<br><code>class LootBox&lt;T&gt;(item: T) {</code><br><code>&nbsp;&nbsp;private var loot: T = item</code><br><code>&nbsp;&nbsp;fun fetch(): T? = loot.takeIf { open }</code><br><code>}</code><br><br><code>T</code>是类型参数的占位符（代表type），可以是任意标识符。使用时指定具体类型：<br><code>LootBox&lt;Fedora&gt;(fedora)</code><br><code>LootBox&lt;Coin&gt;(coin)</code><br><br>同一个泛型类可以实例化为不同类型的具体类。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">泛型函数是什么？如何定义？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>泛型函数</strong>是在函数级别使用类型参数的函数，不一定在泛型类中。<br><br>定义方式：在fun关键字前加类型参数：<br><code>fun &lt;T&gt; functionName(param: T): T { ... }</code><br><br>例如，泛型扩展函数：<br><code>fun &lt;T&gt; LootBox&lt;T&gt;.fetch(): T? { ... }</code><br><br>调用时编译器可以自动推断类型参数，通常不需要显式指定。<br><br>泛型函数让函数可以灵活处理不同类型的输入/输出，同时保持类型安全。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">泛型参数通常用什么字母表示？有什么约定？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">泛型参数通常用单个大写字母表示，常见约定：<br>• <strong>T</strong>：Type，通用类型（最常用）<br>• <strong>E</strong>：Element，元素类型（集合常用）<br>• <strong>K, V</strong>：Key, Value，键值对（Map常用）<br>• <strong>R</strong>：Return，返回值类型<br>• <strong>S, U, V</strong>：第二、第三、第四个类型参数<br><br>虽然可以用任何标识符（甚至完整单词），但使用单个大写字母是各语言的通用约定，代码更易读。建议遵循约定使用T。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">什么是参数化类型？List<String>中的String是什么意思？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>参数化类型</strong>是指使用具体类型替代泛型参数后的类型。<br><br>例如：<br>• <code>List&lt;String&gt;</code>：存储String的列表<br>• <code>List&lt;Int&gt;</code>：存储Int的列表<br>• <code>Map&lt;String, Double&gt;</code>：String键、Double值的映射<br><br>尖括号中的类型告诉编译器集合中存储的是什么类型的数据。<br><br>好处：编译器可以进行类型检查，确保不会把错误类型的元素放入集合；取出元素时不需要手动类型转换。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">泛型和类型推断是什么关系？什么时候需要显式指定类型参数？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin编译器通常可以<strong>自动推断</strong>泛型类型参数，不需要显式指定。<br><br>例如：<br><code>val list = listOf(1, 2, 3)</code>  // 自动推断为List&lt;Int&gt;<br><code>val box = LootBox(Fedora())</code>  // 自动推断为LootBox&lt;Fedora&gt;<br><br>需要显式指定的情况：<br>• 没有足够信息推断类型时<br>• 想使用更宽泛的类型时（如指定为Number而非Int）<br>• 空集合初始化时<br><br>大多数情况下可以依赖类型推断，代码更简洁。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">泛型的类型安全体现在哪里？请举例说明。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">泛型的类型安全体现在编译器会在编译时检查类型是否匹配，防止运行时类型转换错误。<br><br>例如：<br><code>val list: List&lt;String&gt; = listOf("Eli", "Mordoc")</code><br>如果尝试往里面加整数，编译器直接报错：<br><code>list + 1  // 编译错误：类型不匹配</code><br><br>没有泛型的话（如Java的原始类型List），可以放入任意类型，但取出时需要强制转换，可能导致ClassCastException运行时崩溃。<br><br>泛型把类型错误从运行时提前到编译时，更安全。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">为什么说泛型提高了代码复用性？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">没有泛型时，对不同类型做同样的事需要写多份代码。例如：<br>• IntLootBox存储Int<br>• StringLootBox存储String<br>• FedoraLootBox存储Fedora<br>...<br><br>有了泛型，只需写一个LootBox&lt;T&gt;，就能适用于所有类型。<br><br>标准库的集合就是最好的例子：一个List&lt;T&gt;可以存储任意类型的数据，而不需要为每种类型实现一个List。<br><br>泛型让"算法"（数据结构、操作逻辑）与"数据类型"解耦，大大减少重复代码。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch18">
+  <div class="section-header">
+    <h2>第18章 扩展 <span class="card-count">8张</span></h2>
+    <p>扩展函数、扩展属性与泛型扩展</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是扩展（extension）？扩展有什么作用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>扩展</strong>是Kotlin的特性，允许在<strong>不直接修改类定义</strong>的情况下为类添加新的函数或属性。<br><br>作用：<br>• 为无法修改的类（如第三方库类、系统类）添加功能<br>• 替代继承：当类没有open修饰或继承不合适时<br>• 让代码更简洁、更具可读性<br>• 可以为任意类型（包括String、Int等内置类型）添加工具函数<br><br>Kotlin标准库大量使用扩展（标准函数、集合函数等都是扩展）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">如何定义扩展函数？什么是接收者类型？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">定义扩展函数的语法：<br><code>fun 接收者类型.函数名(参数): 返回类型 { ... }</code><br><br><strong>接收者类型（receiver type）</strong>：要为哪个类添加扩展函数，那个类就是接收者类型。<br><br>例如，为String添加扩展：<br><code>fun String.addEnthusiasm(amount: Int = 1) =</code><br><code>&nbsp;&nbsp;this + "!".repeat(amount)</code><br><br>在函数体中，<code>this</code>指向接收者实例（调用该函数的对象）。<br><br>调用方式和普通成员函数一样：<code>"hello".addEnthusiasm()</code></div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">扩展函数真的修改了类吗？它的本质是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">扩展函数<strong>并没有真正修改原类</strong>。它的本质是一个静态函数，接收者实例作为第一个参数传入。<br><br>特点：<br>• 不修改原类的字节码<br>• 不能访问类的私有成员<br>• 不会破坏封装<br>• 只是语法糖，让调用看起来像成员函数<br><br>因为String类没有open修饰，不能继承，但可以用扩展来增加功能。<br><br>扩展是Kotlin的一个重要特性，标准库中的很多功能都是通过扩展实现的。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">在父类上定义扩展函数，子类也能使用吗？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">可以。扩展函数定义在父类上时，所有子类都可以调用该扩展函数。<br><br>例如，在Any上定义扩展：<br><code>fun Any.easyPrint() = println(this)</code><br><br>那么所有类（String、Int、自定义类等）都可以调用：<br><code>"hello".easyPrint()</code><br><code>42.easyPrint()</code><br><br>这是扩展的一个强大特性：在超类上定义扩展，可以一次性为所有子类添加功能。<br><br>但要注意：扩展是静态解析的（编译时决定），不具有多态性。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">什么是泛型扩展函数？它有什么优势？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>泛型扩展函数</strong>是同时使用了泛型和扩展的函数，为泛型类型添加扩展功能。<br><br>例如，为List&lt;T&gt;添加扩展：<br><code>fun &lt;T&gt; List&lt;T&gt;.random(): T = shuffled().first()</code><br><br>优势：<br>• 适用于任意类型的List<br>• 保持类型安全（返回类型与元素类型一致）<br>• 代码复用性极高<br><br>标准库中的集合操作函数（map、filter、let、apply等）大多都是泛型扩展函数。这也是Kotlin标准库简洁而强大的原因之一。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">什么是扩展属性？如何定义？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>扩展属性</strong>是为现有类添加新的属性，和扩展函数类似。<br><br>定义方式：<br><code>val String.numVowels: Int</code><br><code>&nbsp;&nbsp;get() = count { it in "aeiou" }</code><br><br>特点：<br>• 扩展属性<strong>不能有幕后字段（field）</strong>，不能存储状态<br>• 必须提供getter（val）或getter+setter（var）<br>• 本质上是扩展函数的另一种语法形式<br><br>用途：为已有类型添加计算属性（基于已有属性计算出新的属性值）。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">为什么说标准库函数本质上都是扩展函数？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin标准库中的let、apply、run、also、takeIf等标准函数，以及集合的map、filter、flatMap等操作函数，本质上都是<strong>泛型扩展函数</strong>。<br><br>例如，let函数的签名大致是：<br><code>fun &lt;T, R&gt; T.let(block: (T) -> R): R</code><br><br>它们不是定义在Any类内部的成员函数，而是以扩展函数的方式添加的。<br><br>这意味着：<br>• 标准库可以不修改Any类就为所有类型添加功能<br>• 你也可以用同样方式为任意类型添加自定义扩展<br>• 扩展是Kotlin生态系统的基石之一</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">扩展和继承分别在什么情况下使用？如何选择？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">选择扩展的场景：<br>• 需要为无法修改的类（第三方库、系统类、final类）添加功能<br>• 只是添加工具函数，不改变类的核心职责<br>• 函数只在特定场景/模块中有用，不适合作为类的成员<br>• 想保持类的简洁性，把辅助功能放在外部<br><br>选择继承的场景：<br>• 需要修改/重写类的核心行为<br>• 需要添加状态（属性）和多态行为<br>• 类之间有明确的"is-a"关系<br><br>经验法则：优先使用扩展，只有真正需要多态和状态时才用继承。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch19">
+  <div class="section-header">
+    <h2>第19章 函数式编程基础 <span class="card-count">10张</span></h2>
+    <p>变换、过滤、合并函数与惰性集合</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是函数式编程？它的核心思想是什么？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>函数式编程</strong>是一种编程范式，基于λ演算发展而来，主要依赖高阶函数返回的数据，强调使用纯函数和不可变数据。<br><br>核心思想：<br>• <strong>不可变数据</strong>：数据不被修改，函数返回新的数据副本<br>• <strong>纯函数</strong>：相同输入总是产生相同输出，没有副作用<br>• <strong>函数组合</strong>：通过组合简单函数构建复杂逻辑<br>• <strong>高阶函数</strong>：函数可以作为参数和返回值<br><br>Kotlin支持多范式，可以混合使用面向对象和函数式编程。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">函数式编程的三大类函数是什么？分别有什么作用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">函数式编程的三大类函数：<br><br>1. <strong>变换（transform）</strong>：遍历集合，用变换器函数修改每个元素，返回新集合。代表函数：map、flatMap<br><br>2. <strong>过滤（filter）</strong>：按条件检查每个元素，保留满足条件的元素，返回新集合。代表函数：filter<br><br>3. <strong>合并（combine）</strong>：将多个集合或元素合并成一个结果。代表函数：zip、fold、reduce<br><br>每类函数都返回新集合（不修改原集合），可以链式调用组合使用。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">map函数的作用是什么？请举例说明。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>map</strong>是最常用的变换函数，遍历集合中的每个元素，对每个元素应用变换器函数，返回包含修改后元素的新集合。<br><br>特点：<br>• 返回集合的元素个数与输入集合相同<br>• 元素类型可以不同<br>• 不修改原集合<br><br>例如：<br><code>val babies = animals.map { "A baby $it" }</code><br><br>将动物列表转换为"幼崽动物"列表。原集合animals不变，babies是新集合。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">flatMap和map有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">区别：<br><br>• <strong>map</strong>：每个元素变换为一个新元素，输入N个输出N个。变换结果可以是任意类型。<br><br>• <strong>flatMap</strong>：每个元素变换为一个集合，然后把所有子集合<strong>展平（flat）</strong>合并成一个大集合。输入N个，输出个数取决于每个子集合的大小。<br><br>例如：<br><code>listOf(listOf(1,2), listOf(3,4)).flatMap { it }</code><br>// 结果：[1, 2, 3, 4]<br><br>flatMap常用于处理集合的集合，将其降维展平。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">filter函数的作用是什么？它接受什么类型的参数？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>filter</strong>是过滤函数，接受一个<strong>predicate</strong>（谓词，返回Boolean的函数），按条件检查集合中的每个元素，将满足条件（返回true）的元素收集到新集合中返回。<br><br>例如：<br><code>val redItems = items.filter { it.contains("red") }</code><br><br>特点：<br>• 返回新集合，原集合不变<br>• 结果集合元素个数 ≤ 原集合<br>• 元素类型不变<br>• 可以与map、flatMap等链式调用</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">fold函数的作用是什么？它和reduce有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>fold</strong>是合并函数，接受一个初始累加器值，然后遍历集合，将匿名函数的结果更新到累加器，最终返回累加结果。<br><br>语法：<br><code>list.fold(初始值) { accumulator, element -> ... }</code><br><br>与reduce的区别：<br>• <strong>fold</strong>：需要指定初始累加器值，空集合也能工作（返回初始值）<br>• <strong>reduce</strong>：不需要初始值，第一个元素作为初始累加器，空集合会抛异常<br><br>fold更灵活、更安全，推荐优先使用。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">zip函数的作用是什么？请举例说明。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>zip</strong>是合并函数，将两个集合的元素按位置一一配对，返回Pair组成的新集合。<br><br>例如：<br><code>val employees = listOf("Denny", "Claudette", "Peter")</code><br><code>val shirtSize = listOf("large", "x-large", "medium")</code><br><code>employees.zip(shirtSize)</code><br>// 结果：[(Denny, large), (Claudette, x-large), (Peter, medium)]<br><br>可配合toMap()使用，直接转为Map：<br><code>employees.zip(shirtSize).toMap()</code><br><br>如果两个集合长度不同，以较短的为准。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">什么是及早集合和惰性集合？List和Sequence有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>及早集合（eager collection）</strong>：创建后所有元素都立即生成并存储在内存中。如List、Set、Map。<br><br><strong>惰性集合（lazy collection）</strong>：元素按需产生，不提前创建所有元素。如Sequence（序列）。<br><br>区别：<br>• List：元素固定，支持索引访问，适合小到中等数据量<br>• Sequence：元素可能无限多，不记录元素数目，按需生成，适合大数据量<br><br>小集合（<1000元素）两者性能差异可忽略；大集合（几十万元素）Sequence性能更好。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 09</div>
+          <div class="card-question">什么是Sequence（序列）？什么时候应该使用序列？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>Sequence</strong>是Kotlin的惰性集合类型，元素按需产生，不会一次性将所有元素加载到内存。<br><br>创建方式：<br>• <code>generateSequence(种子值) { 迭代函数 }</code><br>• <code>list.asSequence()</code> —— 从List转换<br><br>适用场景：<br>• 数据量很大（几十万以上元素）<br>• 元素个数不确定或无限<br>• 需要提前终止（如take(n)，找到n个就停止）<br>• 链式操作多，避免产生中间集合<br><br>小数据量用List即可，没必要用Sequence。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 10</div>
+          <div class="card-question">函数式编程相比命令式编程有什么优势？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">函数式编程的优势：<br>• <strong>更少的状态变量</strong>：结果自动累加，不需要手动维护可变变量<br>• <strong>更少的错误</strong>：不需要手动赋值循环变量，减少人为失误<br>• <strong>易于链式扩展</strong>：新的操作可以轻松添加到调用链上<br>• <strong>更易读</strong>：声明式代码（说"做什么"）比命令式代码（说"怎么做"）更直观<br>• <strong>不可变性</strong>：数据不被修改，便于调试和推理<br><br>注意：Kotlin是多范式语言，最佳实践是混合使用，根据场景选择最合适的方式。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch20">
+  <div class="section-header">
+    <h2>第20章 Kotlin与Java互操作 <span class="card-count">8张</span></h2>
+    <p>平台类型、可空性注解与互操作最佳实践</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">Kotlin与Java互操作是什么意思？为什么说这是Kotlin最重要的特性之一？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>互操作（interoperability）</strong>是指Kotlin代码和Java代码可以在一起工作，互相调用。<br><br>Kotlin可以编译成Java字节码，所以：<br>• Kotlin文件和Java文件可以共存于同一项目<br>• Kotlin可以调用Java方法、使用Java类<br>• Java也可以调用Kotlin代码<br>• 可以使用现有的Java库（包括Android框架）<br><br>重要性：<br>• 支持<strong>渐进式迁移</strong>：可以逐步将Java代码改为Kotlin<br>• 可以利用庞大的Java生态系统<br>• 降低了学习和采用Kotlin的门槛<br>• 这也是Kotlin能快速普及的重要原因</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">在Kotlin中如何实例化一个Java类？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">在Kotlin中实例化Java类和实例化Kotlin类一样，直接调用构造函数（不需要new关键字）：<br><br><code>val adversary = Jhava()</code><br><br>调用Java方法也一样：<br><code>adversary.utterGreeting()</code><br><br>Kotlin与Java的互操作是无缝的：<br>• Java类在Kotlin中就像Kotlin类一样使用<br>• Java方法和属性可以直接访问<br>• Kotlin会自动做一些转换（如getter/setter转为属性）</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">什么是平台类型（platform type）？它用什么符号表示？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>平台类型</strong>是指来自Java的类型，Kotlin编译器不知道它是否可空（因为Java没有可空类型的概念）。<br><br>表示方式：类型名后跟一个感叹号，如<code>String!</code>，表示"String 或 String?"。<br><br>平台类型的特点：<br>• 只在IDE和错误信息中出现，不能在代码中显式声明<br>• 编译器不会对其做空检查（因为不知道是否可空）<br>• 如果实际值为null但被当作非空使用，会导致IllegalStateException<br><br>相当于把空安全的责任交给了开发者。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">@Nullable和@NotNull注解有什么作用？为什么Java代码开发者应该使用它们？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><code>@Nullable</code>和<code>@NotNull</code>（或@NonNull）是Java中的可空性注解，用于明确标记方法返回值或参数是否可能为null。<br><br>作用：<br>• Kotlin编译器能识别这些注解，将Java类型正确地视为可空或非空<br>• 让Java API对Kotlin更友好，减少平台类型的不确定性<br>• 帮助Kotlin使用者正确处理可空性<br><br>常见来源：JetBrains Annotations、Android Support Annotations、JSR-305等。<br><br>Java库开发者使用这些注解，可以大大提升Kotlin用户的使用体验。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">在Kotlin中调用返回null的Java方法时，应该如何安全处理？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">安全处理方式：<br>• 如果知道可能返回null，将变量声明为可空类型：<br><code>val result: String? = javaMethod()</code><br><br>• 使用安全调用操作符：<br><code>result?.let { ... }</code><br><br>• 使用空合并操作符提供默认值：<br><code>result ?: "default"</code><br><br>• 如果Java方法有@Nullable注解，Kotlin会自动识别为可空类型<br><br>最佳实践：不要假设Java返回值非空，谨慎处理平台类型。有疑问时，当作可空类型处理最安全。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">Java中的getter/setter在Kotlin中如何使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin会自动将Java的getter/setter方法转换为属性语法：<br><br>• Java的<code>getName()</code>和<code>setName()</code> → Kotlin中可以用<code>obj.name</code>访问<br>• 只有getter的是只读属性（val）<br>• 同时有getter和setter的是可变属性（var）<br><br>例如：<br>Java中：<code>person.setName("Alice")</code><br>Kotlin中：<code>person.name = "Alice"</code><br><br>这是Kotlin与Java互操作的一个便利特性，让Java Bean在Kotlin中用起来就像原生Kotlin属性一样。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">为什么说Kotlin与Java的互操作性支持渐进式代码库改造？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>渐进式改造</strong>是指不需要一次性将整个项目从Java改为Kotlin，而是可以逐步迁移。<br><br>原因：<br>• Kotlin和Java文件可以共存于同一项目<br>• 两类代码可以互相调用，没有障碍<br>• 可以先用Kotlin开发新功能<br>• 可以逐步将旧的Java代码转换为Kotlin（如工具类、数据模型、单元测试等）<br><br>这大大降低了采用Kotlin的风险和成本：<br>• 不需要重写整个项目<br>• 可以在合适的时候逐步迁移<br>• 出问题也容易回退</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">Kotlin中调用Java代码时，异常处理有什么不同？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Kotlin没有<strong>受检异常（checked exceptions）</strong>。<br><br>在Java中，如果方法声明了throws异常，调用者必须捕获或继续抛出。<br><br>在Kotlin中：<br>• 调用Java方法时，不需要强制捕获受检异常<br>• 可以选择是否使用try/catch处理<br>• 编译器不会强制要求处理异常<br><br>这是Kotlin的设计选择：受检异常常导致样板代码（如不合理的空catch块），实际价值有限。<br><br>但开发者仍需自行了解可能抛出的异常并酌情处理。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="ch22">
+  <div class="section-header">
+    <h2>第22章 Kotlin协程简介 <span class="card-count">8张</span></h2>
+    <p>异步编程、协程基础、launch与async/await</p>
+  </div>
+  <div class="cards-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 01</div>
+          <div class="card-question">什么是协程（coroutine）？它与线程有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>协程</strong>是Kotlin提供的一种异步编程机制，可以在后台执行耗时任务而不阻塞主线程。<br><br>与线程的区别：<br>• <strong>轻量级</strong>：协程比线程更轻量，可以创建成千上万个协程而不会耗尽内存<br>• <strong>不会阻塞线程</strong>：协程挂起时，线程可以去执行其他协程<br>• <strong>更易用</strong>：编写异步代码像同步代码一样自然，不需要复杂的回调<br>• <strong>由Kotlin管理调度</strong>：协程运行在线程上，但调度更高效<br><br>线程是操作系统级别的，协程是语言/库级别的。一个线程可以运行许多协程。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 02</div>
+          <div class="card-question">为什么Android应用不能在主线程上执行网络请求？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">Android的<strong>主线程（UI线程）</strong>只负责处理UI相关的工作：按钮点击、画面刷新、文本更新等。<br><br>如果在主线程上发起网络请求：<br>• 网络请求需要时间，期间主线程被<strong>阻塞</strong><br>• UI无法响应用户操作，画面卡住<br>• 系统会抛出<strong>NetworkOnMainThreadException</strong>异常，直接崩溃<br><br>因此耗时操作（网络请求、数据库查询、文件读写等）必须放在后台执行。<br><br>协程就是解决这个问题的方案之一：让耗时任务在后台执行，完成后再回到主线程更新UI。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 03</div>
+          <div class="card-question">launch函数的作用是什么？launch(UI)是什么意思？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>launch</strong>是协程构建器，用于创建一个新协程并立即执行指定任务。<br><br><code>launch(UI)</code>表示在<strong>UI上下文（主线程）</strong>中启动协程。<br><br>为什么在UI线程启动协程却不会阻塞？<br>• 协程是挂起（suspend）而非阻塞<br>• 当遇到挂起函数（如await）时，协程暂停，线程可以去做其他事<br>• 挂起函数执行完后，协程恢复，继续执行后续代码<br><br>这样既保证了UI更新在主线程进行，又不会因为等待而阻塞线程。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 04</div>
+          <div class="card-question">async函数的作用是什么？它返回什么类型？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>async</strong>是协程构建器，用于创建一个返回结果的协程。<br><br>async返回<code>Deferred&lt;T&gt;</code>类型（延迟结果），表示一个将来会完成的任务。<br><br>Deferred可以理解为"对未来结果的约定"：<br>• 调用async时，任务开始在后台执行<br>• 调用<code>.await()</code>时，协程挂起，等待结果<br>• 结果就绪后，恢复协程并返回结果<br><br>类似于Java的Future，但await是挂起函数（不会阻塞线程）。<br><br>默认在CommonPool（后台线程池）执行。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 05</div>
+          <div class="card-question">await()函数的作用是什么？为什么它不会阻塞线程？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>await()</strong>是Deferred的挂起函数，用于获取async协程的执行结果。<br><br>调用await时：<br>1. 如果结果已就绪，直接返回结果<br>2. 如果结果未就绪，<strong>挂起</strong>当前协程<br>3. 线程被释放，可以执行其他工作<br>4. 结果就绪后，协程在原上下文中恢复执行<br><br>为什么不阻塞？<br>• 阻塞（block）：线程停下来等待，什么都不做<br>• 挂起（suspend）：协程暂停，线程去执行其他协程<br><br>这就是协程比线程高效的核心原因。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 06</div>
+          <div class="card-question">什么是挂起函数（suspend function）？它有什么特点？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>挂起函数</strong>是带有<code>suspend</code>关键字的函数，可以挂起协程的执行而不阻塞线程。<br><br>例如await函数的签名：<br><code>suspend fun await(): T</code><br><br>特点：<br>• 只能在协程或其他挂起函数中调用<br>• 可以暂停和恢复（不会阻塞线程）<br>• 看起来像同步代码，实际是异步执行<br><br>挂起是协程区别于线程的核心：线程只能被阻塞，而协程可以被挂起——挂起时线程可以去执行其他协程，资源利用率更高。<br><br>挂起函数是协程的基本构建块。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 07</div>
+          <div class="card-question">协程上下文（CoroutineContext）是什么？UI和CommonPool有什么区别？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer"><strong>协程上下文</strong>决定了协程在哪个线程（或线程池）上执行。<br><br>常见上下文：<br>• <strong>UI（Dispatchers.Main）</strong>：在Android主线程执行，用于更新UI<br>• <strong>CommonPool（Dispatchers.Default）</strong>：在后台线程池执行，用于CPU密集型任务<br>• <strong>IO（Dispatchers.IO）</strong>：在IO线程池执行，用于网络、文件等IO操作<br><br>async默认使用CommonPool，所以网络请求在后台执行。launch(UI)在主线程，但调用await等挂起函数时会释放主线程，不会阻塞UI。<br><br>可以通过withContext()在不同上下文之间切换。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="card-number">CARD 08</div>
+          <div class="card-question">launch和async/await有什么区别？分别在什么场景下使用？</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="card-number">ANSWER</div>
+          <div class="card-answer">区别：<br>• <strong>launch</strong>：启动协程，<strong>不返回结果</strong>（返回Job）。用于"发射后不管"的任务。<br>• <strong>async/await</strong>：启动协程，<strong>返回结果</strong>（返回Deferred，await获取结果）。用于需要获取异步计算结果的任务。<br><br>使用场景：<br>• 用launch：更新UI、发送日志、执行不需要返回值的后台任务<br>• 用async/await：获取网络请求结果、计算数据、任何需要返回值的异步操作<br><br>两者都是协程构建器，都能创建协程，选择取决于是否需要返回结果。</div>
+          <div class="flip-hint"><span class="icon">👆</span>点击翻面</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>基于《Kotlin编程权威指南》精华知识卡片 · 共 166 张卡片</p>
+  <p style="margin-top:4px;">点击任意卡片可翻转查看答案，使用顶部标签切换不同章节</p>
+</div>
+
+<script>
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById(tabId).classList.add('active');
+  document.querySelector('[data-tab="' + tabId + '"]').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,3919 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Android Framework 开发揭秘 · 知识脑图</title>
+<style>
+  /* ========== 设计令牌 ========== */
+  :root {
+    /* 主色：深科技蓝 */
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #0f1524;
+    --bg-tertiary: #151c30;
+    --bg-elevated: #1a2340;
+    --bg-hover: #1f2a4a;
+    --bg-active: #253356;
+
+    /* 强调色：青蓝渐变 */
+    --accent-primary: #3dd6e0;
+    --accent-secondary: #5b8def;
+    --accent-tertiary: #8b5cf6;
+    --accent-gradient: linear-gradient(135deg, #3dd6e0 0%, #5b8def 50%, #8b5cf6 100%);
+    --accent-glow: 0 0 20px rgba(61, 214, 224, 0.3);
+
+    /* 文本色 */
+    --text-primary: #e8ecf5;
+    --text-secondary: #9aa5c4;
+    --text-tertiary: #6b7694;
+    --text-muted: #4a5578;
+
+    /* 层级色（6章分别对应不同色调） */
+    --ch1: #3dd6e0;
+    --ch2: #5b8def;
+    --ch3: #8b5cf6;
+    --ch4: #f472b6;
+    --ch5: #fbbf24;
+    --ch6: #34d399;
+
+    /* 边框 & 分割 */
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-light: rgba(255, 255, 255, 0.1);
+    --border-medium: rgba(255, 255, 255, 0.15);
+
+    /* 尺寸 */
+    --sidebar-width: 320px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+
+    /* 动画 */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --transition-fast: 180ms var(--ease-out);
+    --transition-normal: 280ms var(--ease-out);
+  }
+
+  /* ========== 基础重置 ========== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 背景装饰 */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse 800px 600px at 10% -10%, rgba(61, 214, 224, 0.08), transparent 70%),
+      radial-gradient(ellipse 600px 500px at 100% 100%, rgba(139, 92, 246, 0.06), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ========== 布局 ========== */
+  .app {
+    display: flex;
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ========== 侧边导航 ========== */
+  .sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sidebar-header {
+    padding: 24px 20px 18px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: linear-gradient(180deg, rgba(61, 214, 224, 0.04), transparent);
+  }
+
+  .sidebar-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-subtitle {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.3px;
+  }
+
+  .sidebar-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 14px;
+  }
+
+  .sidebar-btn {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+  }
+  .sidebar-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+    border-color: var(--border-light);
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-medium) transparent;
+  }
+  .sidebar-nav::-webkit-scrollbar { width: 6px; }
+  .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+  .sidebar-nav::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 3px;
+  }
+  .sidebar-nav::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  /* ========== 导航树 ========== */
+  .tree, .tree ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .tree > li > .node-item {
+    /* 章节点：特殊样式 */
+  }
+
+  .node-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px 7px 10px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    border-left: 2px solid transparent;
+    user-select: none;
+    position: relative;
+  }
+
+  .node-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  .node-item.active {
+    background: var(--bg-active);
+    color: var(--text-primary);
+    border-left-color: var(--accent-primary);
+  }
+
+  .node-item.active::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    box-shadow: var(--accent-glow);
+  }
+
+  /* 展开/折叠箭头 */
+  .node-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+    color: var(--text-tertiary);
+    font-size: 9px;
+  }
+  .node-toggle.expanded { transform: rotate(90deg); }
+  .node-toggle.leaf { visibility: hidden; }
+
+  /* 节点图标 */
+  .node-icon {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--text-tertiary);
+  }
+
+  .node-label {
+    flex: 1;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+  }
+
+  /* 层级缩进与配色 */
+  .tree > li > .node-item { padding-left: 12px; font-weight: 600; }
+  .tree > li > .node-item .node-icon { width: 8px; height: 8px; }
+
+  /* 每章不同颜色 */
+  .tree > li.chapter-1 > .node-item .node-icon { background: var(--ch1); box-shadow: 0 0 8px rgba(61,214,224,0.4); }
+  .tree > li.chapter-1 > .node-item.active { border-left-color: var(--ch1); }
+  .tree > li.chapter-1 > .node-item.active::after { background: var(--ch1); box-shadow: 0 0 8px rgba(61,214,224,0.5); }
+  .tree > li.chapter-1 > ul { border-left: 1px solid rgba(61,214,224,0.08); }
+
+  .tree > li.chapter-2 > .node-item .node-icon { background: var(--ch2); box-shadow: 0 0 8px rgba(91,141,239,0.4); }
+  .tree > li.chapter-2 > .node-item.active { border-left-color: var(--ch2); }
+  .tree > li.chapter-2 > .node-item.active::after { background: var(--ch2); }
+  .tree > li.chapter-2 > ul { border-left: 1px solid rgba(91,141,239,0.08); }
+
+  .tree > li.chapter-3 > .node-item .node-icon { background: var(--ch3); box-shadow: 0 0 8px rgba(139,92,246,0.4); }
+  .tree > li.chapter-3 > .node-item.active { border-left-color: var(--ch3); }
+  .tree > li.chapter-3 > .node-item.active::after { background: var(--ch3); }
+  .tree > li.chapter-3 > ul { border-left: 1px solid rgba(139,92,246,0.08); }
+
+  .tree > li.chapter-4 > .node-item .node-icon { background: var(--ch4); box-shadow: 0 0 8px rgba(244,114,182,0.4); }
+  .tree > li.chapter-4 > .node-item.active { border-left-color: var(--ch4); }
+  .tree > li.chapter-4 > .node-item.active::after { background: var(--ch4); }
+  .tree > li.chapter-4 > ul { border-left: 1px solid rgba(244,114,182,0.08); }
+
+  .tree > li.chapter-5 > .node-item .node-icon { background: var(--ch5); box-shadow: 0 0 8px rgba(251,191,36,0.4); }
+  .tree > li.chapter-5 > .node-item.active { border-left-color: var(--ch5); }
+  .tree > li.chapter-5 > .node-item.active::after { background: var(--ch5); }
+  .tree > li.chapter-5 > ul { border-left: 1px solid rgba(251,191,36,0.08); }
+
+  .tree > li.chapter-6 > .node-item .node-icon { background: var(--ch6); box-shadow: 0 0 8px rgba(52,211,153,0.4); }
+  .tree > li.chapter-6 > .node-item.active { border-left-color: var(--ch6); }
+  .tree > li.chapter-6 > .node-item.active::after { background: var(--ch6); }
+  .tree > li.chapter-6 > ul { border-left: 1px solid rgba(52,211,153,0.08); }
+
+  /* 子级缩进 */
+  .tree ul {
+    margin-left: 14px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 350ms var(--ease-out), opacity 250ms var(--ease-out);
+    opacity: 0;
+  }
+  .tree ul.expanded {
+    max-height: 5000px;
+    opacity: 1;
+  }
+
+  .tree ul li .node-item { padding-left: 10px; font-size: 12.5px; }
+  .tree ul ul li .node-item { padding-left: 10px; color: var(--text-tertiary); }
+  .tree ul ul li .node-item:hover { color: var(--text-primary); }
+  .tree ul ul li .node-item.active { color: var(--text-primary); }
+
+  /* 面试题特殊标记 */
+  .node-item.interview .node-label::after {
+    content: '面试';
+    display: inline-block;
+    margin-left: 6px;
+    padding: 0 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.12);
+    border-radius: 3px;
+    vertical-align: middle;
+    line-height: 1.6;
+  }
+
+  /* ========== 主内容区 ========== */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-medium) transparent;
+  }
+  .main::-webkit-scrollbar { width: 8px; }
+  .main::-webkit-scrollbar-track { background: transparent; }
+  .main::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 4px;
+  }
+  .main::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 56px 80px;
+  }
+
+  /* 全文内容区块 */
+  .content-section {
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .content-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  /* 面包屑 */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .breadcrumb .crumb-sep { color: var(--text-muted); }
+  .breadcrumb .crumb-current { color: var(--text-primary); font-weight: 500; }
+
+  /* 标题 */
+  .content-header {
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    position: relative;
+  }
+  .content-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: var(--accent-gradient);
+    border-radius: 1px;
+  }
+
+  .content-title {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.3px;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .content-desc {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    line-height: 1.7;
+  }
+
+  /* 章节徽章 */
+  .chapter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    border: 1px solid;
+  }
+  .chapter-badge .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  /* 章节概览卡片 */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+
+  .overview-card {
+    padding: 18px 20px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+  }
+  .overview-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent-gradient);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+  }
+  .overview-card:hover {
+    background: var(--bg-elevated);
+    border-color: var(--border-medium);
+    transform: translateY(-2px);
+  }
+  .overview-card:hover::before { opacity: 1; }
+
+  .overview-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .overview-card-meta {
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+
+  /* ========== 知识点内容 ========== */
+  .section-block {
+    margin-bottom: 36px;
+  }
+
+  .section-block h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    position: relative;
+  }
+  .section-block h2::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 16px;
+    background: var(--accent-gradient);
+    border-radius: 2px;
+    margin-right: 10px;
+    vertical-align: -2px;
+  }
+
+  .section-block h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 24px 0 12px;
+    color: var(--text-primary);
+    padding-left: 12px;
+    border-left: 3px solid var(--accent-secondary);
+    line-height: 1.4;
+  }
+
+  .section-block h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 18px 0 10px;
+    color: var(--text-secondary);
+  }
+
+  .section-block p {
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    line-height: 1.8;
+  }
+
+  /* 知识点列表 */
+  .knowledge-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px;
+  }
+  .knowledge-list li {
+    position: relative;
+    padding: 5px 0 5px 20px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+  .knowledge-list li::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 13px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    opacity: 0.6;
+  }
+  .knowledge-list ul {
+    list-style: none;
+    padding-left: 8px;
+    margin: 6px 0;
+  }
+  .knowledge-list ul li::before {
+    width: 4px;
+    height: 4px;
+    background: var(--text-muted);
+    opacity: 0.8;
+  }
+  .knowledge-list ul li {
+    color: var(--text-tertiary);
+    font-size: 13.5px;
+    padding-left: 18px;
+  }
+
+  /* 面试题卡片 */
+  .interview-card {
+    background: var(--bg-tertiary);
+    border: 1px solid rgba(248, 113, 113, 0.15);
+    border-left: 3px solid #f87171;
+    border-radius: var(--radius-md);
+    padding: 18px 22px;
+    margin-bottom: 16px;
+    transition: all var(--transition-fast);
+  }
+  .interview-card:hover {
+    background: var(--bg-elevated);
+    border-color: rgba(248, 113, 113, 0.25);
+  }
+
+  .interview-question {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fca5a5;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .interview-question .q-label {
+    flex-shrink: 0;
+    padding: 1px 7px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+    border-radius: 4px;
+    margin-top: 2px;
+  }
+
+  .interview-answer {
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    line-height: 1.8;
+  }
+  .interview-answer strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* 重点提示框 */
+  .tip-box {
+    background: rgba(61, 214, 224, 0.06);
+    border: 1px solid rgba(61, 214, 224, 0.15);
+    border-left: 3px solid var(--accent-primary);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    margin: 16px 0;
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    line-height: 1.75;
+  }
+  .tip-box .tip-title {
+    font-weight: 600;
+    color: var(--accent-primary);
+    margin-bottom: 4px;
+  }
+
+  /* 流程步骤 */
+  .step-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+    counter-reset: step-counter;
+  }
+  .step-list li {
+    position: relative;
+    padding: 8px 0 8px 36px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    counter-increment: step-counter;
+    border-left: 1px dashed var(--border-light);
+    margin-left: 11px;
+  }
+  .step-list li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: -11px;
+    top: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--accent-secondary);
+    color: var(--accent-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .step-list li:last-child { border-left-color: transparent; }
+
+  /* 欢迎页 */
+  .welcome {
+    text-align: center;
+    padding: 80px 20px;
+  }
+  .welcome-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    border-radius: 20px;
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    box-shadow: 0 8px 32px rgba(61, 214, 224, 0.25);
+  }
+  .welcome h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .welcome p {
+    font-size: 15px;
+    color: var(--text-tertiary);
+    line-height: 1.8;
+    max-width: 540px;
+    margin: 0 auto 32px;
+  }
+  .welcome-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 28px;
+    font-weight: 700;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .sidebar { width: 260px; min-width: 260px; }
+    .content { padding: 32px 24px 60px; }
+    .content-title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 侧边导航 -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Android Framework</div>
+      <div class="sidebar-subtitle">开发揭秘 · 知识脑图</div>
+      <div class="sidebar-actions">
+        <button class="sidebar-btn" onclick="expandAll()">全部展开</button>
+        <button class="sidebar-btn" onclick="collapseAll()">全部折叠</button>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <ul class="tree" id="treeRoot"></ul>
+    </nav>
+  </aside>
+
+  <!-- 主内容区 -->
+  <main class="main" id="mainContent">
+    <div class="content" id="contentArea"></div>
+  </main>
+
+</div>
+
+<script>
+// ============================================================
+// 知识树数据
+// ============================================================
+const knowledgeTree = [
+  // ========== 第一章 ==========
+  {
+    id: 'ch1',
+    label: '第一章 · 系统启动流程分析',
+    chapter: 1,
+    children: [
+      {
+        id: 'ch1-s1',
+        label: '第一节 · Android启动概览',
+        children: [
+          { id: 'ch1-s1-1', label: 'Android平台基础概述' },
+          { id: 'ch1-s1-2', label: '1.1 Linux内核' },
+          { id: 'ch1-s1-3', label: '系统启动5步流程' },
+          { id: 'ch1-s1-4', label: '1.2 init进程分析' },
+        ]
+      },
+      {
+        id: 'ch1-s2',
+        label: '第二节 · init.rc解析',
+        children: [
+          { id: 'ch1-s2-1', label: 'init.rc概述' },
+          { id: 'ch1-s2-2', label: '2.1 Action' },
+          { id: 'ch1-s2-3', label: '2.2 Service' },
+          { id: 'ch1-s2-4', label: '2.3 Command' },
+          { id: 'ch1-s2-5', label: '2.4 Options' },
+          { id: 'ch1-s2-6', label: '2.5 Service解析流程' },
+        ]
+      },
+      {
+        id: 'ch1-s3',
+        label: '第三节 · Zygote',
+        children: [
+          { id: 'ch1-s3-1', label: '3.1 Zygote概述' },
+          { id: 'ch1-s3-2', label: '3.2 Zygote触发过程' },
+          { id: 'ch1-s3-3', label: '3.3 Zygote启动过程' },
+          { id: 'ch1-s3-4', label: '3.4 System Server启动流程' },
+          { id: 'ch1-s3-5', label: '3.5 Zygote重启条件' },
+          { id: 'ch1-s3-6', label: '3.6 fork函数' },
+          { id: 'ch1-s3-7', label: '3.7 父子进程区别' },
+          { id: 'ch1-s3-8', label: '3.8 写时拷贝(COW)' },
+          { id: 'ch1-s3-9', label: '3.9 孤儿与僵尸进程' },
+          { id: 'ch1-s3-10', label: '3.10 多线程fork调用' },
+        ]
+      },
+      {
+        id: 'ch1-s4',
+        label: '第四节 · 面试题',
+        interview: true,
+        children: [
+          { id: 'ch1-s4-1', label: '4.1 Android系统启动流程', interview: true },
+          { id: 'ch1-s4-2', label: '4.2 system_server为何在Zygote启动', interview: true },
+          { id: 'ch1-s4-3', label: '4.3 为何用Zygote孵化应用', interview: true },
+          { id: 'ch1-s4-4', label: '4.4 fork死锁原理', interview: true },
+          { id: 'ch1-s4-5', label: '4.5 Zygote为何不用Binder', interview: true },
+        ]
+      }
+    ]
+  },
+
+  // ========== 第二章 ==========
+  {
+    id: 'ch2',
+    label: '第二章 · Binder解析',
+    chapter: 2,
+    children: [
+      {
+        id: 'ch2-s1',
+        label: '第一节 · 宏观认识Binder',
+        children: [
+          { id: 'ch2-s1-1', label: '1.1 Binder框架' },
+          { id: 'ch2-s1-2', label: '1.2 涉及到的类' },
+          { id: 'ch2-s1-3', label: '1.3 Binder驱动' },
+        ]
+      },
+      {
+        id: 'ch2-s2',
+        label: '第二节 · Binder的JNI方法注册',
+        children: [
+          { id: 'ch2-s2-1', label: '2.1 Zygote启动' },
+          { id: 'ch2-s2-2', label: '2.2 register_android_os_Binder' },
+        ]
+      },
+      {
+        id: 'ch2-s3',
+        label: '第三节 · Binder驱动',
+        children: [
+          { id: 'ch2-s3-1', label: '3.1 binder_init' },
+          { id: 'ch2-s3-2', label: '3.2 binder_open' },
+          { id: 'ch2-s3-3', label: '3.3 binder_mmap' },
+          { id: 'ch2-s3-4', label: '3.4 binder_ioctl' },
+        ]
+      },
+      {
+        id: 'ch2-s4',
+        label: '第四节 · 数据结构',
+        children: [
+          { id: 'ch2-s4-1', label: '4.1 file_operations' },
+          { id: 'ch2-s4-2', label: '4.2 binder_proc' },
+          { id: 'ch2-s4-3', label: '4.3 binder_node' },
+          { id: 'ch2-s4-4', label: 'binder_buffer' },
+        ]
+      },
+      {
+        id: 'ch2-s5',
+        label: '第五节 · 启动service_manager',
+        children: [
+          { id: 'ch2-s5-1', label: '5.1 启动servicemanager进程' },
+          { id: 'ch2-s5-2', label: '5.2 main函数三步流程' },
+        ]
+      },
+      {
+        id: 'ch2-s6',
+        label: '第六节 · 获取service_manager',
+        children: [
+          { id: 'ch2-s6-1', label: '6.1 defaultServiceManager' },
+        ]
+      },
+      {
+        id: 'ch2-s7',
+        label: '第七节 · addService流程',
+        children: [
+          { id: 'ch2-s7-1', label: '7.1 SystemServer相关' },
+          { id: 'ch2-s7-2', label: '7.2 getIServiceManager' },
+          { id: 'ch2-s7-3', label: '7.3 SMP.addService完整流程' },
+        ]
+      },
+      {
+        id: 'ch2-s8',
+        label: '第八节 · Binder面试题全解析',
+        interview: true,
+        children: [
+          { id: 'ch2-s8-1', label: '8.1 Binder有什么优势', interview: true },
+          { id: 'ch2-s8-2', label: '8.2 一次拷贝原理', interview: true },
+          { id: 'ch2-s8-3', label: '8.3 MMAP内存映射原理', interview: true },
+          { id: 'ch2-s8-4', label: '8.4 Binder跨进程机制', interview: true },
+          { id: 'ch2-s8-5', label: '8.5 四大组件通信机制', interview: true },
+          { id: 'ch2-s8-6', label: '8.6 Intent不能传大数据', interview: true },
+        ]
+      }
+    ]
+  },
+
+  // ========== 第三章 ==========
+  {
+    id: 'ch3',
+    label: '第三章 · Handler解析',
+    chapter: 3,
+    children: [
+      {
+        id: 'ch3-s0',
+        label: '概述',
+        children: [
+          { id: 'ch3-s0-1', label: 'Handler机制本质' },
+        ]
+      },
+      {
+        id: 'ch3-s1',
+        label: '第一节 · 源码分析',
+        children: [
+          { id: 'ch3-s1-1', label: '1.1 相关类介绍' },
+          { id: 'ch3-s1-2', label: '1.2 创建Looper' },
+          { id: 'ch3-s1-3', label: '1.3 Looper.loop()' },
+          { id: 'ch3-s1-4', label: '1.4 创建Handler' },
+          { id: 'ch3-s1-5', label: '1.5 创建Message' },
+          { id: 'ch3-s1-6', label: '1.6 Message与Handler绑定' },
+          { id: 'ch3-s1-7', label: '1.7 Handler发送消息' },
+          { id: 'ch3-s1-8', label: '1.8 Handler处理消息' },
+          { id: 'ch3-s1-9', label: '1.9 小结' },
+        ]
+      },
+      {
+        id: 'ch3-s2',
+        label: '第二节 · 难点问题',
+        children: [
+          { id: 'ch3-s2-1', label: '2.1 线程同步问题' },
+          { id: 'ch3-s2-2', label: '2.2 同步屏障机制' },
+          { id: 'ch3-s2-3', label: '2.3 小结' },
+        ]
+      },
+      {
+        id: 'ch3-s3',
+        label: '第三节 · Handler常问面试题',
+        interview: true,
+        children: [
+          { id: 'ch3-s3-1', label: '3.1 HandlerThread是什么', interview: true },
+          { id: 'ch3-s3-2', label: '3.2 总体原理', interview: true },
+          { id: 'ch3-s3-3', label: '3.3 Looper线程独有', interview: true },
+          { id: 'ch3-s3-4', label: '3.4 ThreadLocal作用', interview: true },
+          { id: 'ch3-s3-5', label: '3.5 Main Looper异同', interview: true },
+          { id: 'ch3-s3-6', label: '3.6 线程切换原理', interview: true },
+          { id: 'ch3-s3-7', label: '3.7 loop死循环不卡死', interview: true },
+          { id: 'ch3-s3-8', label: '3.8 等待唤醒机制', interview: true },
+          { id: 'ch3-s3-9', label: '3.9 Message获取方式', interview: true },
+          { id: 'ch3-s3-10', label: '3.10 MessageQueue管理', interview: true },
+          { id: 'ch3-s3-11', label: '3.11 Message与MQ异同', interview: true },
+          { id: 'ch3-s3-12', label: '3.12 执行时刻管理', interview: true },
+          { id: 'ch3-s3-13', label: '3.13 H/M/Runnable关系', interview: true },
+          { id: 'ch3-s3-14', label: '3.14 IdleHandler', interview: true },
+          { id: 'ch3-s3-15', label: '3.15 同步屏障', interview: true },
+          { id: 'ch3-s3-16', label: '3.16 各组件关系', interview: true },
+          { id: 'ch3-s3-17', label: '3.17 Native侧作用', interview: true },
+          { id: 'ch3-s3-18', label: '3.18 Native侧使用', interview: true },
+          { id: 'ch3-s3-19', label: '3.19 内存泄漏问题', interview: true },
+          { id: 'ch3-s3-20', label: '3.20 系统中的应用', interview: true },
+          { id: 'ch3-s3-21', label: '3.21 不允许并发访问UI', interview: true },
+        ]
+      }
+    ]
+  },
+
+  // ========== 第四章 ==========
+  {
+    id: 'ch4',
+    label: '第四章 · AMS解析',
+    chapter: 4,
+    children: [
+      {
+        id: 'ch4-s1',
+        label: '第一节 · 引言',
+        children: [
+          { id: 'ch4-s1-1', label: 'Android四层架构' },
+        ]
+      },
+      {
+        id: 'ch4-s2',
+        label: '第二节 · Android架构',
+        children: [
+          { id: 'ch4-s2-1', label: 'Loader层' },
+          { id: 'ch4-s2-2', label: 'Kernel层' },
+          { id: 'ch4-s2-3', label: 'Native层' },
+          { id: 'ch4-s2-4', label: 'Framework层' },
+          { id: 'ch4-s2-5', label: 'App层' },
+          { id: 'ch4-s2-6', label: 'Syscall与JNI' },
+        ]
+      },
+      {
+        id: 'ch4-s3',
+        label: '第三节 · 通信方式',
+        children: [
+          { id: 'ch4-s3-1', label: 'Linux原有IPC机制' },
+          { id: 'ch4-s3-2', label: '为何采用Binder（5角度）' },
+          { id: 'ch4-s3-3', label: 'Binder IPC原理' },
+        ]
+      },
+      {
+        id: 'ch4-s4',
+        label: '第四节 · 系统启动系列',
+        children: [
+          { id: 'ch4-s4-1', label: '五大核心进程' },
+        ]
+      },
+      {
+        id: 'ch4-s5',
+        label: '第五节 · AMS',
+        children: [
+          { id: 'ch4-s5-1', label: '5.1 AMS启动' },
+          { id: 'ch4-s5-2', label: '5.2 AMS类图结构' },
+          { id: 'ch4-s5-3', label: 'Proxy代理模式' },
+          { id: 'ch4-s5-4', label: 'Activity启动机制' },
+          { id: 'ch4-s5-5', label: '子线程不能更新UI' },
+          { id: 'ch4-s5-6', label: '进程重要性等级' },
+        ]
+      },
+      {
+        id: 'ch4-s6',
+        label: '第六节 · AMS面试题解析',
+        interview: true,
+        children: [
+          { id: 'ch4-s6-1', label: '6.1 AMS定义与作用', interview: true },
+          { id: 'ch4-s6-2', label: '6.2 ActivityThread vs AppThread', interview: true },
+          { id: 'ch4-s6-3', label: '6.3 Instrumentation', interview: true },
+          { id: 'ch4-s6-4', label: '6.4 AMS与Zygote通信', interview: true },
+          { id: 'ch4-s6-5', label: '6.5 五级管理结构', interview: true },
+          { id: 'ch4-s6-6', label: '6.6 AM/AMS/AMN/AMP关系', interview: true },
+          { id: 'ch4-s6-7', label: '7 手写简化版AMS', interview: true },
+        ]
+      }
+    ]
+  },
+
+  // ========== 第五章 ==========
+  {
+    id: 'ch5',
+    label: '第五章 · WMS解析',
+    chapter: 5,
+    children: [
+      {
+        id: 'ch5-s1',
+        label: '第一节 · Activity与Window概念',
+        children: [
+          { id: 'ch5-s1-1', label: '1.1 Window' },
+          { id: 'ch5-s1-2', label: '1.2 WindowManager' },
+          { id: 'ch5-s1-3', label: '1.3 WindowManagerService' },
+          { id: 'ch5-s1-4', label: '1.4 Token' },
+          { id: 'ch5-s1-5', label: '1.5 Window的type' },
+          { id: 'ch5-s1-6', label: '窗口Flags显示属性' },
+        ]
+      },
+      {
+        id: 'ch5-s2',
+        label: '第二节 · 计算Activity窗口大小',
+        children: [
+          { id: 'ch5-s2-1', label: '核心概念与入口' },
+          { id: 'ch5-s2-2', label: '11步完整流程' },
+        ]
+      },
+      {
+        id: 'ch5-s3',
+        label: '第三节 · 窗口的组织方式',
+        children: [
+          { id: 'ch5-s3-1', label: '核心模型与对应关系' },
+          { id: 'ch5-s3-2', label: '主要操作列表' },
+          { id: 'ch5-s3-3', label: '核心结论' },
+        ]
+      },
+      {
+        id: 'ch5-s4',
+        label: '第四节 · 输入法窗口管理',
+        children: [
+          { id: 'ch5-s4-1', label: '核心概念与位置关系' },
+          { id: 'ch5-s4-2', label: '调整情景与流程' },
+        ]
+      },
+      {
+        id: 'ch5-s5',
+        label: '第五节 · 壁纸窗口管理',
+        children: [
+          { id: 'ch5-s5-1', label: '显示条件与位置' },
+          { id: 'ch5-s5-2', label: 'X/Y轴偏移调整' },
+          { id: 'ch5-s5-3', label: '堆栈位置调整' },
+        ]
+      },
+      {
+        id: 'ch5-s6',
+        label: '第六节 · 计算Z轴位置',
+        children: [
+          { id: 'ch5-s6-1', label: '重新计算的情景' },
+          { id: 'ch5-s6-2', label: 'assignLayersLocked机制' },
+          { id: 'ch5-s6-3', label: '设置到SurfaceFlinger' },
+        ]
+      },
+      {
+        id: 'ch5-s7',
+        label: '第七节 · 启动窗口(Starting Window)',
+        children: [
+          { id: 'ch5-s7-1', label: '核心概念' },
+          { id: 'ch5-s7-2', label: '显示6步流程' },
+          { id: 'ch5-s7-3', label: '结束10步流程' },
+        ]
+      },
+      {
+        id: 'ch5-s8',
+        label: '第八节 · Activity窗口切换',
+        children: [
+          { id: 'ch5-s8-1', label: '核心概念与动画类型' },
+          { id: 'ch5-s8-2', label: '9步切换流程' },
+        ]
+      },
+      {
+        id: 'ch5-s9',
+        label: '第九节 · 窗口动画原理',
+        children: [
+          { id: 'ch5-s9-1', label: '三种Transformation' },
+          { id: 'ch5-s9-2', label: '设置过程' },
+          { id: 'ch5-s9-3', label: '显示框架' },
+          { id: 'ch5-s9-4', label: '推进过程' },
+          { id: 'ch5-s9-5', label: '合成过程' },
+        ]
+      }
+    ]
+  },
+
+  // ========== 第六章 ==========
+  {
+    id: 'ch6',
+    label: '第六章 · PKMS Android10.0',
+    chapter: 6,
+    children: [
+      {
+        id: 'ch6-s1',
+        label: '第一节 · 前言',
+        children: [
+          { id: 'ch6-s1-1', label: 'PKMS是什么' },
+        ]
+      },
+      {
+        id: 'ch6-s2',
+        label: '第二节 · PKMS概述信息',
+        children: [
+          { id: 'ch6-s2-1', label: '三大核心功能' },
+          { id: 'ch6-s2-2', label: '核心源码路径' },
+        ]
+      },
+      {
+        id: 'ch6-s3',
+        label: '第三节 · PKMS角色位置',
+        children: [
+          { id: 'ch6-s3-1', label: 'Binder服务端角色' },
+        ]
+      },
+      {
+        id: 'ch6-s4',
+        label: '第四节 · 启动过程分析',
+        children: [
+          { id: 'ch6-s4-1', label: 'SystemServer七步走' },
+          { id: 'ch6-s4-2', label: 'PKMS.main()四件事' },
+          { id: 'ch6-s4-3', label: '两个重要的锁' },
+          { id: 'ch6-s4-4', label: '阶段1 START' },
+          { id: 'ch6-s4-5', label: '阶段2 SYSTEM_SCAN' },
+          { id: 'ch6-s4-6', label: '阶段3 DATA_SCAN' },
+          { id: 'ch6-s4-7', label: '阶段4 SCAN_END' },
+          { id: 'ch6-s4-8', label: '阶段5 READY' },
+        ]
+      },
+      {
+        id: 'ch6-s5',
+        label: '第五节 · APK的扫描',
+        children: [
+          { id: 'ch6-s5-1', label: '扫描调用链' },
+          { id: 'ch6-s5-2', label: '各环节详解' },
+        ]
+      },
+      {
+        id: 'ch6-s6',
+        label: '第六节 · APK的安装',
+        children: [
+          { id: 'ch6-s6-1', label: '安装三步走' },
+          { id: 'ch6-s6-2', label: '整体安装流程' },
+          { id: 'ch6-s6-3', label: 'installPackagesLI五大环节' },
+        ]
+      },
+      {
+        id: 'ch6-s7',
+        label: '第七节 · PMS之权限扫描',
+        children: [
+          { id: 'ch6-s7-1', label: '权限扫描整体流程' },
+          { id: 'ch6-s7-2', label: '8种XML标签解析' },
+        ]
+      },
+      {
+        id: 'ch6-s8',
+        label: '第八节 · PKMS大综合笔记',
+        children: [
+          { id: 'ch6-s8-1', label: 'Settings与packages.xml' },
+          { id: 'ch6-s8-2', label: 'APK扫描大总结' },
+          { id: 'ch6-s8-3', label: '有界面 vs 无界面安装' },
+        ]
+      }
+    ]
+  }
+];
+
+// ============================================================
+// 内容数据
+// ============================================================
+const contentData = {
+  // ===== 第一章 =====
+  'ch1': {
+    type: 'chapter',
+    chapter: 1,
+    title: '第一章 · 系统启动流程分析',
+    desc: '从电源按下到Launcher显示，深入理解Android系统完整启动链路，掌握init进程、init.rc脚本、Zygote孵化机制等核心知识。',
+    sections: [
+      {
+        title: '核心知识体系',
+        html: `
+          <div class="overview-grid">
+            <div class="overview-card" onclick="navigateTo('ch1-s1')">
+              <div class="overview-card-title">Android启动概览</div>
+              <div class="overview-card-meta">5层架构 · 5步启动流程 · init进程</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch1-s2')">
+              <div class="overview-card-title">init.rc解析</div>
+              <div class="overview-card-meta">Action/Service/Command/Options</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch1-s3')">
+              <div class="overview-card-title">Zygote</div>
+              <div class="overview-card-meta">孵化机制 · SystemServer · fork原理</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch1-s4')">
+              <div class="overview-card-title">面试题精选</div>
+              <div class="overview-card-meta">5道经典启动流程面试题</div>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: '学习路径',
+        html: `
+          <ol class="step-list">
+            <li><strong>理解启动全貌</strong> — 从BootLoader到Launcher的5步完整流程，建立宏观认知</li>
+            <li><strong>深入init进程</strong> — 掌握init的main方法两阶段执行，理解first_stage与second_stage职责</li>
+            <li><strong>掌握init.rc</strong> — 学习Android初始化语言，理解Action/Service/Command/Options四类语句</li>
+            <li><strong>精通Zygote</strong> — 理解Zygote的C/S模型、启动流程、preload机制、fork系统调用</li>
+            <li><strong>SystemServer</strong> — 掌握系统服务的启动方式：引导服务/核心服务/其他服务三步走</li>
+            <li><strong>面试题实战</strong> — 通过5道经典面试题检验学习成果</li>
+          </ol>
+        `
+      }
+    ]
+  },
+  'ch1-s1': {
+    type: 'section',
+    chapter: 1,
+    title: '第一节 · Android启动概览',
+    breadcrumb: ['第一章', 'Android启动概览'],
+    sections: [
+      { title: 'Android平台基础概述', html: `
+        <p>Android是基于Linux内核的开源操作系统，由谷歌开发。Android平台采用分层架构设计，从下往上依次为：</p>
+        <ul class="knowledge-list">
+          <li><strong>Linux内核层</strong> — 提供线程、内存管理、安全机制、驱动模型等底层能力</li>
+          <li><strong>硬件抽象层（HAL）</strong> — 提供标准界面，向Java API框架显示设备硬件功能
+            <ul>
+              <li>包含多个库模块，每个模块为特定硬件组件实现界面（相机、蓝牙等）</li>
+              <li>框架API要求访问硬件时，Android系统加载对应库模块</li>
+            </ul>
+          </li>
+          <li><strong>Android Runtime（ART）</strong> — Android 5.0+ 每个应用运行在独立进程和ART实例中
+            <ul>
+              <li>DEX字节码格式，专为低内存设备优化</li>
+              <li>主要功能：AOT/JIT编译、优化GC、Android 9+ DEX转机器代码、调试支持</li>
+              <li>Android 5.0之前使用Dalvik</li>
+            </ul>
+          </li>
+          <li><strong>原生C/C++库</strong> — ART、HAL等核心组件构建自原生代码
+            <ul>
+              <li>通过Java框架API暴露部分原生库功能（如OpenGL ES）</li>
+              <li>NDK允许原生代码直接访问原生平台库</li>
+            </ul>
+          </li>
+          <li><strong>Java API框架</strong> — 通过Java语言API使用OS全部功能
+            <ul>
+              <li>可扩展视图系统、资源管理器、通知管理器</li>
+              <li>Activity管理器、内容提供程序等</li>
+            </ul>
+          </li>
+          <li><strong>系统应用</strong> — 随附核心应用（邮件、短信、日历、浏览器等）
+            <ul>
+              <li>第三方应用与系统应用地位平等（部分例外如"设置"）</li>
+              <li>可成为默认浏览器、短信应用、默认键盘等</li>
+            </ul>
+          </li>
+        </ul>
+      `},
+      { title: '系统启动5步流程', html: `
+        <ol class="step-list">
+          <li><strong>启动电源及系统启动</strong> — 电源按下，引导芯片从ROM固化位置执行，加载BootLoader到RAM</li>
+          <li><strong>引导程序（BootLoader）</strong> — 运行的第一个程序，非Android系统一部分
+            <ul>
+              <li>第一阶段：检测外部RAM，加载第二阶段程序</li>
+              <li>第二阶段：设置网络、内存等，配置内核参数</li>
+              <li>位置：bootable/bootloader/legacy/usbloader</li>
+            </ul>
+          </li>
+          <li><strong>内核（Kernel）</strong> — 设置缓存、保护存储器、计划列表，加载驱动
+            <ul>
+              <li>完成系统设置后寻找"init"文件，启动第一个用户进程</li>
+            </ul>
+          </li>
+          <li><strong>init进程</strong> — 用户空间第一个进程，PID=1
+            <ul>
+              <li>调用init的main()方法执行三大职责</li>
+            </ul>
+          </li>
+          <li><strong>启动Launcher App</strong> — AMS就绪后打开桌面应用</li>
+        </ol>
+      `},
+      { title: 'init进程三大职责', html: `
+        <ul class="knowledge-list">
+          <li>创建和挂载启动所需要的文件目录</li>
+          <li>初始化和启动属性服务</li>
+          <li>解析init.rc配置文件并启动Zygote进程</li>
+        </ul>
+        <div class="tip-box">
+          <div class="tip-title">💡 init的main方法两阶段执行</div>
+          first_stage：挂载基本文件系统、设置SELinux、重新执行init切换到init domain<br>
+          second_stage：初始化属性系统、启动属性服务、解析init.rc、进入主循环处理事件
+        </div>
+      `}
+    ]
+  },
+  'ch1-s1-1': { type: 'leaf', chapter: 1, title: 'Android平台基础概述', breadcrumb: ['第一章', 'Android启动概览', '基础概述'], redirect: 'ch1-s1' },
+  'ch1-s1-2': { type: 'leaf', chapter: 1, title: '1.1 Linux内核', breadcrumb: ['第一章', 'Android启动概览', 'Linux内核'], redirect: 'ch1-s1' },
+  'ch1-s1-3': { type: 'leaf', chapter: 1, title: '系统启动5步流程', breadcrumb: ['第一章', 'Android启动概览', '启动流程'], redirect: 'ch1-s1' },
+  'ch1-s1-4': { type: 'leaf', chapter: 1, title: '1.2 init进程分析', breadcrumb: ['第一章', 'Android启动概览', 'init进程'], redirect: 'ch1-s1' },
+
+  'ch1-s2': {
+    type: 'section',
+    chapter: 1,
+    title: '第二节 · init.rc解析',
+    breadcrumb: ['第一章', 'init.rc解析'],
+    sections: [
+      { title: 'init.rc概述', html: `
+        <p>init.rc由Android初始化语言（Android Init Language）编写，包含五种类型语句：</p>
+        <ul class="knowledge-list">
+          <li><strong>Action</strong> — 通过触发器决定执行时机</li>
+          <li><strong>Commands</strong> — 具体执行的命令</li>
+          <li><strong>Services</strong> — 由init启动的服务</li>
+          <li><strong>Options</strong> — Service的可选项</li>
+          <li><strong>Import</strong> — 导入其他rc文件</li>
+        </ul>
+      `},
+      { title: '2.1 Action', html: `
+        <p>通过触发器trigger（on开头的语句）决定执行相应service的时机。</p>
+        <ul class="knowledge-list">
+          <li><code>on early-init</code> — 初始化早期阶段触发</li>
+          <li><code>on init</code> — 初始化阶段触发</li>
+          <li><code>on late-init</code> — 初始化晚期阶段触发</li>
+          <li><code>on boot/charger</code> — 系统启动/充电时触发</li>
+          <li><code>on property:=</code> — 当属性值满足条件时触发</li>
+        </ul>
+      `},
+      { title: '2.2 Service', html: `
+        <p>以service开头，由init进程启动，运行在init的子进程中。</p>
+        <ul class="knowledge-list">
+          <li>格式：<code>service &lt;name&gt; &lt;pathname&gt; [&lt;argument&gt;]*</code></li>
+          <li>启动前检查可执行文件是否存在</li>
+          <li>每个service通过fork方式生成子进程</li>
+          <li>示例：<code>service servicemanager /system/bin/servicemanager</code></li>
+        </ul>
+      `},
+      { title: '2.3 Command', html: `
+        <ul class="knowledge-list">
+          <li><code>class_start</code> — 启动属于同一个class的所有服务</li>
+          <li><code>start/stop</code> — 启动/停止指定服务</li>
+          <li><code>setprop</code> — 设置属性值</li>
+          <li><code>mkdir</code> — 创建目录</li>
+          <li><code>write</code> — 向文件写入字符串</li>
+          <li><code>exec</code> — fork并执行，阻塞init进程</li>
+          <li><code>export</code> — 设定环境变量</li>
+          <li><code>loglevel</code> — 设置log级别</li>
+        </ul>
+      `},
+      { title: '2.4 Options', html: `
+        <p>Options是Service的可选项，与service配合使用：</p>
+        <ul class="knowledge-list">
+          <li><code>disabled</code> — 不随class自动启动</li>
+          <li><code>oneshot</code> — service退出后不再重启</li>
+          <li><code>user/group</code> — 设置执行服务的用户/用户组</li>
+          <li><code>class</code> — 设置所属类名，默认为default</li>
+          <li><code>onrestart</code> — 服务重启时执行命令</li>
+          <li><code>socket</code> — 创建/dev/socket/&lt;name&gt;</li>
+          <li><code>critical</code> — 规定时间内不断重启则进入恢复模式</li>
+        </ul>
+      `},
+      { title: '2.5 Service解析流程', html: `
+        <ol class="step-list">
+          <li><strong>LoadBootScripts()</strong> — 创建Parser解析器，解析指定rc文件路径</li>
+          <li><strong>CreateParser()</strong> — 添加三种SectionParser：service/on/import</li>
+          <li><strong>ParseData()</strong> — 逐行解析token，遇到新section切换parser</li>
+          <li><strong>Service解析</strong> — ParseSection创建Service，ParseLine解析options，EndSection加入ServiceList</li>
+          <li><strong>Service启动</strong> — class_start → do_class_start → StartIfNotDisabled → Service::Start() → fork子进程</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch1-s2-1': { type: 'leaf', chapter: 1, title: 'init.rc概述', breadcrumb: ['第一章', 'init.rc解析', '概述'], redirect: 'ch1-s2' },
+  'ch1-s2-2': { type: 'leaf', chapter: 1, title: '2.1 Action', breadcrumb: ['第一章', 'init.rc解析', 'Action'], redirect: 'ch1-s2' },
+  'ch1-s2-3': { type: 'leaf', chapter: 1, title: '2.2 Service', breadcrumb: ['第一章', 'init.rc解析', 'Service'], redirect: 'ch1-s2' },
+  'ch1-s2-4': { type: 'leaf', chapter: 1, title: '2.3 Command', breadcrumb: ['第一章', 'init.rc解析', 'Command'], redirect: 'ch1-s2' },
+  'ch1-s2-5': { type: 'leaf', chapter: 1, title: '2.4 Options', breadcrumb: ['第一章', 'init.rc解析', 'Options'], redirect: 'ch1-s2' },
+  'ch1-s2-6': { type: 'leaf', chapter: 1, title: '2.5 Service解析流程', breadcrumb: ['第一章', 'init.rc解析', 'Service解析'], redirect: 'ch1-s2' },
+
+  'ch1-s3': {
+    type: 'section',
+    chapter: 1,
+    title: '第三节 · Zygote',
+    breadcrumb: ['第一章', 'Zygote'],
+    sections: [
+      { title: '3.1 Zygote概述', html: `
+        <p>Zygote中文译为"受精卵"，主要用于孵化子进程，是Android中的第一个ART虚拟机。</p>
+        <ul class="knowledge-list">
+          <li><strong>两种程序类型</strong>：Java应用（基于ART虚拟机）、Native程序（C/C++，由init直接启动）</li>
+          <li><strong>所有Java应用和SystemServer都由Zygote通过fork()孵化</strong></li>
+          <li>进程最初名字是app_process，由Android.mk定义</li>
+          <li>通过socket方式与其他进程通信（C/S模型）</li>
+          <li><strong>服务端职责</strong>：创建Java虚拟机、加载系统资源、启动SystemServer、接收孵化请求fork新进程</li>
+          <li><strong>应用启动流程</strong>：点击Launcher → AMS接收请求 → Process类发Socket请求 → Zygote监听fork新进程</li>
+        </ul>
+      `},
+      { title: '3.2 Zygote触发过程', html: `
+        <ul class="knowledge-list">
+          <li><strong>init.zygoteXX.rc</strong> — 根据ro.zygote属性导入对应的rc文件
+            <ul>
+              <li>zygote32：纯32位，执行app_process</li>
+              <li>zygote64：纯64位，执行app_process64</li>
+              <li>zygote32_64 / zygote64_32：双进程（主+secondary）</li>
+            </ul>
+          </li>
+          <li><strong>触发时机</strong> — on zygote-start && property:ro.crypto.state=xxx
+            <ul>
+              <li>三种加密状态都会启动：unencrypted / unsupported / encrypted+file</li>
+              <li>zygote-start在late-init序列中触发</li>
+            </ul>
+          </li>
+          <li><strong>app_processXX</strong> — 位置：frameworks/base/cmds/app_process/app_main.cpp</li>
+        </ul>
+      `},
+      { title: '3.3 Zygote启动过程', html: `
+        <ol class="step-list">
+          <li><strong>app_main.cpp::main</strong> — 参数解析，两种模式：zygote模式 / application模式</li>
+          <li><strong>AndroidRuntime::start()</strong> — startVm创建虚拟机，startReg注册JNI方法</li>
+          <li><strong>ZygoteInit.main()</strong> — Java层核心流程
+            <ul>
+              <li>创建ZygoteServer，注册服务端Socket</li>
+              <li>preload()预加载资源：类、资源、HAL、OpenGL、共享库、WebView等</li>
+              <li>gcAndFinalize()主动GC清理</li>
+              <li>forkSystemServer()创建SystemServer进程</li>
+              <li>runSelectLoop进入Socket循环监听</li>
+            </ul>
+          </li>
+        </ol>
+        <div class="tip-box">
+          <div class="tip-title">💡 preload的意义</div>
+          资源预加载到Zygote地址空间，fork后子进程通过写时拷贝共享，大幅减少应用启动时间。代价是增加系统启动时间（preload是最耗时部分之一）。
+        </div>
+      `},
+      { title: '3.4 System Server启动流程', html: `
+        <ul class="knowledge-list">
+          <li>Zygote fork的第一个Java进程，运行大量系统服务</li>
+          <li>包含Binder-x线程、UI thread、InputReader/InputDispatch等</li>
+        </ul>
+        <p><strong>run()方法四部分：</strong></p>
+        <ol class="step-list">
+          <li>初始化系统环境参数（时间、时区、语言、加载Library）</li>
+          <li>初始化Looper（主线程Looper在此创建）</li>
+          <li>初始化Context（createSystemContext → ActivityThread.systemMain()）</li>
+          <li>初始化SystemServiceManager并启动系统服务三步走
+            <ul>
+              <li>startBootstrapServices — 引导服务（PMS、AMS等必须服务）</li>
+              <li>startCoreServices — 核心服务（Battery、UsageStats等）</li>
+              <li>startOtherServices — 其他服务（Alarm、Network等）</li>
+            </ul>
+          </li>
+        </ol>
+        <div class="tip-box">
+          <div class="tip-title">⚠️ Zygote对SystemServer的守护</div>
+          Zygote监测SystemServer的SIGCHLD信号，一旦SystemServer崩溃，Zygote立即杀死自己。init监测到Zygote死亡后重启Zygote，实现自动恢复。
+        </div>
+      `},
+      { title: '3.5 ~ 3.10 进程相关概念', html: `
+        <h4>Zygote重启条件</h4>
+        <ul class="knowledge-list">
+          <li>servicemanager被杀（onrestart机制）</li>
+          <li>surfaceflinger被杀（onrestart机制）</li>
+          <li>Zygote自己被杀</li>
+          <li>system_server被杀 → Zygote自杀 → init重启Zygote</li>
+        </ul>
+        <h4>fork函数</h4>
+        <ul class="knowledge-list">
+          <li>返回值：0（子进程）/ >0（父进程，返回子PID）/ <0（失败）</li>
+          <li>子进程继承整个地址空间：上下文、堆栈、文件描述符、信号控制、优先级等</li>
+          <li>子进程独有：进程号、计时器</li>
+        </ul>
+        <h4>写时拷贝（Copy-On-Write）</h4>
+        <ul class="knowledge-list">
+          <li>内核不复制整个地址空间，父子进程共享同一空间</li>
+          <li>只有需要写入时才复制，各进程拥有独立空间</li>
+          <li>资源复制推迟到需要写入时，之前只读共享</li>
+        </ul>
+        <h4>孤儿进程与僵尸进程</h4>
+        <ul class="knowledge-list">
+          <li><strong>孤儿进程</strong>：父进程先退出，子进程托孤给init进程</li>
+          <li><strong>僵尸进程</strong>：子进程先退出，需等父进程捕获退出状态才真正结束，仅保留退出信息</li>
+        </ul>
+        <h4>多线程进程的fork调用</h4>
+        <ul class="knowledge-list">
+          <li>POSIX标准：复制整个用户空间数据和系统对象，但只复制当前线程到子进程</li>
+          <li>父进程中其他线程在子进程中"突然蒸发"</li>
+          <li><strong>死锁场景</strong>：fork前子线程持有某锁 → fork后子进程中锁被复制但所有者线程消失 → 子进程想获取该锁时无法解开 → 死锁</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch1-s3-1': { type: 'leaf', chapter: 1, title: '3.1 Zygote概述', breadcrumb: ['第一章', 'Zygote', '概述'], redirect: 'ch1-s3' },
+  'ch1-s3-2': { type: 'leaf', chapter: 1, title: '3.2 Zygote触发过程', breadcrumb: ['第一章', 'Zygote', '触发过程'], redirect: 'ch1-s3' },
+  'ch1-s3-3': { type: 'leaf', chapter: 1, title: '3.3 Zygote启动过程', breadcrumb: ['第一章', 'Zygote', '启动过程'], redirect: 'ch1-s3' },
+  'ch1-s3-4': { type: 'leaf', chapter: 1, title: '3.4 System Server启动流程', breadcrumb: ['第一章', 'Zygote', 'SystemServer'], redirect: 'ch1-s3' },
+  'ch1-s3-5': { type: 'leaf', chapter: 1, title: '3.5 Zygote重启条件', breadcrumb: ['第一章', 'Zygote', '重启条件'], redirect: 'ch1-s3' },
+  'ch1-s3-6': { type: 'leaf', chapter: 1, title: '3.6 fork函数', breadcrumb: ['第一章', 'Zygote', 'fork函数'], redirect: 'ch1-s3' },
+  'ch1-s3-7': { type: 'leaf', chapter: 1, title: '3.7 父子进程区别', breadcrumb: ['第一章', 'Zygote', '父子进程'], redirect: 'ch1-s3' },
+  'ch1-s3-8': { type: 'leaf', chapter: 1, title: '3.8 写时拷贝(COW)', breadcrumb: ['第一章', 'Zygote', '写时拷贝'], redirect: 'ch1-s3' },
+  'ch1-s3-9': { type: 'leaf', chapter: 1, title: '3.9 孤儿与僵尸进程', breadcrumb: ['第一章', 'Zygote', '孤儿僵尸进程'], redirect: 'ch1-s3' },
+  'ch1-s3-10': { type: 'leaf', chapter: 1, title: '3.10 多线程fork调用', breadcrumb: ['第一章', 'Zygote', '多线程fork'], redirect: 'ch1-s3' },
+
+  'ch1-s4': {
+    type: 'interview',
+    chapter: 1,
+    title: '第四节 · 面试题',
+    breadcrumb: ['第一章', '面试题'],
+    interviews: [
+      { q: '你了解Android系统启动流程吗？', a: `
+        按电源键触发开机，从ROM预定义位置加载BootLoader到RAM并执行 →
+        BootLoader启动Linux Kernel →
+        Kernel启动用户空间第一个进程init进程 →
+        init进程解析init.rc脚本，挂载文件系统、创建工作目录、启动系统服务进程（Zygote、service manager、media等） →
+        Zygote中启动system_server进程 →
+        system_server中启动AMS、WMS、PMS等核心服务 →
+        AMS就绪后打开Launcher应用的home Activity，显示手机"桌面"。
+      `},
+      { q: 'system_server为什么要在Zygote中启动，而不是由init直接启动呢？', a: `
+        Zygote作为孵化器可以提前加载资源。fork基于Copy-On-Write机制，子进程可直接使用这些资源而不用重新加载。
+        system_server可直接使用Zygote中的JNI函数、共享库、常用类、主题资源等，大幅提高启动效率。
+      `},
+      { q: '为什么要专门使用Zygote进程去孵化应用进程，而不是让system_server去孵化呢？', a: `
+        一方面system_server相比Zygote多运行了AMS、WMS等服务，这些对应用程序来说不需要，增加不必要的内存开销。
+        另一方面fork对多线程不友好，仅将发起调用的线程拷贝到子进程，可能导致死锁。
+        system_server中有很多线程，fork风险远高于Zygote。
+      `},
+      { q: '能说说具体是怎么导致死锁的吗？', a: `
+        POSIX标准中，fork复制整个用户空间数据和所有系统对象，但仅复制当前线程到子进程。
+        父进程中其他线程在子进程中"突然蒸发"。每个锁有一个所有者（最后一次lock它的线程）。
+        fork前子线程lock了某个锁获得所有权 → fork后子进程中其他线程都消失了，但锁被正常复制 →
+        子进程中这个锁没有主人，无人能解锁 → 子进程想lock这个锁时无法解开，发生死锁。
+      `},
+      { q: 'Zygote为什么不采用Binder机制进行IPC通信？', a: `
+        Binder机制中存在Binder线程池，是多线程的。若Zygote采用Binder，就存在fork与多线程的死锁问题。
+        实际上Binder机制不一定需要多线程，只注册一个Binder线程也可以工作（如service manager）。
+        Zygote虽未采用Binder，但它也不是单线程的——Zygote在fork前主动停止其他线程，fork后重新启动。
+      `}
+    ]
+  },
+  'ch1-s4-1': { type: 'leaf', chapter: 1, title: '4.1 Android系统启动流程', breadcrumb: ['第一章', '面试题', '启动流程'], redirect: 'ch1-s4' },
+  'ch1-s4-2': { type: 'leaf', chapter: 1, title: '4.2 system_server为何在Zygote启动', breadcrumb: ['第一章', '面试题', 'system_server'], redirect: 'ch1-s4' },
+  'ch1-s4-3': { type: 'leaf', chapter: 1, title: '4.3 为何用Zygote孵化应用', breadcrumb: ['第一章', '面试题', 'Zygote孵化'], redirect: 'ch1-s4' },
+  'ch1-s4-4': { type: 'leaf', chapter: 1, title: '4.4 fork死锁原理', breadcrumb: ['第一章', '面试题', 'fork死锁'], redirect: 'ch1-s4' },
+  'ch1-s4-5': { type: 'leaf', chapter: 1, title: '4.5 Zygote为何不用Binder', breadcrumb: ['第一章', '面试题', 'Zygote Binder'], redirect: 'ch1-s4' },
+
+  // ===== 第二章 =====
+  'ch2': {
+    type: 'chapter',
+    chapter: 2,
+    title: '第二章 · Binder解析',
+    desc: '深入理解Android核心IPC机制Binder，从驱动层到Framework层，掌握数据结构、注册流程、addService完整链路及面试高频考点。',
+    sections: [
+      {
+        title: '核心知识体系',
+        html: `
+          <div class="overview-grid">
+            <div class="overview-card" onclick="navigateTo('ch2-s1')">
+              <div class="overview-card-title">宏观认识Binder</div>
+              <div class="overview-card-meta">框架分层 · 涉及类 · 驱动概述</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch2-s2')">
+              <div class="overview-card-title">JNI方法注册</div>
+              <div class="overview-card-meta">Binder/BinderInternal/BinderProxy</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch2-s3')">
+              <div class="overview-card-title">Binder驱动</div>
+              <div class="overview-card-meta">init/open/mmap/ioctl</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch2-s4')">
+              <div class="overview-card-title">数据结构</div>
+              <div class="overview-card-meta">binder_proc/node/buffer</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch2-s5')">
+              <div class="overview-card-title">启动ServiceManager</div>
+              <div class="overview-card-meta">binder_open/become/binder_loop</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch2-s7')">
+              <div class="overview-card-title">addService流程</div>
+              <div class="overview-card-meta">完整跨进程调用链</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch2-s8')">
+              <div class="overview-card-title">面试题精选</div>
+              <div class="overview-card-meta">6道经典Binder面试题</div>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: '学习路径',
+        html: `
+          <ol class="step-list">
+            <li><strong>建立宏观认知</strong> — 理解Binder C/S架构、四层分层、核心角色</li>
+            <li><strong>学习JNI注册</strong> — 掌握三个Binder相关类的JNI注册链路</li>
+            <li><strong>深入驱动层</strong> — 理解binder_init/open/mmap/ioctl四大入口函数</li>
+            <li><strong>掌握数据结构</strong> — binder_proc/binder_node/binder_buffer等核心结构体</li>
+            <li><strong>ServiceManager</strong> — 启动流程、获取流程、handle=0的特殊地位</li>
+            <li><strong>完整流程</strong> — 以addService为例走通完整跨进程调用</li>
+            <li><strong>面试题实战</strong> — 优势、一次拷贝、MMAP、跨进程机制等</li>
+          </ol>
+        `
+      }
+    ]
+  },
+  'ch2-s1': {
+    type: 'section',
+    chapter: 2,
+    title: '第一节 · 宏观认识Binder',
+    breadcrumb: ['第二章', '宏观认识Binder'],
+    sections: [
+      { title: '1.1 Binder框架', html: `
+        <p>Binder是Android中核心的IPC（进程间通信）机制，采用C/S架构。从上到下分为四层：</p>
+        <ul class="knowledge-list">
+          <li><strong>Java应用层</strong> — App开发使用的AIDL接口</li>
+          <li><strong>Framework层</strong> — Binder、ServiceManager等Java类</li>
+          <li><strong>Native层</strong> — BpBinder、BBinder、ProcessState等</li>
+          <li><strong>内核驱动层</strong> — binder驱动，负责数据传递、内存映射、线程管理</li>
+        </ul>
+        <p>Client通过ServiceManager获取Server的代理对象，通过代理对象进行跨进程调用。</p>
+      `},
+      { title: '1.2 Binder涉及到的类', html: `
+        <h4>Java层</h4>
+        <ul class="knowledge-list">
+          <li>Binder、BinderProxy</li>
+          <li>ServiceManager、ServiceManagerNative、ServiceManagerProxy</li>
+        </ul>
+        <h4>Native层</h4>
+        <ul class="knowledge-list">
+          <li>BpBinder、BBinder</li>
+          <li>ProcessState、IPCThreadState</li>
+          <li>BpServiceManager</li>
+        </ul>
+        <h4>驱动层</h4>
+        <ul class="knowledge-list">
+          <li>binder_proc、binder_thread、binder_node</li>
+          <li>binder_buffer、binder_transaction</li>
+        </ul>
+        <p>Binder实体在Server端，Binder代理在Client端，通过handle标识。</p>
+      `},
+      { title: '1.3 Binder驱动', html: `
+        <ul class="knowledge-list">
+          <li>位于内核层，是Binder通信的核心枢纽</li>
+          <li>负责进程间的数据传递、内存映射、线程管理、引用计数</li>
+          <li>提供/dev/binder设备节点，用户空间通过ioctl与驱动交互</li>
+          <li>采用mmap内存映射实现一次拷贝，提高IPC效率</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch2-s1-1': { type: 'leaf', chapter: 2, title: '1.1 Binder框架', breadcrumb: ['第二章', '宏观认识Binder', '框架'], redirect: 'ch2-s1' },
+  'ch2-s1-2': { type: 'leaf', chapter: 2, title: '1.2 涉及到的类', breadcrumb: ['第二章', '宏观认识Binder', '涉及类'], redirect: 'ch2-s1' },
+  'ch2-s1-3': { type: 'leaf', chapter: 2, title: '1.3 Binder驱动', breadcrumb: ['第二章', '宏观认识Binder', '驱动'], redirect: 'ch2-s1' },
+
+  'ch2-s2': {
+    type: 'section',
+    chapter: 2,
+    title: '第二节 · Binder的JNI方法注册',
+    breadcrumb: ['第二章', 'JNI方法注册'],
+    sections: [
+      { title: '2.1 Zygote启动三级流程', html: `
+        <ol class="step-list">
+          <li><strong>启动zygote进程</strong> — init解析init.zygote.rc创建，对应app_process，启动参数含--zygote和--start-system-server</li>
+          <li><strong>执行app_main.cpp::main</strong> — 解析--zygote参数，调用AndroidRuntime::start(ZygoteInit类名)</li>
+          <li><strong>AndroidRuntime::start</strong> — 调用startReg完成JNI注册，循环注册gRegJNI数组中的所有方法</li>
+        </ol>
+      `},
+      { title: '2.2 register_android_os_Binder', html: `
+        <p>依次注册三个类的JNI方法（源文件：android_util_Binder.cpp）：</p>
+        <ul class="knowledge-list">
+          <li><strong>int_register_android_os_Binder</strong> — 注册android.os.Binder的native方法
+            <ul>
+              <li>gBinderMethods：getCallingPid/Uid、clearCallingIdentity、restoreCallingIdentity等</li>
+              <li>gBinderOffsets：保存Binder类信息（mClass、mExecTransact、mObject）</li>
+            </ul>
+          </li>
+          <li><strong>int_register_android_os_BinderInternal</strong> — 注册com.android.internal.os.BinderInternal
+            <ul>
+              <li>gBinderInternalMethods：getContextObject、joinThreadPool等</li>
+              <li>getContextObject是获取ServiceManager的关键入口</li>
+            </ul>
+          </li>
+          <li><strong>int_register_android_os_BinderProxy</strong> — 注册android.os.BinderProxy
+            <ul>
+              <li>gBinderProxyMethods：pingBinder、transactNative、linkToDeath等</li>
+              <li>gBinderProxyOffsets.mObject保存BpBinder指针（JNI ↔ Native桥梁）</li>
+              <li>transactNative是跨进程调用的核心方法</li>
+            </ul>
+          </li>
+        </ul>
+      `}
+    ]
+  },
+  'ch2-s2-1': { type: 'leaf', chapter: 2, title: '2.1 Zygote启动', breadcrumb: ['第二章', 'JNI方法注册', 'Zygote启动'], redirect: 'ch2-s2' },
+  'ch2-s2-2': { type: 'leaf', chapter: 2, title: '2.2 register_android_os_Binder', breadcrumb: ['第二章', 'JNI方法注册', '注册函数'], redirect: 'ch2-s2' },
+
+  'ch2-s3': {
+    type: 'section',
+    chapter: 2,
+    title: '第三节 · Binder驱动',
+    breadcrumb: ['第二章', 'Binder驱动'],
+    sections: [
+      { title: '3.1 binder_init', html: `
+        <ul class="knowledge-list">
+          <li>Binder驱动入口函数，device_initcall宏注册</li>
+          <li>创建binder_deferred_workqueue单线程工作队列</li>
+          <li>init_binder_device：分配内存、设置fops、注册misc驱动</li>
+          <li>将binder_device加入binder_devices链表</li>
+        </ul>
+      `},
+      { title: '3.2 binder_open', html: `
+        <p>用户空间open("/dev/binder")时调用，创建binder_proc结构体：</p>
+        <ul class="knowledge-list">
+          <li>在内核分配binder_proc内存</li>
+          <li>保存task_struct到proc->tsk</li>
+          <li>初始化todo列表、wait等待队列、delivered_death列表</li>
+          <li>设置default_priority为当前进程nice值</li>
+          <li>加入binder_procs全局哈希链表</li>
+          <li>保存到filp->private_data，后续通过filp找到proc</li>
+          <li>binder_lock/unlock保证多线程安全</li>
+        </ul>
+      `},
+      { title: '3.3 binder_mmap', html: `
+        <p>建立内核空间与用户空间的内存映射，映射大小不超过4M：</p>
+        <ol class="step-list">
+          <li>binder_mmap_lock同步锁保证并发安全</li>
+          <li>get_vm_area分配连续内核虚拟内存（VM_IOREMAP方式）</li>
+          <li>proc->buffer指向内核虚拟内存起始地址</li>
+          <li>proc->user_buffer_offset = 用户虚拟地址 - 内核虚拟地址（偏移量）</li>
+          <li>proc->pages分配物理页指针数组</li>
+          <li>binder_update_page_range分配物理页，同时映射到内核和进程空间</li>
+          <li>初始buffer加入proc->buffers链表，标记free，插入free_buffers红黑树</li>
+          <li>proc->free_async_space = buffer_size / 2</li>
+        </ol>
+      `},
+      { title: '3.4 binder_ioctl', html: `
+        <p>用户空间与Binder驱动交互的入口，主要处理BINDER_WRITE_READ命令：</p>
+        <ul class="knowledge-list">
+          <li><strong>binder_ioctl_write_read</strong> — 核心函数
+            <ul>
+              <li>copy_from_user拷贝binder_write_read结构到内核</li>
+              <li>write_size > 0 → binder_thread_write（发送命令给驱动）</li>
+              <li>read_size > 0 → binder_thread_read（从驱动读取返回数据）</li>
+              <li>copy_to_user将结果拷贝回用户空间</li>
+            </ul>
+          </li>
+        </ul>
+      `}
+    ]
+  },
+  'ch2-s3-1': { type: 'leaf', chapter: 2, title: '3.1 binder_init', breadcrumb: ['第二章', 'Binder驱动', 'binder_init'], redirect: 'ch2-s3' },
+  'ch2-s3-2': { type: 'leaf', chapter: 2, title: '3.2 binder_open', breadcrumb: ['第二章', 'Binder驱动', 'binder_open'], redirect: 'ch2-s3' },
+  'ch2-s3-3': { type: 'leaf', chapter: 2, title: '3.3 binder_mmap', breadcrumb: ['第二章', 'Binder驱动', 'binder_mmap'], redirect: 'ch2-s3' },
+  'ch2-s3-4': { type: 'leaf', chapter: 2, title: '3.4 binder_ioctl', breadcrumb: ['第二章', 'Binder驱动', 'binder_ioctl'], redirect: 'ch2-s3' },
+
+  'ch2-s4': {
+    type: 'section',
+    chapter: 2,
+    title: '第四节 · 数据结构',
+    breadcrumb: ['第二章', '数据结构'],
+    sections: [
+      { title: '4.1 file_operations', html: `
+        <p>binder_fops定义驱动文件操作函数集：</p>
+        <ul class="knowledge-list">
+          <li>.poll = binder_poll — 轮询操作</li>
+          <li>.unlocked_ioctl / .compat_ioctl = binder_ioctl — ioctl操作</li>
+          <li>.mmap = binder_mmap — 内存映射</li>
+          <li>.open = binder_open — 打开设备</li>
+          <li>.flush / .release — 刷新和释放</li>
+        </ul>
+      `},
+      { title: '4.2 binder_proc', html: `
+        <p>每个进程open() Binder驱动时创建，管理IPC所需全部信息：</p>
+        <ul class="knowledge-list">
+          <li><strong>链表/红黑树</strong>：threads、nodes、refs_by_desc、refs_by_node</li>
+          <li><strong>进程信息</strong>：pid、tsk、files、vma、vma_vm_mm</li>
+          <li><strong>内存管理</strong>：buffer、user_buffer_offset、buffers、free_buffers、allocated_buffers、pages</li>
+          <li><strong>事务管理</strong>：todo、wait、delivered_death</li>
+          <li><strong>线程管理</strong>：max_threads、requested_threads、ready_threads</li>
+          <li><strong>其他</strong>：default_priority、context、stats</li>
+        </ul>
+      `},
+      { title: '4.3 binder_node', html: `
+        <p>Binder实体在内核中的表示，Server端每个Binder对象对应一个binder_node：</p>
+        <ul class="knowledge-list">
+          <li>proc — 所属binder_proc</li>
+          <li>refs — 指向该节点的所有binder引用队列</li>
+          <li>ptr / cookie — 指向用户空间的指针对应flat_binder_object字段</li>
+          <li>引用计数：internal_strong_refs、local_weak_refs、local_strong_refs</li>
+          <li>状态位：has_strong_ref、pending_strong_ref、has_weak_ref、has_async_transaction、accept_fds</li>
+          <li>async_todo — 异步todo队列</li>
+        </ul>
+      `},
+      { title: 'binder_buffer', html: `
+        <p>Binder驱动中用于传输数据的缓冲区：</p>
+        <ul class="knowledge-list">
+          <li>entry — buffer链表节点（挂载到proc->buffers）</li>
+          <li>rb_node — 红黑树节点（free_buffers或allocated_buffers）</li>
+          <li>free / async_transaction / debug_id 等位字段</li>
+          <li>transaction — 该缓冲区对应的事务</li>
+          <li>target_node — 目标Binder实体</li>
+          <li>data_size / offsets_size / extra_buffers_size</li>
+          <li>data[0] — 数据起始地址（柔性数组）</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch2-s4-1': { type: 'leaf', chapter: 2, title: '4.1 file_operations', breadcrumb: ['第二章', '数据结构', 'file_operations'], redirect: 'ch2-s4' },
+  'ch2-s4-2': { type: 'leaf', chapter: 2, title: '4.2 binder_proc', breadcrumb: ['第二章', '数据结构', 'binder_proc'], redirect: 'ch2-s4' },
+  'ch2-s4-3': { type: 'leaf', chapter: 2, title: '4.3 binder_node', breadcrumb: ['第二章', '数据结构', 'binder_node'], redirect: 'ch2-s4' },
+  'ch2-s4-4': { type: 'leaf', chapter: 2, title: 'binder_buffer', breadcrumb: ['第二章', '数据结构', 'binder_buffer'], redirect: 'ch2-s4' },
+
+  'ch2-s5': {
+    type: 'section',
+    chapter: 2,
+    title: '第五节 · 启动service_manager',
+    breadcrumb: ['第二章', '启动service_manager'],
+    sections: [
+      { title: '5.1 启动servicemanager进程', html: `
+        <ul class="knowledge-list">
+          <li>由init进程解析init.rc创建，可执行程序/system/bin/servicemanager</li>
+          <li>属class core，user/group为system</li>
+          <li>critical属性：关键服务，崩溃导致系统重启</li>
+          <li>onrestart：重启healthd、zygote、media、surfaceflinger、drm</li>
+          <li><strong>Binder通信的大管家</strong>，负责服务的注册与查询</li>
+        </ul>
+      `},
+      { title: '5.2 main函数三步流程', html: `
+        <ol class="step-list">
+          <li><strong>binder_open</strong> — 打开/dev/binder，mmap映射128KB（只读PROT_READ），返回binder_state
+            <ul>
+              <li>ServiceManager只需要128KB映射空间，因为它只负责注册查询</li>
+            </ul>
+          </li>
+          <li><strong>binder_become_context_manager</strong> — 通过ioctl成为Binder上下文管理者
+            <ul>
+              <li>全局只有一个ServiceManager，handle固定为0</li>
+              <li>创建service_manager的binder_node实体，强弱引用各+1</li>
+            </ul>
+          </li>
+          <li><strong>binder_loop</strong> — 进入无限循环处理client请求
+            <ul>
+              <li>发送BC_ENTER_LOOPER设置循环状态</li>
+              <li>循环ioctl读取数据，binder_parse解析处理</li>
+              <li>无数据时进入休眠等待唤醒</li>
+            </ul>
+          </li>
+        </ol>
+      `}
+    ]
+  },
+  'ch2-s5-1': { type: 'leaf', chapter: 2, title: '5.1 启动servicemanager进程', breadcrumb: ['第二章', '启动service_manager', '进程启动'], redirect: 'ch2-s5' },
+  'ch2-s5-2': { type: 'leaf', chapter: 2, title: '5.2 main函数三步流程', breadcrumb: ['第二章', '启动service_manager', 'main流程'], redirect: 'ch2-s5' },
+
+  'ch2-s6': {
+    type: 'section',
+    chapter: 2,
+    title: '第六节 · 获取service_manager',
+    breadcrumb: ['第二章', '获取service_manager'],
+    sections: [
+      { title: '6.1 defaultServiceManager', html: `
+        <p>采用单例模式，三步流程：</p>
+        <ol class="step-list">
+          <li><strong>ProcessState::self()</strong> — 单例，open_driver打开binder设置最大线程数（默认15），mmap分配1M-8K虚拟地址</li>
+          <li><strong>getContextObject(NULL)</strong> — 等价getStrongProxyForHandle(0)，handle=0固定为SM
+            <ul>
+              <li>lookupHandleLocked查找对应资源</li>
+              <li>不存在则创建BpBinder对象，PING_TRANSACTION测试就绪</li>
+              <li>BpBinder::mHandle标识目标Binder实体</li>
+            </ul>
+          </li>
+          <li><strong>interface_cast()</strong> — 模板函数，调用IServiceManager::asInterface
+            <ul>
+              <li>queryLocalInterface查询本地接口（跨进程返回NULL）</li>
+              <li>创建BpServiceManager代理对象</li>
+              <li>由IMPLEMENT_META_INTERFACE宏展开</li>
+            </ul>
+          </li>
+        </ol>
+        <div class="tip-box">
+          <div class="tip-title">💡 重要设计</div>
+          每个进程只有一个ProcessState对象。每个进程的Binder映射空间为1M-8K（预留8K用于缓冲区头）。
+        </div>
+      `}
+    ]
+  },
+  'ch2-s6-1': { type: 'leaf', chapter: 2, title: '6.1 defaultServiceManager', breadcrumb: ['第二章', '获取service_manager', 'defaultServiceManager'], redirect: 'ch2-s6' },
+
+  'ch2-s7': {
+    type: 'section',
+    chapter: 2,
+    title: '第七节 · addService流程',
+    breadcrumb: ['第二章', 'addService流程'],
+    sections: [
+      { title: '整体流程概览', html: `
+        <p>以AMS注册到ServiceManager为例，完整跨进程调用链：</p>
+        <p>SystemServer → ServiceManager.addService → getIServiceManager → SMP.addService → Binder驱动 → ServiceManager处理</p>
+      `},
+      { title: '7.1 SystemServer发起调用', html: `
+        <ol class="step-list">
+          <li>SystemServer.run()创建SystemServiceManager</li>
+          <li>startBootstrapServices启动AMS</li>
+          <li>AMS.setSystemProcess()调用ServiceManager.addService("activity", AMS)</li>
+          <li>ServiceManager.addService → getIServiceManager().addService(name, service, allowIsolated)</li>
+        </ol>
+      `},
+      { title: '7.2 getIServiceManager', html: `
+        <ul class="knowledge-list">
+          <li>单例模式：sServiceManager不为空直接返回</li>
+          <li>BinderInternal.getContextObject() → native → ProcessState::getContextObject(NULL) → BpBinder(0)</li>
+          <li>javaObjectForIBinder将BpBinder转换为Java层BinderProxy</li>
+          <li>BinderProxy.mObject保存BpBinder指针（JNI ↔ Native桥梁）</li>
+          <li>ServiceManagerNative.asInterface → new ServiceManagerProxy(obj)</li>
+        </ul>
+      `},
+      { title: '7.3 SMP.addService完整流程', html: `
+        <ol class="step-list">
+          <li><strong>Parcel.writeStrongBinder</strong> — 将Binder对象写入Parcel → flatten_binder扁平化</li>
+          <li><strong>BinderProxy.transactNative</strong> → JNI → BpBinder::transact</li>
+          <li><strong>IPCThreadState::transact</strong> — writeTransactionData写入mOut，waitForResponse等待回复</li>
+          <li><strong>talkWithDriver</strong> — ioctl(BINDER_WRITE_READ)发送BC_TRANSACTION给驱动</li>
+          <li><strong>binder_transaction（驱动层）</strong>
+            <ul>
+              <li>handle=0 → target为binder_context_mgr_node</li>
+              <li>分配binder_transaction结构体和binder_buffer</li>
+              <li>copy_from_user拷贝用户空间数据</li>
+              <li>遇到BINDER_TYPE_BINDER时binder_translate_binder创建binder_ref，type改为BINDER_TYPE_HANDLE</li>
+              <li>事务加入target进程todo队列，wake_up_interruptible唤醒目标进程</li>
+            </ul>
+          </li>
+          <li><strong>Client端等待</strong> — binder_thread_read进入wait_event_freezable等待</li>
+          <li><strong>ServiceManager处理</strong> — 被唤醒后binder_loop/binder_parse → svcmgr_handler → do_add_service
+            <ul>
+              <li>svc_can_register权限检查（uid/pid验证）</li>
+              <li>find_svc查找是否已注册，更新或新建svcinfo</li>
+              <li>binder_acquire强引用+1，binder_link_to_death注册死亡通知</li>
+            </ul>
+          </li>
+          <li><strong>发送回复</strong> — binder_send_reply → BC_REPLY → 驱动回传 → 唤醒Client端</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch2-s7-1': { type: 'leaf', chapter: 2, title: '7.1 SystemServer相关', breadcrumb: ['第二章', 'addService流程', 'SystemServer'], redirect: 'ch2-s7' },
+  'ch2-s7-2': { type: 'leaf', chapter: 2, title: '7.2 getIServiceManager', breadcrumb: ['第二章', 'addService流程', 'getIServiceManager'], redirect: 'ch2-s7' },
+  'ch2-s7-3': { type: 'leaf', chapter: 2, title: '7.3 SMP.addService完整流程', breadcrumb: ['第二章', 'addService流程', '完整流程'], redirect: 'ch2-s7' },
+
+  'ch2-s8': {
+    type: 'interview',
+    chapter: 2,
+    title: '第八节 · Binder面试题全解析',
+    breadcrumb: ['第二章', '面试题'],
+    interviews: [
+      { q: 'Binder有什么优势？', a: `
+        <strong>性能方面：</strong>共享内存0次拷贝，Binder 1次拷贝，Socket/管道/消息队列2次拷贝。性能仅次于共享内存。<br>
+        <strong>稳定性方面：</strong>Binder基于C/S架构，Client与Server职责明确相互独立，稳定性好。共享内存控制复杂难以使用，可能死锁。<br>
+        <strong>安全性方面：</strong>传统IPC无法获得对方可靠UID/PID，无法鉴别身份，接入点开放。Binder支持实名+匿名Binder，Server端根据UID/PID进行权限控制。Android为每个应用分配UID，是鉴别身份的重要标志。<br>
+        <strong>语言层面：</strong>Binder符合面向对象思想，模糊进程边界，淡化通信过程，契合Android的Java面向对象设计。<br>
+        <strong>公司战略：</strong>Linux内核GPL协议有"病毒式感染"，Google将GPL控制在内核空间，用户空间采用Apache-2.0协议，实现开源与商业化共存。
+      `},
+      { q: 'Binder是如何做到一次拷贝的？', a: `
+        Linux使用虚拟内存寻址，用户空间虚拟地址映射到物理内存，内存映射通过mmap系统调用实现。<br><br>
+        Binder借助内存映射，在内核空间和接收方用户空间数据缓冲区之间建立映射。数据从发送方用户空间copy_from_user到内核缓冲区，由于内核缓冲区和接收方用户空间存在映射关系，相当于直接拷贝到接收方用户空间。<br><br>
+        只需一次拷贝（发送方用户空间 → 内核空间），接收方可直接通过映射读取。
+      `},
+      { q: 'MMAP的内存映射原理了解吗？', a: `
+        分为三个阶段：<br><br>
+        <strong>阶段一：进程启动映射过程</strong> — 进程调用mmap → 在虚拟地址空间寻找空闲连续地址 → 分配vm_area_struct → 插入虚拟地址区域链表/树。<br><br>
+        <strong>阶段二：内核空间实现地址映射</strong> — 通过文件描述符链接file结构体 → file_operations调用内核mmap函数 → 通过inode定位文件磁盘物理地址 → remap_pfn_range建立页表。注意：此时虚拟地址尚未关联实际物理内存数据。<br><br>
+        <strong>阶段三：缺页异常实现数据拷贝</strong> — 前两阶段仅创建虚拟区间和映射，未拷贝数据。进程访问映射地址引发缺页异常 → 请求调页（swap cache中查找，没有则nopage从磁盘装入） → 脏页面自动回写磁盘（msync强制同步）。
+      `},
+      { q: 'Binder机制是如何跨进程的？', a: `
+        1. Binder驱动在内核空间创建一块接收缓存区，实现地址映射：将内核缓存区和接收进程用户空间映射到同一物理缓存区。<br>
+        2. 发送进程通过copy_from_user将数据发送到内核缓存区，由于映射关系相当于也发送到了接收进程用户空间，从而实现跨进程通信。
+      `},
+      { q: '说说四大组件的通信机制', a: `
+        <strong>Activity：</strong>每个Activity通常是一个单独屏幕，通过Intent通信，必须在AndroidManifest.xml声明。<br>
+        <strong>Service：</strong>后台完成用户指定操作，两种状态——started（startService启动，onStartCommand回调，生命周期独立）和bound（bindService绑定，调用者退出服务终止）。无图形界面，需在Manifest声明。<br>
+        <strong>Content Provider：</strong>使一个应用的数据集提供给其他应用，其他应用通过ContentResolver操作。统一数据访问方式，是不同应用间共享数据的唯一方式（Android无公共存储区）。使用content:// URI唯一标识。<br>
+        <strong>Broadcast Receiver：</strong>过滤外部事件，只对感兴趣的事件响应。无用户界面，可启动Activity/Service或用NotificationManager通知。两种注册：动态注册（随Activity生命周期）、静态注册（设备开启即生效，app未启动也能接收）。
+      `},
+      { q: '为什么Intent不能传递大数据？', a: `
+        Intent携带信息大小受Binder限制。数据以Parcel对象形式存放在Binder传递缓存中。数据或返回值比传递buffer大时，传递失败并抛出TransactionTooLargeException。<br><br>
+        Binder传递缓存有限定大小，通常是1Mb。同一进程中所有传输共享缓存空间，多个传输同时进行时，即使各自数据不超限也可能抛出异常。1Mb不是安全上限，因为Binder可能同时处理其他传输。不同机型和系统版本上限值可能不同。
+      `}
+    ]
+  },
+  // ch2-s8-1 ~ ch2-s8-6 redirects
+  'ch2-s8-1': { type: 'leaf', chapter: 2, title: '8.1 Binder有什么优势', breadcrumb: ['第二章', '面试题', '优势'], redirect: 'ch2-s8' },
+  'ch2-s8-2': { type: 'leaf', chapter: 2, title: '8.2 一次拷贝原理', breadcrumb: ['第二章', '面试题', '一次拷贝'], redirect: 'ch2-s8' },
+  'ch2-s8-3': { type: 'leaf', chapter: 2, title: '8.3 MMAP内存映射原理', breadcrumb: ['第二章', '面试题', 'MMAP'], redirect: 'ch2-s8' },
+  'ch2-s8-4': { type: 'leaf', chapter: 2, title: '8.4 Binder跨进程机制', breadcrumb: ['第二章', '面试题', '跨进程'], redirect: 'ch2-s8' },
+  'ch2-s8-5': { type: 'leaf', chapter: 2, title: '8.5 四大组件通信机制', breadcrumb: ['第二章', '面试题', '四大组件'], redirect: 'ch2-s8' },
+  'ch2-s8-6': { type: 'leaf', chapter: 2, title: '8.6 Intent不能传大数据', breadcrumb: ['第二章', '面试题', 'Intent大数据'], redirect: 'ch2-s8' },
+
+  // ===== 第三章 =====
+  'ch3': {
+    type: 'chapter',
+    chapter: 3,
+    title: '第三章 · Handler解析',
+    desc: '掌握Android消息循环机制核心，从Looper/MessageQueue/Handler/Message四大组件到线程同步、同步屏障，21道面试题全覆盖。',
+    sections: [
+      {
+        title: '核心知识体系',
+        html: `
+          <div class="overview-grid">
+            <div class="overview-card" onclick="navigateTo('ch3-s0')">
+              <div class="overview-card-title">概述</div>
+              <div class="overview-card-meta">生产者-消费者模型</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch3-s1')">
+              <div class="overview-card-title">源码分析</div>
+              <div class="overview-card-meta">Looper/Handler/Message完整流程</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch3-s2')">
+              <div class="overview-card-title">难点问题</div>
+              <div class="overview-card-meta">线程同步 · 同步屏障</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch3-s3')">
+              <div class="overview-card-title">面试题精选</div>
+              <div class="overview-card-meta">21道Handler高频面试题</div>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: '核心关系图',
+        html: `
+          <div class="tip-box">
+            <div class="tip-title">📌 一个线程只有一个Looper</div>
+            Thread → 1个 Looper → 1个 MessageQueue → N个 Message（来自静态池，上限50）<br>
+            Thread → N个 Handler → 1个 MessageQueue<br>
+            ThreadLocal是静态的，整个进程共用一个ThreadLocal实例。
+          </div>
+        `
+      }
+    ]
+  },
+  'ch3-s0': {
+    type: 'section',
+    chapter: 3,
+    title: '概述',
+    breadcrumb: ['第三章', '概述'],
+    sections: [
+      { title: 'Handler机制本质', html: `
+        <p>Handler机制本质是<strong>生产者-消费者模型</strong>：</p>
+        <ul class="knowledge-list">
+          <li><strong>生产者</strong> — 子线程发送消息到缓冲区（MessageQueue）</li>
+          <li><strong>消费者</strong> — 主线程从缓冲区取走消息处理</li>
+          <li><strong>好处1</strong>：保证数据生产消费的顺序（MessageQueue先进先出）</li>
+          <li><strong>好处2</strong>：生产者与消费者解耦，双方只依赖缓冲区，不相互持有</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch3-s0-1': { type: 'leaf', chapter: 3, title: 'Handler机制本质', breadcrumb: ['第三章', '概述', '本质'], redirect: 'ch3-s0' },
+
+  'ch3-s1': {
+    type: 'section',
+    chapter: 3,
+    title: '第一节 · 源码分析',
+    breadcrumb: ['第三章', '源码分析'],
+    sections: [
+      { title: '1.1 相关类介绍', html: `
+        <ul class="knowledge-list">
+          <li><strong>Handler</strong> — 发送和接收消息</li>
+          <li><strong>Looper</strong> — 轮询消息队列，一个线程只能有一个Looper</li>
+          <li><strong>Message</strong> — 消息实体</li>
+          <li><strong>MessageQueue</strong> — 消息队列，存储和管理消息</li>
+        </ul>
+      `},
+      { title: '1.2 创建Looper', html: `
+        <ul class="knowledge-list">
+          <li>创建方式：调用 <code>Looper.prepare()</code></li>
+          <li>主线程在ActivityThread.main()中通过<code>Looper.prepareMainLooper()</code>自动创建</li>
+          <li>prepareMainLooper()内部调用prepare(false)，消息队列不可quit</li>
+          <li>prepare()中通过sThreadLocal.set(new Looper(quitAllowed))创建并绑定线程</li>
+          <li>线程已有Looper时再次调用prepare()抛出"Only one Looper may be created per thread"异常</li>
+          <li>Looper构造函数中创建MessageQueue，mThread绑定当前线程</li>
+          <li>MessageQueue构造函数调用nativeInit()初始化Native侧消息队列</li>
+        </ul>
+      `},
+      { title: '1.3 Looper.loop()', html: `
+        <ul class="knowledge-list">
+          <li>死循环（for(;;)），不断调用queue.next()从消息队列取消息</li>
+          <li>没有消息时queue.next()会阻塞（might block）</li>
+          <li>取到消息后调用msg.target.dispatchMessage(msg)分发消息</li>
+          <li>消息处理完后调用msg.recycleUnchecked()回收消息</li>
+          <li>myLooper()为空则抛异常</li>
+        </ul>
+      `},
+      { title: '1.4 ~ 1.6 Handler与Message', html: `
+        <h4>创建Handler</h4>
+        <ul class="knowledge-list">
+          <li>常见方式：new Handler()重写handleMessage()</li>
+          <li>构造函数中通过Looper.myLooper()获取当前线程Looper（不是创建）</li>
+          <li>无Looper则抛异常"Can't create handler inside thread..."</li>
+          <li>mQueue = mLooper.mQueue，Handler持有的MQ来自Looper</li>
+          <li>sThreadLocal是静态ThreadLocal&lt;Looper&gt;，解决多线程并发下Looper线程隔离问题</li>
+        </ul>
+        <h4>创建Message（享元模式）</h4>
+        <ul class="knowledge-list">
+          <li>推荐使用Message.obtain()从消息池中获取复用的Message</li>
+          <li>消息池是静态单链表结构，sPool为链表头</li>
+          <li>同步锁sPoolSync保证线程安全，池上限50个</li>
+          <li>池中有则取出复用，没有则new Message()</li>
+        </ul>
+        <h4>Message与Handler的绑定</h4>
+        <ul class="knowledge-list">
+          <li>方式1：Message.obtain(Handler h)创建时绑定</li>
+          <li>方式2：Handler.enqueueMessage()中绑定msg.target = this</li>
+          <li>所有发送方法最终都会调用enqueueMessage()，因此创建时可不绑定</li>
+        </ul>
+      `},
+      { title: '1.7 ~ 1.9 发送与处理消息', html: `
+        <h4>发送消息两种方式</h4>
+        <ul class="knowledge-list">
+          <li>sendMessage(Message) / post(Runnable)</li>
+          <li>sendMessage → sendMessageDelayed → sendMessageAtTime → enqueueMessage → queue.enqueueMessage</li>
+        </ul>
+        <h4>dispatchMessage分发逻辑</h4>
+        <ol class="step-list">
+          <li>msg.callback不为空（post场景）→ handleCallback(msg)即callback.run()</li>
+          <li>否则mCallback不为空 → mCallback.handleMessage(msg)，返回true则不再往下</li>
+          <li>否则调用handleMessage(msg)</li>
+        </ol>
+        <h4>完整流程小结</h4>
+        <p>Handler.sendMessage → MessageQueue入队 → Looper.loop()轮询 → 到时间取出 → dispatchMessage分发 → handleMessage处理</p>
+      `}
+    ]
+  },
+  // ch3-s1 redirect leaves
+  'ch3-s1-1': { type: 'leaf', chapter: 3, title: '1.1 相关类介绍', breadcrumb: ['第三章', '源码分析', '相关类'], redirect: 'ch3-s1' },
+  'ch3-s1-2': { type: 'leaf', chapter: 3, title: '1.2 创建Looper', breadcrumb: ['第三章', '源码分析', '创建Looper'], redirect: 'ch3-s1' },
+  'ch3-s1-3': { type: 'leaf', chapter: 3, title: '1.3 Looper.loop()', breadcrumb: ['第三章', '源码分析', 'loop()'], redirect: 'ch3-s1' },
+  'ch3-s1-4': { type: 'leaf', chapter: 3, title: '1.4 创建Handler', breadcrumb: ['第三章', '源码分析', '创建Handler'], redirect: 'ch3-s1' },
+  'ch3-s1-5': { type: 'leaf', chapter: 3, title: '1.5 创建Message', breadcrumb: ['第三章', '源码分析', '创建Message'], redirect: 'ch3-s1' },
+  'ch3-s1-6': { type: 'leaf', chapter: 3, title: '1.6 Message与Handler绑定', breadcrumb: ['第三章', '源码分析', '消息绑定'], redirect: 'ch3-s1' },
+  'ch3-s1-7': { type: 'leaf', chapter: 3, title: '1.7 Handler发送消息', breadcrumb: ['第三章', '源码分析', '发送消息'], redirect: 'ch3-s1' },
+  'ch3-s1-8': { type: 'leaf', chapter: 3, title: '1.8 Handler处理消息', breadcrumb: ['第三章', '源码分析', '处理消息'], redirect: 'ch3-s1' },
+  'ch3-s1-9': { type: 'leaf', chapter: 3, title: '1.9 小结', breadcrumb: ['第三章', '源码分析', '小结'], redirect: 'ch3-s1' },
+
+  'ch3-s2': {
+    type: 'section',
+    chapter: 3,
+    title: '第二节 · 难点问题',
+    breadcrumb: ['第三章', '难点问题'],
+    sections: [
+      { title: '2.1 线程同步问题', html: `
+        <p>线程安全的关键在于MessageQueue的两个操作：<strong>消息入库（enqueueMessage）</strong>和<strong>消息出库（next）</strong>。</p>
+        <h4>enqueueMessage线程安全</h4>
+        <ul class="knowledge-list">
+          <li>方法体被synchronized(this)包裹，锁对象是MessageQueue本身</li>
+          <li>所有子线程向主线程发消息时，主线程一次只处理一个，保证队列不混乱</li>
+          <li>入队时按when时间排序插入单链表合适位置</li>
+          <li>新消息插入队首且队列阻塞时需要nativeWake()唤醒</li>
+        </ul>
+        <h4>next()线程安全</h4>
+        <ul class="knowledge-list">
+          <li>取消息逻辑也在synchronized(this)块中</li>
+          <li>意义：保证next和enqueueMessage互斥，确保多线程访问时队列有序</li>
+          <li>nativePollOnce()在synchronized块外部调用，避免等待时持有锁导致死锁</li>
+        </ul>
+      `},
+      { title: '2.2 同步屏障机制', html: `
+        <p><strong>概念</strong>：阻碍同步消息，只让异步消息优先通过的机制（绿色通道）。</p>
+        <ul class="knowledge-list">
+          <li><strong>开启</strong>：MessageQueue.postSyncBarrier()（@hide不对外公开）</li>
+          <li><strong>本质</strong>：插入一条target == null的Message到消息队列</li>
+          <li><strong>原理</strong>：next()发现队首消息target==null（屏障），则跳过同步消息，查找第一个异步消息取出返回</li>
+          <li><strong>移除</strong>：removeSyncBarrier(token)</li>
+        </ul>
+        <h4>应用场景：UI更新</h4>
+        <ul class="knowledge-list">
+          <li>View绘制（draw、requestLayout、invalidate）用到</li>
+          <li>ViewRootImpl.scheduleTraversals()中开启同步屏障</li>
+          <li>Choreographer.postCallback()发送异步消息</li>
+          <li>ViewRootImpl.unscheduleTraversals()中移除同步屏障</li>
+          <li>作用：确保高优先级的异步消息（如屏幕刷新）能被及时处理</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch3-s2-1': { type: 'leaf', chapter: 3, title: '2.1 线程同步问题', breadcrumb: ['第三章', '难点问题', '线程同步'], redirect: 'ch3-s2' },
+  'ch3-s2-2': { type: 'leaf', chapter: 3, title: '2.2 同步屏障机制', breadcrumb: ['第三章', '难点问题', '同步屏障'], redirect: 'ch3-s2' },
+  'ch3-s2-3': { type: 'leaf', chapter: 3, title: '2.3 小结', breadcrumb: ['第三章', '难点问题', '小结'], redirect: 'ch3-s2' },
+
+  'ch3-s3': {
+    type: 'interview',
+    chapter: 3,
+    title: '第三节 · Handler常问面试题',
+    breadcrumb: ['第三章', '面试题'],
+    interviews: [
+      { q: 'HandlerThread是什么？为什么它会存在？', a: `
+        HandlerThread是Thread子类，内部自带Looper。<br>
+        <strong>存在意义1：方便使用</strong> — 普通Thread使用Looper需要手动prepare()和loop()，获取子线程Looper时可能还未初始化，存在线程安全问题。HandlerThread帮你封装好。<br>
+        <strong>存在意义2：保证线程安全</strong> — run()中先prepare再创建Looper，synchronized块中赋值并notifyAll()，getLooper()中wait()等待确保Looper已初始化。
+      `},
+      { q: '简述Handler机制的总体原理？', a: `
+        <strong>Looper准备和轮询：</strong>Looper.prepare()初始化线程独有的Looper和MQ；Looper.loop()死循环读取下一个满足执行时间的Message；无消息时Native侧pollOnce()进入无限等待；有消息但时间未到时进入有限等待。<br><br>
+        <strong>Message发送、入队和出队：</strong>任意线程向Handler发送Message/Runnable，按when顺序插入MQ；无限等待时新消息入队后wake()唤醒；有限等待时epoll_wait超时自动返回。<br><br>
+        <strong>Looper处理Message：</strong>有callback则执行Runnable；否则根据target即Handler回调，有mCallback先调再调handleMessage。
+      `},
+      { q: 'Looper存在哪？如何保证线程独有？', a: `
+        Looper实例管理在静态属性sThreadLocal中。ThreadLocal内部通过ThreadLocalMap持有Looper，key为ThreadLocal实例本身，value为Looper实例。每个Thread都有自己的ThreadLocalMap，因此每个线程对应独立的Looper实例。myLooper()通过sThreadLocal.get()获得。<br><br>
+        <strong>彩蛋：各对象数量关系</strong><br>
+        1个线程 = 1个Looper = 1个MessageQueue = N个Message（静态池上限50）<br>
+        1个线程可以有N个Handler实例<br>
+        ThreadLocal实例是静态的，整个进程共用1个
+      `},
+      { q: '如何理解ThreadLocal的作用？', a: `
+        不是用来切换线程的。作用是让每个线程方便地获取自己的Looper实例（Looper.myLooper()）。供Handler初始化时指定其所属的Looper线程，也可用来判断当前线程是否是主线程。
+      `},
+      { q: '主线程Main Looper和一般Looper的异同？', a: `
+        <strong>区别：</strong>Main Looper不可quit（主线程需持续读取系统消息和用户输入，是进程入口）；Main Looper被静态缓存为sMainLooper，各线程可通过getMainLooper()获取。<br>
+        <strong>相同点：</strong>都通过Looper.prepare()间接调用构造函数创建；都被静态ThreadLocal管理。<br><br>
+        <strong>彩蛋：</strong>App入口是ActivityThread.main()，不是Activity或Application。main()最后调用prepareMainLooper()创建Looper并调用loop()轮询。
+      `},
+      { q: 'Handler/Looper如何切换线程？', a: `
+        Handler创建时指定了所属线程的Looper，持有Looper独有的MessageQueue。Looper.loop()持续读取MQ中的Message，无消息时等待。向Handler发消息即向其MQ插入Message，Message到达并满足条件后唤醒所属线程，Looper回调Message指向的Handler Callback或Runnable，实现线程切换。<br><br>
+        简言之：向其他线程的Handler发消息 = 向该线程独有的MQ插入消息，该线程Looper自动响应。
+      `},
+      { q: 'Looper的loop()死循环为什么不卡死？', a: `
+        loop()是死循环，持续调用MQ.next()读取消息。没有消息时调用pollOnce()，通过Linux的epoll机制进入等待并释放CPU资源。eventFd监听消息抵达的写入事件，有新消息时唤醒。空闲时释放资源、不卡死，同时能持续接收输入。<br><br>
+        <strong>彩蛋：</strong>loop()后的代码不可执行（死循环）；Looper等待时Java侧看是Runnable状态，实际上CPU资源被暂时释放（epoll等待）。
+      `},
+      { q: 'Looper的等待是如何能够准确唤醒的？', a: `
+        两种等待模式：<br>
+        <strong>无限等待：</strong>无消息时（或有同步屏障但无异步消息），pollOnce传入-1 → Linux执行epoll_wait() → 新消息插入时调用Native侧wake()向唤醒fd写入事件触发唤醒。<br>
+        <strong>有限等待：</strong>下一个消息时间未到，将剩余时长传给epoll_wait() → 等待指定时长后epoll自动返回，继续下一次循环读取。
+      `},
+      { q: 'Message如何获取？为什么这么设计？', a: `
+        享元设计模式：通过Message.obtain()从静态单链表池中获取实例，使用完recycle()放回池子供复用。<br>
+        好处：复用Message实例，减少频繁创建销毁，满足高频使用场景，更高效。缓存池上限50个，避免无限制缓存浪费。缓存池是静态的，整个进程共用一个。
+      `},
+      { q: 'MessageQueue如何管理Message？', a: `
+        通过单链表管理Message，线程独有（区别于进程共用的Message Pool）。按Message的执行时刻when进行排队和出队。除了管理Message，还要管理IdleHandler和同步屏障。
+      `},
+      { q: '理解Message和MessageQueue的异同？', a: `
+        <strong>相同点：</strong>都通过单链表管理Message实例。Message通过obtain()/recycle()操作缓存池；MQ通过enqueueMessage()/next()操作队列。<br>
+        <strong>区别：</strong>Message单链表是静态的，整个进程共用的缓存池；MQ单链表是非静态的，只供当前Looper线程使用。
+      `},
+      { q: 'Message的执行时刻如何管理？', a: `
+        按when属性先后顺序管理在MQ中。延时Message的when = 当前时刻 + delay；非延时when = 当前时刻；插队Message的when固定为0，插入队首。<br>
+        读取时比较当前时刻和when：已抵达直接出队，未抵达的计算差值交Native epoll等待对应时长。<br>
+        <strong>注意：</strong>Message不能保证在when时刻精确执行，往往会延迟（必须等当前Message处理完才有机会读取下一个）。
+      `},
+      { q: 'Handler、Message和Runnable的关系如何理解？', a: `
+        Handler是使用Handler机制的入口，是发送Message或Runnable的起点。发送的Runnable本质也是Message，作为callback属性被持有。Handler作为target属性被持有在Message中，消息满足条件时供Looper回调。Handler是对外API，Message是更重要的载体。
+      `},
+      { q: 'IdleHandler空闲Message了解过吗？有什么用？', a: `
+        适用于空闲时执行、不影响主线程操作的任务。<br>
+        <strong>系统应用：</strong>Activity destroy回调放IdleHandler；ActivityThread中GCHandler使用IdleHandler，空闲时执行GC。<br>
+        <strong>App应用：</strong>将部分初始化放IdleHandler不影响Activity启动；闪烁诱导点击等。<br><br>
+        <strong>彩蛋：</strong>add/remove不需要成对（返回false自动移除）；mIdleHandlers不为空时不会死循环（计数重置）；启动服务最好不要放（时机不可控）；运行线程取决于add到的MQ所在线程。
+      `},
+      { q: '异步Message或同步屏障了解过吗？怎么用？什么原理？', a: `
+        <strong>异步Message：</strong>设置了isAsync属性，可用异步Handler发送或直接setAsynchronous()设置。<br>
+        <strong>同步屏障：</strong>在MQ某个位置放一个target为null的Message，此后非异步Message无法执行，只能执行异步Message。<br>
+        <strong>原理：</strong>MQ轮询时发现同步屏障（target==null），跳过同步消息，读取下一个async的Message并执行。屏障移除前同步Message都被阻塞。<br>
+        <strong>应用：</strong>屏幕刷新Choreographer使用同步屏障，确保刷新事件不受队列负荷影响。注意：同步屏障API未对外公开，App使用需依赖反射。
+      `},
+      { q: 'Looper和MessageQueue、Message及Handler的关系？', a: `
+        Message：承载任务的载体，贯穿始终。<br>
+        Handler：对外公开的API，负责发送Message和处理回调，是生产者。<br>
+        MessageQueue：管理待处理Message的入队和出队，是容器。<br>
+        Looper：轮询MQ，保持线程持续运行，是消费者。<br><br>
+        <strong>彩蛋：</strong>如何保证并发访问安全（避免死锁）？Looper消费前先拿锁，无消息或时间未到时先释放锁再等待（nativePollOnce在synchronized块外侧）。消息入队前也需拿锁，此时Looper正在等待且不持有锁，可成功入队，入队后唤醒。无消息可消费时等待且不占锁，避免生产消费死锁。
+      `},
+      { q: 'Native侧的NativeMessageQueue和Looper的作用是？', a: `
+        NativeMessageQueue负责连接Java侧的MessageQueue，进行wait和wake。创建wake的FD，通过epoll机制等待或唤醒。不参与管理Java的Message。Native侧也需要Looper机制，将这部分封装在JNI层供Java和Native共用。
+      `},
+      { q: 'Native侧如何使用Looper？', a: `
+        Native Looper承担Java侧Looper的等待和唤醒，还提供Message、MessageHandler/WeakMessageHandler、LooperCallback/SimpleLooperCallback等API，可供Native侧直接调用（如InputFlinger广泛使用）。使用思路和Java侧类似。
+      `},
+      { q: 'Handler为什么可能导致内存泄露？如何避免？', a: `
+        <strong>原因：</strong>持有Activity的匿名内部类/内部类Handler生命周期与Activity不一致。异步任务仍活跃或Message未处理完，使内部类实例生命周期被错误延长。Activity本该回收却被Thread或Main Looper占据而无法及时回收。<br>
+        引用链：Message → Handler → 外部类(Activity)<br>
+        <strong>避免方法：</strong>静态内部类+弱引用写法；Activity销毁时及时终止Thread、停止子线程Looper或清空Message；切断Activity经由Message抵达GC Root的引用源头。<br><br>
+        <strong>彩蛋：</strong>Handler$Callback方案不能解决——Callback用内部类写法默认持有Activity引用，引用链仍然存在。
+      `},
+      { q: 'Handler在系统当中的应用？', a: `
+        应用非常广泛：Activity生命周期管理、屏幕刷新、HandlerThread、IntentService、AsyncTask等。主要利用Handler的切换线程、主线程异步Message特性。Binder线程非主线程，很多操作需回到主线程，通过Handler切换。典型例子：ActivityThread$H继承Handler，处理各种系统消息。
+      `},
+      { q: 'Android为什么不允许并发访问UI？', a: `
+        Android中UI非线程安全，并发访问会造成数据和显示错乱。检查始于ViewRootImpl.checkThread()，在刷新等访问UI时机调用。非主线程访问会抛出异常。ViewRootImpl创建在onResume()之后。<br><br>
+        <strong>彩蛋：</strong>onCreate()里子线程更新UI不会报错——因为异常检测在ViewRootImpl中，该实例创建和检测在onResume()之后才进行。
+      `}
+    ]
+  },
+  'ch3-s3-1': { type: 'leaf', chapter: 3, title: '3.1 HandlerThread是什么', breadcrumb: ['第三章', '面试题', 'HandlerThread'], redirect: 'ch3-s3' },
+  'ch3-s3-2': { type: 'leaf', chapter: 3, title: '3.2 总体原理', breadcrumb: ['第三章', '面试题', '总体原理'], redirect: 'ch3-s3' },
+  'ch3-s3-3': { type: 'leaf', chapter: 3, title: '3.3 Looper线程独有', breadcrumb: ['第三章', '面试题', '线程独有'], redirect: 'ch3-s3' },
+  'ch3-s3-4': { type: 'leaf', chapter: 3, title: '3.4 ThreadLocal作用', breadcrumb: ['第三章', '面试题', 'ThreadLocal'], redirect: 'ch3-s3' },
+  'ch3-s3-5': { type: 'leaf', chapter: 3, title: '3.5 Main Looper异同', breadcrumb: ['第三章', '面试题', 'Main Looper'], redirect: 'ch3-s3' },
+  'ch3-s3-6': { type: 'leaf', chapter: 3, title: '3.6 线程切换原理', breadcrumb: ['第三章', '面试题', '线程切换'], redirect: 'ch3-s3' },
+  'ch3-s3-7': { type: 'leaf', chapter: 3, title: '3.7 loop死循环不卡死', breadcrumb: ['第三章', '面试题', '死循环'], redirect: 'ch3-s3' },
+  'ch3-s3-8': { type: 'leaf', chapter: 3, title: '3.8 等待唤醒机制', breadcrumb: ['第三章', '面试题', '等待唤醒'], redirect: 'ch3-s3' },
+  'ch3-s3-9': { type: 'leaf', chapter: 3, title: '3.9 Message获取方式', breadcrumb: ['第三章', '面试题', 'Message获取'], redirect: 'ch3-s3' },
+  'ch3-s3-10': { type: 'leaf', chapter: 3, title: '3.10 MessageQueue管理', breadcrumb: ['第三章', '面试题', 'MessageQueue'], redirect: 'ch3-s3' },
+  'ch3-s3-11': { type: 'leaf', chapter: 3, title: '3.11 Message与MQ异同', breadcrumb: ['第三章', '面试题', '异同'], redirect: 'ch3-s3' },
+  'ch3-s3-12': { type: 'leaf', chapter: 3, title: '3.12 执行时刻管理', breadcrumb: ['第三章', '面试题', '执行时刻'], redirect: 'ch3-s3' },
+  'ch3-s3-13': { type: 'leaf', chapter: 3, title: '3.13 H/M/Runnable关系', breadcrumb: ['第三章', '面试题', '关系'], redirect: 'ch3-s3' },
+  'ch3-s3-14': { type: 'leaf', chapter: 3, title: '3.14 IdleHandler', breadcrumb: ['第三章', '面试题', 'IdleHandler'], redirect: 'ch3-s3' },
+  'ch3-s3-15': { type: 'leaf', chapter: 3, title: '3.15 同步屏障', breadcrumb: ['第三章', '面试题', '同步屏障'], redirect: 'ch3-s3' },
+  'ch3-s3-16': { type: 'leaf', chapter: 3, title: '3.16 各组件关系', breadcrumb: ['第三章', '面试题', '组件关系'], redirect: 'ch3-s3' },
+  'ch3-s3-17': { type: 'leaf', chapter: 3, title: '3.17 Native侧作用', breadcrumb: ['第三章', '面试题', 'Native侧'], redirect: 'ch3-s3' },
+  'ch3-s3-18': { type: 'leaf', chapter: 3, title: '3.18 Native侧使用', breadcrumb: ['第三章', '面试题', 'Native使用'], redirect: 'ch3-s3' },
+  'ch3-s3-19': { type: 'leaf', chapter: 3, title: '3.19 内存泄漏问题', breadcrumb: ['第三章', '面试题', '内存泄漏'], redirect: 'ch3-s3' },
+  'ch3-s3-20': { type: 'leaf', chapter: 3, title: '3.20 系统中的应用', breadcrumb: ['第三章', '面试题', '系统应用'], redirect: 'ch3-s3' },
+  'ch3-s3-21': { type: 'leaf', chapter: 3, title: '3.21 不允许并发访问UI', breadcrumb: ['第三章', '面试题', '并发访问UI'], redirect: 'ch3-s3' },
+
+  // ===== 第四章 =====
+  'ch4': {
+    type: 'chapter',
+    chapter: 4,
+    title: '第四章 · AMS解析',
+    desc: '深入理解ActivityManagerService，从系统架构到进程管理，掌握Proxy模式、Activity启动链路、任务栈管理及经典面试题。',
+    sections: [
+      {
+        title: '核心知识体系',
+        html: `
+          <div class="overview-grid">
+            <div class="overview-card" onclick="navigateTo('ch4-s1')">
+              <div class="overview-card-title">引言</div>
+              <div class="overview-card-meta">Android四层架构</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch4-s2')">
+              <div class="overview-card-title">Android架构</div>
+              <div class="overview-card-meta">五层启动链路详解</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch4-s3')">
+              <div class="overview-card-title">通信方式</div>
+              <div class="overview-card-meta">Binder优势5角度分析</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch4-s4')">
+              <div class="overview-card-title">系统启动系列</div>
+              <div class="overview-card-meta">五大核心进程</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch4-s5')">
+              <div class="overview-card-title">AMS详解</div>
+              <div class="overview-card-meta">启动/类图/启动机制/进程等级</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch4-s6')">
+              <div class="overview-card-title">面试题精选</div>
+              <div class="overview-card-meta">7道AMS经典面试题</div>
+            </div>
+          </div>
+        `
+      }
+    ]
+  },
+  'ch4-s1': {
+    type: 'section',
+    chapter: 4,
+    title: '第一节 · 引言',
+    breadcrumb: ['第四章', '引言'],
+    sections: [
+      { title: 'Android四层架构', html: `
+        <p>从下往上依次为：</p>
+        <ul class="knowledge-list">
+          <li><strong>Linux内核层</strong> — 底层基础设施</li>
+          <li><strong>系统库和Android运行时环境</strong> — Native层和ART</li>
+          <li><strong>框架层</strong> — Framework层系统服务</li>
+          <li><strong>应用层</strong> — App应用</li>
+        </ul>
+        <p>底层采用Linux作为基底，上层包含虚拟机的Java层和Native层。通过系统调用(Syscall)连通内核空间与用户空间，通过JNI技术打通Java层和Native层(C/C++)。</p>
+      `}
+    ]
+  },
+  'ch4-s1-1': { type: 'leaf', chapter: 4, title: 'Android四层架构', breadcrumb: ['第四章', '引言', '四层架构'], redirect: 'ch4-s1' },
+
+  'ch4-s2': {
+    type: 'section',
+    chapter: 4,
+    title: '第二节 · Android架构',
+    breadcrumb: ['第四章', 'Android架构'],
+    sections: [
+      { title: '系统启动过程', html: `
+        <p>Loader → Kernel → Native → Framework → App</p>
+      `},
+      { title: 'Loader层', html: `
+        <ul class="knowledge-list">
+          <li><strong>Boot ROM</strong>：关机状态长按Power键开机，引导芯片从ROM固化代码开始执行，加载引导程序到RAM</li>
+          <li><strong>Boot Loader</strong>：启动Android系统前的引导程序，检查RAM、初始化硬件参数等</li>
+        </ul>
+      `},
+      { title: 'Kernel层', html: `
+        <ul class="knowledge-list">
+          <li><strong>swapper进程(pid=0)</strong>：又称idle进程，Kernel第一个进程，初始化进程管理、内存管理，加载Display、Camera Driver、Binder Driver等</li>
+          <li><strong>kthreadd进程(pid=2)</strong>：Linux内核进程，创建kworker、ksoftirqd、thermal等内核守护进程，是所有内核进程的鼻祖</li>
+        </ul>
+      `},
+      { title: 'Native层', html: `
+        <ul class="knowledge-list">
+          <li><strong>init进程(pid=1)</strong>：Linux用户空间第一个进程，所有用户进程的鼻祖</li>
+          <li>init孵化出ueventd、logd、healthd、installd、adbd、lmkd等用户守护进程</li>
+          <li>init启动servicemanager(binder服务管家)、bootanim(开机动画)等重要服务</li>
+          <li>init孵化出Zygote进程：Android第一个Java进程（虚拟机进程），所有Java进程的父进程</li>
+        </ul>
+      `},
+      { title: 'Framework层', html: `
+        <h4>Zygote进程</h4>
+        <ul class="knowledge-list">
+          <li>由init通过解析init.rc文件fork生成</li>
+          <li>加载ZygoteInit类，注册Zygote Socket服务端</li>
+          <li>加载虚拟机、preloadClasses、preloadResouces</li>
+        </ul>
+        <h4>System Server进程</h4>
+        <ul class="knowledge-list">
+          <li>由Zygote fork而来，是Zygote孵化的第一个进程</li>
+          <li>负责启动和管理整个Java framework，包含ActivityManager、PowerManager等服务</li>
+        </ul>
+        <h4>Media Server进程</h4>
+        <ul class="knowledge-list">
+          <li>由init fork而来，负责启动和管理整个C++ framework</li>
+          <li>包含AudioFlinger、Camera Service等</li>
+        </ul>
+      `},
+      { title: 'App层', html: `
+        <ul class="knowledge-list">
+          <li>Zygote孵化出的第一个App进程是Launcher（桌面）</li>
+          <li>Zygote创建Browser、Phone、Email等App进程，每个App至少运行在一个进程上</li>
+          <li>所有App进程都是由Zygote进程fork生成的</li>
+        </ul>
+      `},
+      { title: 'Syscall && JNI', html: `
+        <ul class="knowledge-list">
+          <li>Native与Kernel之间有系统调用(SysCall)层</li>
+          <li>Java层与Native(C/C++)层之间的纽带是JNI</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch4-s2-1': { type: 'leaf', chapter: 4, title: 'Loader层', breadcrumb: ['第四章', 'Android架构', 'Loader层'], redirect: 'ch4-s2' },
+  'ch4-s2-2': { type: 'leaf', chapter: 4, title: 'Kernel层', breadcrumb: ['第四章', 'Android架构', 'Kernel层'], redirect: 'ch4-s2' },
+  'ch4-s2-3': { type: 'leaf', chapter: 4, title: 'Native层', breadcrumb: ['第四章', 'Android架构', 'Native层'], redirect: 'ch4-s2' },
+  'ch4-s2-4': { type: 'leaf', chapter: 4, title: 'Framework层', breadcrumb: ['第四章', 'Android架构', 'Framework层'], redirect: 'ch4-s2' },
+  'ch4-s2-5': { type: 'leaf', chapter: 4, title: 'App层', breadcrumb: ['第四章', 'Android架构', 'App层'], redirect: 'ch4-s2' },
+  'ch4-s2-6': { type: 'leaf', chapter: 4, title: 'Syscall与JNI', breadcrumb: ['第四章', 'Android架构', 'Syscall/JNI'], redirect: 'ch4-s2' },
+
+  'ch4-s3': {
+    type: 'section',
+    chapter: 4,
+    title: '第三节 · 通信方式',
+    breadcrumb: ['第四章', '通信方式'],
+    sections: [
+      { title: 'Linux原有IPC机制', html: `
+        <ul class="knowledge-list">
+          <li>管道、消息队列、共享内存、套接字、信号量、信号</li>
+          <li>Android额外有Binder IPC机制</li>
+          <li>Zygote进程的IPC采用Socket机制</li>
+          <li>system server、media server与上层App之间多采用Binder IPC</li>
+          <li>同进程线程间通信采用Handler消息机制</li>
+          <li>杀进程Process.killProcess()采用signal方式</li>
+          <li>常用通信方式：Binder、Socket、Handler</li>
+        </ul>
+      `},
+      { title: '为何采用Binder（5个角度）', html: `
+        <h4>性能角度</h4>
+        <p>Binder数据拷贝只需1次，管道/消息队列/Socket需要2次。性能仅次于共享内存（0次拷贝）。</p>
+        <h4>稳定性角度</h4>
+        <p>Binder基于C/S架构，Client与Server相对独立，稳定性好。共享内存实现复杂，没有客户与服务端之别，需考虑并发同步问题，可能死锁。</p>
+        <h4>安全角度</h4>
+        <p>传统Linux IPC接收方无法获得对方可靠UID/PID，无法鉴别身份；可靠的身份标记只有IPC机制本身在内核中添加。Android为每个应用分配UID，Server端根据权限控制策略判断UID/PID是否满足访问权限。Binder对外只暴露Client端。</p>
+        <h4>语言层面角度</h4>
+        <p>Linux基于C（面向过程），Android基于Java（面向对象）。Binder符合面向对象思想，模糊进程边界，淡化进程间通信过程。</p>
+        <h4>公司战略角度</h4>
+        <p>Linux内核GPL协议有"病毒式感染"能力。Google将GPL控制在内核空间，用户空间采用Apache-2.0协议，Lib库采用BSD授权，隔断GPL传染性，实现开源与商业化共存。</p>
+      `},
+      { title: 'Binder IPC原理', html: `
+        <ul class="knowledge-list">
+          <li>Binder连接本地代理和远端代理</li>
+          <li>核心函数：transact(int code, Parcel data, Parcel reply, int flags)</li>
+          <li>code表示请求命令标识，data和reply进行数据传递</li>
+          <li>远端代理实现onTransact()函数处理请求</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch4-s3-1': { type: 'leaf', chapter: 4, title: 'Linux原有IPC机制', breadcrumb: ['第四章', '通信方式', 'Linux IPC'], redirect: 'ch4-s3' },
+  'ch4-s3-2': { type: 'leaf', chapter: 4, title: '为何采用Binder（5角度）', breadcrumb: ['第四章', '通信方式', 'Binder优势'], redirect: 'ch4-s3' },
+  'ch4-s3-3': { type: 'leaf', chapter: 4, title: 'Binder IPC原理', breadcrumb: ['第四章', '通信方式', 'IPC原理'], redirect: 'ch4-s3' },
+
+  'ch4-s4': {
+    type: 'section',
+    chapter: 4,
+    title: '第四节 · 系统启动系列',
+    breadcrumb: ['第四章', '系统启动系列'],
+    sections: [
+      { title: '五大核心进程', html: `
+        <ol class="step-list">
+          <li><strong>init进程</strong> — Linux用户空间第一个进程，Init.main</li>
+          <li><strong>zygote进程</strong> — 所有App进程的父进程，ZygoteInit.main</li>
+          <li><strong>system_server进程</strong> — 系统各大服务的载体</li>
+          <li><strong>servicemanager进程</strong> — binder服务大管家，守护进程循环运行在binder_loop</li>
+          <li><strong>app进程</strong> — 通过Process.start启动App进程，ActivityThread.main</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch4-s4-1': { type: 'leaf', chapter: 4, title: '五大核心进程', breadcrumb: ['第四章', '系统启动系列', '五大进程'], redirect: 'ch4-s4' },
+
+  'ch4-s5': {
+    type: 'section',
+    chapter: 4,
+    title: '第五节 · AMS',
+    breadcrumb: ['第四章', 'AMS'],
+    sections: [
+      { title: '5.1 AMS启动', html: `
+        <p>在system_server进程中启动，由SystemServer.startBootstrapServices()完成：</p>
+        <ul class="knowledge-list">
+          <li>创建AMS实例对象，创建Android Runtime、ActivityThread和Context对象</li>
+          <li>setSystemProcess：注册AMS、meminfo、cpuinfo等服务到ServiceManager</li>
+          <li>installSystemProviders，加载SettingsProvider</li>
+          <li>启动SystemUIService，调用一系列服务的systemReady()方法</li>
+          <li>发布Binder服务</li>
+        </ul>
+        <p><strong>AMS相关服务列表（dumpsys查看）：</strong>activity/ActivityManagerService、procstats/ProcessStatsService、meminfo/MemBinder、gfxinfo/GraphicsBinder、dbinfo/DbBinder、cpuinfo/CpuBinder、permission/PermissionController、processinfo/ProcessInfoService、usagestats/UsageStatsService</p>
+      `},
+      { title: '5.2 AMS类图结构', html: `
+        <p>三层结构：</p>
+        <ul class="knowledge-list">
+          <li><strong>绿色（SDK层）</strong>：开放给应用开发人员的接口</li>
+          <li><strong>蓝色（Proxy模式）</strong>：典型的代理模式</li>
+          <li><strong>红色（服务实现）</strong>：底层服务实现，真正的动作执行者</li>
+        </ul>
+        <h4>Proxy模式</h4>
+        <p>为其他对象提供一种代理以控制对这个对象的访问。ActivityManager是客户端，通过ActivityManagerProxy代理类访问AMS。公共接口IActivityManager保证接口一致。本地代理=AMP，远端代理=AMS。</p>
+        <h4>Binder通信</h4>
+        <p>Binder连接本地代理和远端代理（粘合剂）。核心方法transact()，远端实现onTransact()。需要透过Binder驱动进入KERNEL层完成进程通信。</p>
+      `},
+      { title: 'Activity启动机制', html: `
+        <p>调用链：</p>
+        <ul class="knowledge-list">
+          <li>Activity.startActivity() → startActivityForResult()</li>
+          <li>Instrumentation.execStartActivity()</li>
+          <li>ActivityManagerNative.getDefault().startActivity()</li>
+          <li>ActivityManagerProxy.startActivity()（Binder transact）</li>
+          <li>ActivityManagerService.startActivity()</li>
+          <li>startActivityLocked() 内部调用 mWindowManager.setAppStartingWindow</li>
+        </ul>
+        <p>关键点：Activity启动委托给Instrumentation执行；Instrumentation利用AMS（通过Binder IPC）；AMS中startActivityLocked()调用WMS进行窗口管理。</p>
+      `},
+      { title: '子线程不能更新UI', html: `
+        <ul class="knowledge-list">
+          <li>异常：CalledFromWrongThreadException</li>
+          <li>检查位置：ViewRootImpl.checkThread()</li>
+          <li>调用链：requestLayout() → scheduleTraversals() → TraversalRunnable → doTraversal()</li>
+          <li>ViewRootImpl创建时机：ActivityThread.handleResumeActivity()</li>
+        </ul>
+      `},
+      { title: 'Android进程层次（重要性由高到低）', html: `
+        <ol class="step-list">
+          <li><strong>前端进程</strong> — 当前显示在屏幕上与用户交互的进程，数量很少，内存极少时才销毁</li>
+          <li><strong>可见进程</strong> — 拥有可视化界面，但不是最上层（onPause()），系统不会轻易销毁</li>
+          <li><strong>服务进程</strong> — 运行着Service（startService()），守护进程，内存不足时可能被销毁</li>
+          <li><strong>后台进程</strong> — 调用了onStop()的进程，"待销毁"状态</li>
+          <li><strong>空进程</strong> — 系统缓存机制，进程外壳，加快新进程创建速度，内存不足时首先销毁</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch4-s5-1': { type: 'leaf', chapter: 4, title: '5.1 AMS启动', breadcrumb: ['第四章', 'AMS', '启动'], redirect: 'ch4-s5' },
+  'ch4-s5-2': { type: 'leaf', chapter: 4, title: '5.2 AMS类图结构', breadcrumb: ['第四章', 'AMS', '类图结构'], redirect: 'ch4-s5' },
+  'ch4-s5-3': { type: 'leaf', chapter: 4, title: 'Proxy代理模式', breadcrumb: ['第四章', 'AMS', 'Proxy模式'], redirect: 'ch4-s5' },
+  'ch4-s5-4': { type: 'leaf', chapter: 4, title: 'Activity启动机制', breadcrumb: ['第四章', 'AMS', 'Activity启动'], redirect: 'ch4-s5' },
+  'ch4-s5-5': { type: 'leaf', chapter: 4, title: '子线程不能更新UI', breadcrumb: ['第四章', 'AMS', '子线程UI'], redirect: 'ch4-s5' },
+  'ch4-s5-6': { type: 'leaf', chapter: 4, title: '进程重要性等级', breadcrumb: ['第四章', 'AMS', '进程等级'], redirect: 'ch4-s5' },
+
+  'ch4-s6': {
+    type: 'interview',
+    chapter: 4,
+    title: '第六节 · AMS面试题解析',
+    breadcrumb: ['第四章', '面试题'],
+    interviews: [
+      { q: 'ActivityManagerService是什么？什么时候初始化的？有什么作用？', a: `
+        AMS主要负责系统中四大组件的启动、切换、调度及应用进程的管理和调度。职责与操作系统中的进程管理和调度模块类似。<br><br>
+        初始化时机：SystemServer进程开启时初始化AMS。<br>
+        打开App需要AMS通知zygote进程。所有Activity的生命周期由AMS控制。
+      `},
+      { q: 'ActivityThread和ApplicationThread是什么？有何区别？', a: `
+        <strong>ActivityThread：</strong>代表Android的主线程，新进程创建后main函数被加载，执行loop循环进入消息循环。<br><br>
+        <strong>ApplicationThread：</strong>是ActivityThread的内部类，是一个Binder对象，作为IApplicationThread的server端，等待client端请求并处理。最大的client就是AMS。
+      `},
+      { q: 'Instrumentation是什么？和ActivityThread是什么关系？', a: `
+        AMS与ActivityThread之间Activity的创建、暂停等交互由Instrumentation具体操作。每个Activity持有一个Instrumentation对象引用，整个进程只有一个Instrumentation。<br>
+        mInstrumentation在ActivityThread::handleBindApplication函数中初始化。可独立控制某个组件的生命周期。<br>
+        Activity.startActivity → mInstrumentation.execStartActivity() → 调用AMS → AMS通过socket通信告知Zygote fork子进程。
+      `},
+      { q: 'ActivityManagerService和zygote进程通信是如何实现的？', a: `
+        <strong>应用启动流程：</strong>Launcher进程请求AMS → AMS发送创建应用进程请求 → Zygote进程接受请求并fork应用进程。<br><br>
+        <strong>客户端发送请求：</strong>调用Process.start() → ZygoteState.connect() → 使用LocalSocket进行通信 → 创建zygoteInputStream和zygoteWriter进行数据读写。<br><br>
+        <strong>Zygote处理请求：</strong>服务端接收参数后调用ZygoteConnection.processOneCommand()处理 → fork进程 → findStaticMain()找到ActivityThread的main()方法执行 → 子进程启动完成。
+      `},
+      { q: 'ActivityRecord、TaskRecord、ActivityStack、ActivityStackSupervisor、ProcessRecord各自的作用和关系？', a: `
+        <strong>ActivityRecord：</strong>Activity管理的最小单位，应用层Activity组件在AMS中的代表。每个启动的Activity对应一个实例。<br>
+        <strong>TaskRecord：</strong>任务栈，每个包含一个或多个ActivityRecord，栈顶表示当前可见界面。一个App可能有多个TaskRecord。一般启动第一个Activity时创建，singleTask且taskAffinity不同时新建。<br>
+        <strong>ActivityStack：</strong>管理TaskRecord的ArrayList。ASS内部有mHomeStack和mFocusedStack。系统启动第一个app时创建。<br>
+        <strong>ActivityStackSupervisor：</strong>管理多个ActivityStack，当前只有一个Focused的。AMS初始化时创建唯一对象。<br>
+        <strong>ProcessRecord：</strong>记录属于一个进程的所有ActivityRecord。<br><br>
+        <strong>四种启动模式：</strong><br>
+        standard：每次新建实例 | singleTop：栈顶不重建，调onNewIntent<br>
+        singleTask：栈中存在则其上出栈，调onNewIntent | singleInstance：新栈中只有这一个Activity
+      `},
+      { q: 'ActivityManager、ActivityManagerService、ActivityManagerNative、ActivityManagerProxy四者的关系？', a: `
+        调用关系：Activity.startActivity → mInstrumentation.execStartActivity() → ActivityManager.getService() → ActivityManagerNative.getDefault() → ActivityManagerProxy代理对象。<br><br>
+        <strong>ActivityManager：</strong>与所有运行中Activity交互，管理Task、Memory、Service、App等。<br>
+        <strong>IActivityManager：</strong>继承Interface接口，AMN和AMP都实现。<br>
+        <strong>ActivityManagerProxy：</strong>AMN的内部类，Client端本地代理。<br>
+        <strong>ActivityManagerNative：</strong>抽象类，继承Binder，实现IBinder。真正发挥作用的是子类AMS。<br>
+        <strong>ActivityManagerService：</strong>真正实现业务逻辑的服务端，是AMN的子类。<br><br>
+        <strong>Binder架构基础：</strong>IBinder（跨进程通信Base接口）→ Binder/BinderProxy；IInterface（Server能力协议）→ Server/Client都实现。
+      `},
+      { q: '手写实现简化版AMS', a: `
+        <strong>核心类职责：</strong><br>
+        IBinder：跨进程通信的Base接口，所有Binder实体都必须实现<br>
+        IInterface：Server提供能力的协议，Client和Server通信的契约<br>
+        Binder：IBinder子类，Server端持有，完成跨进程通信<br>
+        BinderProxy：Binder代理对象，Client端持有<br><br>
+        <strong>实现步骤：</strong><br>
+        1. 定义IActivityManager接口（继承IInterface），含DESCRIPTOR、TRANSACTION_startActivity、startActivity方法<br>
+        2. 实现Service侧ActivityManagerNative（继承Binder，实现IActivityManager），含asInterface、asBinder、onTransact<br>
+        3. 实现Client侧ActivityManagerProxy（实现IActivityManager，持有mRemote IBinder），startActivity中序列化写入data，调用mRemote.transact()<br>
+        4. 实现ActivityManagerService（继承ActivityManagerNative），实现startActivity()具体业务逻辑
+      `}
+    ]
+  },
+  'ch4-s6-1': { type: 'leaf', chapter: 4, title: '6.1 AMS定义与作用', breadcrumb: ['第四章', '面试题', 'AMS定义'], redirect: 'ch4-s6' },
+  'ch4-s6-2': { type: 'leaf', chapter: 4, title: '6.2 ActivityThread vs AppThread', breadcrumb: ['第四章', '面试题', 'ActivityThread'], redirect: 'ch4-s6' },
+  'ch4-s6-3': { type: 'leaf', chapter: 4, title: '6.3 Instrumentation', breadcrumb: ['第四章', '面试题', 'Instrumentation'], redirect: 'ch4-s6' },
+  'ch4-s6-4': { type: 'leaf', chapter: 4, title: '6.4 AMS与Zygote通信', breadcrumb: ['第四章', '面试题', 'AMS Zygote通信'], redirect: 'ch4-s6' },
+  'ch4-s6-5': { type: 'leaf', chapter: 4, title: '6.5 五级管理结构', breadcrumb: ['第四章', '面试题', '五级管理结构'], redirect: 'ch4-s6' },
+  'ch4-s6-6': { type: 'leaf', chapter: 4, title: '6.6 AM/AMS/AMN/AMP关系', breadcrumb: ['第四章', '面试题', '四者关系'], redirect: 'ch4-s6' },
+  'ch4-s6-7': { type: 'leaf', chapter: 4, title: '7 手写简化版AMS', breadcrumb: ['第四章', '面试题', '手写AMS'], redirect: 'ch4-s6' },
+
+  // ===== 第五章 =====
+  'ch5': {
+    type: 'chapter',
+    chapter: 5,
+    title: '第五章 · WMS解析',
+    desc: '深入理解WindowManagerService，从窗口概念到动画原理，掌握窗口组织方式、Z轴排序、输入法/壁纸管理、启动窗口、Activity切换等核心机制。',
+    sections: [
+      {
+        title: '核心知识体系',
+        html: `
+          <div class="overview-grid">
+            <div class="overview-card" onclick="navigateTo('ch5-s1')">
+              <div class="overview-card-title">Activity与Window概念</div>
+              <div class="overview-card-meta">Window/WM/WMS/Token/Type</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch5-s2')">
+              <div class="overview-card-title">计算窗口大小</div>
+              <div class="overview-card-meta">11步完整流程</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch5-s3')">
+              <div class="overview-card-title">窗口组织方式</div>
+              <div class="overview-card-meta">Token/WindowState三级结构</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch5-s4')">
+              <div class="overview-card-title">输入法窗口管理</div>
+              <div class="overview-card-meta">位置关系·调整流程</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch5-s5')">
+              <div class="overview-card-title">壁纸窗口管理</div>
+              <div class="overview-card-meta">显示条件·偏移·堆栈</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch5-s6')">
+              <div class="overview-card-title">计算Z轴位置</div>
+              <div class="overview-card-meta">assignLayersLocked机制</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch5-s7')">
+              <div class="overview-card-title">启动窗口</div>
+              <div class="overview-card-meta">显示6步·结束10步</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch5-s8')">
+              <div class="overview-card-title">Activity窗口切换</div>
+              <div class="overview-card-meta">9步切换流程</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch5-s9')">
+              <div class="overview-card-title">窗口动画原理</div>
+              <div class="overview-card-meta">三种Transformation·四部分</div>
+            </div>
+          </div>
+        `
+      }
+    ]
+  },
+  'ch5-s1': {
+    type: 'section',
+    chapter: 5,
+    title: '第一节 · Activity与Window相关概念',
+    breadcrumb: ['第五章', 'Activity与Window概念'],
+    sections: [
+      { title: '核心概念', html: `
+        <ul class="knowledge-list">
+          <li><strong>Activity</strong>只负责生命周期和事件处理</li>
+          <li><strong>Window</strong>只控制视图</li>
+          <li>一个Activity包含一个Window，没有Window的Activity相当于Service</li>
+          <li><strong>AMS</strong>统一调度所有应用程序的Activity</li>
+          <li><strong>WMS</strong>控制所有Window的显示与隐藏以及显示位置</li>
+        </ul>
+      `},
+      { title: '1.1 Window', html: `
+        <ul class="knowledge-list">
+          <li>表示窗口概念，是所有View的直接管理者</li>
+          <li>任何视图都通过Window呈现（点击事件由Window→DecorView→View）</li>
+          <li>Activity的setContentView底层通过Window完成</li>
+          <li>Window是抽象类，具体实现是PhoneWindow</li>
+          <li>创建Window需要通过WindowManager创建</li>
+          <li>WindowManager是外界访问Window的入口</li>
+          <li>Window具体实现位于WindowManagerService中</li>
+          <li>WindowManager和WMS的交互通过IPC完成</li>
+          <li>每个Window需要指定Type（应用窗口、子窗口、系统窗口）</li>
+        </ul>
+      `},
+      { title: '1.2 ~ 1.3 WindowManager与WMS', html: `
+        <h4>WindowManager</h4>
+        <p>应用与window之间的管理接口，管理窗口顺序、消息等。</p>
+        <h4>WindowManagerService（WMS）</h4>
+        <ul class="knowledge-list">
+          <li>管理窗口的创建、更新和删除，显示顺序等</li>
+          <li>是WindowManager管理接口的真正实现类</li>
+          <li>运行在System_server进程，作为服务端</li>
+          <li>客户端通过IPC调用交互</li>
+        </ul>
+      `},
+      { title: '1.4 ~ 1.5 Token与Window type', html: `
+        <h4>Token</h4>
+        <p>即窗口令牌（Window Token），是一种特殊的Binder令牌，WMS用它唯一标识系统中的一个窗口。</p>
+        <h4>Window的type</h4>
+        <ul class="knowledge-list">
+          <li><strong>应用窗口</strong>（层级1~99）：TYPE_BASE_APPLICATION / TYPE_APPLICATION / TYPE_APPLICATION_STARTING 等</li>
+          <li><strong>子窗口</strong>（层级1000~1999）：TYPE_APPLICATION_PANEL / TYPE_APPLICATION_MEDIA / TYPE_APPLICATION_SUB_PANEL / TYPE_APPLICATION_ATTACHED_DIALOG 等</li>
+          <li><strong>系统窗口</strong>（层级2000~2999）：TYPE_STATUS_BAR / TYPE_PHONE / TYPE_SYSTEM_ALERT / TYPE_KEYGUARD / TYPE_TOAST / TYPE_INPUT_METHOD / TYPE_WALLPAPER 等</li>
+        </ul>
+      `},
+      { title: '窗口Flags显示属性', html: `
+        <ul class="knowledge-list">
+          <li>FLAG_ALLOW_LOCK_WHILE_SCREEN_ON — window可见时允许锁屏</li>
+          <li>FLAG_NOT_FOCUSABLE — 窗口不能获得焦点</li>
+          <li>FLAG_NOT_TOUCHABLE — 不接受触摸屏事件</li>
+          <li>FLAG_NOT_TOUCH_MODAL — 窗口外点击事件传递到后面窗口</li>
+          <li>FLAG_KEEP_SCREEN_ON — 屏幕常亮</li>
+          <li>FLAG_LAYOUT_IN_SCREEN — 占满整个手机屏幕</li>
+          <li>FLAG_FULLSCREEN — 全屏显示</li>
+          <li>FLAG_SECURE — 安全内容窗口，不允许截屏</li>
+          <li>FLAG_SHOW_WHEN_LOCKED — 锁屏时显示该窗口</li>
+          <li>FLAG_SHOW_WALLPAPER — 系统墙纸显示在该窗口之后</li>
+          <li>FLAG_HARDWARE_ACCELERATED — 硬件加速，须在ContentView之前设置</li>
+          <li>FLAG_TRANSLUCENT_STATUS — 透明状态栏</li>
+          <li>FLAG_TRANSLUCENT_NAVIGATION — 透明导航栏</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch5-s1-1': { type: 'leaf', chapter: 5, title: '1.1 Window', breadcrumb: ['第五章', 'Activity与Window概念', 'Window'], redirect: 'ch5-s1' },
+  'ch5-s1-2': { type: 'leaf', chapter: 5, title: '1.2 WindowManager', breadcrumb: ['第五章', 'Activity与Window概念', 'WM'], redirect: 'ch5-s1' },
+  'ch5-s1-3': { type: 'leaf', chapter: 5, title: '1.3 WindowManagerService', breadcrumb: ['第五章', 'Activity与Window概念', 'WMS'], redirect: 'ch5-s1' },
+  'ch5-s1-4': { type: 'leaf', chapter: 5, title: '1.4 Token', breadcrumb: ['第五章', 'Activity与Window概念', 'Token'], redirect: 'ch5-s1' },
+  'ch5-s1-5': { type: 'leaf', chapter: 5, title: '1.5 Window的type', breadcrumb: ['第五章', 'Activity与Window概念', 'Type'], redirect: 'ch5-s1' },
+  'ch5-s1-6': { type: 'leaf', chapter: 5, title: '窗口Flags显示属性', breadcrumb: ['第五章', 'Activity与Window概念', 'Flags'], redirect: 'ch5-s1' },
+
+  'ch5-s2': {
+    type: 'section',
+    chapter: 5,
+    title: '第二节 · 计算Activity窗口大小',
+    breadcrumb: ['第五章', '计算窗口大小'],
+    sections: [
+      { title: '核心概念与入口', html: `
+        <ul class="knowledge-list">
+          <li>Activity窗口大小由WMS根据屏幕及装饰区大小决定</li>
+          <li>窗口知道自身大小后才能对UI元素进行测量、布局和绘制</li>
+          <li>入口：ViewRoot.performTraversals()向WMS请求计算窗口大小</li>
+        </ul>
+        <h4>关键概念</h4>
+        <ul class="knowledge-list">
+          <li><strong>内容区域（Content Region）</strong>：剔除状态栏占用区域后得到的区域，Content Insets四元组</li>
+          <li><strong>可见区域（Visible Region）</strong>：剔除状态栏和输入法窗口占用区域，Visible Insets四元组</li>
+          <li>屏幕装饰区 = 状态栏 + 输入法窗口所占用的区域</li>
+          <li>大多数情况下内容区域和可见区域大小一致</li>
+        </ul>
+      `},
+      { title: '11步完整流程', html: `
+        <ol class="step-list">
+          <li><strong>ViewRoot.performTraversals</strong> — 获得窗口当前宽高，第一次取屏幕宽高，host.measure()顶层视图测量</li>
+          <li><strong>ViewRoot.relayoutWindow</strong> — 请求WMS计算窗口大小，结果保存到mPendingContentInsets和mPendingVisibleInsets</li>
+          <li><strong>Session.relayout</strong> — 通过Session的relayout方法调用WMS</li>
+          <li><strong>WindowManagerService.relayoutWindow</strong> — 服务端入口，调用performLayoutAndPlaceSurfacesLocked</li>
+          <li><strong>WMS.performLayoutAndPlaceSurfacesLocked</strong> — 检查mInLayout状态防止重入</li>
+          <li><strong>WMS.performLayoutAndPlaceSurfacesLockedInner</strong> — 内部核心实现</li>
+          <li><strong>WMS.performLayoutLockedInner</strong> — 执行布局锁定内部操作</li>
+          <li><strong>PhoneWindowManager.beginLayoutLw</strong> — 窗口管理策略类开始布局，初始化屏幕尺寸等</li>
+          <li><strong>PhoneWindowManager.layoutWindowLw</strong> — 对每个窗口进行布局计算</li>
+          <li><strong>WindowState.computeFrameLw</strong> — 计算窗口的Frame（位置和大小）</li>
+          <li><strong>PhoneWindowManager.finishLayoutLw</strong> — 完成布局，返回结果</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch5-s2-1': { type: 'leaf', chapter: 5, title: '核心概念与入口', breadcrumb: ['第五章', '计算窗口大小', '核心概念'], redirect: 'ch5-s2' },
+  'ch5-s2-2': { type: 'leaf', chapter: 5, title: '11步完整流程', breadcrumb: ['第五章', '计算窗口大小', '11步流程'], redirect: 'ch5-s2' },
+
+  'ch5-s3': {
+    type: 'section',
+    chapter: 5,
+    title: '第三节 · 窗口的组织方式',
+    breadcrumb: ['第五章', '窗口组织方式'],
+    sections: [
+      { title: '核心模型与对应关系', html: `
+        <p>Activity以堆栈形式组织在AMS中，窗口也以堆栈形式组织在WMS中。Z轴位置低的窗口位于Z轴位置高的窗口下面。</p>
+        <h4>对应关系</h4>
+        <ul class="knowledge-list">
+          <li>AMS中每个ActivityRecord ↔ WMS中每个AppWindowToken</li>
+          <li>输入法窗口Binder对象 ↔ WMS中的WindowToken</li>
+          <li>壁纸窗口Binder对象 ↔ WMS中的WindowToken</li>
+          <li>每个令牌（AppWindowToken/WindowToken）描述一组窗口（WindowState）</li>
+          <li>子窗口与父窗口同属一组（同一令牌）</li>
+        </ul>
+      `},
+      { title: '主要操作列表', html: `
+        <p>WMS维护一个AppWindowToken堆栈和一个WindowState堆栈。</p>
+        <ul class="knowledge-list">
+          <li>增加/删除AppWindowToken（Activity启动/销毁时）</li>
+          <li>移动AppWindowToken至指定位置/顶端/底端</li>
+          <li>增加/删除WindowToken</li>
+          <li>增加/删除WindowState</li>
+          <li>将WindowState及其子WindowState增加到窗口堆栈</li>
+          <li>将WindowToken/AppWindowToken对应的所有WindowState移动到指定位置</li>
+        </ul>
+      `},
+      { title: '核心结论', html: `
+        <ol class="step-list">
+          <li>WMS维护一个AppWindowToken堆栈和一个WindowState堆栈</li>
+          <li>AMS中每个ActivityRecord在WMS中对应一个AppWindowToken</li>
+          <li>WindowState堆栈中，第i+1个AppWindowToken对应的所有WindowState在第i个之上</li>
+          <li>一个WindowState可以附加在另一个上面（子窗口）</li>
+          <li>WMS有两个特殊的WindowToken，分别描述输入法窗口和壁纸窗口</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch5-s3-1': { type: 'leaf', chapter: 5, title: '核心模型与对应关系', breadcrumb: ['第五章', '窗口组织方式', '核心模型'], redirect: 'ch5-s3' },
+  'ch5-s3-2': { type: 'leaf', chapter: 5, title: '主要操作列表', breadcrumb: ['第五章', '窗口组织方式', '操作列表'], redirect: 'ch5-s3' },
+  'ch5-s3-3': { type: 'leaf', chapter: 5, title: '核心结论', breadcrumb: ['第五章', '窗口组织方式', '核心结论'], redirect: 'ch5-s3' },
+
+  'ch5-s4': {
+    type: 'section',
+    chapter: 5,
+    title: '第四节 · 输入法窗口管理',
+    breadcrumb: ['第五章', '输入法窗口管理'],
+    sections: [
+      { title: '核心概念与位置关系', html: `
+        <p>输入法窗口是特殊类型的窗口，总是位于需要使用输入法的窗口的上面，输入法对话框总是位于输入法窗口的上面。</p>
+        <p><strong>位置关系（从下到上）：</strong>Activity窗口 → 输入法窗口(IMW) → 输入法对话框(IMD-1/2/3)</p>
+        <h4>对象关系</h4>
+        <ul class="knowledge-list">
+          <li>AMS中Activity堆栈顶端ActivityRecord-N = 当前激活的Activity</li>
+          <li>对应WMS中AppWindowToken-N → WindowState-N</li>
+          <li>WindowState-N上面是WindowState-IMW（输入法窗口）</li>
+          <li>IMW上面是WindowState-IMD-1/2/3（输入法对话框）</li>
+          <li>输入法窗口和对话框对应WindowToken-IM</li>
+          <li>WindowToken-IM在InputMethodManagerService中对应一个Binder对象</li>
+        </ul>
+      `},
+      { title: '调整情景与流程', html: `
+        <h4>需要调整的情景</h4>
+        <ul class="knowledge-list">
+          <li>增加一个窗口到WMS时（addWindow）</li>
+          <li>应用请求WMS重新布局窗口时（relayout）</li>
+        </ul>
+        <h4>调整过程（5步）</h4>
+        <ol class="step-list">
+          <li>计算输入法窗口在窗口堆栈中的位置</li>
+          <li>移动输入法对话框到输入法窗口的上面</li>
+          <li>插入输入法窗口到需要显示输入法的窗口上面</li>
+          <li>调整输入法对话框在窗口堆栈的位置</li>
+          <li>调整输入法窗口在窗口堆栈的位置</li>
+        </ol>
+        <h4>关键变量</h4>
+        <ul class="knowledge-list">
+          <li>mInputMethodWindow：当前输入法窗口的WindowState</li>
+          <li>mInputMethodDialogs：输入法对话框的ArrayList&lt;WindowState&gt;</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch5-s4-1': { type: 'leaf', chapter: 5, title: '核心概念与位置关系', breadcrumb: ['第五章', '输入法窗口管理', '核心概念'], redirect: 'ch5-s4' },
+  'ch5-s4-2': { type: 'leaf', chapter: 5, title: '调整情景与流程', breadcrumb: ['第五章', '输入法窗口管理', '调整流程'], redirect: 'ch5-s4' },
+
+  'ch5-s5': {
+    type: 'section',
+    chapter: 5,
+    title: '第五节 · 壁纸窗口管理',
+    breadcrumb: ['第五章', '壁纸窗口管理'],
+    sections: [
+      { title: '显示条件与位置', html: `
+        <p>壁纸窗口是特殊类型的窗口，与输入法窗口相对，位于Activity窗口的下面。3W场景：输入法窗口在上，Activity窗口在中，壁纸窗口在下。</p>
+        <h4>显示壁纸的两个条件</h4>
+        <ul class="knowledge-list">
+          <li>背景半透明（android:theme = Theme.Translucent）</li>
+          <li>Window属性FLAG_SHOW_WALLPAPER位设置为1</li>
+        </ul>
+        <p><strong>位置关系（从下到上）：</strong>壁纸窗口(WP) → Activity窗口(N)</p>
+        <p>壁纸窗口可设置X轴和Y轴偏移位置，指定显示壁纸的哪一部分。</p>
+      `},
+      { title: 'X/Y轴偏移调整', html: `
+        <h4>偏移计算规则</h4>
+        <ul class="knowledge-list">
+          <li>mLastWallpaperX < 0：壁纸窗口还没设置偏移</li>
+          <li>mLastWallpaperXStep < 0：窗口未告知偏移步长</li>
+          <li>壁纸宽度 <= 屏幕宽度：不偏移</li>
+          <li>壁纸宽度 > 屏幕宽度：在可用宽度范围内偏移</li>
+        </ul>
+        <p>多虚拟屏幕时按屏幕比例分配壁纸区域（左/中/右三分之一）。</p>
+      `},
+      { title: '堆栈位置调整', html: `
+        <h4>调整壁纸位置的情景</h4>
+        <ul class="knowledge-list">
+          <li>增加一个窗口到WMS时（addWindow）</li>
+          <li>应用请求重新布局窗口时（relayout）</li>
+        </ul>
+        <h4>算法步骤</h4>
+        <ol class="step-list">
+          <li>从上到下遍历窗口堆栈，找到需要显示壁纸的窗口foundW</li>
+          <li>检查mNextAppTransition（切换动画相关）</li>
+          <li>比较mWallpaperTarget与foundW是否相同，不同则更新</li>
+          <li>foundW不为null则找到要显示壁纸的窗口</li>
+          <li>调整foundW指向其下面的位置（找到壁纸应该放置的位置）</li>
+          <li>检查需要显示壁纸的窗口是否可见</li>
+          <li>调整壁纸窗口在堆栈中的位置</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch5-s5-1': { type: 'leaf', chapter: 5, title: '显示条件与位置', breadcrumb: ['第五章', '壁纸窗口管理', '显示条件'], redirect: 'ch5-s5' },
+  'ch5-s5-2': { type: 'leaf', chapter: 5, title: 'X/Y轴偏移调整', breadcrumb: ['第五章', '壁纸窗口管理', '偏移调整'], redirect: 'ch5-s5' },
+  'ch5-s5-3': { type: 'leaf', chapter: 5, title: '堆栈位置调整', breadcrumb: ['第五章', '壁纸窗口管理', '堆栈调整'], redirect: 'ch5-s5' },
+
+  'ch5-s6': {
+    type: 'section',
+    chapter: 5,
+    title: '第六节 · 计算Z轴位置',
+    breadcrumb: ['第五章', '计算Z轴位置'],
+    sections: [
+      { title: '重新计算的情景', html: `
+        <ul class="knowledge-list">
+          <li>所有窗口组织在窗口堆栈中，Z轴位置大的在上面</li>
+          <li>窗口按类型、创建顺序、运行状态等规则排列</li>
+          <li>不是先计算Z轴再排列，而是按规则排列后再计算Z轴</li>
+          <li>状态栏总在顶端，输入法窗口总在需要输入法的窗口上面</li>
+          <li>壁纸窗口总在需要显示壁纸的窗口下面</li>
+        </ul>
+        <h4>情景1：应用程序增加一个窗口</h4>
+        <ul class="knowledge-list">
+          <li>输入法窗口：addInputMethodWindowToListLocked</li>
+          <li>输入法对话框：addWindowToListInOrderLocked + adjustInputMethodDialogsLocked</li>
+          <li>壁纸窗口：addWindowToListInOrderLocked + adjustWallpaperWindowsLocked</li>
+          <li>其他窗口：addWindowToListInOrderLocked</li>
+          <li>FLAG_SHOW_WALLPAPER窗口：adjustWallpaperWindowsLocked</li>
+          <li>最后调用assignLayersLocked()分配Z轴层次</li>
+        </ul>
+        <h4>情景2：应用请求重新布局窗口（relayout）</h4>
+      `},
+      { title: 'assignLayersLocked机制', html: `
+        <p>两个关键来源：</p>
+        <ul class="knowledge-list">
+          <li>PhoneWindowManager.windowTypeToLayerLw()的返回值（不是最终Z轴）</li>
+          <li>窗口的SubLayer值（不直接参与Z轴计算，但影响窗口在堆栈中的位置）</li>
+        </ul>
+        <h4>Z轴计算特点</h4>
+        <ul class="knowledge-list">
+          <li>Z轴位置值不连续，每两个窗口之间保留一定位置空间</li>
+          <li>相同类型窗口不一定排列在一起，可能出现同类型不同Z轴值</li>
+          <li>输入法窗口和壁纸窗口是特殊窗口，非堆栈底部第一个窗口时有特殊处理</li>
+        </ul>
+      `},
+      { title: '设置到SurfaceFlinger', html: `
+        <p>WMS计算好每个窗口Z轴位置后设置到SurfaceFlinger服务中进行渲染。SurfaceFlinger根据Z轴位置计算可见区域并渲染UI。</p>
+      `}
+    ]
+  },
+  'ch5-s6-1': { type: 'leaf', chapter: 5, title: '重新计算的情景', breadcrumb: ['第五章', '计算Z轴位置', '计算情景'], redirect: 'ch5-s6' },
+  'ch5-s6-2': { type: 'leaf', chapter: 5, title: 'assignLayersLocked机制', breadcrumb: ['第五章', '计算Z轴位置', 'assignLayersLocked'], redirect: 'ch5-s6' },
+  'ch5-s6-3': { type: 'leaf', chapter: 5, title: '设置到SurfaceFlinger', breadcrumb: ['第五章', '计算Z轴位置', 'SurfaceFlinger'], redirect: 'ch5-s6' },
+
+  'ch5-s7': {
+    type: 'section',
+    chapter: 5,
+    title: '第七节 · 启动窗口(Starting Window)',
+    breadcrumb: ['第五章', '启动窗口'],
+    sections: [
+      { title: '核心概念', html: `
+        <ul class="knowledge-list">
+          <li>Activity启动后、窗口显示前可显示启动窗口（预览窗口）</li>
+          <li>启动窗口由WMS统一管理（负责启动和结束）</li>
+          <li>AMS决定是否显示启动窗口</li>
+          <li>WMS通过PhoneWindowManager创建启动窗口</li>
+          <li>Android应用程序无法决定是否显示启动窗口</li>
+        </ul>
+        <p><strong>启动窗口显示流程：</strong>AMS决定 → 通知WMS → PhoneWindowManager创建 → WMS显示</p>
+        <p><strong>结束时机：</strong>Activity启动完成且窗口显示出来时</p>
+      `},
+      { title: '显示6步流程', html: `
+        <ol class="step-list">
+          <li><strong>ActivityStack.startActivityLocked</strong> — Activity启动中调用，检查是否需要显示启动图标（newTask为true或进程未启动时需要），调用mWindowManager.addAppToken()</li>
+          <li><strong>WMS.setAppStartingWindow</strong> — AMS调用WMS设置启动窗口，根据token查找Activity组件</li>
+          <li><strong>H.sendMessageAtFrontOfQueue</strong> — 通过Handler发送消息到前台</li>
+          <li><strong>H.handleMessage</strong> — 处理ADD_STARTING消息</li>
+          <li><strong>PhoneWindowManager.addStartingWindow</strong> — 窗口管理策略类创建启动窗口</li>
+          <li><strong>WindowManagerImpl.addView</strong> — 本地窗口管理服务添加启动窗口视图</li>
+        </ol>
+      `},
+      { title: '结束10步流程', html: `
+        <ol class="step-list">
+          <li><strong>WindowState.performShowLocked</strong> — Activity窗口显示时触发</li>
+          <li>...（中间步骤）</li>
+          <li><strong>PhoneWindowManager.removeStartingWindow</strong> — 策略类移除启动窗口</li>
+          <li><strong>WindowManagerImpl.removeView</strong> — 本地窗口管理服务移除视图</li>
+          <li><strong>WindowManagerImpl.removeViewLocked</strong> — 锁定状态下移除</li>
+          <li><strong>ViewRoot.die</strong> — ViewRoot请求死亡</li>
+          <li><strong>ViewRoot.doDie</strong> — 执行死亡逻辑</li>
+          <li><strong>ViewRoot.dispatchDetachedFromWindow</strong> — 分发窗口分离事件</li>
+          <li><strong>Session.remove</strong> — 会话移除窗口</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch5-s7-1': { type: 'leaf', chapter: 5, title: '核心概念', breadcrumb: ['第五章', '启动窗口', '核心概念'], redirect: 'ch5-s7' },
+  'ch5-s7-2': { type: 'leaf', chapter: 5, title: '显示6步流程', breadcrumb: ['第五章', '启动窗口', '显示流程'], redirect: 'ch5-s7' },
+  'ch5-s7-3': { type: 'leaf', chapter: 5, title: '结束10步流程', breadcrumb: ['第五章', '启动窗口', '结束流程'], redirect: 'ch5-s7' },
+
+  'ch5-s8': {
+    type: 'section',
+    chapter: 5,
+    title: '第八节 · Activity窗口切换',
+    breadcrumb: ['第五章', 'Activity窗口切换'],
+    sections: [
+      { title: '核心概念与动画类型', html: `
+        <ul class="knowledge-list">
+          <li>同一时刻只有一个Activity处于激活状态</li>
+          <li>AMS激活新Activity时通知WMS切换窗口</li>
+          <li>涉及焦点和屏幕资源从前一个Activity切换到后一个</li>
+          <li>在新Activity启动过程中进行切换操作</li>
+          <li>前一个Activity进入Paused状态后，新Activity进入Resumed状态</li>
+          <li>需要AMS和WMS协作完成</li>
+        </ul>
+        <h4>动画类型</h4>
+        <ul class="knowledge-list">
+          <li>Activity切换动画（App Transition）</li>
+          <li>窗口进入/退出动画</li>
+          <li>附加窗口传递的动画（被附加窗口的动画传递给附加窗口）</li>
+        </ul>
+      `},
+      { title: '9步切换流程', html: `
+        <ol class="step-list">
+          <li><strong>ActivityStack.startActivityLocked</strong> — 新Activity启动入口，根据Intent flag设置切换动画类型，准备切换操作</li>
+          <li><strong>WMS.prepareAppTransition</strong> — 准备Activity切换操作，mNextAppTransition保存下一次切换类型</li>
+          <li><strong>ActivityStack.realStartActivityLocked</strong> — 真正启动Activity，调用completeResumeLocked通知WMS执行切换</li>
+          <li><strong>WMS.setAppVisibility</strong> — 设置Activity窗口的可见性</li>
+          <li><strong>ActivityStack.completeResumeLocked</strong> — 完成Resume，通知WMS执行切换操作</li>
+          <li><strong>ActivityStack.ensureActivitiesVisibleLocked</strong> — 确保所有Activity可见性正确</li>
+          <li><strong>WMS.executeAppTransition</strong> — 执行准备好的Activity切换操作，mAppTransitionReady为true时才执行</li>
+          <li><strong>WMS.performLayoutAndPlaceSurfacesLocked</strong> — 执行布局和Surface放置，刷新系统UI，包含切换动画执行</li>
+          <li><strong>完成切换</strong> — 所有打开的Activity保存在WMS的相关变量中</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch5-s8-1': { type: 'leaf', chapter: 5, title: '核心概念与动画类型', breadcrumb: ['第五章', 'Activity窗口切换', '核心概念'], redirect: 'ch5-s8' },
+  'ch5-s8-2': { type: 'leaf', chapter: 5, title: '9步切换流程', breadcrumb: ['第五章', 'Activity窗口切换', '9步流程'], redirect: 'ch5-s8' },
+
+  'ch5-s9': {
+    type: 'section',
+    chapter: 5,
+    title: '第九节 · 窗口动画原理',
+    breadcrumb: ['第五章', '窗口动画原理'],
+    sections: [
+      { title: '三种Transformation', html: `
+        <p>窗口动画本质：对原始窗口施加变换（Transformation），通过矩阵（Matrix）实现偏移、旋转、缩放、切变、反射、投影等变换。给窗口设置动画 = 设置变换矩阵。</p>
+        <ol class="step-list">
+          <li><strong>Self Transformation（自变换）</strong> — 窗口本身的进入/退出动画（普通动画）</li>
+          <li><strong>Attached Transformation（附加变换）</strong> — 从被附加窗口传递过来的动画（普通动画）</li>
+          <li><strong>App Transformation（应用变换）</strong> — 宿主Activity传递的切换动画</li>
+        </ol>
+        <p>三个Transformation组合形成最终变换矩阵，以60fps速度应用于窗口。前提：计算好窗口原始位置和大小，布局和绘制好UI。</p>
+      `},
+      { title: '设置过程', html: `
+        <ul class="knowledge-list">
+          <li><strong>普通动画</strong>（Self + Attached）：窗口打开时通过WindowState.performShowLocked()实现，applyEnterAnimationLocked应用进入动画</li>
+          <li><strong>切换动画</strong>（App Transformation）：判断是否设置了哑动画，AppWindowToken对象的相关成员变量控制</li>
+        </ul>
+      `},
+      { title: '显示框架', html: `
+        <h4>计算动画三步法</h4>
+        <ol class="step-list">
+          <li>假设状态栏窗口不可见，锁屏窗口可见且不可解散</li>
+          <li>检查窗口是否可见及全屏，根据结果决定状态栏和锁屏窗口显示</li>
+          <li>根据收集的信息决定是否显示状态栏和锁屏窗口</li>
+        </ol>
+        <h4>显示过程（每个窗口）</h4>
+        <ul class="knowledge-list">
+          <li>WindowState.computeShownFrameLocked()计算实际显示的大小和位置（已应用动画变换）</li>
+          <li>将结果设置到SurfaceFlinger服务中</li>
+          <li>窗口准备就绪显示时（isReadyForDisplay()返回true）进行后续处理</li>
+        </ul>
+      `},
+      { title: '推进过程 & 合成过程', html: `
+        <h4>推进过程</h4>
+        <ul class="knowledge-list">
+          <li>窗口动画的推进：按帧逐步推进动画状态</li>
+          <li>Activity组件切换动画的推进：切换动画的逐步推进机制</li>
+        </ul>
+        <h4>合成过程</h4>
+        <ul class="knowledge-list">
+          <li>将三个Transformation组合成一个最终变换矩阵</li>
+          <li>壁纸窗口特殊处理：把壁纸窗口所附加在的窗口的动画设置为壁纸窗口的目标窗口所附加在的窗口的动画</li>
+          <li>合成后应用于窗口原始形状，形成动画效果</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch5-s9-1': { type: 'leaf', chapter: 5, title: '三种Transformation', breadcrumb: ['第五章', '窗口动画原理', 'Transformation'], redirect: 'ch5-s9' },
+  'ch5-s9-2': { type: 'leaf', chapter: 5, title: '设置过程', breadcrumb: ['第五章', '窗口动画原理', '设置过程'], redirect: 'ch5-s9' },
+  'ch5-s9-3': { type: 'leaf', chapter: 5, title: '显示框架', breadcrumb: ['第五章', '窗口动画原理', '显示框架'], redirect: 'ch5-s9' },
+  'ch5-s9-4': { type: 'leaf', chapter: 5, title: '推进过程', breadcrumb: ['第五章', '窗口动画原理', '推进过程'], redirect: 'ch5-s9' },
+  'ch5-s9-5': { type: 'leaf', chapter: 5, title: '合成过程', breadcrumb: ['第五章', '窗口动画原理', '合成过程'], redirect: 'ch5-s9' },
+
+  // ===== 第六章 =====
+  'ch6': {
+    type: 'chapter',
+    chapter: 6,
+    title: '第六章 · PKMS Android10.0',
+    desc: '全面解析PackageManagerService，从启动过程到APK扫描安装，掌握权限扫描、Settings数据结构及安装流程等核心机制。',
+    sections: [
+      {
+        title: '核心知识体系',
+        html: `
+          <div class="overview-grid">
+            <div class="overview-card" onclick="navigateTo('ch6-s1')">
+              <div class="overview-card-title">前言</div>
+              <div class="overview-card-meta">PKMS是什么</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch6-s2')">
+              <div class="overview-card-title">概述信息</div>
+              <div class="overview-card-meta">三大核心功能·源码路径</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch6-s3')">
+              <div class="overview-card-title">角色位置</div>
+              <div class="overview-card-meta">Binder服务端角色</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch6-s4')">
+              <div class="overview-card-title">启动过程分析</div>
+              <div class="overview-card-meta">七步走·五阶段</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch6-s5')">
+              <div class="overview-card-title">APK的扫描</div>
+              <div class="overview-card-meta">扫描调用链·各环节详解</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch6-s6')">
+              <div class="overview-card-title">APK的安装</div>
+              <div class="overview-card-meta">三步走·五大环节</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch6-s7')">
+              <div class="overview-card-title">权限扫描</div>
+              <div class="overview-card-meta">8种XML标签解析</div>
+            </div>
+            <div class="overview-card" onclick="navigateTo('ch6-s8')">
+              <div class="overview-card-title">PKMS大综合笔记</div>
+              <div class="overview-card-meta">Settings·安装方式</div>
+            </div>
+          </div>
+        `
+      }
+    ]
+  },
+  'ch6-s1': {
+    type: 'section',
+    chapter: 6,
+    title: '第一节 · 前言',
+    breadcrumb: ['第六章', '前言'],
+    sections: [
+      { title: 'PKMS是什么', html: `
+        <p>PackageManagerService（简称PKMS）是Android系统核心服务之一，负责应用程序的安装、卸载、信息查询等工作。</p>
+      `}
+    ]
+  },
+  'ch6-s1-1': { type: 'leaf', chapter: 6, title: 'PKMS是什么', breadcrumb: ['第六章', '前言', 'PKMS定义'], redirect: 'ch6-s1' },
+
+  'ch6-s2': {
+    type: 'section',
+    chapter: 6,
+    title: '第二节 · PKMS概述信息',
+    breadcrumb: ['第六章', '概述信息'],
+    sections: [
+      { title: '三大核心功能', html: `
+        <ol class="step-list">
+          <li>解析AndroidManifest.xml清单文件，解析所有节点信息</li>
+          <li>扫描.apk文件，安装系统应用、安装本地应用等</li>
+          <li>管理本地应用：安装、卸载、应用信息查询等</li>
+        </ol>
+        <p>系统启动时启动PKMS服务，负责扫描系统中特定目录，寻找APK文件并解析，全面解析AndroidManifest.xml得到Activity、Service、BroadcastReceiver、ContentProvider等信息。由SystemServer启动。</p>
+      `},
+      { title: '核心源码路径', html: `
+        <ul class="knowledge-list">
+          <li>frameworks/base/core/java/android/app/ApplicationPackageManager.java</li>
+          <li>frameworks/base/services/java/com/android/server/SystemServer.java</li>
+          <li>frameworks/base/services/core/java/com/android/server/pm/PackageManagerService.java</li>
+          <li>frameworks/base/services/core/java/com/android/server/pm/PackageDexOptimizer.java</li>
+          <li>frameworks/base/services/core/java/com/android/server/pm/Installer.java</li>
+          <li>frameworks/base/services/core/java/com/android/server/pm/Settings.java</li>
+          <li>frameworks/base/services/core/java/com/android/server/pm/permission/...</li>
+          <li>frameworks/base/core/java/android/content/pm/IPackageManager.aidl</li>
+          <li>frameworks/base/core/java/android/content/pm/PackageManager.java</li>
+          <li>frameworks/base/core/java/android/server/SystemConfig.java</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch6-s2-1': { type: 'leaf', chapter: 6, title: '三大核心功能', breadcrumb: ['第六章', '概述信息', '核心功能'], redirect: 'ch6-s2' },
+  'ch6-s2-2': { type: 'leaf', chapter: 6, title: '核心源码路径', breadcrumb: ['第六章', '概述信息', '源码路径'], redirect: 'ch6-s2' },
+
+  'ch6-s3': {
+    type: 'section',
+    chapter: 6,
+    title: '第三节 · PKMS角色位置',
+    breadcrumb: ['第六章', '角色位置'],
+    sections: [
+      { title: 'Binder服务端角色', html: `
+        <ul class="knowledge-list">
+          <li>客户端通过Context.getPackageManager()获得ApplicationPackageManager对象</li>
+          <li>mPM指向Proxy代理</li>
+          <li>调用mPM方法 → IPackageManager的Proxy代理方法</li>
+          <li>通过Binder机制的mRemote与服务端PackageManagerService通信</li>
+          <li>PKMS属于Binder机制的服务端角色</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch6-s3-1': { type: 'leaf', chapter: 6, title: 'Binder服务端角色', breadcrumb: ['第六章', '角色位置', 'Binder服务端'], redirect: 'ch6-s3' },
+
+  'ch6-s4': {
+    type: 'section',
+    chapter: 6,
+    title: '第四节 · 启动过程分析',
+    breadcrumb: ['第六章', '启动过程分析'],
+    sections: [
+      { title: 'SystemServer七步走', html: `
+        <h4>startBootstrapServices 中第1-4步</h4>
+        <ol class="step-list">
+          <li><strong>启动Installer服务</strong> — 阻塞等待installd完成启动，创建具有适当权限的关键目录（如/data/user）</li>
+          <li><strong>获取设备是否加密</strong> — 加密则只解析"core"应用，mOnlyCore=true</li>
+          <li><strong>调用PKMS.main()初始化PKMS</strong> — 调用PackageManagerService构造函数创建对象</li>
+          <li><strong>设备未加密时管理A/B OTA dexopting</strong> — 启动OtaDexoptService</li>
+        </ol>
+        <h4>startOtherServices 中第5-7步</h4>
+        <ol class="step-list" start="5">
+          <li><strong>updatePackagesIfNeeded</strong> — 完成dex优化</li>
+          <li><strong>performFstrimIfNeeded</strong> — 完成磁盘维护</li>
+          <li><strong>systemReady</strong> — PKMS准备就绪</li>
+        </ol>
+      `},
+      { title: 'PKMS.main()四件事', html: `
+        <ol class="step-list">
+          <li>检查Package编译相关系统属性</li>
+          <li>调用PackageManagerService构造方法</li>
+          <li>启用部分应用服务于多用户场景（enableSystemUserPackages）</li>
+          <li>往ServiceManager中注册"package"和"package_native"</li>
+        </ol>
+      `},
+      { title: '两个重要的锁', html: `
+        <h4>mInstallLock</h4>
+        <ul class="knowledge-list">
+          <li>保护所有安装apk的访问权限</li>
+          <li>涉及繁重的磁盘数据读写，单线程操作，可能很慢</li>
+          <li>不会在持有mPackages锁的情况下获取</li>
+          <li>持有mInstallLock时获取mPackages是安全的</li>
+        </ul>
+        <h4>mPackages</h4>
+        <ul class="knowledge-list">
+          <li>保护内存中所有apk的package信息及相关状态</li>
+        </ul>
+      `},
+      { title: '五个阶段', html: `
+        <ol class="step-list">
+          <li><strong>BOOT_PROGRESS_PMS_START</strong> — 构造DisplayMetrics、创建Installer、PermissionManager、Settings、PackageDexOptimizer、SystemConfig，创建handler线程，添加8种shareUserId</li>
+          <li><strong>BOOT_PROGRESS_PMS_SYSTEM_SCAN_START</strong> — 获取BOOTCLASSPATH，判断fingerprint更新，旧版本升级处理，扫描system/vendor/product/odm/oem等目录的priv-app、app、overlay包</li>
+          <li><strong>BOOT_PROGRESS_PMS_DATA_SCAN_START</strong> — 扫描data目录应用信息，移除OTA删除的更新系统应用的禁用package设置</li>
+          <li><strong>BOOT_PROGRESS_PMS_SCAN_END</strong> — SDK版本变更更新权限，首次启动初始化默认首选应用，准备系统用户存储，OTA升级清除缓存，更新package.xml</li>
+          <li><strong>BOOT_PROGRESS_PMS_READY</strong> — 获取PermissionController，更新instant app installer，读取dex文件用法，GC回收内存</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch6-s4-1': { type: 'leaf', chapter: 6, title: 'SystemServer七步走', breadcrumb: ['第六章', '启动过程分析', 'SystemServer'], redirect: 'ch6-s4' },
+  'ch6-s4-2': { type: 'leaf', chapter: 6, title: 'PKMS.main()四件事', breadcrumb: ['第六章', '启动过程分析', 'PKMS.main'], redirect: 'ch6-s4' },
+  'ch6-s4-3': { type: 'leaf', chapter: 6, title: '两个重要的锁', breadcrumb: ['第六章', '启动过程分析', '两个锁'], redirect: 'ch6-s4' },
+  'ch6-s4-4': { type: 'leaf', chapter: 6, title: '阶段1 START', breadcrumb: ['第六章', '启动过程分析', 'START阶段'], redirect: 'ch6-s4' },
+  'ch6-s4-5': { type: 'leaf', chapter: 6, title: '阶段2 SYSTEM_SCAN', breadcrumb: ['第六章', '启动过程分析', 'SYSTEM_SCAN'], redirect: 'ch6-s4' },
+  'ch6-s4-6': { type: 'leaf', chapter: 6, title: '阶段3 DATA_SCAN', breadcrumb: ['第六章', '启动过程分析', 'DATA_SCAN'], redirect: 'ch6-s4' },
+  'ch6-s4-7': { type: 'leaf', chapter: 6, title: '阶段4 SCAN_END', breadcrumb: ['第六章', '启动过程分析', 'SCAN_END'], redirect: 'ch6-s4' },
+  'ch6-s4-8': { type: 'leaf', chapter: 6, title: '阶段5 READY', breadcrumb: ['第六章', '启动过程分析', 'READY'], redirect: 'ch6-s4' },
+
+  'ch6-s5': {
+    type: 'section',
+    chapter: 6,
+    title: '第五节 · APK的扫描',
+    breadcrumb: ['第六章', 'APK的扫描'],
+    sections: [
+      { title: '扫描调用链', html: `
+        <p>入口：PKMS构造函数中调用scanDirTracedLI扫描目录APK文件。</p>
+        <ol class="step-list">
+          <li><strong>PKMS.scanDirTracedLI</strong> — 加入systrace日志追踪，调用scanDirLI</li>
+          <li><strong>PKMS.scanDirLI</strong> — 核心扫描函数，创建ParallelPackageParser，遍历文件submit提交解析，从队列取出结果</li>
+          <li><strong>ParallelPackageParser.submit</strong> — 创建PackageParser对象，设置回调，调用scanFile解析APK</li>
+          <li><strong>PackageParser.parsePackage</strong> — 解析给定APK文件，parseBaseApk解析AndroidManifest.xml，所有解析信息放在Package对象中</li>
+        </ol>
+      `},
+      { title: '各环节详解', html: `
+        <h4>scanDirLI</h4>
+        <ul class="knowledge-list">
+          <li>获取目录下所有文件</li>
+          <li>创建ParallelPackageParser对象（并行解析器队列）</li>
+          <li>遍历文件，调用parallelPackageParser.submit(file, parseFlags)提交解析</li>
+          <li>从队列中取出解析结果（ParallelPackageParser.ParseResult）</li>
+        </ul>
+        <h4>PackageParser.parsePackage</h4>
+        <ul class="knowledge-list">
+          <li>parseMonolithicPackage()：解析单块包</li>
+          <li>parseBaseApk()：主要解析AndroidManifest.xml</li>
+          <li>parseBaseApkCommon：从AndroidManifest.xml获取标签名，解析各标签属性</li>
+          <li>parseBaseApplication()：解析application标签</li>
+        </ul>
+      `}
+    ]
+  },
+  'ch6-s5-1': { type: 'leaf', chapter: 6, title: '扫描调用链', breadcrumb: ['第六章', 'APK的扫描', '调用链'], redirect: 'ch6-s5' },
+  'ch6-s5-2': { type: 'leaf', chapter: 6, title: '各环节详解', breadcrumb: ['第六章', 'APK的扫描', '各环节'], redirect: 'ch6-s5' },
+
+  'ch6-s6': {
+    type: 'section',
+    chapter: 6,
+    title: '第六节 · APK的安装',
+    breadcrumb: ['第六章', 'APK的安装'],
+    sections: [
+      { title: '安装三步走', html: `
+        <ol class="step-list">
+          <li>把APK的信息通过IO流写入到PackageInstaller.Session中</li>
+          <li>调用PackageInstaller.Session的commit方法，把APK信息交给PKMS处理</li>
+          <li>进行APK的Copy操作，进行安装</li>
+        </ol>
+      `},
+      { title: '整体安装流程', html: `
+        <ol class="step-list">
+          <li>用户点击APK → PackageInstallerActivity → 点击"安装"按钮</li>
+          <li>startInstall() 跳转到 InstallInstalling Activity</li>
+          <li>InstallInstalling.onCreate 六步：获取保存的mSessionId → 注册观察者 → 创建SessionParams → 轻量级解析APK → 返回新的mInstallId → createSession内部通过Binder调用PKMS</li>
+          <li>InstallingAsyncTask：doInBackground中通过IO流将APK写入Session；onPostExecute调用Session.commit()</li>
+          <li>PKMS处理安装请求：INIT_COPY消息 → 创建InstallParams → installPackagesTracedLI → installPackagesLI</li>
+        </ol>
+      `},
+      { title: 'installPackagesLI五大环节', html: `
+        <ol class="step-list">
+          <li><strong>Prepare（准备）</strong> — 分析当前安装状态，分析包并进行初始验证，preparePackageLI</li>
+          <li><strong>Scan（扫描）</strong> — 基于prepare收集的上下文分析已解析的包，scanPackageTracedLI</li>
+          <li><strong>Reconcile（调和）</strong> — 在彼此上下文和当前系统状态中验证扫描的包，确保安装成功，构造ReconcileRequest</li>
+          <li><strong>Commit（提交）</strong> — 提交所有扫描的包并更新系统状态，是安装流中唯一可以修改系统状态的地方，commitPackagesLocked</li>
+          <li><strong>executePostCommitSteps（完成安装）</strong> — prepareAppDataAfterInstallLIF进行安装，替换安装时清除APP代码缓存，为新代码路径准备配置文件，执行dex优化</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch6-s6-1': { type: 'leaf', chapter: 6, title: '安装三步走', breadcrumb: ['第六章', 'APK的安装', '三步走'], redirect: 'ch6-s6' },
+  'ch6-s6-2': { type: 'leaf', chapter: 6, title: '整体安装流程', breadcrumb: ['第六章', 'APK的安装', '整体流程'], redirect: 'ch6-s6' },
+  'ch6-s6-3': { type: 'leaf', chapter: 6, title: 'installPackagesLI五大环节', breadcrumb: ['第六章', 'APK的安装', '五大环节'], redirect: 'ch6-s6' },
+
+  'ch6-s7': {
+    type: 'section',
+    chapter: 6,
+    title: '第七节 · PMS之权限扫描',
+    breadcrumb: ['第六章', '权限扫描'],
+    sections: [
+      { title: '权限扫描整体流程', html: `
+        <p>PKMS执行systemReady()后，对/system/etc/permissions中的各种xml进行扫描，进行权限存储，供后续使用。</p>
+        <ol class="step-list">
+          <li>PKMS.systemReady() → SystemConfig.readPermissions()</li>
+          <li>readPermissionsFromXml()解析每个xml文件</li>
+          <li>存入SystemConfig相应的成员数组变量</li>
+        </ol>
+        <p><strong>SystemConfig.readPermissions()</strong>：遍历/system/etc/permissions目录下所有xml文件，先扫描其他xml，最后读取platform.xml（优先级最高）。</p>
+      `},
+      { title: '8种XML标签解析', html: `
+        <ol class="step-list">
+          <li><strong>&lt;group&gt;</strong> — 根据gid属性获取gid数值，保存到mGlobalGids数组</li>
+          <li><strong>&lt;permission&gt;</strong> — 解析name属性，存入mPermissions集合</li>
+          <li><strong>&lt;assign-permission&gt;</strong> — 将权限赋予指定uid的用户，存入mSystemPermissions</li>
+          <li><strong>&lt;split-permission&gt;</strong> — 一个权限扩展出新权限，存入mSplitPermissions</li>
+          <li><strong>&lt;library&gt;</strong> — 系统自动加载的动态库，存入mSharedLibraries</li>
+          <li><strong>&lt;feature&gt;</strong> — 硬件支持的功能，存入mAvailableFeatures</li>
+          <li><strong>&lt;oem-permission&gt;</strong> — OEM厂商自定义权限，存入mOemPermissions</li>
+          <li><strong>&lt;privapp-permission&gt;</strong> — 私有应用权限，按不同存储路径分别存储（vendor/product/system_ext/system）</li>
+        </ol>
+      `}
+    ]
+  },
+  'ch6-s7-1': { type: 'leaf', chapter: 6, title: '权限扫描整体流程', breadcrumb: ['第六章', '权限扫描', '整体流程'], redirect: 'ch6-s7' },
+  'ch6-s7-2': { type: 'leaf', chapter: 6, title: '8种XML标签解析', breadcrumb: ['第六章', '权限扫描', '8种标签'], redirect: 'ch6-s7' },
+
+  'ch6-s8': {
+    type: 'section',
+    chapter: 6,
+    title: '第八节 · PKMS大综合笔记',
+    breadcrumb: ['第六章', 'PKMS大综合'],
+    sections: [
+      { title: 'Settings与packages.xml', html: `
+        <h4>Settings创建（第一件事）</h4>
+        <p>在/data/system/目录下创建系列文件：</p>
+        <ul class="knowledge-list">
+          <li><strong>packages.xml</strong> — 记录所有安装应用信息（基本信息、签名、权限）</li>
+          <li><strong>packages-backup.xml</strong> — packages.xml的备份</li>
+          <li><strong>packages.list</strong> — 保存普通应用的数据目录和uid等信息</li>
+          <li><strong>packages-stopped.xml</strong> — 记录被强制停止运行的应用信息</li>
+          <li><strong>packages-stopped-backup.xml</strong> — packages-stopped.xml的备份</li>
+        </ul>
+        <h4>读取packages.xml（第四件事）</h4>
+        <ul class="knowledge-list">
+          <li>Settings.readLPw()方法，优先解析备份文件</li>
+          <li>备份存在则删除原packages.xml</li>
+          <li>使用XmlPullParser解析XML</li>
+          <li>解析各种标签：package/permissions等</li>
+        </ul>
+        <h4>写入packages.xml（第八件事）</h4>
+        <ul class="knowledge-list">
+          <li>备份不存在时：packages.xml重命名为备份名</li>
+          <li>备份存在时：删除packages.xml文件</li>
+          <li>原则：只要有一份文件即可</li>
+        </ul>
+      `},
+      { title: 'APK扫描大总结', html: `
+        <ol class="step-list">
+          <li>在/data/system目录创建一系列文件存储应用信息</li>
+          <li>在SystemConfig中读取系统配置初始化mGlobalGids、mSystemPermissions、mAvailableFeatures</li>
+          <li>指定/data目录下一些文件夹作为扫描目录</li>
+          <li>读取packages.xml数据，解析并存储到Settings中</li>
+          <li>扫描指定目录下的APK包，解析Manifest.xml，赋值给PMS、Settings、Package对象</li>
+          <li>将扫描出的应用信息重新写入packages.xml文件</li>
+        </ol>
+      `},
+      { title: '有界面安装 vs 无界面安装', html: `
+        <h4>有界面安装</h4>
+        <ul class="knowledge-list">
+          <li>安装界面来自PackageInstallerActivity</li>
+          <li>属于packages/app/PackageInstaller应用</li>
+          <li>动作：android.intent.action.VIEW 和 INSTALL_PACKAGE</li>
+          <li>Data：file scheme + application/vnd.android.package-archive MIME类型</li>
+        </ul>
+        <h4>无界面安装</h4>
+        <ul class="knowledge-list">
+          <li>内置APK开机安装</li>
+          <li>命令安装：adb安装（电脑端）、pm命令（手机端）</li>
+          <li>pm只是一个脚本，源码路径：frameworks/base/cmds/pm/pm</li>
+        </ul>
+        <div class="tip-box">
+          <div class="tip-title">📌 安装原理</div>
+          复制APK到系统目录 → 解析Manifest → 更新packages.xml → 创建数据目录 → dex优化等
+        </div>
+      `}
+    ]
+  },
+  'ch6-s8-1': { type: 'leaf', chapter: 6, title: 'Settings与packages.xml', breadcrumb: ['第六章', 'PKMS大综合', 'Settings'], redirect: 'ch6-s8' },
+  'ch6-s8-2': { type: 'leaf', chapter: 6, title: 'APK扫描大总结', breadcrumb: ['第六章', 'PKMS大综合', '扫描总结'], redirect: 'ch6-s8' },
+  'ch6-s8-3': { type: 'leaf', chapter: 6, title: '有界面 vs 无界面安装', breadcrumb: ['第六章', 'PKMS大综合', '安装方式'], redirect: 'ch6-s8' },
+};
+
+// ============================================================
+// 导航树渲染
+// ============================================================
+function buildTree(nodes, parentUl, level = 0) {
+  nodes.forEach((node, idx) => {
+    const li = document.createElement('li');
+    if (level === 0) {
+      li.className = `chapter-${node.chapter}`;
+    }
+
+    const item = document.createElement('div');
+    item.className = 'node-item';
+    if (node.interview) item.classList.add('interview');
+    item.dataset.id = node.id;
+
+    // 箭头
+    const toggle = document.createElement('span');
+    toggle.className = 'node-toggle';
+    if (node.children && node.children.length > 0) {
+      toggle.innerHTML = '▶';
+    } else {
+      toggle.classList.add('leaf');
+    }
+    item.appendChild(toggle);
+
+    // 图标
+    const icon = document.createElement('span');
+    icon.className = 'node-icon';
+    item.appendChild(icon);
+
+    // 标签
+    const label = document.createElement('span');
+    label.className = 'node-label';
+    label.textContent = node.label;
+    item.appendChild(label);
+
+    // 点击事件
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // 切换展开/折叠
+      if (node.children && node.children.length > 0) {
+        const childUl = li.querySelector(':scope > ul');
+        const isExpanded = childUl.classList.contains('expanded');
+        if (isExpanded) {
+          collapseNode(childUl, toggle);
+        } else {
+          expandNode(childUl, toggle);
+        }
+      }
+      // 选中
+      selectNode(node.id);
+    });
+
+    li.appendChild(item);
+
+    // 子节点
+    if (node.children && node.children.length > 0) {
+      const childUl = document.createElement('ul');
+      buildTree(node.children, childUl, level + 1);
+      li.appendChild(childUl);
+    }
+
+    parentUl.appendChild(li);
+  });
+}
+
+function expandNode(ul, toggle) {
+  ul.classList.add('expanded');
+  toggle.classList.add('expanded');
+}
+
+function collapseNode(ul, toggle) {
+  ul.classList.remove('expanded');
+  toggle.classList.remove('expanded');
+}
+
+function expandAll() {
+  document.querySelectorAll('.tree ul').forEach(ul => ul.classList.add('expanded'));
+  document.querySelectorAll('.node-toggle:not(.leaf)').forEach(t => t.classList.add('expanded'));
+}
+
+function collapseAll() {
+  document.querySelectorAll('.tree ul').forEach(ul => ul.classList.remove('expanded'));
+  document.querySelectorAll('.node-toggle').forEach(t => t.classList.remove('expanded'));
+}
+
+// ============================================================
+// 全文内容构建 + 锚点跳转 + 滚动联动高亮
+// ============================================================
+let currentId = null;
+let isScrollingByClick = false;
+let scrollTimeout = null;
+
+// 构建全文内容
+function buildFullContent() {
+  const contentArea = document.getElementById('contentArea');
+  let html = '';
+
+  // 遍历 knowledgeTree，按章节顺序构建
+  knowledgeTree.forEach(chapter => {
+    html += buildChapterContent(chapter);
+  });
+
+  contentArea.innerHTML = html;
+}
+
+// 构建单个章节的全部内容（章 + 所有子节）
+function buildChapterContent(chapterNode) {
+  let html = '';
+  const chapterId = chapterNode.id;
+  const chapterData = contentData[chapterId];
+
+  // 章节点内容
+  html += buildSectionBlock(chapterId, chapterData);
+
+  // 递归构建所有子节点内容
+  if (chapterNode.children && chapterNode.children.length > 0) {
+    chapterNode.children.forEach(child => {
+      html += buildSubSectionContent(child);
+    });
+  }
+
+  return html;
+}
+
+// 构建子节内容（递归）
+function buildSubSectionContent(node) {
+  let html = '';
+  const data = contentData[node.id];
+
+  // 只渲染有实际内容的节点（非 leaf 重定向节点）
+  if (data && data.type !== 'leaf') {
+    html += buildSectionBlock(node.id, data);
+  }
+
+  if (node.children && node.children.length > 0) {
+    node.children.forEach(child => {
+      html += buildSubSectionContent(child);
+    });
+  }
+
+  return html;
+}
+
+// 构建单个内容区块（带 id）
+function buildSectionBlock(id, data) {
+  if (!data) return '';
+
+  const chapterColor = getChapterColor(data.chapter);
+  const chapterName = getChapterName(data.chapter);
+
+  let html = `<section class="content-section" id="section-${id}" data-id="${id}">`;
+
+  // 面包屑
+  if (data.breadcrumb && data.breadcrumb.length > 0) {
+    html += '<div class="breadcrumb">';
+    data.breadcrumb.forEach((crumb, i) => {
+      if (i > 0) html += '<span class="crumb-sep">›</span>';
+      if (i === data.breadcrumb.length - 1) {
+        html += `<span class="crumb-current">${crumb}</span>`;
+      } else {
+        html += `<span>${crumb}</span>`;
+      }
+    });
+    html += '</div>';
+  }
+
+  // 章节徽章
+  if (data.type === 'chapter') {
+    html += `<div class="chapter-badge" style="border-color: ${chapterColor}40; color: ${chapterColor};">
+      <span class="badge-dot" style="background: ${chapterColor}; box-shadow: 0 0 8px ${chapterColor}80;"></span>
+      ${chapterName} · 共 ${countSections(id)} 个知识点
+    </div>`;
+  }
+
+  // 标题
+  html += '<div class="content-header">';
+  html += `<h1 class="content-title">${data.title}</h1>`;
+  if (data.desc) html += `<p class="content-desc">${data.desc}</p>`;
+  html += '</div>';
+
+  // 章节内容
+  if (data.type === 'chapter' && data.sections) {
+    data.sections.forEach(section => {
+      html += '<div class="section-block">';
+      html += `<h2>${section.title}</h2>`;
+      html += section.html;
+      html += '</div>';
+    });
+  }
+
+  // 小节内容
+  if (data.type === 'section' && data.sections) {
+    data.sections.forEach(section => {
+      html += '<div class="section-block">';
+      html += `<h3>${section.title}</h3>`;
+      html += section.html;
+      html += '</div>';
+    });
+  }
+
+  // 面试题
+  if (data.type === 'interview' && data.interviews) {
+    html += '<div class="section-block">';
+    html += `<h2>面试题（${data.interviews.length}道）</h2>`;
+    html += '<p style="margin-bottom: 16px;">精选高频面试题，覆盖核心考点，建议结合前面知识系统学习后再来刷题。</p>';
+    data.interviews.forEach((item, i) => {
+      html += '<div class="interview-card">';
+      html += `<div class="interview-question"><span class="q-label">Q${i + 1}</span><span>${item.q}</span></div>`;
+      html += `<div class="interview-answer">${item.a}</div>`;
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  html += '</section>';
+  return html;
+}
+
+// 选中节点：滚动到对应内容 + 高亮
+function selectNode(id) {
+  // 处理 leaf 重定向
+  const data = contentData[id];
+  let targetId = id;
+  if (data && data.type === 'leaf' && data.redirect) {
+    targetId = data.redirect;
+  }
+
+  // 移除旧选中
+  document.querySelectorAll('.node-item.active').forEach(el => el.classList.remove('active'));
+  // 添加新选中（用原始 id 高亮，而非重定向 id）
+  const nodeEl = document.querySelector(`.node-item[data-id="${id}"]`);
+  if (nodeEl) {
+    nodeEl.classList.add('active');
+    // 滚动到可见区域
+    nodeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  // 展开父级路径
+  if (nodeEl) {
+    let parent = nodeEl.parentElement;
+    while (parent && parent.id !== 'treeRoot') {
+      if (parent.tagName === 'UL') {
+        parent.classList.add('expanded');
+        const prevLi = parent.parentElement;
+        if (prevLi) {
+          const toggle = prevLi.querySelector(':scope > .node-item > .node-toggle');
+          if (toggle) toggle.classList.add('expanded');
+        }
+      }
+      parent = parent.parentElement;
+    }
+  }
+
+  currentId = id;
+
+  // 滚动到对应内容区块
+  const section = document.getElementById(`section-${targetId}`);
+  if (section) {
+    isScrollingByClick = true;
+    const mainEl = document.getElementById('mainContent');
+    const offsetTop = section.offsetTop - 16;
+    mainEl.scrollTo({ top: offsetTop, behavior: 'smooth' });
+
+    // 滚动结束后重置标记
+    if (scrollTimeout) clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      isScrollingByClick = false;
+    }, 800);
+  }
+}
+
+function navigateTo(id) {
+  selectNode(id);
+}
+
+// 滚动联动：检测当前视口中最接近顶部的内容区块
+function setupScrollSpy() {
+  const mainEl = document.getElementById('mainContent');
+  let ticking = false;
+
+  mainEl.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        updateActiveSection();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+}
+
+function updateActiveSection() {
+  // 如果是点击触发的滚动，跳过联动检测（避免闪烁）
+  if (isScrollingByClick) return;
+
+  const mainEl = document.getElementById('mainContent');
+  const sections = document.querySelectorAll('.content-section');
+  const scrollTop = mainEl.scrollTop;
+  const offset = 20; // 容差偏移
+
+  // 如果已滚动到底部，高亮最后一个 section
+  const isAtBottom = mainEl.scrollHeight - mainEl.scrollTop - mainEl.clientHeight < 10;
+  if (isAtBottom && sections.length > 0) {
+    const lastId = sections[sections.length - 1].dataset.id;
+    if (lastId !== currentId) {
+      highlightNavNode(lastId);
+    }
+    return;
+  }
+
+  let activeId = null;
+
+  // 找到最后一个 offsetTop <= scrollTop + offset 的 section
+  for (let i = 0; i < sections.length; i++) {
+    const section = sections[i];
+    if (section.offsetTop - offset <= scrollTop) {
+      activeId = section.dataset.id;
+    } else {
+      break;
+    }
+  }
+
+  // 如果还没到任何 section，高亮第一个
+  if (!activeId && sections.length > 0) {
+    activeId = sections[0].dataset.id;
+  }
+
+  if (activeId && activeId !== currentId) {
+    highlightNavNode(activeId);
+  }
+}
+
+function highlightNavNode(id) {
+  currentId = id;
+
+  // 移除旧选中
+  document.querySelectorAll('.node-item.active').forEach(el => el.classList.remove('active'));
+
+  // 添加新选中
+  const nodeEl = document.querySelector(`.node-item[data-id="${id}"]`);
+  if (nodeEl) {
+    nodeEl.classList.add('active');
+    nodeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  // 展开父级路径
+  if (nodeEl) {
+    let parent = nodeEl.parentElement;
+    while (parent && parent.id !== 'treeRoot') {
+      if (parent.tagName === 'UL') {
+        parent.classList.add('expanded');
+        const prevLi = parent.parentElement;
+        if (prevLi) {
+          const toggle = prevLi.querySelector(':scope > .node-item > .node-toggle');
+          if (toggle) toggle.classList.add('expanded');
+        }
+      }
+      parent = parent.parentElement;
+    }
+  }
+}
+
+function getChapterColor(chapter) {
+  const colors = {
+    1: '#3dd6e0',
+    2: '#5b8def',
+    3: '#8b5cf6',
+    4: '#f472b6',
+    5: '#fbbf24',
+    6: '#34d399'
+  };
+  return colors[chapter] || '#3dd6e0';
+}
+
+function getChapterName(chapter) {
+  const names = {
+    1: '系统启动流程分析',
+    2: 'Binder解析',
+    3: 'Handler解析',
+    4: 'AMS解析',
+    5: 'WMS解析',
+    6: 'PKMS Android10.0'
+  };
+  return names[chapter] || '';
+}
+
+function countSections(chapterId) {
+  let count = 0;
+  function walk(nodes) {
+    nodes.forEach(node => {
+      if (node.children && node.children.length > 0) {
+        walk(node.children);
+      } else {
+        count++;
+      }
+    });
+  }
+  const chapterNode = knowledgeTree.find(n => n.id === chapterId);
+  if (chapterNode && chapterNode.children) walk(chapterNode.children);
+  return count;
+}
+
+// ============================================================
+// 初始化
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const treeRoot = document.getElementById('treeRoot');
+  buildTree(knowledgeTree, treeRoot, 0);
+
+  // 构建全文内容
+  buildFullContent();
+
+  // 设置滚动联动高亮
+  setupScrollSpy();
+
+  // 默认全部折叠（buildTree默认就是折叠状态）
+  // 默认高亮第一章
+  selectNode('ch1');
+});
+</script>
+</body>
+</html>
